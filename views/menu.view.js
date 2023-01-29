@@ -165,7 +165,22 @@ Views.registerView("menu", {
             Please export and save your data locally before starting.<br>
             <b>Beginning a challenge will permanently delete your current save.</b><br>
             `;
-
+        if (challengeSave.challengeMode !== 0 || 1===1)
+            html += `<div class='button showthat control' style='margin-top: 2px;' onclick='exitChallenge()'>Exit Challenge 
+                </div>
+                <div class='button showthat control' style='margin-top: 2px;' onclick='resumeChallenge()'>Resume Challenge 
+                </div><br>`;
+        html += 
+        `<div class='button showthat control' style='margin-top: 2px;' onclick='beginChallenge(1)'>Mana Drought 
+            <div class='showthis' style='color:black;width:230px;margin-left:100px;'>${_txt("menu>challenges>mana_drought")}</div>
+        </div><br>
+        <div class='button showthat control' style='margin-top: 2px;' onclick='beginChallenge(2)'>Noodle Arms
+            <div class='showthis' style='color:black;width:230px;margin-left:100px;'>${_txt("menu>challenges>noodle_arms")}</div>
+        </div><br>
+        <div class='button showthat control' style='margin-top: 2px;' onclick='beginChallenge(3)'>Mana Burn
+            <div class='showthis' style='color:black;width:230px;margin-left:100px;'>${_txt("menu>challenges>mana_burn")}</div>
+        </div><br>`
+        html += `</div>`
         return html;
     },
     totals() {
