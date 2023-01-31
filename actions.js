@@ -265,13 +265,28 @@ function calcTalentMult(talent) {
 function addExpFromAction(action) {
     const adjustedExp = action.expMult * (action.manaCost() / action.adjustedTicks);
     for (const stat in action.stats) {
-        const expToAdd = action.stats[stat] * adjustedExp * getTotalBonusXP(stat);
+        var expToAdd = action.stats[stat] * adjustedExp * getTotalBonusXP(stat);
+
+        if (stat == "Dex" || stat == "Con" || stat == "Spd" || stat == "Per") {
+            expToAdd *= Math.pow(1.10, getBuffLevel("PrestigePhysical"))
+        }
+
+        if (stat == "Cha" || stat == "Int" || stat == "Soul") {
+            expToAdd *= Math.pow(1.10, getBuffLevel("PrestigeMental"))
+        }
         const statExp = `statExp${stat}`;
         if (!action[statExp]) {
             action[statExp] = 0;
         }
         action[statExp] += expToAdd;
         addExp(stat, expToAdd);
+    }
+
+    // Prestige Overflow
+    for (const stat in stats) {
+        expToAdd = adjustedExp * getTotalBonusXP(stat) * (Math.pow(1.00222, getBuffLevel("PrestigeExpOverflow")) - 1);
+        if (expToAdd != 0) 
+            addExp(stat, expToAdd);
     }
 }
 

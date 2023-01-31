@@ -97,6 +97,13 @@ let totalTalent = 0;
 // eslint-disable-next-line prefer-const
 let shouldRestart = true;
 
+// let prestigeValues = {};
+
+// let prestigeCurrentPoints = 0;
+// let prestigeTotalPoints = 0;
+// let completedCurrentPrestige = false;
+// let completedAnyPrestige = true; // Set to false once method is setup to complete Current game
+
 // eslint-disable-next-line prefer-const
 let resources = {
     gold: 0,
@@ -141,7 +148,22 @@ let loadoutnames;
 //let loadoutnames = ["1", "2", "3", "4", "5"];
 const skillList = ["Combat", "Magic", "Practical", "Alchemy", "Crafting", "Dark", "Chronomancy", "Pyromancy", "Restoration", "Spatiomancy", "Mercantilism", "Divine", "Commune", "Wunderkind", "Gluttony", "Thievery", "Leadership", "Assassin"];
 const skills = {};
-const buffList = ["Ritual", "Imbuement", "Imbuement2", "Feast", "Aspirant", "Heroism", "Imbuement3"];
+const buffList = ["Ritual", 
+    "Imbuement", 
+    "Imbuement2", 
+    "Feast", 
+    "Aspirant", 
+    "Heroism", 
+    "Imbuement3",
+    "PrestigePhysical",
+    "PrestigeMental",
+    "PrestigeCombat",
+    "PrestigeSpatiomancy",
+    "PrestigeChronomancy",
+    "PrestigeBartering",
+    "PrestigeExpOverflow"
+];
+
 const dungeonFloors = [6, 9, 20];
 const trialFloors = [50, 100, 7, 1000, 25];
 const buffHardCaps = {
@@ -151,7 +173,14 @@ const buffHardCaps = {
     Imbuement3: 7,
     Feast: 100,
     Aspirant: 20,
-    Heroism: 50
+    Heroism: 50,
+    PrestigePhysical: 100,
+    PrestigeMental: 100,
+    PrestigeCombat: 100,
+    PrestigeSpatiomancy: 100,
+    PrestigeChronomancy: 100,
+    PrestigeBartering: 100,
+    PrestigeExpOverflow: 100
 };
 const buffCaps = {
     Ritual: 666,
@@ -160,9 +189,17 @@ const buffCaps = {
     Imbuement3: 7,
     Feast: 100,
     Aspirant: 20,
-    Heroism: 50
+    Heroism: 50,
+    PrestigePhysical: 100,
+    PrestigeMental: 100,
+    PrestigeCombat: 100,
+    PrestigeSpatiomancy: 100,
+    PrestigeChronomancy: 100,
+    PrestigeBartering: 100,
+    PrestigeExpOverflow: 100
 };
 const buffs = {};
+const prestigeValues = {};
 let goldInvested = 0;
 let stonesUsed;
 // eslint-disable-next-line prefer-const
@@ -482,6 +519,10 @@ function loadDefaults() {
     initializeStats();
     initializeSkills();
     initializeBuffs();
+    prestigeValues["prestigeCurrentPoints"] = 0;
+    prestigeValues["prestigeTotalPoints"] = 0;
+    prestigeValues["completedCurrentPrestige"] = false;
+    prestigeValues["completedAnyPrestige"] = true;
 }
 
 function loadUISettings() {
@@ -561,6 +602,35 @@ function load(inChallenge) {
             }
         }
     }
+
+    // console.log("inLoadddd")
+    // console.log(toLoad.prestigeValues)
+    // if (toLoad.prestigeValues !== undefined) {
+    //     prestigeCurrentPoints = toLoad.prestigeValues.prestigeCurrentPoints;
+    //     prestigeTotalPoints = toLoad.prestigeValues.prestigeTotalPoints;
+    //     completedCurrentPrestige = toLoad.prestigeValues.completedCurrentPrestige;
+    //     completedAnyPrestige = toLoad.prestigeValues.completedAnyPrestige;
+    // } else {
+    //     let prestigeValues = {};
+
+    //     prestigeCurrentPoints = 0;
+    //     prestigeTotalPoints = 0;
+    //     completedCurrentPrestige = false;
+    //     completedAnyPrestige = true;
+    // }
+    // console.log("post load")
+    // console.log(prestigeValues)
+
+    if (toLoad.prestigeValues !== undefined) {
+        prestigeValues["prestigeCurrentPoints"]    = toLoad.prestigeValues["prestigeCurrentPoints"]    === undefined ? 0 : toLoad.prestigeValues["prestigeCurrentPoints"];
+        prestigeValues["prestigeTotalPoints"]      = toLoad.prestigeValues["prestigeTotalPoints"]      === undefined ? 0 : toLoad.prestigeValues["prestigeTotalPoints"];
+        prestigeValues["completedCurrentPrestige"] = toLoad.prestigeValues["completedCurrentPrestige"] === undefined ? 0 : toLoad.prestigeValues["completedCurrentPrestige"];
+        prestigeValues["completedAnyPrestige"]     = toLoad.prestigeValues["completedAnyPrestige"]     === undefined ? 0 : toLoad.prestigeValues["completedAnyPrestige"];
+    }
+
+
+
+
 
     if (toLoad.storyReqs !== undefined) {
         for (const property in storyReqs) {
@@ -784,6 +854,8 @@ function load(inChallenge) {
     }
     else totals = {time: 0, effectiveTime: 0, loops: 0, actions: 0};
     view.updateTotals();
+    console.log("Updating prestige values from load")
+    view.updatePrestigeValues();
 
     // capped at 1 month of gain
     addOffline(Math.min(Math.floor((new Date() - new Date(toLoad.date)) * offlineRatio), 2678400000));
@@ -839,6 +911,9 @@ function save() {
     toSave.totalTalent = totalTalent;
     toSave.skills = skills;
     toSave.buffs = buffs;
+    toSave.prestigeValues = prestigeValues;
+    console.log("in saving")
+    console.log(toSave.prestigeValues);
     toSave.goldInvested = goldInvested;
     toSave.stonesUsed = stonesUsed;
     toSave.version75 = true;
@@ -1020,4 +1095,102 @@ function resumeChallenge() {
         pauseGame();
         restart();
     }
+}
+
+// All prestige button functions
+function completedCurrentGame() {
+    console.log("completed current prestige")
+
+    if (!prestigeValues["completedCurrentPrestige"]) {
+        prestigeValues["prestigeCurrentPoints"] += 90;
+        prestigeValues["prestigeTotalPoints"] += 90;
+        prestigeValues["completedCurrentPrestige"] = true;
+        prestigeValues["completedAnyPrestige"] = true;
+
+        view.updatePrestigeValues();
+    }
+}
+
+function prestigeUpgrade(prestigeSelected) {
+    // Update prestige value
+    const costOfPrestige = getPrestigeCost(prestigeSelected);
+    if (costOfPrestige > prestigeValues["prestigeCurrentPoints"]) {
+        console.log("Not enough points available.")
+        return;
+    }
+
+    addBuffAmt(prestigeSelected, 1);
+    prestigeValues["prestigeCurrentPoints"] -= costOfPrestige;
+    
+
+    // Retain certain values between prestiges
+    const nextPrestigeBuffs = {
+        PrestigePhysical: getBuffLevel("PrestigePhysical"),
+        PrestigeMental: getBuffLevel("PrestigeMental"),
+        PrestigeCombat: getBuffLevel("PrestigeCombat"),
+        PrestigeSpatiomancy: getBuffLevel("PrestigeSpatiomancy"),
+        PrestigeChronomancy: getBuffLevel("PrestigeChronomancy"),
+        PrestigeBartering: getBuffLevel("PrestigeBartering"),
+        PrestigeExpOverflow: getBuffLevel("PrestigeExpOverflow"),
+    }
+
+    const nextPrestigeValues = {
+        prestigeCurrentPoints: prestigeValues["prestigeCurrentPoints"],
+        prestigeTotalPoints: prestigeValues["prestigeTotalPoints"],
+        completedCurrentPrestige: false,
+        completedAnyPrestige: true
+    }
+
+    let nextTotals = totals;
+    let nextOfflineMs = totalOfflineMs;
+
+
+    // Confirmation of prestige
+    if (window.localStorage[defaultSaveName] && window.localStorage[defaultSaveName] !== "") {
+        if (confirm("Prestiging will reset all of your progress, but retain prestige points. Are you sure?"))
+            window.localStorage[defaultSaveName] = "";
+        else
+            return false;
+    }
+
+
+    // Remove all progress and save totals
+    load(false);
+    clearList();
+    restart();
+    pauseGame();
+
+
+    // Regain prestige values and Totals
+    for (const [key, value] of Object.entries(nextPrestigeBuffs)) {
+        if (value != 0) {
+            addBuffAmt(key, value);
+            view.requestUpdate("updateBuff", key);
+        }
+    }
+
+    prestigeValues["prestigeCurrentPoints"]    = nextPrestigeValues.prestigeCurrentPoints.valueOf();
+    prestigeValues["prestigeTotalPoints"]      = nextPrestigeValues.prestigeTotalPoints.valueOf();
+    prestigeValues["completedCurrentPrestige"] = nextPrestigeValues.completedCurrentPrestige.valueOf();
+    prestigeValues["completedAnyPrestige"]     = nextPrestigeValues.completedAnyPrestige.valueOf();
+    totals = nextTotals;
+    totalOfflineMs = nextOfflineMs;
+    view.updatePrestigeValues();
+}
+
+
+function getPrestigeCost(prestigeSelected) {
+    var currentCost = 30;
+
+    for (var i = 0; i < getBuffLevel(prestigeSelected); i++) {
+        currentCost += 10 + (5 * i)
+    }
+
+    return currentCost;
+}
+
+function getPrestigeCurrentBonus(prestigeSelected, base) {
+    return Math.pow(base, getBuffLevel(prestigeSelected)) > 1 ? 
+        Math.pow(base, getBuffLevel(prestigeSelected)) * 100 - 100 :      // *100 - 100 is to get percent values, otherwise 1.02 will just round to 1, rather than 2%.
+        0;
 }

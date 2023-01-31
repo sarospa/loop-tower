@@ -15,7 +15,7 @@ let lastSave = Date.now();
 function getSpeedMult(zone = curTown) {
     let speedMult = 1;
 
-    // dark ritual
+    // Dark Ritual
     if (zone === 0) speedMult *= getRitualBonus(0, 20, 10);
     else if (zone === 1) speedMult *= getRitualBonus(20, 40, 5);
     else if (zone === 2) speedMult *= getRitualBonus(40, 60, 2.5);
@@ -27,11 +27,14 @@ function getSpeedMult(zone = curTown) {
     else if (zone === 8) speedMult *= getRitualBonus(250, 300, .5);
     speedMult *= getRitualBonus(300, 666, .1);
     
-    // chronomancy
+    // Chronomancy
     speedMult *= getSkillBonus("Chronomancy");
     
-    //Imbue Soul
+    // Imbue Soul
     speedMult += 0.5 * getBuffLevel("Imbuement3");
+
+    // Prestige Chronomancy
+    speedMult *= Math.pow(1.05, getBuffLevel("PrestigeChronomancy"));
 
     return speedMult;
 }

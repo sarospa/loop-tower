@@ -8,6 +8,7 @@ Views.registerView("menu", {
         html += Views.menu.htmlOptionsMenu();
         html += Views.menu.htmlChallengeMenu();
         html += Views.menu.htmlTotalsMenu();
+        html += Views.menu.htmlPrestigeMenu();
         return html;
     },
     versions() {
@@ -157,6 +158,16 @@ Views.registerView("menu", {
         </div>`;
         return html;
     },
+    htmlPrestigeMenu() {
+        const html = 
+        `<div style='display:inline-block;height:30px;margin-left:10px;' class='showthatH'>
+            ${_txt("menu>prestige_bonus>meta>title")}
+            <div class='showthisH'>
+                ${this.prestige_bonuses()}
+            </div>
+        </div>`;
+        return html;
+    },
     challenges() {
         let html = 
         `<div>Challenges are special modes that impose special conditions and heavy restrictions.<br> 
@@ -191,6 +202,85 @@ Views.registerView("menu", {
         Loops: <div id='totalLoops'></div><br>
         Actions: <div id='totalActions'></div><br>
         </div>`;
+        return html;
+    },
+    prestige_bonuses() {
+        let html =
+        `<div><br> 
+        Prestige bonuses are always active.<br>
+        Each time you complete the game, you receive 90 points to spend on these bonuses.<br>
+        Please export and save your data locally before attempting to trigger a prestige.<br>
+        <br>
+        <b>The ability to spec into prestige bonuses may be done at any time, but keep in mind this will reset ALL progress.</b><br>
+        <br><br><br>
+        Available points: <div id='currentPrestigePoints'></div> / <div id='totalPrestigePoints'></div>
+        <br>
+
+        `;
+        html +=
+        
+        `
+        <br>
+        <div class='button showthat control' style='margin-top: -50px;' onclick='prestigeUpgrade("PrestigePhysical")'>Prestige Physical
+            <div class='showthis' style='color:black;width:230px;margin-left:200px;'>${_txt("menu>prestige_bonus>PrestigePhysical")}
+                <br><br>
+                Current Bonus: <div id='prestigePhysicalCurrentBonus'></div>%<br>
+                Next level cost: <div id='prestigePhysicalNextCost'></div> points<br> 
+            </div>
+        </div><br>
+
+        <div class='button showthat control' style='margin-top: -50px;' onclick='prestigeUpgrade("PrestigeMental")'>Prestige Mental
+        <div class='showthis' style='color:black;width:230px;margin-left:200px;'>${_txt("menu>prestige_bonus>PrestigeMental")}
+            <br><br>
+            Current Bonus: <div id='prestigeMentalCurrentBonus'></div>%<br>
+            Next level cost: <div id='prestigeMentalNextCost'></div> points<br> 
+        </div>
+        </div><br>
+
+
+        <div class='button showthat control' style='margin-top: -50px;' onclick='prestigeUpgrade("PrestigeCombat")'>Prestige Combat
+            <div class='showthis' style='color:black;width:230px;margin-left:200px;'>${_txt("menu>prestige_bonus>PrestigeCombat")}
+                <br><br>
+                Current Bonus: <div id='prestigeCombatCurrentBonus'></div>%<br>
+                Next level cost: <div id='prestigeCombatNextCost'></div> points<br> 
+            </div>
+        </div><br>
+
+        <div class='button showthat control' style='margin-top: -50px;' onclick='prestigeUpgrade("PrestigeSpatiomancy")'>Prestige Spatiomancy
+            <div class='showthis' style='color:black;width:230px;margin-left:200px;'>${_txt("menu>prestige_bonus>PrestigeSpatiomancy")}
+                <br><br>
+                Current Bonus: <div id='prestigeSpatiomancyCurrentBonus'></div>%<br>
+                Next level cost: <div id='prestigeSpatiomancyNextCost'></div> points<br> 
+            </div>
+        </div><br>
+
+        <div class='button showthat control' style='margin-top: -50px;' onclick='prestigeUpgrade("PrestigeChronomancy")'>Prestige Chronomancy
+            <div class='showthis' style='color:black;width:230px;margin-left:200px;'>${_txt("menu>prestige_bonus>PrestigeChronomancy")}
+                <br><br>
+                Current Bonus: <div id='prestigeChronomancyCurrentBonus'></div>%<br>
+                Next level cost: <div id='prestigeChronomancyNextCost'></div> points<br> 
+            </div>
+        </div><br>
+
+        <div class='button showthat control' style='margin-top: -50px;' onclick='prestigeUpgrade("PrestigeBartering")'>PrestigeBartering
+            <div class='showthis' style='color:black;width:230px;margin-left:200px;'>${_txt("menu>prestige_bonus>PrestigeBartering")}
+                <br><br>
+                Current Bonus: <div id='prestigeBarteringCurrentBonus'></div>%<br>
+                Next level cost: <div id='prestigeBarteringNextCost'></div> points<br> 
+            </div>
+        </div><br>
+
+        <div class='button showthat control' style='margin-top: -50px;' onclick='prestigeUpgrade("PrestigeExpOverflow")'>Prestige Experience Overflow
+            <div class='showthis' style='color:black;width:230px;margin-left:200px;'>${_txt("menu>prestige_bonus>PrestigeExpOverflow")}
+                <br><br>
+                Current Bonus: <div id='prestigeExpOverflowCurrentBonus'></div>%<br>
+                Next level cost: <div id='prestigeExpOverflowNextCost'></div> points<br> 
+            </div>
+        </div><br>
+
+        `
+
+        ;
         return html;
     }
 });

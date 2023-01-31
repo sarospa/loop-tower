@@ -265,7 +265,7 @@
             <meta>
                 <title>Saving</title>
             </meta>
-            <manual_save>Save Maaaaaaaaaaaaaaaaaaanually</manual_save>
+            <manual_save>Save Manually</manual_save>
             <export_list>Export Current List</export_list>
             <import_list>Import List to Current</import_list>
             <list_label>Export/Import List</list_label>
@@ -382,6 +382,20 @@
                 <title>Totals</title>
             </meta>
         </totals>
+
+        <prestige_bonus>
+            <meta>
+                <title>Prestige Perks</title>
+            </meta>
+            <PrestigePhysical>Increases Experience gain of all Physical skills (Dex, Str, Con, Spd, Per) by 10% per level.</PrestigePhysical>
+            <PrestigeMental>Increases Experience gain of all Mental skills (Cha, Int, Soul) by 10% per level.</PrestigeMental>
+            <PrestigeCombat>Increases Self and Team Combat by 10% per level.</PrestigeCombat>
+            <PrestigeSpatiomancy>Increases the number of "Findables" per zone by 5% per level.</PrestigeSpatiomancy>
+            <PrestigeChronomancy>Increases speed of all zones by a multiplier of 5% per level.</PrestigeChronomancy>
+            <PrestigeBartering>Increases received from merchants by 5% per level.</PrestigeBartering>
+            <PrestigeExpOverflow>Experience earned is spread amongst all stats by 2% per level.</PrestigeExpOverflow>
+        </prestige_bonus>
+
     </menu>
     <tutorial><![CDATA[
       TUTORIAL:<br>
@@ -938,6 +952,49 @@
             Increases the exp multiplier of training actions by 100% and raises all action speeds by 50% per level additively.
             ]]></desc>
         </imbue_soul>
+
+        <prestige_-_physical>
+            <label>Prestige - Physical</label>
+            <desc><![CDATA[ 
+            Increases Experience gain of all Physical skills (Dex, Str, Con, Spd, Per) by 10% per level. 
+            ]]></desc>
+        </prestige_-_physical>
+        <prestige_-_mental>
+            <label>Prestige - Mental</label>
+            <desc><![CDATA[ 
+            Increases Experience gain of all Mental skills (Cha, Int, Soul) by 10% per level. 
+            ]]></desc>
+        </prestige_-_mental>
+        <prestige_-_combat>
+            <label>Prestige - Combat</label>
+            <desc><![CDATA[ 
+            Increases Self and Team Combat by 10% per level. 
+            ]]></desc>
+        </prestige_-_combat>
+        <prestige_-_spatiomancy>
+            <label>Prestige - Spatiomancy</label>
+            <desc><![CDATA[ 
+            Increases the number of "Findables" per zone by 5% per level. 
+            ]]></desc>
+        </prestige_-_spatiomancy>
+        <prestige_-_chronomancy>
+            <label>Prestige - Chronomancy</label>
+            <desc><![CDATA[ 
+            Increases speed of all zones by a multiplier of 5% per level. 
+            ]]></desc>
+        </prestige_-_chronomancy>
+        <prestige_-_bartering>
+            <label>Prestige - Bartering</label>
+            <desc><![CDATA[ 
+            Increases received from merchants by 5% per level. 
+            ]]></desc>
+        </prestige_-_bartering>
+        <prestige_-_experience_overflow>
+            <label>Prestige - Experience Overflow</label>
+            <desc><![CDATA[ 
+            Experience earned is spread amongst all stats by 2% per level. 
+            ]]></desc>
+        </prestige_-_experience_overflow>
         <tooltip>
             <level>Level</level>
             <no_reset_on_restart><![CDATA[Buffs last through resets.<br>You can click on the right hand number to edit it and adjust the cap for that buff. (buff actions will automatically fail and not spend soulstones past your set cap)]]></no_reset_on_restart>
