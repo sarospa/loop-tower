@@ -214,7 +214,10 @@ Views.registerView("menu", {
         <b>The ability to spec into prestige bonuses may be done at any time, but keep in mind this will reset ALL progress.</b><br>
         <br><br><br>
         Available points: <div id='currentPrestigePoints'></div> / <div id='totalPrestigePoints'></div>
-        Upgrade cost follows the format of: 30 -> 40 -> 55 -> 75 -> 100 -> 130 -> ...
+        <br>
+        Upgrade cost follows the format of: 
+        <br>
+        30 -> 40 -> 55 -> 75 -> 100 -> 130 -> ...
         <br>
 
         `;
