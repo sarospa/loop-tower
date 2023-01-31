@@ -262,7 +262,7 @@ Views.registerView("menu", {
             </div>
         </div><br>
 
-        <div class='button showthat control' style='margin-top: -50px;' onclick='prestigeUpgrade("PrestigeBartering")'>PrestigeBartering
+        <div class='button showthat control' style='margin-top: -50px;' onclick='prestigeUpgrade("PrestigeBartering")'>Prestige Bartering
             <div class='showthis' style='color:black;width:230px;margin-left:200px;'>${_txt("menu>prestige_bonus>PrestigeBartering")}
                 <br><br>
                 Current Bonus: <div id='prestigeBarteringCurrentBonus'></div>%<br>
