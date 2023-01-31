@@ -927,7 +927,6 @@ Action.LongQuest = new Action("Long Quest", {
             addResource("gold", goldGain);
             return goldGain;
         });
-        completedCurrentGame();
     },
     story(completed) {
         if (towns[0][`good${this.varName}`] >= 10 && towns[0][`goodTemp${this.varName}`] <= towns[0][`good${this.varName}`] - 10) unlockStory("maxLQuestsInALoop");
