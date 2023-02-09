@@ -485,6 +485,8 @@ const options = {
     pauseBeforeRestart: false,
     pauseOnFailedLoop: false,
     pauseOnComplete: false,
+    speedIncrease10x: false,
+    speedIncrease20x: false,
     highlightNew: true,
     statColors: false,
     pingOnPause: false,
@@ -497,6 +499,9 @@ const options = {
 function setOption(option, value) {
     options[option] = value;
     if (option === "updateRate") recalcInterval(options.updateRate);
+    if ((option === "speedIncrease10x" || option === "speedIncrease20x") && bonusSpeed > 1) {
+        checkExtraSpeed()
+    }
 }
 
 function loadOption(option, value) {

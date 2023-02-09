@@ -109,6 +109,16 @@ Views.registerView("menu", {
                     <div class='showthis'>${_txt("menu>options>hotkeys_tooltip")}</div>
                 </label>
                 <br>
+                <div class='control'>
+                    <input type='checkbox' id='speedIncrease10xInput' onchange='setOption("speedIncrease10x", this.checked)'>
+                    <label for='speedIncrease10xInput'>${_txt("menu>options>speedIncrease10x_text")}</label>
+                </div>
+                <br>
+                <div class='control'>
+                    <input type='checkbox' id='speedIncrease20xInput' onchange='setOption("speedIncrease20x", this.checked)'>
+                    <label for='speedIncrease20xInput'>${_txt("menu>options>speedIncrease20x_text")}</label>
+                </div>
+                <br>
                 ${_txt("menu>options>update_rate")}
                 <input id='updateRateInput' type='number' value='50' min='1' style='width: 50px;transform: translateY(-2px);' oninput='setOption("updateRate", parseInt(this.value))' />
                 <br>

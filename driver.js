@@ -627,11 +627,17 @@ function addOffline(num) {
 function toggleOffline() {
     if (totalOfflineMs === 0) return;
     if (bonusSpeed === 1) {
-        bonusSpeed = 5;
+        checkExtraSpeed();
         document.getElementById("isBonusOn").textContent = _txt("time_controls>bonus_seconds>state>on");
     } else {
         bonusSpeed = 1;
         document.getElementById("isBonusOn").textContent = _txt("time_controls>bonus_seconds>state>off");
     }
     view.requestUpdate("updateTime", null);
+}
+
+function checkExtraSpeed() {
+    bonusSpeed = 5;
+    if (options.speedIncrease10x === true) { bonusSpeed = 10};
+    if (options.speedIncrease20x === true) { bonusSpeed = 20};
 }
