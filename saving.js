@@ -526,6 +526,7 @@ function loadDefaults() {
     initializeBuffs();
     prestigeValues["prestigeCurrentPoints"] = 0;
     prestigeValues["prestigeTotalPoints"] = 0;
+    prestigeValues["prestigeTotalCompletions"] = 0;
     prestigeValues["completedCurrentPrestige"] = false;
     prestigeValues["completedAnyPrestige"] = true;
 }
@@ -608,33 +609,13 @@ function load(inChallenge) {
         }
     }
 
-    // console.log("inLoadddd")
-    // console.log(toLoad.prestigeValues)
-    // if (toLoad.prestigeValues !== undefined) {
-    //     prestigeCurrentPoints = toLoad.prestigeValues.prestigeCurrentPoints;
-    //     prestigeTotalPoints = toLoad.prestigeValues.prestigeTotalPoints;
-    //     completedCurrentPrestige = toLoad.prestigeValues.completedCurrentPrestige;
-    //     completedAnyPrestige = toLoad.prestigeValues.completedAnyPrestige;
-    // } else {
-    //     let prestigeValues = {};
-
-    //     prestigeCurrentPoints = 0;
-    //     prestigeTotalPoints = 0;
-    //     completedCurrentPrestige = false;
-    //     completedAnyPrestige = true;
-    // }
-    // console.log("post load")
-    // console.log(prestigeValues)
-
     if (toLoad.prestigeValues !== undefined) {
-        prestigeValues["prestigeCurrentPoints"]    = toLoad.prestigeValues["prestigeCurrentPoints"]    === undefined ? 0 : toLoad.prestigeValues["prestigeCurrentPoints"];
-        prestigeValues["prestigeTotalPoints"]      = toLoad.prestigeValues["prestigeTotalPoints"]      === undefined ? 0 : toLoad.prestigeValues["prestigeTotalPoints"];
-        prestigeValues["completedCurrentPrestige"] = toLoad.prestigeValues["completedCurrentPrestige"] === undefined ? 0 : toLoad.prestigeValues["completedCurrentPrestige"];
-        prestigeValues["completedAnyPrestige"]     = toLoad.prestigeValues["completedAnyPrestige"]     === undefined ? 0 : toLoad.prestigeValues["completedAnyPrestige"];
+        prestigeValues["prestigeCurrentPoints"]     = toLoad.prestigeValues["prestigeCurrentPoints"]     === undefined ? 0 : toLoad.prestigeValues["prestigeCurrentPoints"];
+        prestigeValues["prestigeTotalPoints"]       = toLoad.prestigeValues["prestigeTotalPoints"]       === undefined ? 0 : toLoad.prestigeValues["prestigeTotalPoints"];
+        prestigeValues["prestigeTotalCompletions"]  = toLoad.prestigeValues["prestigeTotalCompletions"]  === undefined ? 0 : toLoad.prestigeValues["prestigeTotalCompletions"];
+        prestigeValues["completedCurrentPrestige"]  = toLoad.prestigeValues["completedCurrentPrestige"]  === undefined ? 0 : toLoad.prestigeValues["completedCurrentPrestige"];
+        prestigeValues["completedAnyPrestige"]      = toLoad.prestigeValues["completedAnyPrestige"]      === undefined ? 0 : toLoad.prestigeValues["completedAnyPrestige"];
     }
-
-
-
 
 
     if (toLoad.storyReqs !== undefined) {
@@ -917,8 +898,6 @@ function save() {
     toSave.skills = skills;
     toSave.buffs = buffs;
     toSave.prestigeValues = prestigeValues;
-    console.log("in saving")
-    console.log(toSave.prestigeValues);
     toSave.goldInvested = goldInvested;
     toSave.stonesUsed = stonesUsed;
     toSave.version75 = true;
@@ -1107,10 +1086,11 @@ function completedCurrentGame() {
     console.log("completed current prestige")
 
     if (!prestigeValues["completedCurrentPrestige"]) {
-        prestigeValues["prestigeCurrentPoints"] += 90;
-        prestigeValues["prestigeTotalPoints"] += 90;
+        prestigeValues["prestigeCurrentPoints"]    += 90;
+        prestigeValues["prestigeTotalPoints"]      += 90;
+        prestigeValues["prestigeTotalCompletions"] += 1;
         prestigeValues["completedCurrentPrestige"] = true;
-        prestigeValues["completedAnyPrestige"] = true;
+        prestigeValues["completedAnyPrestige"]     = true;
 
         view.updatePrestigeValues();
     }
@@ -1127,23 +1107,26 @@ function prestigeUpgrade(prestigeSelected) {
     addBuffAmt(prestigeSelected, 1);
     prestigeValues["prestigeCurrentPoints"] -= costOfPrestige;
     
-
     // Retain certain values between prestiges
     const nextPrestigeBuffs = {
-        PrestigePhysical: getBuffLevel("PrestigePhysical"),
-        PrestigeMental: getBuffLevel("PrestigeMental"),
-        PrestigeCombat: getBuffLevel("PrestigeCombat"),
+        PrestigePhysical:    getBuffLevel("PrestigePhysical"),
+        PrestigeMental:      getBuffLevel("PrestigeMental"),
+        PrestigeCombat:      getBuffLevel("PrestigeCombat"),
         PrestigeSpatiomancy: getBuffLevel("PrestigeSpatiomancy"),
         PrestigeChronomancy: getBuffLevel("PrestigeChronomancy"),
-        PrestigeBartering: getBuffLevel("PrestigeBartering"),
+        PrestigeBartering:   getBuffLevel("PrestigeBartering"),
         PrestigeExpOverflow: getBuffLevel("PrestigeExpOverflow"),
+
+        // Imbue Soul carry overs between prestiges, but only up to the number of prestiges you have.
+        Imbuement3: Math.floor(prestigeValues["prestigeTotalCompletions"], getBuffLevel("Imbuement3")), 
     }
 
     const nextPrestigeValues = {
-        prestigeCurrentPoints: prestigeValues["prestigeCurrentPoints"],
-        prestigeTotalPoints: prestigeValues["prestigeTotalPoints"],
-        completedCurrentPrestige: false,
-        completedAnyPrestige: true
+        prestigeCurrentPoints:     prestigeValues["prestigeCurrentPoints"],
+        prestigeTotalPoints:       prestigeValues["prestigeTotalPoints"],
+        prestigeTotalCompletions:  prestigeValues["prestigeTotalCompletions"],
+        completedCurrentPrestige:  false,
+        completedAnyPrestige:      true,
     }
 
     let nextTotals = totals;
@@ -1176,6 +1159,7 @@ function prestigeUpgrade(prestigeSelected) {
 
     prestigeValues["prestigeCurrentPoints"]    = nextPrestigeValues.prestigeCurrentPoints.valueOf();
     prestigeValues["prestigeTotalPoints"]      = nextPrestigeValues.prestigeTotalPoints.valueOf();
+    prestigeValues["prestigeTotalCompletions"] = nextPrestigeValues.prestigeTotalCompletions.valueOf();
     prestigeValues["completedCurrentPrestige"] = nextPrestigeValues.completedCurrentPrestige.valueOf();
     prestigeValues["completedAnyPrestige"]     = nextPrestigeValues.completedAnyPrestige.valueOf();
     totals = nextTotals;

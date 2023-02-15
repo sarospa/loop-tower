@@ -221,8 +221,13 @@ Views.registerView("menu", {
         Each time you complete the game, you receive 90 points to spend on these bonuses.<br>
         Please export and save your data locally before attempting to trigger a prestige.<br>
         <br>
-        <b>The ability to spec into prestige bonuses may be done at any time, but keep in mind this will reset ALL progress.</b><br>
+        <b>The ability to spec into prestige bonuses may be done at any time, but keep in mind this will reset ALL progress.</b>
+        <br><br>
+        Imbue Soul levels will carry over between prestiges, up to the maximum number of prestiges you've completed. <br>
+        Max carryover possible: <div id='maxTotalImbueSoulLevels'></div>
+        <br>
         <br><br><br>
+        <b>Total Prestiges Completed: <div id='currentPrestigesCompleted'></div></b><br>
         Available points: <div id='currentPrestigePoints'></div> / <div id='totalPrestigePoints'></div>
         <br>
         Upgrade cost follows the format of: 

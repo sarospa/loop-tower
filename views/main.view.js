@@ -1278,6 +1278,10 @@ function View() {
 
     this.updatePrestigeValues = function() {
         document.getElementById('currentPrestigePoints').textContent = `${formatNumber(prestigeValues["prestigeCurrentPoints"])}`;
+        document.getElementById('currentPrestigesCompleted').textContent = `${formatNumber(prestigeValues["prestigeTotalCompletions"])}`;
+        // document.getElementById('maxTotalImbueSoulLevels').textContent = `${formatNumber(prestigeValues["prestigeTotalCompletions"])}`;
+        document.getElementById('maxTotalImbueSoulLevels').textContent = `${formatNumber(Math.floor(prestigeValues["prestigeTotalCompletions"], 7))}`;
+
         document.getElementById('totalPrestigePoints').textContent = `${formatNumber(prestigeValues["prestigeTotalPoints"])}`;
 
         document.getElementById('prestigePhysicalCurrentBonus').textContent = `${formatNumber(getPrestigeCurrentBonus("PrestigePhysical", 1.10))}`;
