@@ -268,11 +268,11 @@ function addExpFromAction(action) {
         var expToAdd = action.stats[stat] * adjustedExp * getTotalBonusXP(stat);
 
         if (stat == "Dex" || stat == "Con" || stat == "Spd" || stat == "Per") {
-            expToAdd *= Math.pow(1.10, getBuffLevel("PrestigePhysical"))
+            expToAdd *= Math.pow(1.20, getBuffLevel("PrestigePhysical"))
         }
 
         if (stat == "Cha" || stat == "Int" || stat == "Soul") {
-            expToAdd *= Math.pow(1.10, getBuffLevel("PrestigeMental"))
+            expToAdd *= Math.pow(1.20, getBuffLevel("PrestigeMental"))
         }
         const statExp = `statExp${stat}`;
         if (!action[statExp]) {

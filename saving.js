@@ -528,7 +528,7 @@ function loadDefaults() {
     prestigeValues["prestigeTotalPoints"] = 0;
     prestigeValues["prestigeTotalCompletions"] = 0;
     prestigeValues["completedCurrentPrestige"] = false;
-    prestigeValues["completedAnyPrestige"] = true;
+    prestigeValues["completedAnyPrestige"] = false;
 }
 
 function loadUISettings() {
@@ -610,11 +610,11 @@ function load(inChallenge) {
     }
 
     if (toLoad.prestigeValues !== undefined) {
-        prestigeValues["prestigeCurrentPoints"]     = toLoad.prestigeValues["prestigeCurrentPoints"]     === undefined ? 0 : toLoad.prestigeValues["prestigeCurrentPoints"];
-        prestigeValues["prestigeTotalPoints"]       = toLoad.prestigeValues["prestigeTotalPoints"]       === undefined ? 0 : toLoad.prestigeValues["prestigeTotalPoints"];
-        prestigeValues["prestigeTotalCompletions"]  = toLoad.prestigeValues["prestigeTotalCompletions"]  === undefined ? 0 : toLoad.prestigeValues["prestigeTotalCompletions"];
-        prestigeValues["completedCurrentPrestige"]  = toLoad.prestigeValues["completedCurrentPrestige"]  === undefined ? 0 : toLoad.prestigeValues["completedCurrentPrestige"];
-        prestigeValues["completedAnyPrestige"]      = toLoad.prestigeValues["completedAnyPrestige"]      === undefined ? 0 : toLoad.prestigeValues["completedAnyPrestige"];
+        prestigeValues["prestigeCurrentPoints"]     = toLoad.prestigeValues["prestigeCurrentPoints"]     === undefined ? 0     : toLoad.prestigeValues["prestigeCurrentPoints"];
+        prestigeValues["prestigeTotalPoints"]       = toLoad.prestigeValues["prestigeTotalPoints"]       === undefined ? 0     : toLoad.prestigeValues["prestigeTotalPoints"];
+        prestigeValues["prestigeTotalCompletions"]  = toLoad.prestigeValues["prestigeTotalCompletions"]  === undefined ? 0     : toLoad.prestigeValues["prestigeTotalCompletions"];
+        prestigeValues["completedCurrentPrestige"]  = toLoad.prestigeValues["completedCurrentPrestige"]  === undefined ? 0     : toLoad.prestigeValues["completedCurrentPrestige"];
+        prestigeValues["completedAnyPrestige"]      = toLoad.prestigeValues["completedAnyPrestige"]      === undefined ? false : toLoad.prestigeValues["completedAnyPrestige"];
     }
 
 

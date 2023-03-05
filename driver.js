@@ -260,7 +260,7 @@ function resetResource(resource) {
 
 function resetResources() {
     resources = copyObject(resourcesTemplate);
-    if(getExploreProgress() >= 100) addResource("glasses", true);
+    if(getExploreProgress() >= 100 || prestigeValues['completedAnyPrestige']) addResource("glasses", true);
     view.requestUpdate("updateResources", null);
 }
 

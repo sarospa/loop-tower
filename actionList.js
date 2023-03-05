@@ -643,7 +643,7 @@ Action.FoundGlasses = new Action("Found Glasses", {
     },
     affectedBy: ["SurveyZ1"],
     allowed() {
-        return 1;
+        return 0;
     },
     canStart() {
         return false;
@@ -652,7 +652,7 @@ Action.FoundGlasses = new Action("Found Glasses", {
         return 0;
     },
     visible() {
-        return getExploreProgress() >= 100;
+        return getExploreProgress() >= 100 || prestigeValues["completedAnyPrestige"];
     },
     unlocked() {
         return false;
