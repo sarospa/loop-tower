@@ -389,13 +389,14 @@
             <meta>
                 <title>Prestige Perks</title>
             </meta>
-            <PrestigePhysical>Increases Experience gain of all Physical skills (Dex, Str, Con, Spd, Per) by 10% per level.</PrestigePhysical>
-            <PrestigeMental>Increases Experience gain of all Mental skills (Cha, Int, Soul) by 10% per level.</PrestigeMental>
+            <PrestigePhysical>Increases Experience gain of all Physical skills (Dex, Str, Con, Spd, Per) by 20% per level.</PrestigePhysical>
+            <PrestigeMental>Increases Experience gain of all Mental skills (Cha, Int, Soul) by 20% per level.</PrestigeMental>
             <PrestigeCombat>Increases Self and Team Combat by 10% per level.</PrestigeCombat>
             <PrestigeSpatiomancy>Increases the number of "Findables" per zone by 5% per level.</PrestigeSpatiomancy>
             <PrestigeChronomancy>Increases speed of all zones by a multiplier of 5% per level.</PrestigeChronomancy>
             <PrestigeBartering>Increases received from merchants by 5% per level.</PrestigeBartering>
             <PrestigeExpOverflow>Experience earned is spread amongst all stats by 2% per level.</PrestigeExpOverflow>
+            <PrestigeResetAll>Resets all current prestige bonuses, giving you back the points to allocate again. Note, this DOES trigger a reset, so this cannot be done mid-playthrough.</PrestigeResetAll>
         </prestige_bonus>
 
     </menu>

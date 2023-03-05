@@ -297,6 +297,13 @@ Views.registerView("menu", {
             </div>
         </div><br>
 
+        <br><br>
+
+        <div class='button showthat control' style='margin-top: -50px;' onclick='resetAllPrestiges()'>Reset All Prestiges
+            <div class='showthis' style='color:black;width:230px;margin-left:200px;'>${_txt("menu>prestige_bonus>PrestigeResetAll")}
+            </div>
+        </div><br>
+
         `
 
         ;

@@ -1126,21 +1126,45 @@ function prestigeUpgrade(prestigeSelected) {
         prestigeTotalPoints:       prestigeValues["prestigeTotalPoints"],
         prestigeTotalCompletions:  prestigeValues["prestigeTotalCompletions"],
         completedCurrentPrestige:  false,
-        completedAnyPrestige:      true,
+        completedAnyPrestige:      prestigeValues["completedAnyPrestige"],
     }
 
+    prestigeWithNewValues(nextPrestigeValues, nextPrestigeBuffs)
+}
+
+function resetAllPrestiges() {
+    // Retain certain values between prestiges
+    const nextPrestigeBuffs = {
+        PrestigePhysical:    0,
+        PrestigeMental:      0,
+        PrestigeCombat:      0,
+        PrestigeSpatiomancy: 0,
+        PrestigeChronomancy: 0,
+        PrestigeBartering:   0,
+        PrestigeExpOverflow: 0,
+
+        // Imbue Soul carry overs between prestiges, but only up to the number of prestiges you have.
+        Imbuement3: Math.floor(prestigeValues["prestigeTotalCompletions"], getBuffLevel("Imbuement3")), 
+    }
+
+    const nextPrestigeValues = {
+        prestigeCurrentPoints:     prestigeValues["prestigeTotalPoints"],
+        prestigeTotalPoints:       prestigeValues["prestigeTotalPoints"],
+        prestigeTotalCompletions:  prestigeValues["prestigeTotalCompletions"],
+        completedCurrentPrestige:  false,
+        completedAnyPrestige:      prestigeValues["completedAnyPrestige"],
+    }
+
+    prestigeWithNewValues(nextPrestigeValues, nextPrestigeBuffs)
+}
+
+function prestigeWithNewValues(nextPrestigeValues, nextPrestigeBuffs) {
     let nextTotals = totals;
     let nextOfflineMs = totalOfflineMs;
 
 
     // Confirmation of prestige
-    if (window.localStorage[defaultSaveName] && window.localStorage[defaultSaveName] !== "") {
-        if (confirm("Prestiging will reset all of your progress, but retain prestige points. Are you sure?"))
-            window.localStorage[defaultSaveName] = "";
-        else
-            return false;
-    }
-
+    prestigeConfirmation()
 
     // Remove all progress and save totals
     load(false);
@@ -1167,6 +1191,14 @@ function prestigeUpgrade(prestigeSelected) {
     view.updatePrestigeValues();
 }
 
+function prestigeConfirmation() {
+    if (window.localStorage[defaultSaveName] && window.localStorage[defaultSaveName] !== "") {
+        if (confirm("Prestiging will reset all of your progress, but retain prestige points. Are you sure?"))
+            window.localStorage[defaultSaveName] = "";
+        else
+            return false;
+    }
+}
 
 function getPrestigeCost(prestigeSelected) {
     var currentCost = 30;
