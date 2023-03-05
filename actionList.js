@@ -622,7 +622,7 @@ Action.BuyGlasses = new Action("Buy Glasses", {
         return 50;
     },
     visible() {
-        return towns[0].getLevel("Wander") >= 3 && getExploreProgress() < 100;
+        return towns[0].getLevel("Wander") >= 3 && getExploreProgress() < 100 && !prestigeValues["completedAnyPrestige"];
     },
     unlocked() {
         return towns[0].getLevel("Wander") >= 20;
