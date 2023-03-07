@@ -130,15 +130,26 @@ function getArmorLevel() {
 }
 
 function getSelfCombat() {
-    return ((getSkillLevel("Combat") + getSkillLevel("Pyromancy") * 5) * getArmorLevel() * (1 + getBuffLevel("Feast") * .05)) * Math.pow(1.10, getBuffLevel("PrestigeCombat"));
+    return ((getSkillLevel("Combat") + getSkillLevel("Pyromancy") * 5) 
+                * getArmorLevel() 
+                * (1 + getBuffLevel("Feast") * .05)) 
+                * Math.pow(PRESTIGE_COMBAT_BASE, getBuffLevel("PrestigeCombat"));
 }
 
 function getZombieStrength() {
-    return getSkillLevel("Dark") * resources.zombie / 2 * Math.max(getBuffLevel("Ritual") / 100, 1) * (1 + getBuffLevel("Feast") * .05)  * Math.pow(1.10, getBuffLevel("PrestigeCombat"));
+    return getSkillLevel("Dark") 
+                * resources.zombie / 2 
+                * Math.max(getBuffLevel("Ritual") / 100, 1) 
+                * (1 + getBuffLevel("Feast") * .05)  
+                * Math.pow(PRESTIGE_COMBAT_BASE, getBuffLevel("PrestigeCombat"));
 }
 
 function getTeamStrength() {
-    return ((getSkillLevel("Combat") + getSkillLevel("Restoration") * 4) * (resources.teamMembers / 2) * getAdvGuildRank().bonus * getSkillBonus("Leadership") * (1 + getBuffLevel("Feast") * .05)) * Math.pow(1.10, getBuffLevel("PrestigeCombat"));
+    return ((getSkillLevel("Combat") + getSkillLevel("Restoration") * 4) 
+                * (resources.teamMembers / 2) 
+                * getAdvGuildRank().bonus * getSkillBonus("Leadership") 
+                * (1 + getBuffLevel("Feast") * .05))
+                * Math.pow(PRESTIGE_COMBAT_BASE, getBuffLevel("PrestigeCombat"));
 }
 
 function getTeamCombat() {

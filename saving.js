@@ -1189,6 +1189,7 @@ function prestigeWithNewValues(nextPrestigeValues, nextPrestigeBuffs) {
     totals = nextTotals;
     totalOfflineMs = nextOfflineMs;
     view.updatePrestigeValues();
+    save();
 }
 
 function prestigeConfirmation() {

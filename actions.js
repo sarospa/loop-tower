@@ -1,5 +1,14 @@
 "use strict";
 
+// Constants used as the base for Prestige exponential bonuses.
+const PRESTIGE_COMBAT_BASE       = 1.20;
+const PRESTIGE_PHYSICAL_BASE     = 1.20;
+const PRESTIGE_MENTAL_BASE       = 1.20;
+const PRESTIGE_BARTERING_BASE    = 1.10;
+const PRESTIGE_SPATIOMANCY_BASE  = 1.10;
+const PRESTIGE_CHRONOMANCY_BASE  = 1.05;
+const PRESTIGE_EXP_OVERFLOW_BASE = 1.00222;
+
 function Actions() {
     this.current = [];
     this.next = [];
@@ -268,11 +277,11 @@ function addExpFromAction(action) {
         var expToAdd = action.stats[stat] * adjustedExp * getTotalBonusXP(stat);
 
         if (stat == "Dex" || stat == "Con" || stat == "Spd" || stat == "Per") {
-            expToAdd *= Math.pow(1.20, getBuffLevel("PrestigePhysical"))
+            expToAdd *= Math.pow(PRESTIGE_PHYSICAL_BASE, getBuffLevel("PrestigePhysical"))
         }
 
         if (stat == "Cha" || stat == "Int" || stat == "Soul") {
-            expToAdd *= Math.pow(1.20, getBuffLevel("PrestigeMental"))
+            expToAdd *= Math.pow(PRESTIGE_MENTAL_BASE, getBuffLevel("PrestigeMental"))
         }
         const statExp = `statExp${stat}`;
         if (!action[statExp]) {
@@ -284,7 +293,7 @@ function addExpFromAction(action) {
 
     // Prestige Overflow
     for (const stat in stats) {
-        expToAdd = adjustedExp * getTotalBonusXP(stat) * (Math.pow(1.00222, getBuffLevel("PrestigeExpOverflow")) - 1);
+        expToAdd = adjustedExp * getTotalBonusXP(stat) * (Math.pow(PRESTIGE_EXP_OVERFLOW_BASE, getBuffLevel("PrestigeExpOverflow")) - 1);
         if (expToAdd != 0) 
             addExp(stat, expToAdd);
     }
