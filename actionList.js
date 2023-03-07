@@ -262,7 +262,7 @@ function SurveyAction(townNum) {
             Luck: 0.2
         },
         canStart() {
-            return resources.map > 0 && towns[this.townNum].getLevel("Survey") < 100;
+            return resources.map > 0;
         },
         manaCost() {
             return 10000 * (this.townNum + 1);
@@ -275,9 +275,12 @@ function SurveyAction(townNum) {
         },
         finish() {
             addResource("map", -1);
-            addResource("completedMap", 1);
-            towns[this.townNum].finishProgress(this.varName, getExploreSkill());
-            view.requestUpdate("updateActionTooltips", null);
+            if (options.pauseOnComplete && towns[this.townNum].getLevel("Survey") == 100) pauseGame();
+            else {
+                addResource("completedMap", 1);
+                towns[this.townNum].finishProgress(this.varName, getExploreSkill());
+                view.requestUpdate("updateActionTooltips", null);    
+            }
         }
     }
     obj.townNum = townNum;
