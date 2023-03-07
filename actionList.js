@@ -7149,9 +7149,9 @@ const actionsWithGoldCost = Object.values(Action).filter(
 
 // Prestige Functions
 function adjustContentFromPrestige() {
-    return Math.pow(1.05, getBuffLevel("PrestigeSpatiomancy"))
+    return Math.pow(PRESTIGE_SPATIOMANCY_BASE, getBuffLevel("PrestigeSpatiomancy"))
 }
 
 function adjustGoldCostFromPrestige() {
-    return Math.pow(1.05, getBuffLevel("PrestigeBartering"))
+    return Math.pow(PRESTIGE_BARTERING_BASE, getBuffLevel("PrestigeBartering"))
 }
