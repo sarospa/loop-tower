@@ -351,6 +351,8 @@
             <hotkeys>Hotkeys</hotkeys>
             <speedIncrease10x_text>10x Bonus Speed</speedIncrease10x_text>
             <speedIncrease20x_text>20x Bonus Speed</speedIncrease20x_text>
+            <speedIncrease50x_text>50x Bonus Speed (Experimental)</speedIncrease50x_text>
+            <speedIncrease100x_text>100x Bonus Speed (Experimental)</speedIncrease100x_text>
             <hotkeys_tooltip><![CDATA[
                 Spacebar: Pause/play<br>
                 R: Restart<br>
