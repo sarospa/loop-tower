@@ -273,29 +273,17 @@ function calcTalentMult(talent) {
 
 function addExpFromAction(action) {
     const adjustedExp = action.expMult * (action.manaCost() / action.adjustedTicks);
-    for (const stat in action.stats) {
-        var expToAdd = action.stats[stat] * adjustedExp * getTotalBonusXP(stat);
+    const overFlow=Math.pow(PRESTIGE_EXP_OVERFLOW_BASE, getBuffLevel("PrestigeExpOverflow")) - 1
+    for (const stat in stats) {
+        var expToAdd = ((action.stats[stat]??0)+overFlow) * adjustedExp * getTotalBonusXP(stat);
 
-        if (stat == "Dex" || stat == "Con" || stat == "Spd" || stat == "Per") {
-            expToAdd *= Math.pow(PRESTIGE_PHYSICAL_BASE, getBuffLevel("PrestigePhysical"))
-        }
-
-        if (stat == "Cha" || stat == "Int" || stat == "Soul") {
-            expToAdd *= Math.pow(PRESTIGE_MENTAL_BASE, getBuffLevel("PrestigeMental"))
-        }
+        // Used for updating the menus when hovering over a completed item in the actionList
         const statExp = `statExp${stat}`;
         if (!action[statExp]) {
             action[statExp] = 0;
         }
         action[statExp] += expToAdd;
         addExp(stat, expToAdd);
-    }
-
-    // Prestige Overflow
-    for (const stat in stats) {
-        expToAdd = adjustedExp * getTotalBonusXP(stat) * (Math.pow(PRESTIGE_EXP_OVERFLOW_BASE, getBuffLevel("PrestigeExpOverflow")) - 1);
-        if (expToAdd != 0) 
-            addExp(stat, expToAdd);
     }
 }
 

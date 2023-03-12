@@ -201,5 +201,14 @@ function restartStats() {
 
 function getTotalBonusXP(statName) {
     const soulstoneBonus = stats[statName].soulstone ? calcSoulstoneMult(stats[statName].soulstone) : 1;
-    return soulstoneBonus * calcTalentMult(getTalent(statName));
+
+        var statBonus=1
+        if (["Str","Dex","Con","Spd","Per"].includes(statName)) {
+            statBonus *= Math.pow(PRESTIGE_PHYSICAL_BASE, getBuffLevel("PrestigePhysical"))
+        }
+        if (["Cha","Int","Soul","Luck"].includes(statName)) {
+            statBonus *= Math.pow(PRESTIGE_MENTAL_BASE, getBuffLevel("PrestigeMental"))
+        }
+        
+    return statBonus * soulstoneBonus * calcTalentMult(getTalent(statName));
 }
