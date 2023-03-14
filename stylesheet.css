@@ -72,12 +72,12 @@ body {
 }
 
 .showthat2 {
-    width: 76px;
+    width: 110px;
 }
 
 .showthis2 {
     margin-top: -20px;
-    margin-left: 76px;
+    margin-left: 110px;
     z-index: 1000;
     min-width: 450px;
     max-height: 600px;

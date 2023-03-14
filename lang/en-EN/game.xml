@@ -6,6 +6,57 @@
                 <title>Changelog</title>
                 <version_prefix>Version</version_prefix>
             </meta>
+            <version verNum="P: 0.1.4"><![CDATA[
+            <b> Mar 13th, 2023</b><br>
+            <b> Changelog:</b>
+                • I stopped being lazy and added a change log!<br><br>
+            <b> PrestigeMental:</b>
+                • Tooltip now reflects that it affects luck.<br><br>
+            <b> PrestigeBartering:</b>
+                • Tooltip now specifies that it affects the amount of *mana* bought from merchants.<br>
+            ]]></version>
+            <version verNum="P: 0.1.3"><![CDATA[
+            <b> Mar 12th, 2023</b><br>
+            <b> PrestigeExpOverflow:</b>
+                • Now gains the bonuses of PrestigePhysical and PrestigeMental when their respective skills are being added to.<br><br>
+            <b> PrestigeMental:</b>
+                • By popular questioning and request, now has "Luck" as one of the skills it provides a bonus to.<br><br>
+            <b> PrestigePhysical:</b>
+                • By an absolute blunder on my part, now actually provides a bonus for Strength.<br><br>
+            <b> Other Changes:</b>
+                • Otherwise just a small tooltip adjustment as ExpOverflow wasn't giving you the "Current Bonus" in the prestige dropdown<br>
+            ]]></version>
+            <version verNum="P: 0.1.2"><![CDATA[
+            <b> Mar 6th, 2023</b><br>
+            <b> Prestige buffs:</b>
+                • Combat:        1.10 -> 1.20<br>
+                • Spationmancy:  1.10 -> 1.20<br>
+                • Bartering:     1.10 -> 1.20<br><br>
+            <b> Other Changes:</b>
+                • Triggers a save after prestiging to prevent refresh errors<br>
+                • Updates text content to reflect prestige bonuses correctly.<br>
+                • Bug fix for Spatio / Barter<br>
+                • Survey action can now be done even when at 100% surveyed, but it will result in no progress and remove a map. This allows it to work with "Pause on progress complete"<br>
+            ]]></version>
+            <version verNum="P: 0.1.1"><![CDATA[
+            <b> Mar 5th, 2023</b><br>
+            <b> Updates:</b>
+                • Prestiges will now begin with the "Found Glasses" action thanks to the overwhelming feeling that you're forgetting something important when you prestige<br>
+                • Buffed prestigeMental and prestigePhysical to give 10 -> 20% bonuses to their respective skills<br><br>
+            <b> Quick Followups:</b>
+                • Added "Reset all Prestiges" to recoup your spent points<br>
+                • Prevents buy glasses action in all prestiges.<br>
+                • Updated tooltips to reflect the buff change from above<br>
+            ]]></version>
+            <version verNum="P: 0.1.0"><![CDATA[
+            <b> Feb 15th, 2023</b><br>
+            <b> Prestige mode</b>
+                • Once you've restored time, you'll gain 90 points to spend on a variety of prestige bonuses.<br>
+                • These may be viewed in the "Prestige Perks" menu dropdown at the top left.<br>
+                • Imbue Soul levels will carry over between prestiges, up to the maximum number of prestiges you've completed.<br>
+            <b> QoL</b>
+                • Added a 10x and 20x checkbox in the "Options" drop down when using Bonus time<br>
+            ]]></version>
             <version verNum="3.0"><![CDATA[
             <b> Jan 23rd, 2023</b>
             • Writing update! Vera from Discord has contributed a ton of new action stories for content across the game.<br>
@@ -392,11 +443,11 @@
                 <title>Prestige Perks</title>
             </meta>
             <PrestigePhysical>Increases Experience gain of all Physical skills (Dex, Str, Con, Spd, Per) by 20% per level.</PrestigePhysical>
-            <PrestigeMental>Increases Experience gain of all Mental skills (Cha, Int, Soul) by 20% per level.</PrestigeMental>
+            <PrestigeMental>Increases Experience gain of all Mental skills (Cha, Int, Soul, Luck) by 20% per level.</PrestigeMental>
             <PrestigeCombat>Increases Self and Team Combat by 20% per level.</PrestigeCombat>
             <PrestigeSpatiomancy>Increases the number of "Findables" per zone by 10% per level.</PrestigeSpatiomancy>
             <PrestigeChronomancy>Increases speed of all zones by a multiplier of 5% per level.</PrestigeChronomancy>
-            <PrestigeBartering>Increases received from merchants by 10% per level.</PrestigeBartering>
+            <PrestigeBartering>Increases mana received from merchants by 10% per level.</PrestigeBartering>
             <PrestigeExpOverflow>Experience earned is spread amongst all stats by 2% per level.</PrestigeExpOverflow>
             <PrestigeResetAll>Resets all current prestige bonuses, giving you back the points to allocate again. Note, this DOES trigger a reset, so this cannot be done mid-playthrough.</PrestigeResetAll>
         </prestige_bonus>

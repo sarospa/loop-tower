@@ -29,7 +29,7 @@ Views.registerView("menu", {
         const html =
         `<div style='display:inline-block;height:30px;margin-left:10px;' class='showthatH'>
             ${_txt("menu>changelog>meta>title")}
-            <div style='max-width: 71px;' class='showthisH' id='changelog'>
+            <div style='max-width:110px;' class='showthisH' id='changelog'>
                 ${this.versions()}
             </div>
         </div>`;
