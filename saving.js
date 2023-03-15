@@ -1104,6 +1104,10 @@ function prestigeUpgrade(prestigeSelected) {
     if (costOfPrestige > prestigeValues["prestigeCurrentPoints"]) {
         console.log("Not enough points available.")
         return;
+    } 
+    // Confirmation of prestige
+    if (!prestigeConfirmation()) {
+        return;
     }
 
     addBuffAmt(prestigeSelected, 1);
@@ -1165,9 +1169,6 @@ function prestigeWithNewValues(nextPrestigeValues, nextPrestigeBuffs) {
     let nextOfflineMs = totalOfflineMs;
 
 
-    // Confirmation of prestige
-    prestigeConfirmation()
-
     // Remove all progress and save totals
     load(false);
     clearList();
@@ -1195,12 +1196,14 @@ function prestigeWithNewValues(nextPrestigeValues, nextPrestigeBuffs) {
 }
 
 function prestigeConfirmation() {
+    save();
     if (window.localStorage[defaultSaveName] && window.localStorage[defaultSaveName] !== "") {
         if (confirm("Prestiging will reset all of your progress, but retain prestige points. Are you sure?"))
             window.localStorage[defaultSaveName] = "";
         else
             return false;
     }
+    return true;
 }
 
 function getPrestigeCost(prestigeSelected) {
