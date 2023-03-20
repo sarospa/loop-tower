@@ -640,6 +640,5 @@ function checkExtraSpeed() {
     bonusSpeed = 5;
     if (options.speedIncrease10x === true) { bonusSpeed = 10};
     if (options.speedIncrease20x === true) { bonusSpeed = 20};
-    if (options.speedIncrease50x === true) { bonusSpeed = 50};
-    if (options.speedIncrease100x === true) { bonusSpeed = 100};
+    if (bonusSpeed < options.speedIncreaseCustom) { bonusSpeed = options.speedIncreaseCustom };
 }

@@ -489,6 +489,7 @@ const options = {
     speedIncrease20x: false,
     speedIncrease50x: false,
     speedIncrease100x: false,
+    speedIncreaseCustom: 5,
     highlightNew: true,
     statColors: false,
     pingOnPause: false,
@@ -501,7 +502,7 @@ const options = {
 function setOption(option, value) {
     options[option] = value;
     if (option === "updateRate") recalcInterval(options.updateRate);
-    if ((option === "speedIncrease10x" || option === "speedIncrease20x" || option === "speedIncrease50x" || option === "speedIncrease100x") && bonusSpeed > 1) {
+    if (bonusSpeed > 1 && ["speedIncrease10x", "speedIncrease20x", "speedIncreaseCustom"].includes(option)) {
         checkExtraSpeed()
     }
 }
@@ -819,7 +820,7 @@ function load(inChallenge) {
     }
 
     for (const option in options) {
-        loadOption(option, options[option]);
+        if (!document.getElementById(`${option}Input`) === null) loadOption(option, options[option]); // If an element is removed from the document, don't try to load it.
     }
     storyShowing = toLoad.storyShowing === undefined ? 0 : toLoad.storyShowing;
     storyMax = toLoad.storyMax === undefined ? 0 : toLoad.storyMax;

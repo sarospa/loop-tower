@@ -6,6 +6,12 @@
                 <title>Changelog</title>
                 <version_prefix>Version</version_prefix>
             </meta>
+            <version verNum="P: 0.1.5"><![CDATA[
+            <b> Mar 20th, 2023</b><br>
+            <b> Changelog:</b>
+                • Options -> Custom Bonus Speed:<br>
+                • Now allows you to enter a value into a text box for whatever customSpeed you desire :)
+            ]]></version>
             <version verNum="P: 0.1.4"><![CDATA[
             <b> Mar 13th, 2023</b><br>
             <b> Changelog:</b>
@@ -404,8 +410,7 @@
             <hotkeys>Hotkeys</hotkeys>
             <speedIncrease10x_text>10x Bonus Speed</speedIncrease10x_text>
             <speedIncrease20x_text>20x Bonus Speed</speedIncrease20x_text>
-            <speedIncrease50x_text>50x Bonus Speed (Experimental)</speedIncrease50x_text>
-            <speedIncrease100x_text>100x Bonus Speed (Experimental)</speedIncrease100x_text>
+            <speedIncreaseCustom_text> Custom Bonus Speed </speedIncreaseCustom_text>
             <hotkeys_tooltip><![CDATA[
                 Spacebar: Pause/play<br>
                 R: Restart<br>
