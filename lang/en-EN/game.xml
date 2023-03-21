@@ -6,6 +6,12 @@
                 <title>Changelog</title>
                 <version_prefix>Version</version_prefix>
             </meta>
+            <version verNum="P: 0.1.6"><![CDATA[
+            <b> Mar 20th, 2023</b><br>
+            <b> Changelog:</b>
+                • Bux fix
+                  • Fixed: Previous change caused check boxes to not save their states. 
+            ]]></version>
             <version verNum="P: 0.1.5"><![CDATA[
             <b> Mar 20th, 2023</b><br>
             <b> Changelog:</b>

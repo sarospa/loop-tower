@@ -820,7 +820,9 @@ function load(inChallenge) {
     }
 
     for (const option in options) {
-        if (!document.getElementById(`${option}Input`) === null) loadOption(option, options[option]); // If an element is removed from the document, don't try to load it.
+        // Not sure how to remove old UI elements yet without breaking them from past saves. Using this as "temp" fix
+        if (!["speedIncrease50x", "speedIncrease100x", "speedIncreaseCustom"].includes(option)) 
+            loadOption(option, options[option]); 
     }
     storyShowing = toLoad.storyShowing === undefined ? 0 : toLoad.storyShowing;
     storyMax = toLoad.storyMax === undefined ? 0 : toLoad.storyMax;
