@@ -3489,7 +3489,7 @@ Action.ManaGeyser = new Action("Mana Geyser", {
 function adjustGeysers() {
     let town = towns[3];
     let baseGeysers = Math.round(town.getLevel("Mountain") * 10 * adjustContentFromPrestige());
-    town.totalGeysers = baseGeysers + baseGeysers * getSurveyBonus(town);
+    town.totalGeysers = Math.round(baseGeysers + baseGeysers * getSurveyBonus(town));
 }
 
 Action.DecipherRunes = new Action("Decipher Runes", {
