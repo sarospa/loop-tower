@@ -6,12 +6,13 @@
                 <title>Changelog</title>
                 <version_prefix>Version</version_prefix>
             </meta>
-            <version verNum="P: 0.1.6"><![CDATA[
+            <version verNum="P: 0.1.6c"><![CDATA[
             <b> Mar 20th, 2023</b><br>
             <b> Changelog:</b>
                 • Bux fix<br>
                   • Fixed: Previous change caused check boxes to not save their states. <br>
                   • Fixed: Geysers could be fractionated depending on survey progress. <br>
+                  • Fixed: Surveying 100% areas shouldn't give completed maps. <br>
             ]]></version>
             <version verNum="P: 0.1.5"><![CDATA[
             <b> Mar 20th, 2023</b><br>
