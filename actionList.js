@@ -275,8 +275,8 @@ function SurveyAction(townNum) {
         },
         finish() {
             addResource("map", -1);
-            if (options.pauseOnComplete && towns[this.townNum].getLevel("Survey") == 100) pauseGame();
-            else {
+            if (options.pauseOnComplete) pauseGame();
+            if (towns[this.townNum].getLevel("Survey") != 100) {
                 addResource("completedMap", 1);
                 towns[this.townNum].finishProgress(this.varName, getExploreSkill());
                 view.requestUpdate("updateActionTooltips", null);    
