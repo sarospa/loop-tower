@@ -1181,10 +1181,9 @@ function prestigeWithNewValues(nextPrestigeValues, nextPrestigeBuffs) {
 
     // Regain prestige values and Totals
     for (const [key, value] of Object.entries(nextPrestigeBuffs)) {
-        if (value != 0) {
-            addBuffAmt(key, value);
-            view.requestUpdate("updateBuff", key);
-        }
+        addBuffAmt(key, 0);     // Set them to 0
+        addBuffAmt(key, value); // Then set them to actual value
+        view.requestUpdate("updateBuff", key);
     }
 
     prestigeValues["prestigeCurrentPoints"]    = nextPrestigeValues.prestigeCurrentPoints.valueOf();
