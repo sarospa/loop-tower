@@ -130,6 +130,9 @@ function pauseGame(ping) {
     view.requestUpdate("updateTime", null);
     view.requestUpdate("updateCurrentActionBar", actions.currentPos);
     view.update();
+    if (!stop && options.notifyOnPause) {
+        clearPauseNotification();
+    }
     document.title = stop ? "*PAUSED* Idle Loops" : "Idle Loops";
     document.getElementById("pausePlay").textContent = _txt(`time_controls>${stop ? "play_button" : "pause_button"}`);
     if (!stop && (shouldRestart || timer >= timeNeeded)) {
@@ -166,6 +169,9 @@ function prepareRestart() {
         if (options.pingOnPause) {
             beep(250);
             setTimeout(() => beep(250), 500);
+        }
+        if (options.notifyOnPause) {
+            showPauseNotification("Game paused!");
         }
         if (curAction) {
             actions.completedTicks += actions.getNextValidAction().ticks;

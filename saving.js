@@ -440,6 +440,8 @@ let curThievesGuildSegment = 0;
 // eslint-disable-next-line prefer-const
 let curGodsSegment = 0;
 
+let pauseNotification = false ? new Notification() : null; // typing
+
 const options = {
     theme: "normal",
     keepCurrentList: false,
@@ -451,6 +453,7 @@ const options = {
     highlightNew: true,
     statColors: false,
     pingOnPause: false,
+    notifyOnPause: false,
     autoMaxTraining: false,
     hotkeys: true,
     updateRate: 50,
@@ -458,6 +461,28 @@ const options = {
 };
 
 function setOption(option, value) {
+    if (option === "notifyOnPause" && value) {
+        const input = document.getElementById("notifyOnPauseInput");
+        if (Notification && Notification.permission === "default") {
+            input.checked = false;
+            input.indeterminate = true;
+            Notification.requestPermission(_ => {
+                input.indeterminate = false;
+                input.checked = value;
+                setOption(option, value);
+            });
+            return;
+        } else if (Notification && Notification.permission === "denied") {
+            input.checked = false;
+            input.indeterminate = false;
+            alert("Notification permission denied. You may need to allow this site to send you notifications manually.");
+            return;
+        } else if (!Notification || Notification.permission !== "granted") {
+            input.checked = false;
+            input.indeterminate = false;
+            return;
+        }
+    }
     options[option] = value;
     if (option === "updateRate") recalcInterval(options.updateRate);
 }
@@ -466,6 +491,17 @@ function loadOption(option, value) {
     if (option === "updateRate") document.getElementById(`${option}Input`).value = value;
     if (option === "autosaveRate") document.getElementById(`${option}Input`).value = value;
     else document.getElementById(`${option}Input`).checked = value;
+}
+
+function showPauseNotification(message) {
+    pauseNotification = new Notification("Idle Loops", { icon: "favicon-32x32.png", body: message, tag: "paused", renotify: true });
+}
+
+function clearPauseNotification() {
+    if (pauseNotification) {
+        pauseNotification.close();
+        pauseNotification = null;
+    }
 }
 
 function closeTutorial() {
@@ -715,6 +751,7 @@ function load(inChallenge) {
         options.theme = toLoad.currentTheme === undefined ? options.theme : toLoad.currentTheme;
         options.repeatLastAction = toLoad.repeatLast;
         options.pingOnPause = toLoad.pingOnPause === undefined ? options.pingOnPause : toLoad.pingOnPause;
+        options.notifyOnPause = toLoad.notifyOnPause === undefined ? options.notifyOnPause : toLoad.notifyOnPause;
         options.autoMaxTraining = toLoad.autoMaxTraining === undefined ? options.autoMaxTraining : toLoad.autoMaxTraining;
         options.highlightNew = toLoad.highlightNew === undefined ? options.highlightNew : toLoad.highlightNew;
         options.hotkeys = toLoad.hotkeys === undefined ? options.hotkeys : toLoad.hotkeys;

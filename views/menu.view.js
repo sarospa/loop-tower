@@ -100,6 +100,9 @@ Views.registerView("menu", {
                 <input id='pingOnPauseInput' type='checkbox' onchange='setOption("pingOnPause", this.checked)'/>
                     <label for='pingOnPauseInput'>${_txt("menu>options>pause_audio_cue")}</label>
                 <br>
+                <input id='notifyOnPauseInput' type='checkbox' onchange='setOption("notifyOnPause", this.checked)'/>
+                    <label for='notifyOnPauseInput'>${_txt("menu>options>pause_notify_cue")}</label>
+                <br>
                 <input id='autoMaxTrainingInput' type='checkbox' onchange='setOption("autoMaxTraining", this.checked)'/>
                     <label for='autoMaxTrainingInput'>${_txt("menu>options>auto_max_training")}</label>
                 <br>
