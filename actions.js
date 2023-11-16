@@ -10,17 +10,32 @@ function Actions() {
     this.currentPos = 0;
     this.timeSinceLastUpdate = 0;
 
-    this.tick = function() {
+    this.tick = function(availableMana) {
+        availableMana ??= 1;
+
         const curAction = this.getNextValidAction();
         // out of actions
         if (!curAction) {
             shouldRestart = true;
-            return;
+            return 0;
         }
-        addExpFromAction(curAction);
-        curAction.ticks++;
-        curAction.manaUsed++;
-        curAction.timeSpent += 1 / baseManaPerSecond / getActualGameSpeed();
+        // restrict to the number of ticks it takes to get to a next level
+        availableMana = Math.min(availableMana, getMaxTicksForAction(curAction));
+        // restrict to the number of ticks it takes to finish the current action
+        availableMana = Math.min(availableMana, Math.ceil(curAction.adjustedTicks - curAction.ticks));
+        // just in case
+        if (availableMana < 0) availableMana = 0;
+
+        // regardless of what happens, this is the amount of mana we're spending
+        const manaToSpend = availableMana;
+
+        // exp needs to get added AFTER checking multipart progress, since this tick() call may
+        // represent any number of ticks, all of which process at the existing levels
+
+        curAction.ticks += manaToSpend;
+        curAction.manaUsed += manaToSpend;
+        curAction.timeSpent += manaToSpend / baseManaPerSecond / getActualGameSpeed();
+
         // only for multi-part progress bars
         if (curAction.loopStats) {
             let segment = 0;
@@ -30,48 +45,66 @@ function Actions() {
                 segment++;
             }
             // segment is 0,1,2
-            const toAdd = curAction.tickProgress(segment) * (curAction.manaCost() / curAction.adjustedTicks);
-            // console.log("using: "+curAction.loopStats[(towns[curAction.townNum][curAction.varName + "LoopCounter"]+segment) % curAction.loopStats.length]+" to add: " + toAdd + " to segment: " + segment + " and part " +towns[curAction.townNum][curAction.varName + "LoopCounter"]+" of progress " + curProgress + " which costs: " + curAction.loopCost(segment));
-            towns[curAction.townNum][curAction.varName] += toAdd;
-            curProgress += toAdd;
+
+            // thanks to Gustav on the discord for the multipart loop code
+            let manaLeft = manaToSpend;
+            const tickMultiplier = (curAction.manaCost() / curAction.adjustedTicks);
             let partUpdateRequired = false;
-            while (curProgress >= curAction.loopCost(segment)) {
-                curProgress -= curAction.loopCost(segment);
-                // segment finished
-                if (segment === curAction.segments - 1) {
-                    // part finished
-                    if (curAction.name === "Dark Ritual" && towns[curAction.townNum][curAction.varName] >= 4000000) unlockStory("darkRitualThirdSegmentReached");
-                    if (curAction.name === "Imbue Mind" && towns[curAction.townNum][curAction.varName] >= 700000000) unlockStory("imbueMindThirdSegmentReached");
-                    towns[curAction.townNum][curAction.varName] = 0;
-                    towns[curAction.townNum][`${curAction.varName}LoopCounter`] += curAction.segments;
-                    towns[curAction.townNum][`total${curAction.varName}`]++;
-                    segment -= curAction.segments;
-                    curAction.loopsFinished();
-                    partUpdateRequired = true;
-                    if (curAction.canStart && !curAction.canStart()) {
-                        this.completedTicks += curAction.ticks;
-                        view.requestUpdate("updateTotalTicks", null);
-                        curAction.loopsLeft = 0;
-                        curAction.ticks = 0;
-                        curAction.manaRemaining = timeNeeded - timer;
-                        curAction.goldRemaining = resources.gold;
-                        curAction.finish();
-                        totals.actions++;
-                        break;
+
+            while (manaLeft > 0.01) {
+                //const toAdd = curAction.tickProgress(segment) * (curAction.manaCost() / curAction.adjustedTicks);
+                const progressMultiplier = curAction.tickProgress(segment) * tickMultiplier;
+                const toAdd = Math.min(
+                    manaLeft * progressMultiplier, // how much progress would we make if we spend all available mana?
+                    curAction.loopCost(segment) - curProgress // how much progress would it take to complete this segment?
+                );
+                manaLeft -= toAdd / progressMultiplier;
+                // console.log("using: "+curAction.loopStats[(towns[curAction.townNum][curAction.varName + "LoopCounter"]+segment) % curAction.loopStats.length]+" to add: " + toAdd + " to segment: " + segment + " and part " +towns[curAction.townNum][curAction.varName + "LoopCounter"]+" of progress " + curProgress + " which costs: " + curAction.loopCost(segment));
+                towns[curAction.townNum][curAction.varName] += toAdd;
+                curProgress += toAdd;
+                while (curProgress >= curAction.loopCost(segment)) {
+                    curProgress -= curAction.loopCost(segment);
+                    // segment finished
+                    if (segment === curAction.segments - 1) {
+                        // part finished
+                        if (curAction.name === "Dark Ritual" && towns[curAction.townNum][curAction.varName] >= 4000000) unlockStory("darkRitualThirdSegmentReached");
+                        if (curAction.name === "Imbue Mind" && towns[curAction.townNum][curAction.varName] >= 700000000) unlockStory("imbueMindThirdSegmentReached");
+                        towns[curAction.townNum][curAction.varName] = 0;
+                        towns[curAction.townNum][`${curAction.varName}LoopCounter`] += curAction.segments;
+                        towns[curAction.townNum][`total${curAction.varName}`]++;
+                        segment -= curAction.segments;
+                        curAction.loopsFinished();
+                        partUpdateRequired = true;
+                        if (curAction.canStart && !curAction.canStart()) {
+                            this.completedTicks += curAction.ticks;
+                            view.requestUpdate("updateTotalTicks", null);
+                            curAction.loopsLeft = 0;
+                            curAction.ticks = 0;
+                            curAction.manaRemaining = timeNeeded - timer;
+                            curAction.goldRemaining = resources.gold;
+                            curAction.finish();
+                            totals.actions++;
+                            break;
+                        }
+                        towns[curAction.townNum][curAction.varName] = curProgress;
                     }
-                    towns[curAction.townNum][curAction.varName] = curProgress;
+                    if (curAction.segmentFinished) {
+                        curAction.segmentFinished();
+                        partUpdateRequired = true;
+                    }
+                    segment++;
                 }
-                if (curAction.segmentFinished) {
-                    curAction.segmentFinished();
-                    partUpdateRequired = true;
-                }
-                segment++;
             }
+
             view.requestUpdate("updateMultiPartSegments", curAction);
             if (partUpdateRequired) {
                 view.requestUpdate("updateMultiPart", curAction);
             }
         }
+
+        // exp gets added here, where it can factor in to adjustTicksNeeded
+        addExpFromAction(curAction, manaToSpend);
+
         if (curAction.ticks >= curAction.adjustedTicks) {
             curAction.ticks = 0;
             curAction.loopsLeft--;
@@ -101,6 +134,8 @@ function Actions() {
                 this.currentPos++;
             }
         }
+
+        return manaToSpend;
     };
 
     this.getNextValidAction = function() {
@@ -262,8 +297,20 @@ function calcTalentMult(talent) {
     return 1 + Math.pow(talent, 0.4) / 3;
 }
 
-function addExpFromAction(action) {
-    const adjustedExp = action.expMult * (action.manaCost() / action.adjustedTicks);
+// how many ticks would it take to get to the first level up
+function getMaxTicksForAction(action) {
+    let maxTicks = Number.MAX_SAFE_INTEGER;
+    const expMultiplier = action.expMult * (action.manaCost() / action.adjustedTicks);
+    for (const stat in action.stats) {
+        const expToNext = getExpToLevel(stat);
+        const statMultiplier = expMultiplier * action.stats[stat] * getTotalBonusXP(stat);
+        maxTicks = Math.min(maxTicks, Math.ceil(expToNext / statMultiplier));
+    }
+    return maxTicks;
+}
+
+function addExpFromAction(action, manaCount) {
+    const adjustedExp = manaCount * action.expMult * (action.manaCost() / action.adjustedTicks);
     for (const stat in action.stats) {
         const expToAdd = action.stats[stat] * adjustedExp * getTotalBonusXP(stat);
         const statExp = `statExp${stat}`;

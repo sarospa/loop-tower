@@ -1,10 +1,5 @@
 function startGame() {
-    window.doWork = new Worker("interval.js");
-    window.doWork.onmessage = function(event) {
-        if (event.data === "interval.start") {
-            tick();
-        }
-    };
+    // load calls recalcInterval, which will start the callbacks
     load();
     setScreenSize();
 }

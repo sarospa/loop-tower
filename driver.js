@@ -5,7 +5,7 @@ let gameSpeed = 1;
 const baseManaPerSecond = 50;
 
 let curTime = new Date();
-let gameTicksLeft = 0;
+let gameTicksLeft = 0; // actually milliseconds, not ticks
 let refund = false;
 let radarUpdateTime = 0;
 let timeCounter = 0;
@@ -40,6 +40,43 @@ function getActualGameSpeed() {
     return gameSpeed * getSpeedMult() * bonusSpeed;
 }
 
+function refreshDungeons(manaSpent) {
+    for (const dungeon of dungeons) {
+        for (const level of dungeon) {
+            const chance = level.ssChance;
+            if (chance < 1) level.ssChance = Math.min(chance + 0.0000001 * manaSpent, 1);
+        }
+    }
+}
+
+function singleTick() {
+    timer++;
+    timeCounter += 1 / baseManaPerSecond;
+    effectiveTime += 1 / baseManaPerSecond;
+
+    actions.tick();
+
+    refreshDungeons(1);
+
+    if (shouldRestart || timer >= timeNeeded) {
+        loopEnd();
+        prepareRestart();
+    }
+    gameTicksLeft -= ((1000 / baseManaPerSecond));
+}
+
+let lastAnimationTime = 0;
+let animationFrameRequest = 0;
+
+function animationTick(animationTime) {
+    if (animationTime == lastAnimationTime) {
+        // double tick in the same frame, drop this one
+        return;
+    }
+    animationFrameRequest = requestAnimationFrame(animationTick);
+    tick();
+}
+
 function tick() {
     const newTime = Date.now();
     gameTicksLeft += newTime - curTime;
@@ -60,42 +97,69 @@ function tick() {
         return;
     }
 
-    while (gameTicksLeft > (1000 / baseManaPerSecond)) {
-        if (gameTicksLeft > 2000) {
-            console.warn(`too fast! (${gameTicksLeft})`);
-            statGraph.graphObject.options.animation.duration = 0;
-            gameTicksLeft = 0;
-            refund = true;
-        }
-        if (stop) {
-            return;
-        }
-        timer++;
-        timeCounter += 1 / baseManaPerSecond / getActualGameSpeed();
-        effectiveTime += 1 / baseManaPerSecond / getSpeedMult();
+    // convert "gameTicksLeft" (actually milliseconds) into equivalent base-mana count, aka actual game ticks
+    // including the gameSpeed multiplier here because it is effectively constant over the course of a single
+    // update, and it affects how many actual game ticks pass in a given span of realtime.
+    let baseManaToBurn = Math.floor(gameTicksLeft * baseManaPerSecond * gameSpeed / 1000);
 
-        actions.tick();
-        for (const dungeon of dungeons) {
-            for (const level of dungeon) {
-                const chance = level.ssChance;
-                if (chance < 1) level.ssChance = Math.min(chance + 0.0000001, 1);
-            }
+    while (baseManaToBurn * bonusSpeed >= 1) {
+        if (stop) {
+            break;
         }
+        // first, figure out how much *actual* mana is available to get spent. bonusSpeed gets rolled in first,
+        // since it can change over the course of an update (if offline time runs out)
+        let manaAvailable = baseManaToBurn;
+        // totalMultiplier lets us back-convert from manaAvailable (in units of "effective game ticks") to
+        // baseManaToBurn (in units of "realtime ticks modulated by gameSpeed") once we figure out how much
+        // of our mana we're using in this cycle
+        let totalMultiplier = 1;
+
+        if (bonusSpeed > 1) {
+            // can't spend more mana than offline time available
+            manaAvailable = Math.min(manaAvailable * bonusSpeed, Math.ceil(totalOfflineMs * baseManaPerSecond * gameSpeed * bonusSpeed / 1000));
+            totalMultiplier *= bonusSpeed;
+        }
+
+        // next, roll in the multiplier from skills/etc
+        let speedMult = getSpeedMult();
+        manaAvailable *= speedMult;
+        totalMultiplier *= speedMult;
+
+        // limit to only how much time we have available
+        manaAvailable = Math.min(manaAvailable, timeNeeded - timer);
+
+        // don't run more than 1 tick
+        if (shouldRestart) {
+            manaAvailable = Math.min(manaAvailable, 1);
+        }
+
+        // a single action may not use a partial tick, so ceil() to be sure
+        const manaSpent = Math.ceil(actions.tick(manaAvailable));
+
+        // okay, so the current action has used manaSpent effective ticks. figure out how much of our realtime
+        // that accounts for, in base ticks and in seconds.
+        const baseManaSpent = manaSpent / totalMultiplier;
+        const timeSpent = baseManaSpent / gameSpeed / baseManaPerSecond;
+
+        // update timers
+        timer += manaSpent; // number of effective mana ticks
+        timeCounter += timeSpent; // realtime seconds
+        effectiveTime += timeSpent * gameSpeed * bonusSpeed; // "seconds" modified only by gameSpeed and offline bonus
+        baseManaToBurn -= baseManaSpent; // burn spent mana
+        gameTicksLeft -= timeSpent * 1000;
+
+        // spend bonus time for this segment
+        if (bonusSpeed > 1) {
+            addOffline(-Math.abs(timeSpent * (bonusSpeed - 1)) * 1000);
+        }
+
+        refreshDungeons(manaSpent);
 
         if (shouldRestart || timer >= timeNeeded) {
             loopEnd();
             prepareRestart();
+            break; // don't span loops within tick()
         }
-        gameTicksLeft -= ((1000 / baseManaPerSecond) / getActualGameSpeed());
-    }
-
-    if (bonusSpeed > 1) {
-        addOffline(-Math.abs(delta * (bonusSpeed - 1)));
-    }
-
-    if (refund) {
-        addOffline(delta);
-        refund = false;
     }
 
     if (radarUpdateTime > 1000) {
@@ -112,8 +176,12 @@ function recalcInterval(fps) {
     if (mainTickLoop !== undefined) {
         clearInterval(mainTickLoop);
     }
-    doWork.postMessage({ stop: true });
-    doWork.postMessage({ start: true, ms: (1000 / fps) });
+    if (window.requestAnimationFrame) {
+        animationFrameRequest = requestAnimationFrame(animationTick);
+        mainTickLoop = setInterval(tick, 1000);
+    } else {
+        mainTickLoop = setInterval(tick, 1000 / fps);
+    }
 }
 
 function stopGame() {

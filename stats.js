@@ -171,6 +171,15 @@ function addBuffAmt(name, amount) {
     view.requestUpdate("updateBuff",name);
 }
 
+// how much "addExp" would you have to do to get this stat to the next exp or talent level
+function getExpToLevel(name) {
+    const expToNext = getExpOfLevel(getLevel(name) + 1) - stats[name].exp;
+    const talentToNext = getExpOfTalent(getTalent(name) + 1) - stats[name].talent;
+    const aspirantBonus = getBuffLevel("Aspirant") ?  getBuffLevel("Aspirant") * 0.01 : 0;
+    const talentMultiplier = (getSkillBonus("Wunderkind") + aspirantBonus) / 100;
+    return Math.ceil(Math.min(expToNext, talentToNext / talentMultiplier));
+}
+
 function addExp(name, amount) {
     stats[name].exp += amount;
     const aspirantBonus = getBuffLevel("Aspirant") ?  getBuffLevel("Aspirant") * 0.01 : 0;
