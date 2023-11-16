@@ -73,8 +73,11 @@ function animationTick(animationTime) {
         // double tick in the same frame, drop this one
         return;
     }
-    animationFrameRequest = requestAnimationFrame(animationTick);
-    tick();
+    try {
+        tick();
+    } finally {
+        animationFrameRequest = requestAnimationFrame(animationTick);
+    }
 }
 
 function tick() {
@@ -88,6 +91,11 @@ function tick() {
     if (curTime - lastSave > options.autosaveRate * 1000) {
         lastSave = curTime;
         save();
+    }
+
+    // don't do any updates until we've got enough time built up to match the refresh rate setting
+    if (gameTicksLeft < 1000 / window.fps) {
+        return;
     }
 
     if (stop) {

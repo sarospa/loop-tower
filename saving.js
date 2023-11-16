@@ -750,10 +750,13 @@ function load(inChallenge) {
         options.autoMaxTraining = toLoad.autoMaxTraining === undefined ? options.autoMaxTraining : toLoad.autoMaxTraining;
         options.highlightNew = toLoad.highlightNew === undefined ? options.highlightNew : toLoad.highlightNew;
         options.hotkeys = toLoad.hotkeys === undefined ? options.hotkeys : toLoad.hotkeys;
-        options.updateRate = toLoad.updateRate === undefined ? options.updateRate : toLoad.updateRate;
+        options.updateRate = toLoad.updateRate === undefined ? options.updateRate : window.localStorage["updateRate"] ?? toLoad.updateRate;
     } else {
         for (const option in toLoad.options) {
             options[option] = toLoad.options[option];
+        }
+        if ("updateRate" in toLoad.options && window.localStorage["updateRate"]) {
+            options.updateRate = window.localStorage["updateRate"];
         }
     }
 
@@ -912,6 +915,7 @@ function save() {
         toSave.challengeSave[challengeProgress] = challengeSave[challengeProgress];
 
     window.localStorage[saveName] = JSON.stringify(toSave);
+    window.localStorage["updateRate"] = options.updateRate;
 }
 
 function exportSave() {

@@ -8,8 +8,9 @@
             </meta>
             <version verNum="3.0.2"><![CDATA[
             <b> Nov 15th, 2023</b>
-            • Rewritten tick() code uses browser's requestAnimationFrame if available, bypassing the "Visual updates" option entirely. Ticks should be more efficient as well, especially under high game speeds.<br>
+            • Rewritten tick() code uses browser's requestAnimationFrame if available. Ticks should be more efficient as well, especially under high game speeds.<br>
             • Fix to Actions.tick() from Gustav from Discord, now multi-segment actions that complete multiple segments in a single tick will calculate each segment individually.<br>
+            • The "visual updates per second" option is now stored separately from saves, so you won't import refresh rate with a pasted savedata.<br>
             ]]></version>
             <version verNum="3.0.1"><![CDATA[
             <b> Nov 14th, 2023</b>
