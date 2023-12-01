@@ -78,6 +78,10 @@
             </filter>
         </svg>
     </div>
+    <div id="loadingBox" class="showWhileLoading hideWhenLoaded">
+        <!-- This will only be visible if the localization has never been loaded in this browser -->
+        <div id="loadingText" class="localized" data-lockey="misc>loading">Initial load (this may take a while)...</div>
+    </div>
     <canvas id="talentTreeCanvas" style="display: none;"></canvas>
     <div id="talentTree" style="display: none;"></div>
     <div id="timeInfo" style="width:100%;text-align:center;">
@@ -498,7 +502,10 @@
     
     <script>
         if (localStorage["latestTheme"]) {
-            document.body.className = `t-${localStorage["latestTheme"]}`;
+            document.body.className = `t-${localStorage["latestTheme"]} loading`;
+        }
+        if (localStorage["loadingText"]) {
+            document.getElementById("loadingText").textContent = localStorage["loadingText"];
         }
     </script>
     <script src="helpers.js"></script>
@@ -536,6 +543,7 @@
                 }
                 Views.draw();
                 Localization.localizePage("game");
+                localStorage["loadingText"] = document.getElementById("loadingText").textContent;
                 startGame();
             }
         }, 10);
