@@ -435,7 +435,8 @@ let curThievesGuildSegment = 0;
 // eslint-disable-next-line prefer-const
 let curGodsSegment = 0;
 
-let pauseNotification = false ? new Notification() : null; // typing
+/** @type {Notification} */
+let pauseNotification = null;
 
 const options = {
     theme: "normal",
@@ -453,6 +454,27 @@ const options = {
     hotkeys: true,
     updateRate: 50,
     autosaveRate: 30,
+};
+
+// The original forks will throw exceptions if there are unexpected properties in the options element. This list lets us
+// check to see if a given option should go into "options" in the save, otherwise it belongs in "extraOptions".
+/** @satisfies {{[K in keyof typeof options]: boolean}} */
+const isStandardOption = {
+    theme: true,
+    keepCurrentList: true,
+    repeatLastAction: true,
+    addActionsToTop: true,
+    pauseBeforeRestart: true,
+    pauseOnFailedLoop: true,
+    pauseOnComplete: true,
+    highlightNew: true,
+    statColors: true,
+    pingOnPause: true,
+    notifyOnPause: false,
+    autoMaxTraining: true,
+    hotkeys: true,
+    updateRate: true,
+    autosaveRate: true,
 };
 
 function setOption(option, value) {
@@ -483,9 +505,11 @@ function setOption(option, value) {
 }
 
 function loadOption(option, value) {
-    if (option === "updateRate") document.getElementById(`${option}Input`).value = value;
-    if (option === "autosaveRate") document.getElementById(`${option}Input`).value = value;
-    else document.getElementById(`${option}Input`).checked = value;
+    const input = document.getElementById(`${option}Input`);
+    if (!input) return;
+    if (option === "updateRate") input.value = value;
+    if (option === "autosaveRate") input.value = value;
+    else input.checked = value;
 }
 
 function showPauseNotification(message) {
@@ -752,10 +776,11 @@ function load(inChallenge) {
         options.hotkeys = toLoad.hotkeys === undefined ? options.hotkeys : toLoad.hotkeys;
         options.updateRate = toLoad.updateRate === undefined ? options.updateRate : window.localStorage["updateRate"] ?? toLoad.updateRate;
     } else {
-        for (const option in toLoad.options) {
+        const optionsToLoad = {...toLoad.options, ...toLoad.extraOptions};
+        for (const option in optionsToLoad) {
             options[option] = toLoad.options[option];
         }
-        if ("updateRate" in toLoad.options && window.localStorage["updateRate"]) {
+        if ("updateRate" in optionsToLoad && window.localStorage["updateRate"]) {
             options.updateRate = window.localStorage["updateRate"];
         }
     }
@@ -899,7 +924,15 @@ function save() {
     toSave.nextList = actions.next;
     toSave.loadouts = loadouts;
     toSave.loadoutnames = loadoutnames;
-    toSave.options = options;
+    toSave.options = {};
+    toSave.extraOptions = {}; // to avoid crashing when exporting to lloyd, etc
+    for (const option in options) {
+        if (isStandardOption[option]) {
+            toSave.options[option] = options[option];
+        } else {
+            toSave.extraOptions[option] = options[option];
+        }
+    }
     toSave.storyShowing = storyShowing;
     toSave.storyMax = storyMax;
     toSave.storyReqs = storyReqs;

@@ -6,6 +6,10 @@
                 <title>Changelog</title>
                 <version_prefix>Version</version_prefix>
             </meta>
+            <version verNum="3.0.3"><![CDATA[
+            <b> Nov 30th, 2023</b>
+            • Added some workaround code to make sure saves exported from the dmchurch fork can be imported back into the lloyd fork, for portability.<br>
+            ]]></version>
             <version verNum="3.0.2"><![CDATA[
             <b> Nov 15th, 2023</b>
             • Rewritten tick() code uses browser's requestAnimationFrame if available. Ticks should be more efficient as well, especially under high game speeds.<br>
