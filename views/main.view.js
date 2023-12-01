@@ -846,6 +846,8 @@ function View() {
         let actionStats = "";
         let actionSkills = "";
         let skillDetails = "";
+        let lockedStats = "";
+        let lockedSkills = "";
         const statKeyNames = Object.keys(action.stats);
         for (let i = 0; i < 9; i++) {
             for (const stat of statKeyNames) {
@@ -854,6 +856,15 @@ function View() {
                     actionStats += `<div class='bold'>${statLabel}:</div> ${action.stats[stat] * 100}%<br>`;
                 }
             }
+        }
+        // pretty sure this is guaranteed but we'll check anyway
+        if (statKeyNames.length > 0) {
+            // sort stats by percentage descending
+            statKeyNames.sort((a, b) => (action.stats[b] - action.stats[a]));
+            const highestStatValue = action.stats[statKeyNames[0]];
+            lockedStats = `(${statKeyNames.map(stat => /** @type {[boolean, string]} */([action.stats[stat] === highestStatValue, _txt(`stats>${stat}>short_form`)]))
+                                      .map(([isHighestStat, label]) => isHighestStat ? `<div class='bold'>${label}</div>` : label)
+                                      .join(", ")})<br>`;
         }
         if (action.skills !== undefined) {
             const skillKeyNames = Object.keys(action.skills);
@@ -866,6 +877,7 @@ function View() {
                         actionSkills += `<div class='bold'>${skillLabel}:</div><span id='expGain${action.varName}${skill}'></span><br>`;
                         if (action.teachesSkill(skill)) {
                             const learnSkill = `<div class='bold'>${_txt("actions>tooltip>learn_skill")}:</div>`;
+                            lockedSkills += `${learnSkill} <span>${_txt(`skills>${xmlName}>label`)}</span><br>`;
                             skillDetails +=
                                 `<hr>
                                 ${learnSkill} <div class='bold underline'>${_txt(`skills>${xmlName}>label`)}</div><br>
@@ -888,6 +900,8 @@ function View() {
         const isTravel = getTravelNum(action.name) > 0;
         const divClass = isTravel ? "travelContainer showthat" : "actionContainer showthat";
         const imageName = action.name.startsWith("Assassin") ? "assassin" : camelize(action.name);
+        const unlockConditions = /<br>Unlocked (.*?)(?:<br>|$)/is.exec(`${action.tooltip}${action.goldCost === undefined ? "" : action.tooltip2}`)?.[1]; // I hate this but wygd
+        const lockedText = unlockConditions ? `${_txt("actions>tooltip>locked_tooltip")}<br>Will unlock ${unlockConditions}` : `${action.tooltip}${action.goldCost === undefined ? "" : action.tooltip2}`;
         const totalDivText =
             `<div
                 id='container${action.varName}'
@@ -904,7 +918,7 @@ function View() {
                 <div style='position:relative'>
                     <img src='img/${imageName}.svg' class='superLargeIcon' draggable='false'>${extraImage}
                 </div>
-                <div class='showthis' draggable='false'>
+                <div class='showthis when-unlocked' draggable='false'>
                     ${action.tooltip}<span id='goldCost${action.varName}'></span>
                     ${(action.goldCost === undefined) ? "" : action.tooltip2}
                     <br>
@@ -913,6 +927,12 @@ function View() {
                     <div class='bold'>${_txt("actions>tooltip>mana_cost")}:</div> <div id='manaCost${action.varName}'>${formatNumber(action.manaCost())}</div><br>
                     <div class='bold'>${_txt("actions>tooltip>exp_multiplier")}:</div><div id='expMult${action.varName}'>${action.expMult * 100}</div>%<br>
                     ${skillDetails}
+                </div>
+                <div class='showthis when-locked' draggable='false'>
+                    ${lockedText}
+                    <br>
+                    ${lockedSkills}
+                    ${lockedStats}
                 </div>
             </div>`;
 

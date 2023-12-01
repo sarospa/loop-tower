@@ -9,6 +9,7 @@
             <version verNum="3.0.3"><![CDATA[
             <b> Nov 30th, 2023</b>
             • Added some workaround code to make sure saves exported from the dmchurch fork can be imported back into the lloyd fork, for portability.<br>
+            • Tooltips for actions that are visible but not yet unlocked now show in abbreviated form, to reduce flavor text confusion.<br>
             • Actions that teach skills now show a description of the skill in the action tooltip.<br>
             ]]></version>
             <version verNum="3.0.2"><![CDATA[
@@ -1066,6 +1067,7 @@
       One second = 50 mana.<br>
       Minimum 1 tick per action.<br>
       Restarts automatically upon no actions left.]]></list_explanation>
+            <locked_tooltip><![CDATA[<i>You sense opportunity ahead...</i>]]></locked_tooltip>
             <learn_skill><![CDATA[Learn skill]]></learn_skill>
         </tooltip>
         <current_action>

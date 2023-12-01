@@ -35,6 +35,15 @@ body {
 {
     display: block;
 }
+.showthat:hover .showthis.when-locked,
+.showthat.locked:hover .showthis.when-unlocked
+{
+    display: none;
+}
+.showthat.locked:hover .showthis.when-locked
+{
+    display: block;
+}
 
 .showthat2:hover .showthis2 {
     display: flex;
