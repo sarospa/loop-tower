@@ -124,6 +124,18 @@ Action.prototype.infoText = function() {
             <br><span class='bold'>${`${_txt("actions>tooltip>total_checked")}: `}</span><div id='checked${this.varName}'></div>`;
 };
 
+Action.prototype.teachesSkill = function(skill) {
+    // if we don't give exp in the skill we don't teach it
+    if (this.skills?.[skill] === undefined) return false;
+    // if we have an unlock function and it references the skill, we don't teach it
+    if (this.unlocked?.toString().search(`getSkillLevel\\("${skill}"\\)`) >= 0) return false;
+    // if this is combat or magic and this isn't town 0, we don't teach it
+    if ((skill === "Combat" || skill === "Magic") && this.townNum > 0) return false;
+    // otherwise we do (as long as we actually give exp in it and it isn't zeroed out)
+    const exp = typeof(this.skills[skill]) === "function" ? this.skills[skill]() : this.skills[skill];
+    return exp > 0;
+}
+
 // same as Action, but contains shared code to load segment names for multipart actions.
 // (constructor takes number of segments as a second argument)
 function MultipartAction(name, extras) {

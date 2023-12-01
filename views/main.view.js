@@ -845,6 +845,7 @@ function View() {
     this.createTownAction = function(action) {
         let actionStats = "";
         let actionSkills = "";
+        let skillDetails = "";
         const statKeyNames = Object.keys(action.stats);
         for (let i = 0; i < 9; i++) {
             for (const stat of statKeyNames) {
@@ -860,8 +861,19 @@ function View() {
             for (let i = 0; i < l; i++) {
                 for (const skill of skillKeyNames) {
                     if (skillList[i] === skill) {
-                        const skillLabel = `${_txt(`skills>${getXMLName(skill)}>label`)} ${_txt("stats>tooltip>exp")}`;
+                        const xmlName = getXMLName(skill);
+                        const skillLabel = `${_txt(`skills>${xmlName}>label`)} ${_txt("stats>tooltip>exp")}`;
                         actionSkills += `<div class='bold'>${skillLabel}:</div><span id='expGain${action.varName}${skill}'></span><br>`;
+                        if (action.teachesSkill(skill)) {
+                            const learnSkill = `<div class='bold'>${_txt("actions>tooltip>learn_skill")}:</div>`;
+                            skillDetails +=
+                                `<hr>
+                                ${learnSkill} <div class='bold underline'>${_txt(`skills>${xmlName}>label`)}</div><br>
+                                <i>${_txt(`skills>${xmlName}>desc`)}</i><br>`;
+                            if (_txtsObj(`skills>${xmlName}>desc2`)?.length > 0) {
+                                skillDetails += `${_txt(`skills>${xmlName}>desc2`).replace(/<br>\s*Currently.*(?:<br>|$)/sgi, "") }<br>`; // ugh
+                            }
+                        }
                     }
                 }
             }
@@ -900,6 +912,7 @@ function View() {
                     ${actionStats}
                     <div class='bold'>${_txt("actions>tooltip>mana_cost")}:</div> <div id='manaCost${action.varName}'>${formatNumber(action.manaCost())}</div><br>
                     <div class='bold'>${_txt("actions>tooltip>exp_multiplier")}:</div><div id='expMult${action.varName}'>${action.expMult * 100}</div>%<br>
+                    ${skillDetails}
                 </div>
             </div>`;
 
