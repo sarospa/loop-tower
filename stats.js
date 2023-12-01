@@ -130,15 +130,26 @@ function getArmorLevel() {
 }
 
 function getSelfCombat() {
-    return (getSkillLevel("Combat") + getSkillLevel("Pyromancy") * 5) * getArmorLevel() * (1 + getBuffLevel("Feast") * .05);
+    return ((getSkillLevel("Combat") + getSkillLevel("Pyromancy") * 5) 
+                * getArmorLevel() 
+                * (1 + getBuffLevel("Feast") * .05)) 
+                * Math.pow(PRESTIGE_COMBAT_BASE, getBuffLevel("PrestigeCombat"));
 }
 
 function getZombieStrength() {
-    return getSkillLevel("Dark") * resources.zombie / 2 * Math.max(getBuffLevel("Ritual") / 100, 1) * (1 + getBuffLevel("Feast") * .05);
+    return getSkillLevel("Dark") 
+                * resources.zombie / 2 
+                * Math.max(getBuffLevel("Ritual") / 100, 1) 
+                * (1 + getBuffLevel("Feast") * .05)  
+                * Math.pow(PRESTIGE_COMBAT_BASE, getBuffLevel("PrestigeCombat"));
 }
 
 function getTeamStrength() {
-    return (getSkillLevel("Combat") + getSkillLevel("Restoration") * 4) * (resources.teamMembers / 2) * getAdvGuildRank().bonus * getSkillBonus("Leadership") * (1 + getBuffLevel("Feast") * .05);
+    return ((getSkillLevel("Combat") + getSkillLevel("Restoration") * 4) 
+                * (resources.teamMembers / 2) 
+                * getAdvGuildRank().bonus * getSkillBonus("Leadership") 
+                * (1 + getBuffLevel("Feast") * .05))
+                * Math.pow(PRESTIGE_COMBAT_BASE, getBuffLevel("PrestigeCombat"));
 }
 
 function getTeamCombat() {
@@ -168,6 +179,7 @@ function handleSkillExp(list) {
 function addBuffAmt(name, amount) {
     if (getBuffLevel(name) === buffHardCaps[name]) return;
     buffs[name].amt += amount;
+    if (amount === 0) buffs[name].amt = 0; // for presetige, reset to 0 when passed in.
     view.requestUpdate("updateBuff",name);
 }
 
@@ -199,5 +211,14 @@ function restartStats() {
 
 function getTotalBonusXP(statName) {
     const soulstoneBonus = stats[statName].soulstone ? calcSoulstoneMult(stats[statName].soulstone) : 1;
-    return soulstoneBonus * calcTalentMult(getTalent(statName));
+
+        var statBonus=1
+        if (["Str","Dex","Con","Spd","Per"].includes(statName)) {
+            statBonus *= Math.pow(PRESTIGE_PHYSICAL_BASE, getBuffLevel("PrestigePhysical"))
+        }
+        if (["Cha","Int","Soul","Luck"].includes(statName)) {
+            statBonus *= Math.pow(PRESTIGE_MENTAL_BASE, getBuffLevel("PrestigeMental"))
+        }
+        
+    return statBonus * soulstoneBonus * calcTalentMult(getTalent(statName));
 }

@@ -8,7 +8,14 @@ Views.registerView("buffsContainer", {
             Feast: "Great Feast",
             Aspirant: "Aspirant",
             Heroism: "Heroism",
-            Imbuement3: "Imbue Soul"
+            Imbuement3: "Imbue Soul",
+            PrestigePhysical: "Prestige - Physical",
+            PrestigeMental: "Prestige - Mental",
+            PrestigeCombat: "Prestige - Combat",
+            PrestigeSpatiomancy: "Prestige - Spatiomancy",
+            PrestigeChronomancy: "Prestige - Chronomancy",
+            PrestigeBartering: "Prestige - Bartering",
+            PrestigeExpOverflow: "Prestige - Experience Overflow",
         };
         let html = "";
         for (const buff of buffList) {
@@ -35,3 +42,5 @@ Views.registerView("buffsContainer", {
         return html;
     },
 });
+//                            ${desc2 ? `<span class="localized" data-lockey="buffs>${XMLName}>desc2"></span>` : ""}
+

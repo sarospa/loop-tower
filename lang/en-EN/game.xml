@@ -6,6 +6,10 @@
                 <title>Changelog</title>
                 <version_prefix>Version</version_prefix>
             </meta>
+            <version verNum="3.P16.4"><![CDATA[
+            <b> Nov 30th, 2023</b>
+            • Merged in WaylonJ's prestige version. Save compatibility is now only guaranteed with the prestige fork, not the lloyd fork.<br>
+            ]]></version>
             <version verNum="3.0.3"><![CDATA[
             <b> Nov 30th, 2023</b>
             • Added some workaround code to make sure saves exported from the dmchurch fork can be imported back into the lloyd fork, for portability.<br>
@@ -20,9 +24,78 @@
             ]]></version>
             <version verNum="3.0.1"><![CDATA[
             <b> Nov 14th, 2023</b>
+            (from lloyd fork, version 3.0)<br>
             • Yarr, the game has been taken over by dmchurch, where is this boat even going?<br>
             • Dark theme now rotates the colors back into the right hues.<br>
             • "Notify on Pause" option to send an HTML5 notification to your system tray instead of a beep when the game pauses.<br>
+            ]]></version>
+            <version verNum="P: 0.1.6c"><![CDATA[
+            <b> Mar 20th, 2023</b><br>
+            <b> Changelog:</b>
+                • Bux fix<br>
+                  • Fixed: Previous change caused check boxes to not save their states. <br>
+                  • Fixed: Geysers could be fractionated depending on survey progress. <br>
+                  • Fixed: Surveying 100% areas shouldn't give completed maps. <br>
+                  • Fixed: Reset All Prestige didn't remove old values. <br>
+            ]]></version>
+            <version verNum="P: 0.1.5"><![CDATA[
+            <b> Mar 20th, 2023</b><br>
+            <b> Changelog:</b>
+                • Options -> Custom Bonus Speed:<br>
+                • Now allows you to enter a value into a text box for whatever customSpeed you desire :)
+            ]]></version>
+            <version verNum="P: 0.1.4"><![CDATA[
+            <b> Mar 13th, 2023</b><br>
+            <b> Changelog:</b>
+                • I stopped being lazy and added a change log!<br><br>
+            <b> PrestigeMental:</b>
+                • Tooltip now reflects that it affects luck.<br><br>
+            <b> PrestigeBartering:</b>
+                • Tooltip now specifies that it affects the amount of *mana* bought from merchants.<br>
+            <b> Bug:</b>
+                • Trying to fix prestige bug not reset-ing values (V1).<br>
+            ]]></version>
+            <version verNum="P: 0.1.3"><![CDATA[
+            <b> Mar 12th, 2023</b><br>
+            <b> PrestigeExpOverflow:</b>
+                • Now gains the bonuses of PrestigePhysical and PrestigeMental when their respective skills are being added to.<br><br>
+            <b> PrestigeMental:</b>
+                • By popular questioning and request, now has "Luck" as one of the skills it provides a bonus to.<br><br>
+            <b> PrestigePhysical:</b>
+                • By an absolute blunder on my part, now actually provides a bonus for Strength.<br><br>
+            <b> Other Changes:</b>
+                • Otherwise just a small tooltip adjustment as ExpOverflow wasn't giving you the "Current Bonus" in the prestige dropdown<br>
+            ]]></version>
+            <version verNum="P: 0.1.2"><![CDATA[
+            <b> Mar 6th, 2023</b><br>
+            <b> Prestige buffs:</b>
+                • Combat:        1.10 -> 1.20<br>
+                • Spationmancy:  1.10 -> 1.20<br>
+                • Bartering:     1.10 -> 1.20<br><br>
+            <b> Other Changes:</b>
+                • Triggers a save after prestiging to prevent refresh errors<br>
+                • Updates text content to reflect prestige bonuses correctly.<br>
+                • Bug fix for Spatio / Barter<br>
+                • Survey action can now be done even when at 100% surveyed, but it will result in no progress and remove a map. This allows it to work with "Pause on progress complete"<br>
+            ]]></version>
+            <version verNum="P: 0.1.1"><![CDATA[
+            <b> Mar 5th, 2023</b><br>
+            <b> Updates:</b>
+                • Prestiges will now begin with the "Found Glasses" action thanks to the overwhelming feeling that you're forgetting something important when you prestige<br>
+                • Buffed prestigeMental and prestigePhysical to give 10 -> 20% bonuses to their respective skills<br><br>
+            <b> Quick Followups:</b>
+                • Added "Reset all Prestiges" to recoup your spent points<br>
+                • Prevents buy glasses action in all prestiges.<br>
+                • Updated tooltips to reflect the buff change from above<br>
+            ]]></version>
+            <version verNum="P: 0.1.0"><![CDATA[
+            <b> Feb 15th, 2023</b><br>
+            <b> Prestige mode</b>
+                • Once you've restored time, you'll gain 90 points to spend on a variety of prestige bonuses.<br>
+                • These may be viewed in the "Prestige Perks" menu dropdown at the top left.<br>
+                • Imbue Soul levels will carry over between prestiges, up to the maximum number of prestiges you've completed.<br>
+            <b> QoL</b>
+                • Added a 10x and 20x checkbox in the "Options" drop down when using Bonus time<br>
             ]]></version>
             <version verNum="3.0"><![CDATA[
             <b> Jan 23rd, 2023</b>
@@ -368,6 +441,9 @@
             <pause_notify_cue>Notify on pause</pause_notify_cue>
             <auto_max_training>Max All Training Actions on Training cap increase</auto_max_training>
             <hotkeys>Hotkeys</hotkeys>
+            <speedIncrease10x_text>10x Bonus Speed</speedIncrease10x_text>
+            <speedIncrease20x_text>20x Bonus Speed</speedIncrease20x_text>
+            <speedIncreaseCustom_text> Custom Bonus Speed </speedIncreaseCustom_text>
             <hotkeys_tooltip><![CDATA[
                 Spacebar: Pause/play<br>
                 R: Restart<br>
@@ -401,6 +477,21 @@
                 <title>Totals</title>
             </meta>
         </totals>
+
+        <prestige_bonus>
+            <meta>
+                <title>Prestige Perks</title>
+            </meta>
+            <PrestigePhysical>Increases Experience gain of all Physical skills (Dex, Str, Con, Spd, Per) by 20% per level.</PrestigePhysical>
+            <PrestigeMental>Increases Experience gain of all Mental skills (Cha, Int, Soul, Luck) by 20% per level.</PrestigeMental>
+            <PrestigeCombat>Increases Self and Team Combat by 20% per level.</PrestigeCombat>
+            <PrestigeSpatiomancy>Increases the number of "Findables" per zone by 10% per level.</PrestigeSpatiomancy>
+            <PrestigeChronomancy>Increases speed of all zones by a multiplier of 5% per level.</PrestigeChronomancy>
+            <PrestigeBartering>Increases mana received from merchants by 10% per level.</PrestigeBartering>
+            <PrestigeExpOverflow>Experience earned is spread amongst all stats by 2% per level.</PrestigeExpOverflow>
+            <PrestigeResetAll>Resets all current prestige bonuses, giving you back the points to allocate again. Note, this DOES trigger a reset, so this cannot be done mid-playthrough.</PrestigeResetAll>
+        </prestige_bonus>
+
     </menu>
     <tutorial><![CDATA[
       TUTORIAL:<br>
@@ -957,6 +1048,49 @@
             Increases the exp multiplier of training actions by 100% and raises all action speeds by 50% per level additively.
             ]]></desc>
         </imbue_soul>
+
+        <prestige_-_physical>
+            <label>Prestige - Physical</label>
+            <desc><![CDATA[ 
+            Increases Experience gain of all Physical skills (Dex, Str, Con, Spd, Per) by 10% per level. 
+            ]]></desc>
+        </prestige_-_physical>
+        <prestige_-_mental>
+            <label>Prestige - Mental</label>
+            <desc><![CDATA[ 
+            Increases Experience gain of all Mental skills (Cha, Int, Soul) by 10% per level. 
+            ]]></desc>
+        </prestige_-_mental>
+        <prestige_-_combat>
+            <label>Prestige - Combat</label>
+            <desc><![CDATA[ 
+            Increases Self and Team Combat by 10% per level. 
+            ]]></desc>
+        </prestige_-_combat>
+        <prestige_-_spatiomancy>
+            <label>Prestige - Spatiomancy</label>
+            <desc><![CDATA[ 
+            Increases the number of "Findables" per zone by 5% per level. 
+            ]]></desc>
+        </prestige_-_spatiomancy>
+        <prestige_-_chronomancy>
+            <label>Prestige - Chronomancy</label>
+            <desc><![CDATA[ 
+            Increases speed of all zones by a multiplier of 5% per level. 
+            ]]></desc>
+        </prestige_-_chronomancy>
+        <prestige_-_bartering>
+            <label>Prestige - Bartering</label>
+            <desc><![CDATA[ 
+            Increases received from merchants by 5% per level. 
+            ]]></desc>
+        </prestige_-_bartering>
+        <prestige_-_experience_overflow>
+            <label>Prestige - Experience Overflow</label>
+            <desc><![CDATA[ 
+            Experience earned is spread amongst all stats by 2% per level. 
+            ]]></desc>
+        </prestige_-_experience_overflow>
         <tooltip>
             <level>Level</level>
             <no_reset_on_restart><![CDATA[Buffs last through resets.<br>You can click on the right hand number to edit it and adjust the cap for that buff. (buff actions will automatically fail and not spend soulstones past your set cap)]]></no_reset_on_restart>

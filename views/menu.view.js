@@ -8,6 +8,7 @@ Views.registerView("menu", {
         html += Views.menu.htmlOptionsMenu();
         html += Views.menu.htmlChallengeMenu();
         html += Views.menu.htmlTotalsMenu();
+        html += Views.menu.htmlPrestigeMenu();
         return html;
     },
     versions() {
@@ -28,7 +29,7 @@ Views.registerView("menu", {
         const html =
         `<div style='display:inline-block;height:30px;margin-left:10px;' class='showthatH'>
             ${_txt("menu>changelog>meta>title")}
-            <div style='max-width: 71px;' class='showthisH' id='changelog'>
+            <div style='max-width:110px;' class='showthisH' id='changelog'>
                 ${this.versions()}
             </div>
         </div>`;
@@ -111,6 +112,19 @@ Views.registerView("menu", {
                     <div class='showthis'>${_txt("menu>options>hotkeys_tooltip")}</div>
                 </label>
                 <br>
+                <div class='control'>
+                    <input type='checkbox' id='speedIncrease10xInput' onchange='setOption("speedIncrease10x", this.checked)'>
+                    <label for='speedIncrease10xInput'>${_txt("menu>options>speedIncrease10x_text")}</label>
+                </div>
+                <br>
+                <div class='control'>
+                    <input type='checkbox' id='speedIncrease20xInput' onchange='setOption("speedIncrease20x", this.checked)'>
+                    <label for='speedIncrease20xInput'>${_txt("menu>options>speedIncrease20x_text")}</label>
+                </div>
+                <br>
+                ${_txt("menu>options>speedIncreaseCustom_text")}
+                <input id='customSpeedIncrease' type='number' value='5' min='1' style='width: 50px;transform: translateY(-2px);' oninput='setOption("speedIncreaseCustom", parseInt(this.value))' />
+                <br>
                 ${_txt("menu>options>update_rate")}
                 <input id='updateRateInput' type='number' value='50' min='1' style='width: 50px;transform: translateY(-2px);' oninput='setOption("updateRate", parseInt(this.value))' />
                 <br>
@@ -160,6 +174,16 @@ Views.registerView("menu", {
         </div>`;
         return html;
     },
+    htmlPrestigeMenu() {
+        const html = 
+        `<div style='display:inline-block;height:30px;margin-left:10px;' class='showthatH'>
+            ${_txt("menu>prestige_bonus>meta>title")}
+            <div class='showthisH'>
+                ${this.prestige_bonuses()}
+            </div>
+        </div>`;
+        return html;
+    },
     challenges() {
         let html = 
         `<div>Challenges are special modes that impose special conditions and heavy restrictions.<br> 
@@ -194,6 +218,101 @@ Views.registerView("menu", {
         Loops: <div id='totalLoops'></div><br>
         Actions: <div id='totalActions'></div><br>
         </div>`;
+        return html;
+    },
+    prestige_bonuses() {
+        let html =
+        `<div><br> 
+        Prestige bonuses are always active.<br>
+        Each time you complete the game, you receive 90 points to spend on these bonuses.<br>
+        Please export and save your data locally before attempting to trigger a prestige.<br>
+        <br>
+        <b>The ability to spec into prestige bonuses may be done at any time, but keep in mind this will reset ALL progress.</b>
+        <br><br>
+        Imbue Soul levels will carry over between prestiges, up to the maximum number of prestiges you've completed. <br>
+        Max carryover possible: <div id='maxTotalImbueSoulLevels'></div>
+        <br>
+        <br><br><br>
+        <b>Total Prestiges Completed: <div id='currentPrestigesCompleted'></div></b><br>
+        Available points: <div id='currentPrestigePoints'></div> / <div id='totalPrestigePoints'></div>
+        <br>
+        Upgrade cost follows the format of: 
+        <br>
+        30 -> 40 -> 55 -> 75 -> 100 -> 130 -> ...
+        <br>
+
+        `;
+        html +=
+        
+        `
+        <br>
+        <div class='button showthat control' style='margin-top: -50px;' onclick='prestigeUpgrade("PrestigePhysical")'>Prestige Physical
+            <div class='showthis' style='color:black;width:230px;margin-left:200px;'>${_txt("menu>prestige_bonus>PrestigePhysical")}
+                <br><br>
+                Current Bonus: <div id='prestigePhysicalCurrentBonus'></div>%<br>
+                Next level cost: <div id='prestigePhysicalNextCost'></div> points<br> 
+            </div>
+        </div><br>
+
+        <div class='button showthat control' style='margin-top: -50px;' onclick='prestigeUpgrade("PrestigeMental")'>Prestige Mental
+        <div class='showthis' style='color:black;width:230px;margin-left:200px;'>${_txt("menu>prestige_bonus>PrestigeMental")}
+            <br><br>
+            Current Bonus: <div id='prestigeMentalCurrentBonus'></div>%<br>
+            Next level cost: <div id='prestigeMentalNextCost'></div> points<br> 
+        </div>
+        </div><br>
+
+
+        <div class='button showthat control' style='margin-top: -50px;' onclick='prestigeUpgrade("PrestigeCombat")'>Prestige Combat
+            <div class='showthis' style='color:black;width:230px;margin-left:200px;'>${_txt("menu>prestige_bonus>PrestigeCombat")}
+                <br><br>
+                Current Bonus: <div id='prestigeCombatCurrentBonus'></div>%<br>
+                Next level cost: <div id='prestigeCombatNextCost'></div> points<br> 
+            </div>
+        </div><br>
+
+        <div class='button showthat control' style='margin-top: -50px;' onclick='prestigeUpgrade("PrestigeSpatiomancy")'>Prestige Spatiomancy
+            <div class='showthis' style='color:black;width:230px;margin-left:200px;'>${_txt("menu>prestige_bonus>PrestigeSpatiomancy")}
+                <br><br>
+                Current Bonus: <div id='prestigeSpatiomancyCurrentBonus'></div>%<br>
+                Next level cost: <div id='prestigeSpatiomancyNextCost'></div> points<br> 
+            </div>
+        </div><br>
+
+        <div class='button showthat control' style='margin-top: -50px;' onclick='prestigeUpgrade("PrestigeChronomancy")'>Prestige Chronomancy
+            <div class='showthis' style='color:black;width:230px;margin-left:200px;'>${_txt("menu>prestige_bonus>PrestigeChronomancy")}
+                <br><br>
+                Current Bonus: <div id='prestigeChronomancyCurrentBonus'></div>%<br>
+                Next level cost: <div id='prestigeChronomancyNextCost'></div> points<br> 
+            </div>
+        </div><br>
+
+        <div class='button showthat control' style='margin-top: -50px;' onclick='prestigeUpgrade("PrestigeBartering")'>Prestige Bartering
+            <div class='showthis' style='color:black;width:230px;margin-left:200px;'>${_txt("menu>prestige_bonus>PrestigeBartering")}
+                <br><br>
+                Current Bonus: <div id='prestigeBarteringCurrentBonus'></div>%<br>
+                Next level cost: <div id='prestigeBarteringNextCost'></div> points<br> 
+            </div>
+        </div><br>
+
+        <div class='button showthat control' style='margin-top: -50px;' onclick='prestigeUpgrade("PrestigeExpOverflow")'>Prestige Experience Overflow
+            <div class='showthis' style='color:black;width:230px;margin-left:200px;'>${_txt("menu>prestige_bonus>PrestigeExpOverflow")}
+                <br><br>
+                Current Bonus: <div id='prestigeExpOverflowCurrentBonus'></div>%<br>
+                Next level cost: <div id='prestigeExpOverflowNextCost'></div> points<br> 
+            </div>
+        </div><br>
+
+        <br><br>
+
+        <div class='button showthat control' style='margin-top: -50px;' onclick='resetAllPrestiges()'>Reset All Prestiges
+            <div class='showthis' style='color:black;width:230px;margin-left:200px;'>${_txt("menu>prestige_bonus>PrestigeResetAll")}
+            </div>
+        </div><br>
+
+        `
+
+        ;
         return html;
     }
 });

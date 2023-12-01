@@ -671,7 +671,8 @@ function View() {
         } else {
             document.getElementById("skillList").style.display = "none";
         }
-        if (totalActionList.filter(action => action.finish.toString().includes("updateBuff")).filter(action => action.unlocked()).length > 0) {
+        if (totalActionList.filter(action => action.finish.toString().includes("updateBuff")).filter(action => action.unlocked()).length > 0 ||
+            prestigeValues["completedAnyPrestige"]) {
             document.getElementById("buffList").style.display = "flex";
         } else {
             document.getElementById("buffList").style.display = "none";
@@ -1306,6 +1307,31 @@ function View() {
         document.getElementById('totalEffectiveTime').textContent = `${formatTime(totals.effectiveTime)}`;
         document.getElementById('totalLoops').textContent = `${formatNumber(totals.loops)}`;
         document.getElementById('totalActions').textContent = `${formatNumber(totals.actions)}`;
+    }
+
+    this.updatePrestigeValues = function() {
+        document.getElementById('currentPrestigePoints').textContent = `${formatNumber(prestigeValues["prestigeCurrentPoints"])}`;
+        document.getElementById('currentPrestigesCompleted').textContent = `${formatNumber(prestigeValues["prestigeTotalCompletions"])}`;
+        // document.getElementById('maxTotalImbueSoulLevels').textContent = `${formatNumber(prestigeValues["prestigeTotalCompletions"])}`;
+        document.getElementById('maxTotalImbueSoulLevels').textContent = `${formatNumber(Math.floor(prestigeValues["prestigeTotalCompletions"], 7))}`;
+
+        document.getElementById('totalPrestigePoints').textContent = `${formatNumber(prestigeValues["prestigeTotalPoints"])}`;
+
+        document.getElementById('prestigePhysicalCurrentBonus').textContent = `${formatNumber(getPrestigeCurrentBonus("PrestigePhysical", PRESTIGE_PHYSICAL_BASE))}`;
+        document.getElementById('prestigeMentalCurrentBonus').textContent = `${formatNumber(getPrestigeCurrentBonus("PrestigeMental", PRESTIGE_MENTAL_BASE))}`;
+        document.getElementById('prestigeCombatCurrentBonus').textContent = `${formatNumber(getPrestigeCurrentBonus("PrestigeCombat", PRESTIGE_COMBAT_BASE))}`;
+        document.getElementById('prestigeSpatiomancyCurrentBonus').textContent = `${formatNumber(getPrestigeCurrentBonus("PrestigeSpatiomancy", PRESTIGE_SPATIOMANCY_BASE))}`;
+        document.getElementById('prestigeChronomancyCurrentBonus').textContent = `${formatNumber(getPrestigeCurrentBonus("PrestigeChronomancy", PRESTIGE_CHRONOMANCY_BASE))}`;
+        document.getElementById('prestigeBarteringCurrentBonus').textContent = `${formatNumber(getPrestigeCurrentBonus("PrestigeBartering", PRESTIGE_BARTERING_BASE))}`;
+        document.getElementById('prestigeExpOverflowCurrentBonus').textContent = `${formatNumber(getPrestigeCurrentBonus("PrestigeExpOverflow", PRESTIGE_EXP_OVERFLOW_BASE) * 10)}`;
+
+        document.getElementById('prestigePhysicalNextCost').textContent = `${formatNumber(getPrestigeCost("PrestigePhysical"))}`;
+        document.getElementById('prestigeMentalNextCost').textContent = `${formatNumber(getPrestigeCost("PrestigeMental"))}`;
+        document.getElementById('prestigeCombatNextCost').textContent = `${formatNumber(getPrestigeCost("PrestigeCombat"))}`;
+        document.getElementById('prestigeSpatiomancyNextCost').textContent = `${formatNumber(getPrestigeCost("PrestigeSpatiomancy"))}`;
+        document.getElementById('prestigeChronomancyNextCost').textContent = `${formatNumber(getPrestigeCost("PrestigeChronomancy"))}`;
+        document.getElementById('prestigeBarteringNextCost').textContent = `${formatNumber(getPrestigeCost("PrestigeBartering"))}`;
+        document.getElementById('prestigeExpOverflowNextCost').textContent = `${formatNumber(getPrestigeCost("PrestigeExpOverflow"))}`;        
     }
 }
 

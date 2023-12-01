@@ -15,7 +15,7 @@ let lastSave = Date.now();
 function getSpeedMult(zone = curTown) {
     let speedMult = 1;
 
-    // dark ritual
+    // Dark Ritual
     if (zone === 0) speedMult *= getRitualBonus(0, 20, 10);
     else if (zone === 1) speedMult *= getRitualBonus(20, 40, 5);
     else if (zone === 2) speedMult *= getRitualBonus(40, 60, 2.5);
@@ -27,11 +27,14 @@ function getSpeedMult(zone = curTown) {
     else if (zone === 8) speedMult *= getRitualBonus(250, 300, .5);
     speedMult *= getRitualBonus(300, 666, .1);
     
-    // chronomancy
+    // Chronomancy
     speedMult *= getSkillBonus("Chronomancy");
     
-    //Imbue Soul
+    // Imbue Soul
     speedMult += 0.5 * getBuffLevel("Imbuement3");
+
+    // Prestige Chronomancy
+    speedMult *= Math.pow(1.05, getBuffLevel("PrestigeChronomancy"));
 
     return speedMult;
 }
@@ -339,7 +342,7 @@ function resetResource(resource) {
 
 function resetResources() {
     resources = copyObject(resourcesTemplate);
-    if(getExploreProgress() >= 100) addResource("glasses", true);
+    if(getExploreProgress() >= 100 || prestigeValues['completedAnyPrestige']) addResource("glasses", true);
     view.requestUpdate("updateResources", null);
 }
 
@@ -706,11 +709,18 @@ function addOffline(num) {
 function toggleOffline() {
     if (totalOfflineMs === 0) return;
     if (bonusSpeed === 1) {
-        bonusSpeed = 5;
+        checkExtraSpeed();
         document.getElementById("isBonusOn").textContent = _txt("time_controls>bonus_seconds>state>on");
     } else {
         bonusSpeed = 1;
         document.getElementById("isBonusOn").textContent = _txt("time_controls>bonus_seconds>state>off");
     }
     view.requestUpdate("updateTime", null);
+}
+
+function checkExtraSpeed() {
+    bonusSpeed = 5;
+    if (options.speedIncrease10x === true) { bonusSpeed = 10};
+    if (options.speedIncrease20x === true) { bonusSpeed = 20};
+    if (bonusSpeed < options.speedIncreaseCustom) { bonusSpeed = options.speedIncreaseCustom };
 }

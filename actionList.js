@@ -274,7 +274,7 @@ function SurveyAction(townNum) {
             Luck: 0.2
         },
         canStart() {
-            return resources.map > 0 && towns[this.townNum].getLevel("Survey") < 100;
+            return resources.map > 0;
         },
         manaCost() {
             return 10000 * (this.townNum + 1);
@@ -287,9 +287,12 @@ function SurveyAction(townNum) {
         },
         finish() {
             addResource("map", -1);
-            addResource("completedMap", 1);
-            towns[this.townNum].finishProgress(this.varName, getExploreSkill());
-            view.requestUpdate("updateActionTooltips", null);
+            if (options.pauseOnComplete) pauseGame();
+            if (towns[this.townNum].getLevel("Survey") != 100) {
+                addResource("completedMap", 1);
+                towns[this.townNum].finishProgress(this.varName, getExploreSkill());
+                view.requestUpdate("updateActionTooltips", null);    
+            }
         }
     }
     obj.townNum = townNum;
@@ -508,12 +511,12 @@ Action.Wander = new Action("Wander", {
 });
 function adjustPots() {
     let town = towns[0];
-    let basePots = town.getLevel("Wander") * 5;
+    let basePots = Math.round(town.getLevel("Wander") * 5 * adjustContentFromPrestige());
     town.totalPots = Math.floor(basePots + basePots * getSurveyBonus(town));
 }
 function adjustLocks() {
     let town = towns[0];
-    let baseLocks = town.getLevel("Wander");
+    let baseLocks = Math.round(town.getLevel("Wander") * adjustContentFromPrestige());
     town.totalLocks = Math.floor(baseLocks * getSkillMod("Spatiomancy", 100, 300, .5) + baseLocks * getSurveyBonus(town));
 }
 
@@ -634,7 +637,7 @@ Action.BuyGlasses = new Action("Buy Glasses", {
         return 50;
     },
     visible() {
-        return towns[0].getLevel("Wander") >= 3 && getExploreProgress() < 100;
+        return towns[0].getLevel("Wander") >= 3 && getExploreProgress() < 100 && !prestigeValues["completedAnyPrestige"];
     },
     unlocked() {
         return towns[0].getLevel("Wander") >= 20;
@@ -655,7 +658,7 @@ Action.FoundGlasses = new Action("Found Glasses", {
     },
     affectedBy: ["SurveyZ1"],
     allowed() {
-        return 1;
+        return 0;
     },
     canStart() {
         return false;
@@ -664,7 +667,7 @@ Action.FoundGlasses = new Action("Found Glasses", {
         return 0;
     },
     visible() {
-        return getExploreProgress() >= 100;
+        return getExploreProgress() >= 100 || prestigeValues["completedAnyPrestige"];
     },
     unlocked() {
         return false;
@@ -701,7 +704,7 @@ Action.BuyManaZ1 = new Action("Buy Mana Z1", {
         return towns[0].getLevel("Wander") >= 20;
     },
     goldCost() {
-        return Math.floor(50 * getSkillBonus("Mercantilism"));
+        return Math.floor(50 * getSkillBonus("Mercantilism") * adjustGoldCostFromPrestige());
     },
     finish() {
         addMana(resources.gold * this.goldCost());
@@ -751,7 +754,7 @@ Action.MeetPeople = new Action("Meet People", {
 });
 function adjustSQuests() {
     let town = towns[0];
-    let baseSQuests = town.getLevel("Met");
+    let baseSQuests = Math.round(town.getLevel("Met") * adjustContentFromPrestige());
     town.totalSQuests = Math.floor(baseSQuests * getSkillMod("Spatiomancy", 200, 400, .5) + baseSQuests * getSurveyBonus(town));
 }
 
@@ -891,7 +894,7 @@ Action.Investigate = new Action("Investigate", {
 });
 function adjustLQuests() {
     let town = towns[0];
-    let baseLQuests = town.getLevel("Secrets") / 2;
+    let baseLQuests = Math.round(town.getLevel("Secrets") / 2 * adjustContentFromPrestige());
     town.totalLQuests = Math.floor(baseLQuests * getSkillMod("Spatiomancy", 300, 500, .5) + baseLQuests * getSurveyBonus(town));
 }
 
@@ -1574,17 +1577,17 @@ Action.ExploreForest = new Action("Explore Forest", {
 });
 function adjustWildMana() {
     let town = towns[1];
-    let baseWildMana = town.getLevel("Forest") * 5 + town.getLevel("Thicket") * 5;
+    let baseWildMana = Math.round((town.getLevel("Forest") * 5 + town.getLevel("Thicket") * 5) * adjustContentFromPrestige());
     town.totalWildMana = Math.floor(baseWildMana + baseWildMana * getSurveyBonus(town));
 }
 function adjustHunt() {
     let town = towns[1];
-    let baseHunt = town.getLevel("Forest") * 2;
+    let baseHunt = Math.round(town.getLevel("Forest") * 2 * adjustContentFromPrestige());
     town.totalHunt = Math.floor(baseHunt * getSkillMod("Spatiomancy", 400, 600, .5) + baseHunt * getSurveyBonus(town));
 }
 function adjustHerbs() {
     let town = towns[1];
-    let baseHerbs = (town.getLevel("Forest") * 5 + town.getLevel("Shortcut") * 2 + town.getLevel("Flowers") * 13);
+    let baseHerbs = Math.round((town.getLevel("Forest") * 5 + town.getLevel("Shortcut") * 2 + town.getLevel("Flowers") * 13) * adjustContentFromPrestige());
     town.totalHerbs = Math.floor(baseHerbs * getSkillMod("Spatiomancy", 500, 700, .5) + baseHerbs * getSurveyBonus(town));
 }
 
@@ -2462,7 +2465,7 @@ Action.ExploreCity = new Action("Explore City", {
 });
 function adjustSuckers() {
     let town = towns[2];
-    let baseGamble = town.getLevel("City") * 3;
+    let baseGamble = Math.round(town.getLevel("City") * 3 * adjustContentFromPrestige());
     town.totalGamble = Math.floor(baseGamble * getSkillMod("Spatiomancy", 600, 800, .5) + baseGamble * getSurveyBonus(town));
 }
 
@@ -2596,7 +2599,7 @@ Action.BuyManaZ3 = new Action("Buy Mana Z3", {
         return true;
     },
     goldCost() {
-        return Math.floor(50 * getSkillBonus("Mercantilism"));
+        return Math.floor(50 * getSkillBonus("Mercantilism") * adjustGoldCostFromPrestige());
     },
     finish() {
         addMana(resources.gold * this.goldCost());
@@ -3497,8 +3500,8 @@ Action.ManaGeyser = new Action("Mana Geyser", {
 });
 function adjustGeysers() {
     let town = towns[3];
-    let baseGeysers = town.getLevel("Mountain") * 10;
-    town.totalGeysers = baseGeysers + baseGeysers * getSurveyBonus(town);
+    let baseGeysers = Math.round(town.getLevel("Mountain") * 10 * adjustContentFromPrestige());
+    town.totalGeysers = Math.round(baseGeysers + baseGeysers * getSurveyBonus(town));
 }
 
 Action.DecipherRunes = new Action("Decipher Runes", {
@@ -3763,7 +3766,7 @@ Action.MineSoulstones = new Action("Mine Soulstones", {
 
 function adjustMineSoulstones() {
     let town = towns[3];
-    let baseMine = town.getLevel("Cavern") * 3;
+    let baseMine = Math.round(town.getLevel("Cavern") * 3 * adjustContentFromPrestige());
     town.totalMineSoulstones = Math.floor(baseMine * getSkillMod("Spatiomancy", 700, 900, .5) + baseMine * getSurveyBonus(town));
 }
 
@@ -3908,7 +3911,7 @@ Action.TakeArtifacts = new Action("Take Artifacts", {
 });
 function adjustArtifacts() {
     let town = towns[3];
-    let baseArtifacts = town.getLevel("Illusions") * 5;
+    let baseArtifacts = Math.round(town.getLevel("Illusions") * 5 * adjustContentFromPrestige());
     town.totalArtifacts = Math.floor(baseArtifacts * getSkillMod("Spatiomancy", 800, 1000, .5) + baseArtifacts * getSurveyBonus(town));
 }
 
@@ -4315,7 +4318,7 @@ Action.AcceptDonations = new Action("Accept Donations", {
 
 function adjustDonations() {
     let town = towns[4];
-    let base = town.getLevel("Canvassed") * 5;
+    let base = Math.round(town.getLevel("Canvassed") * 5 * adjustContentFromPrestige());
     town.totalDonations = Math.floor(base * getSkillMod("Spatiomancy", 900, 1100, .5) + base * getSurveyBonus(town));
 }
 
@@ -4400,7 +4403,7 @@ Action.BuyManaZ5 = new Action("Buy Mana Z5", {
         return true;
     },
     goldCost() {
-        return Math.floor(50 * getSkillBonus("Mercantilism"));
+        return Math.floor(50 * getSkillBonus("Mercantilism") * adjustGoldCostFromPrestige());
     },
     finish() {
         addMana(resources.gold * this.goldCost());
@@ -5307,7 +5310,7 @@ Action.Meander = new Action("Meander", {
 });
 function adjustPylons() {
     let town = towns[5];
-    let base = town.getLevel("Meander") * 10;
+    let base = Math.round(town.getLevel("Meander") * 10 * adjustContentFromPrestige());
     town.totalPylons = Math.floor(base * getSkillMod("Spatiomancy", 1000, 1200, .5) + base * getSurveyBonus(town));
 }
 
@@ -5357,7 +5360,7 @@ Action.ManaWell = new Action("Mana Well", {
 });
 function adjustWells() {
     let town = towns[5];
-    let base = town.getLevel("Meander") * 10;
+    let base = Math.round(town.getLevel("Meander") * 10 * adjustContentFromPrestige());
     town.totalWells = Math.floor(base + base * getSurveyBonus(town));
 }
 
@@ -6097,19 +6100,19 @@ Action.Excursion = new Action("Excursion", {
 });
 function adjustPockets() {
     let town = towns[7];
-    let base = town.getLevel("Excursion");
+    let base = Math.round(town.getLevel("Excursion") * adjustContentFromPrestige());
     town.totalPockets = Math.floor(base * getSkillMod("Spatiomancy", 1100, 1300, .5) + base * getSurveyBonus(town));
     view.requestUpdate("updateActionTooltips", null);
 }
 function adjustWarehouses() {
     let town = towns[7];
-    let base = town.getLevel("Excursion") / 2.5;
+    let base = Math.round(town.getLevel("Excursion") / 2.5 * adjustContentFromPrestige());
     town.totalWarehouses = Math.floor(base * getSkillMod("Spatiomancy", 1200, 1400, .5) + base * getSurveyBonus(town));
     view.requestUpdate("updateActionTooltips", null);
 }
 function adjustInsurance() {
     let town = towns[7];
-    let base = town.getLevel("Excursion") / 10;
+    let base = Math.round(town.getLevel("Excursion") / 10 * adjustContentFromPrestige());
     town.totalInsurance = Math.floor(base * getSkillMod("Spatiomancy", 1300, 1500, .5) + base * getSurveyBonus(town));
     view.requestUpdate("updateActionTooltips", null);
 }
@@ -7147,6 +7150,7 @@ Action.RestoreTime = new Action("Restore Time", {
     },
     finish() {
         addResource("reputation", 9999999);
+        completedCurrentGame();
     },
     story(completed) {
         unlockGlobalStory(12);
@@ -7156,3 +7160,13 @@ Action.RestoreTime = new Action("Restore Time", {
 const actionsWithGoldCost = Object.values(Action).filter(
     action => action.goldCost !== undefined
 );
+
+
+// Prestige Functions
+function adjustContentFromPrestige() {
+    return Math.pow(PRESTIGE_SPATIOMANCY_BASE, getBuffLevel("PrestigeSpatiomancy"))
+}
+
+function adjustGoldCostFromPrestige() {
+    return Math.pow(PRESTIGE_BARTERING_BASE, getBuffLevel("PrestigeBartering"))
+}

@@ -1,5 +1,14 @@
 "use strict";
 
+// Constants used as the base for Prestige exponential bonuses.
+const PRESTIGE_COMBAT_BASE       = 1.20;
+const PRESTIGE_PHYSICAL_BASE     = 1.20;
+const PRESTIGE_MENTAL_BASE       = 1.20;
+const PRESTIGE_BARTERING_BASE    = 1.10;
+const PRESTIGE_SPATIOMANCY_BASE  = 1.10;
+const PRESTIGE_CHRONOMANCY_BASE  = 1.05;
+const PRESTIGE_EXP_OVERFLOW_BASE = 1.00222;
+
 function Actions() {
     this.current = [];
     this.next = [];
@@ -301,9 +310,10 @@ function calcTalentMult(talent) {
 function getMaxTicksForAction(action) {
     let maxTicks = Number.MAX_SAFE_INTEGER;
     const expMultiplier = action.expMult * (action.manaCost() / action.adjustedTicks);
-    for (const stat in action.stats) {
+    const overFlow=Math.pow(PRESTIGE_EXP_OVERFLOW_BASE, getBuffLevel("PrestigeExpOverflow")) - 1;
+    for (const stat in stats) {
         const expToNext = getExpToLevel(stat);
-        const statMultiplier = expMultiplier * action.stats[stat] * getTotalBonusXP(stat);
+        const statMultiplier = expMultiplier * ((action.stats[stat]??0)+overFlow) * getTotalBonusXP(stat);
         maxTicks = Math.min(maxTicks, Math.ceil(expToNext / statMultiplier));
     }
     return maxTicks;
@@ -311,8 +321,11 @@ function getMaxTicksForAction(action) {
 
 function addExpFromAction(action, manaCount) {
     const adjustedExp = manaCount * action.expMult * (action.manaCost() / action.adjustedTicks);
-    for (const stat in action.stats) {
-        const expToAdd = action.stats[stat] * adjustedExp * getTotalBonusXP(stat);
+    const overFlow=Math.pow(PRESTIGE_EXP_OVERFLOW_BASE, getBuffLevel("PrestigeExpOverflow")) - 1;
+    for (const stat in stats) {
+        const expToAdd = ((action.stats[stat]??0)+overFlow) * adjustedExp * getTotalBonusXP(stat);
+
+        // Used for updating the menus when hovering over a completed item in the actionList
         const statExp = `statExp${stat}`;
         if (!action[statExp]) {
             action[statExp] = 0;
