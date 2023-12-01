@@ -739,8 +739,24 @@ input[type="number"] {
 
 .t-dark {
     filter: invert(1) hue-rotate(180deg);
+    filter: url(#inversion2);
     background: #111;
     color: #222;
+}
+.t-dark.invertrotate {
+    filter: invert(1) hue-rotate(180deg);
+}
+.t-dark.inversion1 {
+    filter: url(#inversion1);
+}
+.t-dark.inversion2 {
+    filter: url(#inversion2);
+}
+.t-dark.inversion3 {
+    filter: url(#inversion3);
+}
+.t-dark.inversion4 {
+    filter: url(#inversion4);
 }
 
 .t-dark .buffmaxinput {
