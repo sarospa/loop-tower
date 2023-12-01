@@ -488,6 +488,7 @@ const options = {
     speedIncrease50x: false,
     speedIncrease100x: false,
     speedIncreaseCustom: 5,
+    speedIncreaseBackground: -1,
     highlightNew: true,
     statColors: false,
     pingOnPause: false,
@@ -514,6 +515,7 @@ const isStandardOption = {
     speedIncrease50x: true,
     speedIncrease100x: true,
     speedIncreaseCustom: true,
+    speedIncreaseBackground: false,
     highlightNew: true,
     statColors: true,
     pingOnPause: true,
@@ -549,7 +551,7 @@ function setOption(option, value) {
     }
     options[option] = value;
     if (option === "updateRate") recalcInterval(options.updateRate);
-    if (bonusSpeed > 1 && ["speedIncrease10x", "speedIncrease20x", "speedIncreaseCustom"].includes(option)) {
+    if (isBonusActive() && ["speedIncrease10x", "speedIncrease20x", "speedIncreaseCustom", "speedIncreaseBackground"].includes(option)) {
         checkExtraSpeed()
     }
 }
@@ -557,9 +559,9 @@ function setOption(option, value) {
 function loadOption(option, value) {
     const input = document.getElementById(`${option}Input`);
     if (!input) return;
-    if (option === "updateRate") input.value = value;
-    if (option === "autosaveRate") input.value = value;
-    else input.checked = value;
+    if (input.type === "checkbox") input.checked = value;
+    else if (option === "speedIncreaseBackground" && (typeof value !== "number" || isNaN(value) || value < 0)) input.value = "";
+    else input.value = value;
 }
 
 function showPauseNotification(message) {
@@ -842,7 +844,7 @@ function load(inChallenge) {
     } else {
         const optionsToLoad = {...toLoad.options, ...toLoad.extraOptions};
         for (const option in optionsToLoad) {
-            options[option] = toLoad.options[option];
+            options[option] = optionsToLoad[option];
         }
         if ("updateRate" in optionsToLoad && window.localStorage["updateRate"]) {
             options.updateRate = window.localStorage["updateRate"];
@@ -886,7 +888,7 @@ function load(inChallenge) {
 
     for (const option in options) {
         // Not sure how to remove old UI elements yet without breaking them from past saves. Using this as "temp" fix
-        if (!["speedIncrease50x", "speedIncrease100x", "speedIncreaseCustom"].includes(option)) 
+        if (!["speedIncrease50x", "speedIncrease100x"].includes(option)) 
             loadOption(option, options[option]); 
     }
     storyShowing = toLoad.storyShowing === undefined ? 0 : toLoad.storyShowing;

@@ -160,8 +160,8 @@ function tick() {
         gameTicksLeft -= timeSpent * 1000;
 
         // spend bonus time for this segment
-        if (bonusSpeed > 1) {
-            addOffline(-Math.abs(timeSpent * (bonusSpeed - 1)) * 1000);
+        if (isBonusActive()) {
+            addOffline(-timeSpent * (bonusSpeed - 1) * 1000);
         }
 
         refreshDungeons(manaSpent);
@@ -718,9 +718,22 @@ function toggleOffline() {
     view.requestUpdate("updateTime", null);
 }
 
+function isBonusActive() {
+    return bonusSpeed !== 1;
+}
+
 function checkExtraSpeed() {
     bonusSpeed = 5;
     if (options.speedIncrease10x === true) { bonusSpeed = 10};
     if (options.speedIncrease20x === true) { bonusSpeed = 20};
     if (bonusSpeed < options.speedIncreaseCustom) { bonusSpeed = options.speedIncreaseCustom };
+    if (typeof options.speedIncreaseBackground === "number" && !isNaN(options.speedIncreaseBackground) && options.speedIncreaseBackground >= 0 && !document.hasFocus()) {
+        if (options.speedIncreaseBackground === 1) {
+            bonusSpeed = 1.00001;
+        } else if (options.speedIncreaseBackground === 0) {
+            bonusSpeed = 0.0000001; // let's avoid any divide by zero errors shall we
+        } else {
+            bonusSpeed = options.speedIncreaseBackground;
+        }
+    }
 }

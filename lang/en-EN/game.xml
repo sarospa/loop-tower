@@ -9,6 +9,7 @@
             <version verNum="3.P16.4"><![CDATA[
             <b> Nov 30th, 2023</b>
             • Merged in WaylonJ's prestige version. Save compatibility is now only guaranteed with the prestige fork, not the lloyd fork.<br>
+            • Added "Background Bonus Speed" option. If set to a number >= 0, bonus time will be used at this rate instead of the normal bonus rate whenever the tab is running in the background.<br>
             ]]></version>
             <version verNum="3.0.3"><![CDATA[
             <b> Nov 30th, 2023</b>
@@ -444,6 +445,7 @@
             <speedIncrease10x_text>10x Bonus Speed</speedIncrease10x_text>
             <speedIncrease20x_text>20x Bonus Speed</speedIncrease20x_text>
             <speedIncreaseCustom_text> Custom Bonus Speed </speedIncreaseCustom_text>
+            <speedIncreaseBackground_text>Background Bonus Speed</speedIncreaseBackground_text>
             <hotkeys_tooltip><![CDATA[
                 Spacebar: Pause/play<br>
                 R: Restart<br>
