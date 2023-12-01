@@ -136,6 +136,16 @@ Action.prototype.teachesSkill = function(skill) {
     return exp > 0;
 }
 
+Action.prototype.canMakeProgress = function(offset) {
+    // some actions with a tickProgress (like Small Dungeon) will throw an exception if tickProgress
+    // is called after they're already complete. Turn that into a boolean.
+    try {
+        return this.tickProgress(offset) > 0;
+    } catch {
+        return false;
+    }
+}
+
 // same as Action, but contains shared code to load segment names for multipart actions.
 // (constructor takes number of segments as a second argument)
 function MultipartAction(name, extras) {

@@ -108,12 +108,14 @@ function tick() {
         return;
     }
 
+    const deadline = performance.now() + 1000 / window.fps; // don't go past the current frame update time
+
     // convert "gameTicksLeft" (actually milliseconds) into equivalent base-mana count, aka actual game ticks
     // including the gameSpeed multiplier here because it is effectively constant over the course of a single
     // update, and it affects how many actual game ticks pass in a given span of realtime.
     let baseManaToBurn = Math.floor(gameTicksLeft * baseManaPerSecond * gameSpeed / 1000);
 
-    while (baseManaToBurn * bonusSpeed >= 1) {
+    while (baseManaToBurn * bonusSpeed >= 1 && performance.now() < deadline) {
         if (stop) {
             break;
         }

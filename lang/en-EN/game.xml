@@ -9,6 +9,11 @@
                 <title>Changelog</title>
                 <version_prefix>Version</version_prefix>
             </meta>
+            <version verNum="3.P16.5"><![CDATA[
+            <b> Dec 1st, 2023</b>
+            • Fixed a bug where dungeon actions would break if the last floor was completed in under a tick. (Thanks to slabdrill from the discord for the report and the repro!)<br>
+            • The tick driver will not attempt to spend more than one frame's worth of time processing actions, no matter how high you set your bonus multiplier.<br>
+            ]]></version>
             <version verNum="3.P16.4"><![CDATA[
             <b> Nov 30th, 2023</b>
             • Merged in WaylonJ's prestige version. Save compatibility is now only guaranteed with the prestige fork, not the lloyd fork.<br>

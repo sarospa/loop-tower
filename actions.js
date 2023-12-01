@@ -60,7 +60,7 @@ function Actions() {
             const tickMultiplier = (curAction.manaCost() / curAction.adjustedTicks);
             let partUpdateRequired = false;
 
-            while (manaLeft > 0.01) {
+            while (manaLeft > 0.01 && curAction.canMakeProgress(segment)) {
                 //const toAdd = curAction.tickProgress(segment) * (curAction.manaCost() / curAction.adjustedTicks);
                 const progressMultiplier = curAction.tickProgress(segment) * tickMultiplier;
                 const toAdd = Math.min(
