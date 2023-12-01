@@ -495,7 +495,12 @@
             <div class="button" onclick="closeTutorial()">OK</div>
         </div>
     </div>
-
+    
+    <script>
+        if (localStorage["latestTheme"]) {
+            document.body.className = `t-${localStorage["latestTheme"]}`;
+        }
+    </script>
     <script src="helpers.js"></script>
     <script src="actionList.js"></script>
     <script src="localization.js"></script>

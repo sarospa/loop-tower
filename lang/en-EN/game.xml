@@ -11,6 +11,7 @@
             • Merged in WaylonJ's prestige version. Save compatibility is now only guaranteed with the prestige fork, not the lloyd fork.<br>
             • Added "Background Bonus Speed" option. If set to a number >= 0, bonus time will be used at this rate instead of the normal bonus rate whenever the tab is running in the background.<br>
             • New color inversion filter for Dark theme, maintains colors better.<br>
+            • Set the theme before loading any other JavaScript to avoid a flash of white when reloading.<br>
             ]]></version>
             <version verNum="3.0.3"><![CDATA[
             <b> Nov 30th, 2023</b>

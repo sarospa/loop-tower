@@ -1256,6 +1256,7 @@ function View() {
         if (init) document.getElementById("themeInput").value = options.theme;
         options.theme = document.getElementById("themeInput").value;
         document.getElementById("theBody").className = `t-${options.theme}`;
+        localStorage["latestTheme"] = options.theme;
     };
 
     this.createTravelMenu = function() {
