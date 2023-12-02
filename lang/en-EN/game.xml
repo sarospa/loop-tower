@@ -9,6 +9,11 @@
                 <title>Changelog</title>
                 <version_prefix>Version</version_prefix>
             </meta>
+            <version verNum="3.P16.6"><![CDATA[
+            <b> Dec 2nd, 2023</b>
+            • Survey actions will no longer trigger "pause on complete" before reaching 100%. (Thanks to baldain from the discord!)<br>
+            • Survey actions will not consume resources once progress reaches 100%.<br>
+            ]]></version>
             <version verNum="3.P16.5"><![CDATA[
             <b> Dec 1st, 2023</b>
             • Fixed a bug where dungeon actions would break if the last floor was completed in under a tick. (Thanks to slabdrill from the discord for the report and the repro!)<br>

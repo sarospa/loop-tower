@@ -296,12 +296,13 @@ function SurveyAction(townNum) {
             return getExploreProgress() > 0;
         },
         finish() {
-            addResource("map", -1);
-            if (options.pauseOnComplete) pauseGame();
             if (towns[this.townNum].getLevel("Survey") != 100) {
+                addResource("map", -1);
                 addResource("completedMap", 1);
                 towns[this.townNum].finishProgress(this.varName, getExploreSkill());
                 view.requestUpdate("updateActionTooltips", null);    
+            } else if (options.pauseOnComplete) {
+                pauseGame(true, "Survey complete! (Game paused)");
             }
         }
     }

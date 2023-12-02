@@ -206,7 +206,7 @@ function stopGame() {
     document.getElementById("pausePlay").textContent = _txt("time_controls>play_button");
 }
 
-function pauseGame(ping) {
+function pauseGame(ping, message) {
     stop = !stop;
     view.requestUpdate("updateTime", null);
     view.requestUpdate("updateCurrentActionBar", actions.currentPos);
@@ -219,8 +219,13 @@ function pauseGame(ping) {
     if (!stop && (shouldRestart || timer >= timeNeeded)) {
         restart();
     } else if (ping) {
-        beep(250);
-        setTimeout(() => beep(250), 500);
+        if (options.pingOnPause) {
+            beep(250);
+            setTimeout(() => beep(250), 500);
+        }
+        if (options.notifyOnPause) {
+            showPauseNotification(message || "Game paused!");
+        }
     }
 }
 

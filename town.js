@@ -30,7 +30,7 @@ function Town(index) {
     this.finishProgress = function(varName, expGain) {
         // return if capped, for performance
         if (this[`exp${varName}`] === 505000) {
-            if (options.pauseOnComplete) pauseGame();
+            if (options.pauseOnComplete) pauseGame(true, "Progress complete! (Game paused)");
             else return;
         }
 
