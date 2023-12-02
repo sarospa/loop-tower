@@ -13,6 +13,7 @@
             <b> Dec 1st, 2023</b>
             • Fixed a bug where dungeon actions would break if the last floor was completed in under a tick. (Thanks to slabdrill from the discord for the report and the repro!)<br>
             • The tick driver will not attempt to spend more than one frame's worth of time processing actions, no matter how high you set your bonus multiplier.<br>
+            • Experimental implementation of a responsive UI, can be enabled in Options.<br>
             ]]></version>
             <version verNum="3.P16.4"><![CDATA[
             <b> Nov 30th, 2023</b>
@@ -447,6 +448,7 @@
             </discord>
             <adblock_warning>WARNING: For some reason, Adblock Plus can cause massive lag. This game won't ever have ads, so if your game is freezing frequently, please disable it on this page.
             </adblock_warning>
+            <responsive_ui>Experimental responsive UI</responsive_ui>
             <highlight_new>Highlight new actions</highlight_new>
             <stat_colors>Use stat colors on menu (requires save and refresh)</stat_colors>
             <pause_audio_cue>Ping on pause</pause_audio_cue>

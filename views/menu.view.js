@@ -92,6 +92,9 @@ Views.registerView("menu", {
                 ${Views.menu.htmlThemeMenu()}
                 ${Object.keys(Localization.supportedLang).length > 1 ? Views.menu.htmlLocalizationMenu() : ""}
                 ${_txt("menu>options>adblock_warning")}<br>
+                <input id='responsiveUIInput' type='checkbox' onchange='setOption("responsiveUI", this.checked)'/>
+                    <label for='responsiveUIInput'>${_txt("menu>options>responsive_ui")}</label>
+                <br>
                 <input id='highlightNewInput' type='checkbox' onchange='setOption("highlightNew", this.checked)'/>
                     <label for='highlightNewInput'>${_txt("menu>options>highlight_new")}</label>
                 <br>

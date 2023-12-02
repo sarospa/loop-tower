@@ -477,6 +477,7 @@ let pauseNotification = null;
 
 const options = {
     theme: "normal",
+    responsiveUI: false,
     keepCurrentList: false,
     repeatLastAction: false,
     addActionsToTop: false,
@@ -504,6 +505,7 @@ const options = {
 /** @satisfies {{[K in keyof typeof options]: boolean}} */
 const isStandardOption = {
     theme: true,
+    responsiveUI: false,
     keepCurrentList: true,
     repeatLastAction: true,
     addActionsToTop: true,
@@ -551,6 +553,8 @@ function setOption(option, value) {
     }
     options[option] = value;
     if (option === "updateRate") recalcInterval(options.updateRate);
+    else if (option === "responsiveUI") value ? document.documentElement.classList.add("responsive") : document.documentElement.classList.remove("responsive");
+
     if (isBonusActive() && ["speedIncrease10x", "speedIncrease20x", "speedIncreaseCustom", "speedIncreaseBackground"].includes(option)) {
         checkExtraSpeed()
     }
@@ -562,6 +566,7 @@ function loadOption(option, value) {
     if (input.type === "checkbox") input.checked = value;
     else if (option === "speedIncreaseBackground" && (typeof value !== "number" || isNaN(value) || value < 0)) input.value = "";
     else input.value = value;
+    if (option === "responsiveUI") value ? document.documentElement.classList.add("responsive") : document.documentElement.classList.remove("responsive");
 }
 
 function showPauseNotification(message) {

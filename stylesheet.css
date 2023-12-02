@@ -754,6 +754,127 @@ input[type="number"] {
     background: #e4ece5;
 }
 
+/* responsive layout */
+
+:root.responsive {
+    height: 100%;
+}
+
+.responsive body {
+    display:grid;
+    grid:
+        "header header header" max-content
+        "actions town stats" 1fr
+        / minmax(350px, 1fr) minmax(535px, 2fr) minmax(316px, 1fr)
+        ;
+    justify-items: stretch;
+}
+
+.responsive #timeInfo {
+    grid-area: header;
+    display: grid;
+    grid:
+        "time time time" 10px
+        "menu resources ." 16px
+        "menu controls ." auto
+        / 1fr max-content 1fr;
+    gap: 2px;
+}
+
+.responsive body > br, .responsive #timeInfo > br {
+    display: none;
+}
+
+.responsive #timeBarContainer {
+    grid-area: time;
+}
+
+.responsive #menu {
+    grid-area: menu;
+    text-align: left;
+    min-height: 30px;
+    height: auto !important;
+    margin-right: 0 !important;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.responsive #trackedResources {
+    grid-area: resources;
+}
+
+.responsive #timeControls {
+    grid-area: controls;
+}
+
+.responsive #statsColumn, .responsive #actionsColumn, .responsive #townColumn {
+    width: auto !important;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.responsive #statsColumn {
+  grid-area: stats;  
+}  
+
+.responsive #statsWindow > .showthat > .showthis {
+    right:0%;
+}
+
+.responsive #buffList {
+    position: relative;
+}
+
+.responsive #buffList > .showthat > .showthis {
+    bottom:100%;
+}
+
+.responsive #actionsColumn {
+    grid-area: actions;
+    margin: 0 1em 1em;
+    overflow: visible;
+}
+
+.responsive #actionList {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.responsive #actionList > *:not(.showthat, #actionChanges, #expandableList) {
+    display: none;
+}
+
+.responsive #townColumn {
+    grid-area: town;
+}
+
+.responsive .townStatContainer, .responsive .townInfoContainer {
+    width: auto;
+    display: block;
+}
+
+.responsive #curActionsList, .responsive #nextActionsList {
+    position: absolute;
+    inset: 0;
+    padding-bottom: 4ex;
+    max-height: none !important;
+    width: auto;
+}
+
+.responsive #expandableList {
+    height:auto !important;
+    flex-grow: 1;
+}
+
+.responsive .actionOptions {
+    min-height: none;
+}
+
+.responsive #trackedResources {
+    margin-bottom: 0;
+}
+
 /* dark theme */
 
 .t-dark {
