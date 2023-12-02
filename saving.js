@@ -496,6 +496,7 @@ const options = {
     notifyOnPause: false,
     autoMaxTraining: false,
     hotkeys: true,
+    predictor:  false,
     updateRate: 50,
     autosaveRate: 30,
 };
@@ -524,6 +525,7 @@ const isStandardOption = {
     notifyOnPause: false,
     autoMaxTraining: true,
     hotkeys: true,
+    predictor: false,
     updateRate: true,
     autosaveRate: true,
 };
@@ -554,6 +556,7 @@ function setOption(option, value) {
     options[option] = value;
     if (option === "updateRate") recalcInterval(options.updateRate);
     else if (option === "responsiveUI") value ? document.documentElement.classList.add("responsive") : document.documentElement.classList.remove("responsive");
+    else if (option === "predictor") localStorage["loadPredictor"] = value;
 
     if (isBonusActive() && ["speedIncrease10x", "speedIncrease20x", "speedIncreaseCustom", "speedIncreaseBackground"].includes(option)) {
         checkExtraSpeed()
@@ -567,6 +570,7 @@ function loadOption(option, value) {
     else if (option === "speedIncreaseBackground" && (typeof value !== "number" || isNaN(value) || value < 0)) input.value = "";
     else input.value = value;
     if (option === "responsiveUI") value ? document.documentElement.classList.add("responsive") : document.documentElement.classList.remove("responsive");
+    else if (option === "predictor") localStorage["loadPredictor"] = value;
 }
 
 function showPauseNotification(message) {

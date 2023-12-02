@@ -115,6 +115,9 @@ Views.registerView("menu", {
                     <div class='showthis'>${_txt("menu>options>hotkeys_tooltip")}</div>
                 </label>
                 <br>
+                <input id='predictorInput' type='checkbox' onchange='setOption("predictor", this.checked)'/>
+                    <label for='predictorInput'>${_txt("menu>options>predictor")}</label>
+                <br>
                 <div class='control'>
                     <input type='checkbox' id='speedIncrease10xInput' onchange='setOption("speedIncrease10x", this.checked)'>
                     <label for='speedIncrease10xInput'>${_txt("menu>options>speedIncrease10x_text")}</label>

@@ -14,6 +14,7 @@
             • Fixed a bug where dungeon actions would break if the last floor was completed in under a tick. (Thanks to slabdrill from the discord for the report and the repro!)<br>
             • The tick driver will not attempt to spend more than one frame's worth of time processing actions, no matter how high you set your bonus multiplier.<br>
             • Experimental implementation of a responsive UI, can be enabled in Options.<br>
+            • Added the predictor script, which can be enabled in the Options menu.<br>
             ]]></version>
             <version verNum="3.P16.4"><![CDATA[
             <b> Nov 30th, 2023</b>
@@ -455,6 +456,7 @@
             <pause_notify_cue>Notify on pause</pause_notify_cue>
             <auto_max_training>Max All Training Actions on Training cap increase</auto_max_training>
             <hotkeys>Hotkeys</hotkeys>
+            <predictor>Load Predictor (requires save and refresh)</predictor>
             <speedIncrease10x_text>10x Bonus Speed</speedIncrease10x_text>
             <speedIncrease20x_text>20x Bonus Speed</speedIncrease20x_text>
             <speedIncreaseCustom_text> Custom Bonus Speed </speedIncreaseCustom_text>
