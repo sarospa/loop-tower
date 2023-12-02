@@ -865,6 +865,7 @@ input[type="number"] {
 .responsive #expandableList {
     height:auto !important;
     flex-grow: 1;
+    display: flex;
 }
 
 .responsive .actionOptions {

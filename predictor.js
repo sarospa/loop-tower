@@ -495,66 +495,12 @@ const Koviko = {
      * @memberof Koviko.Predictor
      */
     initStyle() {
-      // Get the style element if it already exists for some reason
-      let style = document.getElementById('koviko');
+      // The CSS is in predictor.css now, we just need to add an enabling class
+      document.documentElement.classList.add("usePredictor");
 
-      // Build the CSS
-      let css = `
-      .nextActionContainer { width: auto!important; padding-left:4px; padding-right: 4px; grid-template: "a b . c" / auto auto 1fr auto }
-      .nextActionContainer[style~='flex;'] {display: grid!important;}
-      .nextActionContainer > div:first-child { width: 70px; }
-      .nextActionContainer > div:nth-child(2) { width: 120px; text-align: right; grid-area: c }
-      .koviko.valid, .koviko.invalid { grid-area: b;pointer-events:auto }
-      #nextActionsList{height:100%!important; overflow-y:scroll;}
-      #curActionsListContainer{width:120px!important; z-index: 100;}
-      #nextActionsList:hover{margin-left:-40%;padding-left:40%}
-      #actionList>div:nth-child(2){left: 53px !important}
-      #nextActionsList.disabled ul.koviko{display:none;}
-      .nextActionContainer:nth-child(1n+9) .showthis {bottom: 5px; top: unset;}
-      span.koviko{font-weight:bold;color:#8293ff;}
-      div.koviko{top:-5px;left:auto;right:100%}
-      ul.koviko{list-style:none;margin:0;padding:0;pointer-events:none;display:inline;}
-      ul.koviko li{display:inline-block;margin: 0 2px;font-weight:bold;font-size:90%}
-      ul.koviko.invalid li{color:#c00!important}
-      ul.koviko.expired li, .expired .koviko{color:#777!important}
-      ul.koviko .mana{color:#8293ff}
-      ul.koviko .manaBought{color:#6371ca}
-      ul.koviko .gold{color:#d09249}
-      ul.koviko .rep{color:#b06f37}
-      ul.koviko .soul{color:#9d67cd}
-      ul.koviko .herbs{color:#4caf50}
-      ul.koviko .hide{color:#663300}
-      ul.koviko .potions{color:#00b2ee}
-      ul.koviko .lpotions{color:#436ef7}
-      ul.koviko .blood{color:#8b0000}
-      ul.koviko .crafts{color:#777777}
-      ul.koviko .adventures{color:#191919}
-      ul.koviko .ritual{color:#ff1493}
-      ul.koviko .artifacts{color:#ffd700}
-      ul.koviko .mind{color:#006400}
-      ul.koviko .stone{color:#ff0000}
-      ul.koviko .heroism{color:#ff0000}
-      ul.koviko .power{color:#0000ff}
-      ul.koviko .map{color:#2ea9bd}
-      ul.koviko .completedMap{color:#45e5ff}
-      ul.koviko .finLoops{color:#777777}
-      ul.koviko .heart{color:#ca0b0b}
-      ul.koviko .giants{color:#6ba9c4}
-      `;
+      // and also do this I guess
       document.getElementById("actionsColumn").style.width="500px";
       document.getElementById("nextActionsListContainer").style.width="380px";
-
-      // Create the <style> element if it doesn't already exist
-      if (!style || style.tagName.toLowerCase() !== 'style') {
-        style = document.createElement('style');
-        style.type = 'text/css';
-        style.id = 'koviko';
-        document.head.appendChild(style);
-      }
-
-      // Clean out the <style> element and append the correct CSS
-      for (; style.lastChild; style.removeChild(style.lastChild));
-      style.appendChild(document.createTextNode(css));
     }
 
     /**
