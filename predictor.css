@@ -3,7 +3,7 @@
 .usePredictor .nextActionContainer > div:first-child { width: 70px; }
 .usePredictor .nextActionContainer > div:nth-child(2) { width: 120px; text-align: right; grid-area: c }
 .usePredictor .koviko.valid, .usePredictor .koviko.invalid { grid-area: b;pointer-events:auto }
-.usePredictor #nextActionsList{height:100%!important; overflow-y:scroll;}
+:root:not(.responsive) .usePredictor #nextActionsList{height:100%!important; overflow-y:scroll;}
 .usePredictor #curActionsListContainer{width:120px!important; z-index: 100;}
 .usePredictor #nextActionsList:hover{margin-left:-40%;padding-left:40%}
 .usePredictor #actionList>div:nth-child(2){left: 53px !important}

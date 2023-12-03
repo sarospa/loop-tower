@@ -9,6 +9,11 @@
                 <title>Changelog</title>
                 <version_prefix>Version</version_prefix>
             </meta>
+            <version verNum="3.P16.7"><![CDATA[
+            <b> Dec 3rd, 2023</b>
+            • Dark theme now has different variants to choose from, representing different color filter methods, so you can choose which works best for your computer/monitor/eyes/taste. Thank you to zenonline for making the request!<br>
+            • Enabling the predictor no longer causes the action list to overflow in the experimental responsive UI. (This is part of why it's called "experimental".)<br>
+            ]]></version>
             <version verNum="3.P16.6"><![CDATA[
             <b> Dec 2nd, 2023</b>
             • Survey actions will no longer trigger "pause on complete" before reaching 100%. (Thanks to baldain from the discord!)<br>
@@ -438,11 +443,20 @@
             </meta>
             <localization_title>Language</localization_title>
             <theme_title>Theme</theme_title>
+            <theme_variant_title>Theme Variant</theme_variant_title>
             <theme>
                 <normal>Normal</normal>
             </theme>
             <theme>
                 <dark>Dark</dark>
+                <variants>
+                    <inverted>Classic</inverted>
+                    <invertrotate>Rotated Classic</invertrotate>
+                    <inversion1>Matrix 1</inversion1>
+                    <inversion2>Matrix 2</inversion2>
+                    <inversion3>Matrix 3</inversion3>
+                    <inversion4>Matrix 4</inversion4>
+                </variants>
             </theme>
             <theme>
                 <cubic>Cubic</cubic>

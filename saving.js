@@ -477,6 +477,7 @@ let pauseNotification = null;
 
 const options = {
     theme: "normal",
+    themeVariant: "",
     responsiveUI: false,
     keepCurrentList: false,
     repeatLastAction: false,
@@ -506,6 +507,7 @@ const options = {
 /** @satisfies {{[K in keyof typeof options]: boolean}} */
 const isStandardOption = {
     theme: true,
+    themeVariant: false,
     responsiveUI: false,
     keepCurrentList: true,
     repeatLastAction: true,

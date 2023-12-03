@@ -161,6 +161,13 @@ Views.registerView("menu", {
             html += `<option value='${themeList[index]}'>${$(theme).find(themeList[index]).text()}</option>`;
         });
         html += "</select><br>";
+        html += `<div class='block' id='themeVariantSection'>${_txt("menu>options>theme_variant_title")}: <select id='themeVariantInput' onchange='view.changeTheme();'>`;
+        $(themes).each((index, theme) => {
+            $(theme).find("variants>*").each((vindex, variant) => {
+                html += `<option class='variant-${themeList[index]}' value='${variant.tagName}'>${$(variant).text()}</option>`;
+            });
+        });
+        html += "</select></div>"
         return html;
     },
     htmlChallengeMenu() {

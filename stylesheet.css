@@ -2,6 +2,10 @@ div {
     display: inline-block;
 }
 
+div.block {
+    display: block;
+}
+
 body {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -883,6 +887,9 @@ input[type="number"] {
     filter: url(#inversion2);
     background: #111;
     color: #222;
+}
+.t-dark.inverted {
+    filter: invert(1);
 }
 .t-dark.invertrotate {
     filter: invert(1) hue-rotate(180deg);

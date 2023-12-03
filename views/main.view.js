@@ -1253,10 +1253,22 @@ function View() {
     };
 
     this.changeTheme = function(init) {
-        if (init) document.getElementById("themeInput").value = options.theme;
-        options.theme = document.getElementById("themeInput").value;
-        document.getElementById("theBody").className = `t-${options.theme}`;
-        localStorage["latestTheme"] = options.theme;
+        const themeInput = document.getElementById("themeInput");
+        const themeVariantInput = document.getElementById("themeVariantInput");
+        if (init) themeInput.value = options.theme;
+        if (init) themeVariantInput.value = options.themeVariant;
+        options.theme = themeInput.value;
+        options.themeVariant = themeVariantInput.value;
+        const variants = $(themeVariantInput).find(`.variant-${options.theme}`);
+        if (variants.length) {
+            document.getElementById("themeVariantSection").style.display = "";
+            $(themeVariantInput).find("option").css("display", "none");
+            variants.css("display", "");
+        } else {
+            document.getElementById("themeVariantSection").style.display = "none";
+        }
+        document.getElementById("theBody").className = `t-${options.theme} ${options.themeVariant}`;
+        localStorage["latestTheme"] = `${options.theme} ${options.themeVariant}`;
     };
 
     this.createTravelMenu = function() {
