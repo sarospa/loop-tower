@@ -14,7 +14,8 @@
             • Dark theme now has different variants to choose from, representing different color filter methods, so you can choose which works best for your computer/monitor/eyes/taste. Thank you to zenonline for making the request!<br>
             • Enabling the predictor no longer causes the action list to overflow in the experimental responsive UI. (This is part of why it's called "experimental".)<br>
             • The game will no longer attempt to keep an empty action list active, even if the checkbox is checked.<br>
-            • Switched the default dark mode variant to one that's better for legibility, especially with the predictor. Previous default was "Matrix 2", now is "Matrix 4".<br>
+            • Switched the default dark mode variant to one that's better for legibility, especially with the predictor. (Previous default was "Matrix 2", now is "Matrix 4".)<br>
+            • If the "Background Bonus Speed" option is set to a value less than 1, it will apply in the background regardless of whether or not bonus is active.<br>
             ]]></version>
             <version verNum="3.P16.6"><![CDATA[
             <b> Dec 2nd, 2023</b>
@@ -482,6 +483,7 @@
             <speedIncrease20x_text>20x Bonus Speed</speedIncrease20x_text>
             <speedIncreaseCustom_text> Custom Bonus Speed </speedIncreaseCustom_text>
             <speedIncreaseBackground_text>Background Bonus Speed</speedIncreaseBackground_text>
+            <speedIncreaseBackground_warning>(This will apply even if bonus is inactive. To make the game run at full speed in the background, unset this or set it to 1 or greater)</speedIncreaseBackground_warning>
             <hotkeys_tooltip><![CDATA[
                 Spacebar: Pause/play<br>
                 R: Restart<br>

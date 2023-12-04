@@ -442,6 +442,7 @@ const curDate = new Date();
 let totalOfflineMs = 0;
 // eslint-disable-next-line prefer-const
 let bonusSpeed = 1;
+let bonusActive = false;
 const offlineRatio = 1;
 let totals = {
     time: 0,
@@ -532,37 +533,62 @@ const isStandardOption = {
     autosaveRate: true,
 };
 
-function setOption(option, value) {
-    if (option === "notifyOnPause" && value) {
-        const input = document.getElementById("notifyOnPauseInput");
-        if (Notification && Notification.permission === "default") {
-            input.checked = false;
-            input.indeterminate = true;
-            Notification.requestPermission(_ => {
+/** @type {{[K in keyof typeof options]?: (value: any, init: boolean) => void}} */
+const optionValueHandlers = {
+    notifyOnPause(value, init) {
+        const input = /** @type {HTMLInputElement} */(document.getElementById("notifyOnPauseInput"));
+        if (value && !init) {
+            if (Notification && Notification.permission === "default") {
+                input.checked = false;
+                input.indeterminate = true;
+                Notification.requestPermission(_ => {
+                    input.indeterminate = false;
+                    input.checked = value;
+                    setOption("notifyOnPause", value);
+                });
+            } else if (Notification && Notification.permission === "denied") {
+                input.checked = false;
                 input.indeterminate = false;
-                input.checked = value;
-                setOption(option, value);
-            });
-            return;
-        } else if (Notification && Notification.permission === "denied") {
+                alert("Notification permission denied. You may need to allow this site to send you notifications manually.");
+            } else if (!Notification || Notification.permission !== "granted") {
+                input.checked = false;
+                input.indeterminate = false;
+            }
+        } else if (!value) {
+            options.notifyOnPause = false;
             input.checked = false;
             input.indeterminate = false;
-            alert("Notification permission denied. You may need to allow this site to send you notifications manually.");
-            return;
-        } else if (!Notification || Notification.permission !== "granted") {
-            input.checked = false;
-            input.indeterminate = false;
-            return;
+        }
+    },
+    updateRate(value, init) {
+        if (!init) recalcInterval(value);
+    },
+    responsiveUI(value, init) {
+        if (value) {
+            document.documentElement.classList.add("responsive");
+        } else {
+            document.documentElement.classList.remove("responsive");
+        }
+    },
+    predictor(value, init) {
+        localStorage["loadPredictor"] = value || "";
+    },
+    speedIncrease10x: checkExtraSpeed,
+    speedIncrease20x: checkExtraSpeed,
+    speedIncreaseCustom: checkExtraSpeed,
+    speedIncreaseBackground(value, init) {
+        checkExtraSpeed();
+        if (typeof value === "number" && !isNaN(value) && value < 1) {
+            document.getElementById("speedIncreaseBackgroundWarning").style.display = "";
+        } else {
+            document.getElementById("speedIncreaseBackgroundWarning").style.display = "none";
         }
     }
-    options[option] = value;
-    if (option === "updateRate") recalcInterval(options.updateRate);
-    else if (option === "responsiveUI") value ? document.documentElement.classList.add("responsive") : document.documentElement.classList.remove("responsive");
-    else if (option === "predictor") localStorage["loadPredictor"] = value || "";
+};
 
-    if (isBonusActive() && ["speedIncrease10x", "speedIncrease20x", "speedIncreaseCustom", "speedIncreaseBackground"].includes(option)) {
-        checkExtraSpeed()
-    }
+function setOption(option, value) {
+    options[option] = value;
+    optionValueHandlers[option]?.(value, false);
 }
 
 function loadOption(option, value) {
@@ -571,8 +597,7 @@ function loadOption(option, value) {
     if (input.type === "checkbox") input.checked = value;
     else if (option === "speedIncreaseBackground" && (typeof value !== "number" || isNaN(value) || value < 0)) input.value = "";
     else input.value = value;
-    if (option === "responsiveUI") value ? document.documentElement.classList.add("responsive") : document.documentElement.classList.remove("responsive");
-    else if (option === "predictor") localStorage["loadPredictor"] = value || "";
+    optionValueHandlers[option]?.(value, true);
 }
 
 function showPauseNotification(message) {

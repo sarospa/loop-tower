@@ -127,10 +127,12 @@ function tick() {
         // of our mana we're using in this cycle
         let totalMultiplier = 1;
 
+        manaAvailable *= bonusSpeed;
+        totalMultiplier *= bonusSpeed;
+
         if (bonusSpeed > 1) {
             // can't spend more mana than offline time available
-            manaAvailable = Math.min(manaAvailable * bonusSpeed, Math.ceil(totalOfflineMs * baseManaPerSecond * gameSpeed * bonusSpeed / 1000));
-            totalMultiplier *= bonusSpeed;
+            manaAvailable = Math.min(manaAvailable, Math.ceil(totalOfflineMs * baseManaPerSecond * gameSpeed * bonusSpeed / 1000));
         }
 
         // next, roll in the multiplier from skills/etc
@@ -162,7 +164,7 @@ function tick() {
         gameTicksLeft -= timeSpent * 1000;
 
         // spend bonus time for this segment
-        if (isBonusActive()) {
+        if (bonusSpeed !== 1) {
             addOffline(-timeSpent * (bonusSpeed - 1) * 1000);
         }
 
@@ -715,26 +717,25 @@ function addOffline(num) {
 
 function toggleOffline() {
     if (totalOfflineMs === 0) return;
-    if (bonusSpeed === 1) {
+    if (!isBonusActive()) {
+        bonusSpeed = 5;
+        bonusActive = true;
         checkExtraSpeed();
         document.getElementById("isBonusOn").textContent = _txt("time_controls>bonus_seconds>state>on");
     } else {
         bonusSpeed = 1;
+        bonusActive = false;
         document.getElementById("isBonusOn").textContent = _txt("time_controls>bonus_seconds>state>off");
     }
     view.requestUpdate("updateTime", null);
 }
 
 function isBonusActive() {
-    return bonusSpeed !== 1;
+    return bonusActive && bonusSpeed !== 1;
 }
 
 function checkExtraSpeed() {
-    bonusSpeed = 5;
-    if (options.speedIncrease10x === true) { bonusSpeed = 10};
-    if (options.speedIncrease20x === true) { bonusSpeed = 20};
-    if (bonusSpeed < options.speedIncreaseCustom) { bonusSpeed = options.speedIncreaseCustom };
-    if (typeof options.speedIncreaseBackground === "number" && !isNaN(options.speedIncreaseBackground) && options.speedIncreaseBackground >= 0 && !document.hasFocus()) {
+    if (typeof options.speedIncreaseBackground === "number" && !isNaN(options.speedIncreaseBackground) && options.speedIncreaseBackground >= 0 && !document.hasFocus() && (options.speedIncreaseBackground < 1 || isBonusActive())) {
         if (options.speedIncreaseBackground === 1) {
             bonusSpeed = 1.00001;
         } else if (options.speedIncreaseBackground === 0) {
@@ -742,5 +743,13 @@ function checkExtraSpeed() {
         } else {
             bonusSpeed = options.speedIncreaseBackground;
         }
+        return;
     }
+    if (!isBonusActive()) {
+        bonusSpeed = 1;
+        return;
+    }
+    if (options.speedIncrease10x === true) { bonusSpeed = 10};
+    if (options.speedIncrease20x === true) { bonusSpeed = 20};
+    if (bonusSpeed < options.speedIncreaseCustom) { bonusSpeed = options.speedIncreaseCustom };
 }

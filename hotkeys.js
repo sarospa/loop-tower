@@ -77,12 +77,12 @@ function executeHotkey(action) {
 window.onfocus = function() {
     setShiftKey(false);
     setControlKey(false);
-    if (isBonusActive()) checkExtraSpeed();
+    checkExtraSpeed();
 };
 
 window.onblur = function() {
     GameKeyboard.stopSpins();
-    if (isBonusActive()) checkExtraSpeed();
+    checkExtraSpeed();
 };
 
 // handle shift/control keys
