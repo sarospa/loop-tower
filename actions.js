@@ -208,7 +208,7 @@ function Actions() {
         portalUsed = false;
         stoneLoc = 0;
         totalMerchantMana = 7500;
-        if (options.keepCurrentList) {
+        if (options.keepCurrentList && this.current?.length > 0) {
             this.currentPos = 0;
             this.completedTicks = 0;
 
