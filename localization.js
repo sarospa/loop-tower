@@ -1,4 +1,4 @@
-window.Localization = {
+const Localization = window.Localization = {
     // config
     // set to true for more console.log
     debug: false,
@@ -32,6 +32,7 @@ window.Localization = {
         });
     },
     // lib can be ignored to use the last used lib. returns the text for the given key
+    /** @type {(path: string, lib?: string) => string} */
     txt(path, lib) {
         // eslint-disable-next-line no-param-reassign
         if (typeof(lib) === "undefined") lib = "game";
@@ -89,8 +90,8 @@ window.Localization = {
 
 Localization.init();
 // binding the _txt function for simplier use
-window._txt = Localization.txt;
-window._txtsObj = Localization.txtsObj;
+const _txt = window._txt = Localization.txt;
+const _txtsObj = window._txtsObj = Localization.txtsObj;
 
 let locCheck = false;
 Localization.loadLib("fallback", () => {

@@ -524,6 +524,12 @@ input[type="number"] {
     font-size: 13px;
 }
 
+#actionLog {
+    min-height: 100px;
+    max-height: 400px;
+    overflow: auto;
+}
+
 #curActionsListContainer {
     width: 35%;
     height: 100%;
@@ -851,6 +857,35 @@ input[type="number"] {
 
 .responsive #townColumn {
     grid-area: town;
+    display: flex;
+    flex-direction: column;
+}
+
+.responsive #townWindow {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.responsive #townWindow > div.showthat {
+    margin: 0 20px;
+}
+
+.responsive #townWindow > div.showthat {
+    display: flex;
+    justify-content: center;
+}
+
+.responsive #actionsTitle {
+    margin: 0 40px;
+}
+
+.responsive .actionOptions {
+    min-height:auto;
+}
+.responsive .actionStories {
+    min-height:auto;
 }
 
 .responsive .townStatContainer, .responsive .townInfoContainer {
@@ -878,6 +913,11 @@ input[type="number"] {
 
 .responsive #trackedResources {
     margin-bottom: 0;
+}
+
+.responsive #actionLog {
+    max-height: none;
+    flex-grow: 1;
 }
 
 /* dark theme */

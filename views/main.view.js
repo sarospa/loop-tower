@@ -129,6 +129,8 @@ function View() {
         updateTime: [],
         updateOffline: [],
         updateTotals: [],
+        updateStories: [],
+        updateActionLogEntry: [],
         updateCurrentActionBar: [],
         updateCurrentActionsDivs: [],
         updateTotalTicks: [],
@@ -587,6 +589,22 @@ function View() {
         }
     };
 
+    this.updateActionLogEntry = function(index) {
+        const entry = actionLog.entries[index];
+        if (!entry) return;
+        let element = document.getElementById(`actionLogEntry${index}`);
+        if (element) {
+            entry.element = element;
+            entry.updateElement();
+        } else {
+            element = entry.createElement();
+            element.id = `actionLogEntry${index}`;
+            
+            const log = document.getElementById("actionLog");
+            log.appendChild(element);
+        }
+    }
+
     this.mouseoverAction = function(index, isShowing) {
         if (isShowing) curActionShowing = index;
         else curActionShowing = undefined;
@@ -698,6 +716,9 @@ function View() {
                             storyTooltipText += storyText[0] + storyText[1];
                             lastInBranch = false;
                             storiesUnlocked++;
+                            if (action.visible() && action.unlocked()) {
+                                actionLog.addActionStory(action, i, init);
+                            }
                         } else if (lastInBranch) {
                             storyTooltipText += "<b>???:</b> ???";
                         } else {
@@ -1352,11 +1373,15 @@ function unlockGlobalStory(num) {
     if (num > storyMax) {
         document.getElementById("newStory").style.display = "inline-block";
         storyMax = num;
+        actionLog.addGlobalStory(num);
     }
 }
 
 function unlockStory(name) {
-    if (!storyReqs[name]) storyReqs[name] = true;
+    if (!storyReqs[name]) {
+        storyReqs[name] = true;
+        if (options.actionLog) view.requestUpdate("updateStories", false);
+    }
 }
 
 const curActionsDiv = document.getElementById("curActionsList");

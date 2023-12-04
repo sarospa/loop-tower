@@ -78,6 +78,33 @@ const townNames = ["Beginnersville", "Forest Path", "Merchanton", "Mt. Olympus",
 
 // actions are all sorted below by town in order
 
+/**
+ * @typedef {object} ActionExtras
+ * @prop {"normal"|"progress"|"limited"|"multipart"} type
+ * @prop {number} expMult
+ * @prop {number} townNum
+ * @prop {(storyNum: number) => boolean} storyReqs
+ * @prop {{[K in typeof statList[number]]?: number}} stats
+ * @prop {() => boolean} canStart
+ * @prop {() => number} manaCost
+ * @prop {() => boolean} visible
+ * @prop {() => boolean} unlocked
+ * @prop {() => void} finish
+ * 
+ * @prop {string} tooltip
+ * @prop {string} tooltip2
+ * @prop {string} label
+ * @prop {string} labelDone
+ * @prop {string} infoText
+ */
+
+/**
+ * @constructor
+ * @this {Action}
+ * 
+ * @param {string} name 
+ * @param {ActionExtras} extras 
+ */
 function Action(name, extras) {
     this.name = name;
     // many actions have to override this (in extras) for save compatibility, because the
@@ -1289,7 +1316,7 @@ Action.SmallDungeon = new DungeonAction("Small Dungeon", 0, {
     },
     loopsFinished() {
         const curFloor = Math.floor((towns[this.townNum].SDungeonLoopCounter) / this.segments + 0.0000001 - 1);
-        const success = finishDungeon(this.dungeonNum, curFloor);
+        const success = this.finishDungeon(curFloor);
         if (success === true && storyMax <= 1) {
             unlockGlobalStory(1);
         } else if (success === false && storyMax <= 2) {
@@ -1310,7 +1337,8 @@ Action.SmallDungeon = new DungeonAction("Small Dungeon", 0, {
         if (towns[this.townNum][this.varName + "LoopCounter"] >= 42) unlockStory("clearSDungeon");
     },
 });
-function finishDungeon(dungeonNum, floorNum) {
+DungeonAction.prototype.finishDungeon = function finishDungeon(floorNum) {
+    const dungeonNum = this.dungeonNum;
     const floor = dungeons[dungeonNum][floorNum];
     if (!floor) {
         return false;
@@ -1320,9 +1348,11 @@ function finishDungeon(dungeonNum, floorNum) {
     if (rand <= floor.ssChance) {
         const statToAdd = statList[Math.floor(Math.random() * statList.length)];
         floor.lastStat = statToAdd;
-        stats[statToAdd].soulstone = stats[statToAdd].soulstone ? (stats[statToAdd].soulstone + Math.floor(Math.pow(10, dungeonNum) * getSkillBonus("Divine"))) : 1;
+        const countToAdd = Math.floor(Math.pow(10, dungeonNum) * getSkillBonus("Divine"));
+        stats[statToAdd].soulstone = (stats[statToAdd].soulstone ?? 0) + countToAdd;
         floor.ssChance *= 0.98;
         view.requestUpdate("updateSoulstones",null);
+        actionLog.addSoulstones(this, statToAdd, countToAdd);
         return true;
     }
     return false;
@@ -2864,7 +2894,7 @@ Action.LargeDungeon = new DungeonAction("Large Dungeon", 1, {
     },
     loopsFinished() {
         const curFloor = Math.floor((towns[this.townNum].LDungeonLoopCounter) / this.segments + 0.0000001 - 1);
-        finishDungeon(this.dungeonNum, curFloor);
+        this.finishDungeon(curFloor);
     },
     visible() {
         return towns[2].getLevel("Drunk") >= 5;
@@ -5537,7 +5567,7 @@ Action.TheSpire = new DungeonAction("The Spire", 2, {
     },
     loopsFinished() {
         const curFloor = Math.floor((towns[this.townNum].TheSpireLoopCounter) / this.segments + 0.0000001 - 1);
-        finishDungeon(this.dungeonNum, curFloor);
+        this.finishDungeon(curFloor);
         if (curFloor >= getBuffLevel("Aspirant")) addBuffAmt("Aspirant", 1);
         if (curFloor == dungeonFloors[this.dungeonNum]-1) unlockStory("clearedSpire");
     },

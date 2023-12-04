@@ -472,6 +472,7 @@
             <adblock_warning>WARNING: For some reason, Adblock Plus can cause massive lag. This game won't ever have ads, so if your game is freezing frequently, please disable it on this page.
             </adblock_warning>
             <responsive_ui>Experimental responsive UI</responsive_ui>
+            <action_log>Experimental action log</action_log>
             <highlight_new>Highlight new actions</highlight_new>
             <stat_colors>Use stat colors on menu (requires save and refresh)</stat_colors>
             <pause_audio_cue>Ping on pause</pause_audio_cue>
@@ -1196,8 +1197,17 @@
     <actions>
         <title>Action Options</title>
         <title_stories>Action Stories</title_stories>
+        <title_log>Action Log</title_log>
         <title_list>Action List</title_list>
         <title_loadout>Loadouts</title_loadout>
+        <log>
+            <header>Loop {loop}, {action} in {town}</header>
+            <action_story><![CDATA[<b>{header} ({condition}):</b> {story}]]></action_story>
+            <global_story><![CDATA[<b>Loop {loop}:</b> {story}]]></global_story>
+            <soulstone><![CDATA[<b>{header}:</b> You find a soulstone attuned to {stat}.]]></soulstone>
+            <soulstone_multi><![CDATA[<b>{header}:</b> You find {count} soulstones: {stats}]]></soulstone_multi>
+            <soulstone_stat>{count} of {stat}</soulstone_stat>
+        </log>
         <tooltip>
             <desc><![CDATA[
           Mana cost is based on ratio of stat %s.<br>

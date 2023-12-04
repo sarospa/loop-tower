@@ -82,11 +82,13 @@ let timeNeeded = timeNeededInitial;
 let stop = false;
 const view = new View();
 const actions = new Actions();
+const actionLog = new ActionLog();
 const towns = [];
 // eslint-disable-next-line prefer-const
 let curTown = 0;
 
-const statList = ["Dex", "Str", "Con", "Spd", "Per", "Cha", "Int", "Luck", "Soul"];
+
+const statList = /** @type {const} */(["Dex", "Str", "Con", "Spd", "Per", "Cha", "Int", "Luck", "Soul"]);
 const stats = {};
 let totalTalent = 0;
 // eslint-disable-next-line prefer-const
@@ -480,6 +482,7 @@ const options = {
     theme: "normal",
     themeVariant: "",
     responsiveUI: false,
+    actionLog: false,
     keepCurrentList: false,
     repeatLastAction: false,
     addActionsToTop: false,
@@ -510,6 +513,7 @@ const isStandardOption = {
     theme: true,
     themeVariant: false,
     responsiveUI: false,
+    actionLog: false,
     keepCurrentList: true,
     repeatLastAction: true,
     addActionsToTop: true,
@@ -569,6 +573,10 @@ const optionValueHandlers = {
         } else {
             document.documentElement.classList.remove("responsive");
         }
+    },
+    actionLog(value, init) {
+        document.getElementById("actionLog").style.display = value ? "" : "none";
+        document.getElementById("actionLogTitle").style.display = value ? "" : "none";
     },
     predictor(value, init) {
         localStorage["loadPredictor"] = value || "";
