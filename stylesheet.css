@@ -884,7 +884,7 @@ input[type="number"] {
 
 .t-dark {
     filter: invert(1) hue-rotate(180deg);
-    filter: url(#inversion2);
+    filter: url(#inversion4);
     background: #111;
     color: #222;
 }
