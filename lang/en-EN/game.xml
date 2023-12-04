@@ -1202,11 +1202,14 @@
         <title_loadout>Loadouts</title_loadout>
         <log>
             <header>Loop {loop}, {action} in {town}</header>
+            <multiloop>{loopStart}–{loopEnd}</multiloop>
             <action_story><![CDATA[<b>{header} ({condition}):</b> {story}]]></action_story>
             <global_story><![CDATA[<b>Loop {loop}:</b> {story}]]></global_story>
-            <soulstone><![CDATA[<b>{header}:</b> You find a soulstone attuned to {stat}.]]></soulstone>
+            <soulstone><![CDATA[<b>{header}:</b> You find a soulstone attuned to {stat_long}.]]></soulstone>
+            <soulstone_singlemulti><![CDATA[<b>{header}:</b> You find {count} soulstones attuned to {stat_long}.]]></soulstone_singlemulti>
             <soulstone_multi><![CDATA[<b>{header}:</b> You find {count} soulstones: {stats}]]></soulstone_multi>
-            <soulstone_stat>{count} of {stat}</soulstone_stat>
+            <soulstone_stat>{count} of {stat_long}</soulstone_stat>
+            <soulstone_stat_short>{count} {stat}</soulstone_stat_short>
         </log>
         <tooltip>
             <desc><![CDATA[

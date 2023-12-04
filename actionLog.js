@@ -43,15 +43,16 @@ class ActionLog {
         for (let i = this.entries.length - 1; i >= 0; i--)  {
             entry = this.entries[i];
             if (entry instanceof SoulstoneEntry) {
-                if (entry.action === action) {
+                if (entry.action.name === action.name) {
                     break;
                 }
             } else {
                 break;
             }
         }
-        if (entry instanceof SoulstoneEntry) {
+        if (entry instanceof SoulstoneEntry && entry.action.name === action.name) {
             entry.addSoulstones(stat, count);
+            entry.loopEnd = currentLoop;
         } else {
             entry = new SoulstoneEntry(action);
             entry.addSoulstones(stat, count);
@@ -64,7 +65,9 @@ class ActionLogEntry {
     /** @type {string} */
     type;
     /** @type {number} */
-    loop;
+    loopStart;
+    /** @type {number} */
+    loopEnd;
     /** @type {Action & ActionExtras} */
     action;
 
@@ -83,7 +86,7 @@ class ActionLogEntry {
      */
     constructor(type, action, loop) {
         this.type = type;
-        this.loop = loop ?? totals.loops;
+        this.loopStart = this.loopEnd = loop ?? currentLoop;
         this.action = action;
     }
     createElement() {
@@ -108,7 +111,9 @@ class ActionLogEntry {
 
     /** @type {(key: string) => string} */
     getReplacement(key) {
-        if (key === "loop") return intToString(this.loop, 1);
+        if (key === "loop") return this.loopStart === this.loopEnd ? intToString(this.loopStart, 1) : _txt("actions>log>multiloop");
+        if (key === "loopStart") return intToString(this.loopStart, 1);
+        if (key === "loopEnd") return intToString(this.loopEnd, 1);
         if (key === "town") return townNames[this.action.townNum];
         if (key === "action") return this.action.label;
         if (key === "header") return _txt("actions>log>header");
@@ -176,19 +181,22 @@ class SoulstoneEntry extends ActionLogEntry {
     }
 
     getText() {
-        return _txt(this.count === 1 ? "actions>log>soulstone" : "actions>log>soulstone_multi");
+        return _txt(this.count === 1 ? "actions>log>soulstone" : Object.keys(this.stones).length === 1 ? "actions>log>soulstone_singlemulti" : "actions>log>soulstone_multi");
     }
 
     getReplacement(key) {
         if (key === "count") return intToString(this.count, 1);
-        if (key === "stat") return _txt(`stats>${Object.keys(this.stones)[0]}>long_form`);
+        if (key === "stat_long") return _txt(`stats>${Object.keys(this.stones)[0]}>long_form`);
+        if (key === "stat") return _txt(`stats>${Object.keys(this.stones)[0]}>short_form`);
         if (key === "stats") {
             const strs = [];
+            const template = _txt(Object.keys(this.stones).length > 3 ? "actions>log>soulstone_stat_short" : "actions>log>soulstone_stat"); 
             for (const stat in stats) {
                 if (stat in this.stones) {
-                    strs.push(_txt("actions>log>soulstone_stat")
+                    strs.push(template
                                 .replace("{count}", intToString(this.stones[stat], 1))
-                                .replace("{stat}", _txt(`stats>${stat}>long_form`))
+                                .replace("{stat_long}", _txt(`stats>${stat}>long_form`))
+                                .replace("{stat}", _txt(`stats>${stat}>short_form`))
                             );
                 }
             }

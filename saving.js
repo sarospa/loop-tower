@@ -445,6 +445,7 @@ let totalOfflineMs = 0;
 // eslint-disable-next-line prefer-const
 let bonusSpeed = 1;
 let bonusActive = false;
+let currentLoop = 0;
 const offlineRatio = 1;
 let totals = {
     time: 0,
@@ -955,6 +956,7 @@ function load(inChallenge) {
         totals.actions = toLoad.totals.actions === undefined ? 0 : toLoad.totals.actions;
     }
     else totals = {time: 0, effectiveTime: 0, loops: 0, actions: 0};
+    currentLoop = totals.loops;
     view.updateTotals();
     console.log("Updating prestige values from load")
     view.updatePrestigeValues();

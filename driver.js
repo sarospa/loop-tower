@@ -281,6 +281,7 @@ function restart() {
     effectiveTime = 0;
     timeNeeded = timeNeededInitial;
     document.title = "Idle Loops";
+    currentLoop = totals.loops + 1; // don't let currentLoop get out of sync with totals.loops, that'd cause problems
     resetResources();
     restartStats();
     for (let i = 0; i < towns.length; i++) {
