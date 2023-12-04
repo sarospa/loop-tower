@@ -540,7 +540,7 @@
       Wander for a bit, then smash pots.<br>
       Watch the numbers change, read all the tooltips.<br>
       Complete the town, go to the next one.<br><br>
-      Hey there, it looks like you're starting the game on omsi6.github.io.<br>
+      Hey there, it looks like you're starting the game on a site other than stopsign.github.io.<br>
       Before you start, you should know that this is a fanmade modification<br>
       for the original game, located <a href="https://stopsign.github.io/idleLoops/">here</a>. You can import your save from the<br>
       original, but if you import it back to the original, you'll lose any progress in features specific to this version.<br><br>
@@ -1093,25 +1093,25 @@
         <prestige_-_physical>
             <label>Prestige - Physical</label>
             <desc><![CDATA[ 
-            Increases Experience gain of all Physical skills (Dex, Str, Con, Spd, Per) by 10% per level. 
+            Increases Experience gain of all Physical skills (Dex, Str, Con, Spd, Per) by 20% per level. 
             ]]></desc>
         </prestige_-_physical>
         <prestige_-_mental>
             <label>Prestige - Mental</label>
             <desc><![CDATA[ 
-            Increases Experience gain of all Mental skills (Cha, Int, Soul) by 10% per level. 
+            Increases Experience gain of all Mental skills (Cha, Int, Soul) by 20% per level. 
             ]]></desc>
         </prestige_-_mental>
         <prestige_-_combat>
             <label>Prestige - Combat</label>
             <desc><![CDATA[ 
-            Increases Self and Team Combat by 10% per level. 
+            Increases Self and Team Combat by 20% per level. 
             ]]></desc>
         </prestige_-_combat>
         <prestige_-_spatiomancy>
             <label>Prestige - Spatiomancy</label>
             <desc><![CDATA[ 
-            Increases the number of "Findables" per zone by 5% per level. 
+            Increases the number of "Findables" per zone by 10% per level. 
             ]]></desc>
         </prestige_-_spatiomancy>
         <prestige_-_chronomancy>
@@ -1123,7 +1123,7 @@
         <prestige_-_bartering>
             <label>Prestige - Bartering</label>
             <desc><![CDATA[ 
-            Increases received from merchants by 5% per level. 
+            Increases received from merchants by 10% per level. 
             ]]></desc>
         </prestige_-_bartering>
         <prestige_-_experience_overflow>
