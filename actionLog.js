@@ -8,10 +8,12 @@ class ActionLog {
 
     /** @type {(entry: ActionLogEntry, init: boolean) => void} */
     addEntry(entry, init) {
+        entry.historyIndex = this.history.length;
         this.history.push(entry);
         if (!init) {
+            entry.entryIndex = this.entries.length;
             this.entries.push(entry);
-            view.requestUpdate("updateActionLogEntry", this.entries.length - 1);
+            view.requestUpdate("updateActionLogEntry", entry.entryIndex);
         }
     }
 
@@ -58,12 +60,16 @@ class ActionLog {
             entry.addSoulstones(stat, count);
             this.addEntry(entry, init);
         }
-        view.requestUpdate("updateActionLogEntry", this.entries.length - 1);
+        view.requestUpdate("updateActionLogEntry", entry.entryIndex);
     }
 }
 class ActionLogEntry {
     /** @type {string} */
     type;
+    /** @type {number} */
+    historyIndex = null;
+    /** @type {number} */
+    entryIndex = null;
     /** @type {number} */
     loopStart;
     /** @type {number} */
