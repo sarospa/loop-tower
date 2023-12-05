@@ -3799,7 +3799,9 @@ Action.MineSoulstones = new Action("Mine Soulstones", {
     finish() {
         towns[3].finishRegular(this.varName, 10, () => {
             const statToAdd = statList[Math.floor(Math.random() * statList.length)];
-            stats[statToAdd].soulstone +=  Math.floor(getSkillBonus("Divine"));
+            const countToAdd = Math.floor(getSkillBonus("Divine"));
+            stats[statToAdd].soulstone += countToAdd;
+            actionLog.addSoulstones(this, statToAdd, countToAdd);
             view.requestUpdate("updateSoulstones", null);
         });
     },
