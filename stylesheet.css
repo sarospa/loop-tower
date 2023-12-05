@@ -899,6 +899,22 @@ input[type="number"] {
     justify-content: center;
 }
 
+.responsive #townInfos, .responsive #townActions {
+    display: flex;
+    align-items: start;
+}
+
+.responsive #townInfos > *, .responsive #townActions > * {
+    flex: 0 0 100%;
+}
+
+.responsive #townInfos > *[style*="none"], .responsive #townActions > *[style*="none"] {
+    display:block !important;
+    visibility: collapse;
+    width: 100%;
+}
+
+
 .responsive #actionsTitle {
     margin: 0 40px;
 }
