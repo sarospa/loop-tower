@@ -8,13 +8,36 @@ class ActionLog {
 
     /** @type {(entry: ActionLogEntry, init: boolean) => void} */
     addEntry(entry, init) {
-        entry.historyIndex = this.history.length;
-        this.history.push(entry);
-        if (!init) {
+        if (entry.historyIndex === null) {
+            entry.historyIndex = this.history.length;
+            this.history.push(entry);
+        }
+        if (!init && entry.entryIndex === null) {
             entry.entryIndex = this.entries.length;
             this.entries.push(entry);
+        }
+        if (entry.entryIndex !== null) {
             view.requestUpdate("updateActionLogEntry", entry.entryIndex);
         }
+    }
+
+    /** @type {<T extends ActionLogEntry, C extends new(...args: any[]) => T>(type: C, action: Action, updateLoopEnd?: boolean) => T | null} */
+    findRepeatableEntry(type, action, updateLoopEnd) {
+        for (let i = this.entries.length - 1; i >= 0; i--)  {
+            const entry = this.entries[i];
+            if (entry instanceof type && entry.action.name === action.name) {
+                if (updateLoopEnd) entry.loopEnd = currentLoop;
+                return entry;
+            } else if (!entry.repeatable) {
+                return null;
+            }
+        }
+        return null;
+    }
+
+    /** @type {<C extends new(action: any, ...args: any[]) => any, T extends InstanceType<C>>(type: C, ...[action, ...args]: ConstructorParameters<C>) => T} */
+    findOrCreateRepeatableEntry(type, action, ...args) {
+        return this.findRepeatableEntry(type, action, true) ?? new type(action, ...args);
     }
 
     addActionStory(action, storyindex, init) {
@@ -40,27 +63,19 @@ class ActionLog {
     /** @type {(action: Action, stat: typeof statList[number], count: number, init: boolean) => void} */
     addSoulstones(action, stat, count, init) {
         if (!options.actionLog) return;
-        /** @type {ActionLogEntry} */
-        let entry;
-        for (let i = this.entries.length - 1; i >= 0; i--)  {
-            entry = this.entries[i];
-            if (entry instanceof SoulstoneEntry) {
-                if (entry.action.name === action.name) {
-                    break;
-                }
-            } else {
-                break;
-            }
-        }
-        if (entry instanceof SoulstoneEntry && entry.action.name === action.name) {
-            entry.addSoulstones(stat, count);
-            entry.loopEnd = currentLoop;
-        } else {
-            entry = new SoulstoneEntry(action);
-            entry.addSoulstones(stat, count);
-            this.addEntry(entry, init);
-        }
-        view.requestUpdate("updateActionLogEntry", entry.entryIndex);
+
+        const entry = this.findOrCreateRepeatableEntry(SoulstoneEntry, action);
+        entry.addSoulstones(stat, count);
+        this.addEntry(entry, init);
+    }
+
+    /** @type {(action: Action, skill: typeof skillList[number], toLevel: number, fromLevel?: number, init?: boolean) => void} */
+    addSkillLevel(action, skill, toLevel, fromLevel, init) {
+        if (!options.actionLog) return;
+
+        const entry = this.findOrCreateRepeatableEntry(SkillEntry, action, skill, toLevel, fromLevel);
+        entry.toLevel = toLevel;
+        this.addEntry(entry, init);
     }
 }
 class ActionLogEntry {
@@ -76,6 +91,8 @@ class ActionLogEntry {
     loopEnd;
     /** @type {Action & ActionExtras} */
     action;
+    /** @type {boolean} */
+    repeatable;
 
     #element;
     /** @type {HTMLElement} */
@@ -87,13 +104,14 @@ class ActionLogEntry {
     }
     /**
      * @param {string} type
-     * @param {Action & ActionExtras} action
+     * @param {Action} action
      * @param {number=} loop
      */
-    constructor(type, action, loop) {
+    constructor(type, repeatable, action, loop) {
         this.type = type;
+        this.repeatable = repeatable;
         this.loopStart = this.loopEnd = loop ?? currentLoop;
-        this.action = action;
+        this.action = /** @type {Action & ActionExtras} */(action);
     }
     createElement() {
         const div = document.createElement("div");
@@ -130,14 +148,29 @@ class ActionLogEntry {
     getText() {
         throw new Error("Method not implemented.");
     }
+
+    /** @type {(other: ActionLogEntry) => boolean} */
+    canMerge(other) {
+        return this.type === other.type && this.action.name === other.action.name && this.canMergeParameters(other);
+    }
+    /** @returns {boolean} */
+    canMergeParameters(_other) {
+        return false;
+    }
+
 }
 
 class ActionStoryEntry extends ActionLogEntry {
     /** @type {number} */
     storyIndex;
 
+    /**
+     * @param {Action} action
+     * @param {number} storyIndex 
+     * @param {number=} loop 
+     */
     constructor(action, storyIndex, loop) {
-        super("story", action, loop);
+        super("story", false, action, loop);
         this.storyIndex = storyIndex;
     }
 
@@ -156,8 +189,12 @@ class GlobalStoryEntry extends ActionLogEntry {
     /** @type {number} */
     chapter;
 
-    constructor(chapter) {
-        super("global", null);
+    /**
+     * @param {number} chapter
+     * @param {number=} loop
+     */
+    constructor(chapter, loop) {
+        super("global", false, null, loop);
         this.chapter = chapter;
     }
 
@@ -176,8 +213,12 @@ class SoulstoneEntry extends ActionLogEntry {
     /** @type {{[K in typeof statList[number]]?: number}} */
     stones = {};
 
+    /**
+     * @param {Action} action
+     * @param {number=} loop 
+     */
     constructor(action, loop) {
-        super("soulstone", action, loop);
+        super("soulstone", true, action, loop);
     }
 
     addSoulstones(stat, count) {
@@ -208,6 +249,47 @@ class SoulstoneEntry extends ActionLogEntry {
             }
             return strs.join(", ");
         }
+        return super.getReplacement(key);
+    }
+
+    canMergeParameters() {
+        return true;
+    }
+}
+
+class SkillEntry extends ActionLogEntry {
+    count = 0;
+    /** @type {typeof skillList[number]} */
+    skill;
+
+    /** @type {number} */
+    fromLevel;
+    /** @type {number} */
+    toLevel;
+
+    /**
+     * @param {Action} action
+     * @param {typeof skillList[number]} skill
+     * @param {number} toLevel
+     * @param {number=} fromLevel
+     * @param {number=} loop
+     */
+    constructor(action, skill, toLevel, fromLevel, loop) {
+        super("skill", true, action, loop);
+        this.skill = skill;
+        this.fromLevel = fromLevel ?? toLevel - 1;
+        this.toLevel = toLevel;
+    }
+
+    getText() {
+        return _txt(this.toLevel === this.fromLevel + 1 ? "actions>log>skill" : "actions>log>skill_multi");
+    }
+
+    getReplacement(key) {
+        if (key === "skill") return _txt(`skills>${getXMLName(this.skill)}>label`);
+        if (key === "levels") return formatNumber(this.toLevel - this.fromLevel);
+        if (key === "fromLevel") return formatNumber(this.fromLevel);
+        if (key === "toLevel") return formatNumber(this.toLevel);
         return super.getReplacement(key);
     }
 }

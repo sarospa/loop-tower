@@ -29,6 +29,7 @@ function Actions() {
             shouldRestart = true;
             return 0;
         }
+        currentAction = curAction;
 
         // this is how much mana is actually getting spent during this call to tick().
         let manaToSpend = availableMana;
@@ -151,6 +152,8 @@ function Actions() {
                 this.currentPos++;
             }
         }
+
+        currentAction = null;
 
         return manaToSpend;
     };

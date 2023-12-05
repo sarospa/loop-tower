@@ -165,7 +165,12 @@ function getPrcToNextSkillLevel(skill) {
 
 function addSkillExp(name, amount) {
     if (name === "Combat" || name === "Pyromancy" || name === "Restoration") amount *= 1 + getBuffLevel("Heroism") * 0.02;
+    const oldLevel = getSkillLevel(name);
     skills[name].exp += amount;
+    const newLevel = getSkillLevel(name);
+    if (oldLevel !== newLevel) {
+        actionLog.addSkillLevel(currentAction, name, newLevel, oldLevel);
+    }
     view.requestUpdate("updateSkill", name);
 }
 
