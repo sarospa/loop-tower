@@ -902,6 +902,7 @@ input[type="number"] {
 .responsive #townInfos, .responsive #townActions {
     display: flex;
     align-items: start;
+    overflow: clip visible;
 }
 
 .responsive #townInfos > *, .responsive #townActions > * {
@@ -910,8 +911,9 @@ input[type="number"] {
 
 .responsive #townInfos > *[style*="none"], .responsive #townActions > *[style*="none"] {
     display:block !important;
-    visibility: collapse;
+    visibility: hidden;
     width: 100%;
+    order: 1;
 }
 
 
