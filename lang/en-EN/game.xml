@@ -14,6 +14,8 @@
             • There is now an option to enable fractional mana usage, for late-game actions where the mana cost is less than 1. This may cause issues and the predictor doesn't account for it, so it is disabled by default.<br>
             • Fixing some layout issues with the responsive UI.<br>
             • Adding an experimental Action Log, which reports interesting things that happen (currently: global stories, action stories, and soulstones from dungeons) during a play session.<br>
+            • Fixed a mana accounting bug that could cause up to double mana consumption in some cases.<br>
+            • Actions with multipart progress bars will no longer go past their expected limits if too much progress is made in 1 tick.<br>
             ]]></version>
             <version verNum="3.P16.7"><![CDATA[
             <b> Dec 3rd, 2023</b>

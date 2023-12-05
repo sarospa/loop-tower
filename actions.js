@@ -29,22 +29,22 @@ function Actions() {
             shouldRestart = true;
             return 0;
         }
-        // restrict to the number of ticks it takes to get to a next level
-        availableMana = Math.min(availableMana, getMaxTicksForAction(curAction));
-        // restrict to the number of ticks it takes to finish the current action
-        availableMana = Math.min(availableMana, Mana.ceil(curAction.adjustedTicks - curAction.ticks));
-        // just in case
-        if (availableMana < 0) availableMana = 0;
 
-        // regardless of what happens, this is the amount of mana we're spending
-        const manaToSpend = availableMana;
+        // this is how much mana is actually getting spent during this call to tick().
+        let manaToSpend = availableMana;
+
+        // restrict to the number of ticks it takes to get to a next level
+        manaToSpend = Math.min(manaToSpend, getMaxTicksForAction(curAction));
+        // restrict to the number of ticks it takes to finish the current action
+        manaToSpend = Math.min(manaToSpend, Mana.ceil(curAction.adjustedTicks - curAction.ticks));
+        // just in case
+        if (manaToSpend < 0) manaToSpend = 0;
+
+        // we think we'll be spending manaToSpend, but we might not actually finish out the whole
+        // amount if this is a multi-part progress action.
 
         // exp needs to get added AFTER checking multipart progress, since this tick() call may
         // represent any number of ticks, all of which process at the existing levels
-
-        curAction.ticks += manaToSpend;
-        curAction.manaUsed += manaToSpend;
-        curAction.timeSpent += manaToSpend / baseManaPerSecond / getActualGameSpeed();
 
         // only for multi-part progress bars
         if (curAction.loopStats) {
@@ -58,9 +58,11 @@ function Actions() {
 
             // thanks to Gustav on the discord for the multipart loop code
             let manaLeft = manaToSpend;
+            manaToSpend = 0;
             const tickMultiplier = (curAction.manaCost() / curAction.adjustedTicks);
             let partUpdateRequired = false;
 
+            manaLoop:
             while (manaLeft > 0.01 && curAction.canMakeProgress(segment)) {
                 //const toAdd = curAction.tickProgress(segment) * (curAction.manaCost() / curAction.adjustedTicks);
                 const progressMultiplier = curAction.tickProgress(segment) * tickMultiplier;
@@ -69,6 +71,7 @@ function Actions() {
                     curAction.loopCost(segment) - curProgress // how much progress would it take to complete this segment?
                 );
                 manaLeft -= toAdd / progressMultiplier;
+                manaToSpend += toAdd / progressMultiplier;
                 // console.log("using: "+curAction.loopStats[(towns[curAction.townNum][curAction.varName + "LoopCounter"]+segment) % curAction.loopStats.length]+" to add: " + toAdd + " to segment: " + segment + " and part " +towns[curAction.townNum][curAction.varName + "LoopCounter"]+" of progress " + curProgress + " which costs: " + curAction.loopCost(segment));
                 towns[curAction.townNum][curAction.varName] += toAdd;
                 curProgress += toAdd;
@@ -94,7 +97,7 @@ function Actions() {
                             curAction.goldRemaining = resources.gold;
                             curAction.finish();
                             totals.actions++;
-                            break;
+                            break manaLoop;
                         }
                         towns[curAction.townNum][curAction.varName] = curProgress;
                     }
@@ -111,6 +114,10 @@ function Actions() {
                 view.requestUpdate("updateMultiPart", curAction);
             }
         }
+
+        curAction.ticks += manaToSpend;
+        curAction.manaUsed += manaToSpend;
+        curAction.timeSpent += manaToSpend / baseManaPerSecond / getActualGameSpeed();
 
         // exp gets added here, where it can factor in to adjustTicksNeeded
         addExpFromAction(curAction, manaToSpend);
