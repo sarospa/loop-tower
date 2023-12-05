@@ -91,8 +91,10 @@ function intToStringNegative(value, amount) {
 }
 
 function intToString(value, amount) {
+    const prefix = value < 0 ? "-" : "";
+    value = Math.abs(value);
     if (value >= 10000) {
-        return nFormatter(value, 3);
+        return prefix + nFormatter(value, 3);
     }
     if (value >= 1000) {
         let baseValue = 3;
@@ -100,13 +102,13 @@ function intToString(value, amount) {
             baseValue = amount;
         }
         const returnVal = parseFloat(value).toFixed(baseValue - 1);
-        return `${returnVal[0]},${returnVal.substring(1)}`;
+        return `${prefix}${returnVal[0]},${returnVal.substring(1)}`;
     }
     let baseValue = 3;
     if (amount) {
         baseValue = amount;
     }
-    return parseFloat(value).toFixed(baseValue - 1);
+    return prefix + parseFloat(value).toFixed(baseValue - 1);
 }
 
 function intToStringRound(value) {
@@ -123,6 +125,32 @@ function toSuffix(value) {
     let shortValue = parseFloat((suffixNum === 0 ? value : (value / Math.pow(1000, suffixNum))).toPrecision(3));
     if (shortValue % 1 !== 0) shortValue = shortValue.toPrecision(3);
     return shortValue + suffixes[suffixNum];
+}
+
+const Mana = {
+    ceil(value, minNonZero) {
+        return value === 0 ? 0
+                : !options.fractionalMana ? Math.ceil(value)
+                : !minNonZero ? value
+                : value > 0 ? Math.max(value, minNonZero)
+                : Math.min(value, -minNonZero);
+    },
+    
+    floor(value, minNonZero) {
+        return value === 0 ? 0
+                : !options.fractionalMana ? Math.floor(value)
+                : !minNonZero ? value
+                : value > 0 ? Math.max(value, minNonZero)
+                : Math.min(value, -minNonZero);
+    },
+    
+    round(value, minNonZero) {
+        return value === 0 ? 0
+                : !options.fractionalMana ? Math.round(value)
+                : !minNonZero ? value
+                : value > 0 ? Math.max(value, minNonZero)
+                : Math.min(value, -minNonZero);
+    },
 }
 
 const si = [

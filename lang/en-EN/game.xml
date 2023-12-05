@@ -9,6 +9,10 @@
                 <title>Changelog</title>
                 <version_prefix>Version</version_prefix>
             </meta>
+            <version verNum="3.P16.8"><![CDATA[
+            <b> Dec 4th, 2023</b>
+            • There is now an option to enable fractional mana usage, for late-game actions where the mana cost is less than 1. This may cause issues and the predictor doesn't account for it, so it is disabled by default.<br>
+            ]]></version>
             <version verNum="3.P16.7"><![CDATA[
             <b> Dec 3rd, 2023</b>
             • Dark theme now has different variants to choose from, representing different color filter methods, so you can choose which works best for your computer/monitor/eyes/taste. Thank you to zenonline for making the request!<br>
@@ -473,6 +477,7 @@
             </adblock_warning>
             <responsive_ui>Experimental responsive UI</responsive_ui>
             <action_log>Experimental action log</action_log>
+            <fractional_mana>Fractional mana consumption</fractional_mana>
             <highlight_new>Highlight new actions</highlight_new>
             <stat_colors>Use stat colors on menu (requires save and refresh)</stat_colors>
             <pause_audio_cue>Ping on pause</pause_audio_cue>

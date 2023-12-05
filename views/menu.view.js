@@ -98,6 +98,9 @@ Views.registerView("menu", {
                 <input id='actionLogInput' type='checkbox' onchange='setOption("actionLog", this.checked)'/>
                     <label for='actionLogInput'>${_txt("menu>options>action_log")}</label>
                 <br>
+                <input id='fractionalManaInput' type='checkbox' onchange='setOption("fractionalMana", this.checked)'/>
+                    <label for='fractionalManaInput'>${_txt("menu>options>fractional_mana")}</label>
+                <br>
                 <input id='highlightNewInput' type='checkbox' onchange='setOption("highlightNew", this.checked)'/>
                     <label for='highlightNewInput'>${_txt("menu>options>highlight_new")}</label>
                 <br>

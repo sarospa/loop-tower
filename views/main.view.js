@@ -321,7 +321,7 @@ function View() {
 
     this.updateTime = function() {
         document.getElementById("timeBar").style.width = `${100 - timer / timeNeeded * 100}%`;
-        document.getElementById("timer").textContent = `${intToString((timeNeeded - timer), 1)} | ${formatTime((timeNeeded - timer) / 50 / getActualGameSpeed())}`;
+        document.getElementById("timer").textContent = `${intToString((timeNeeded - timer), options.fractionalMana ? 2 : 1)} | ${formatTime((timeNeeded - timer) / 50 / getActualGameSpeed())}`;
     };
     this.updateOffline = function() {
         document.getElementById("bonusSeconds").textContent = formatTime(totalOfflineMs / 1000);
@@ -568,10 +568,10 @@ function View() {
 
         // only update tooltip if it's open
         if (curActionShowing === index) {
-            document.getElementById(`action${index}ManaOrig`).textContent = formatNumber(action.manaCost() * action.loops);
-            document.getElementById(`action${index}ManaUsed`).textContent = formatNumber(action.manaUsed);
+            document.getElementById(`action${index}ManaOrig`).textContent = intToString(action.manaCost() * action.loops, options.fractionalMana ? 3 : 1);
+            document.getElementById(`action${index}ManaUsed`).textContent = intToString(action.manaUsed, options.fractionalMana ? 3 : 1);
             document.getElementById(`action${index}LastMana`).textContent = intToString(action.lastMana, 3);
-            document.getElementById(`action${index}Remaining`).textContent = formatNumber(action.manaRemaining);
+            document.getElementById(`action${index}Remaining`).textContent = intToString(action.manaRemaining, options.fractionalMana ? 3 : 1);
             document.getElementById(`action${index}GoldRemaining`).textContent = formatNumber(action.goldRemaining);
             document.getElementById(`action${index}TimeSpent`).textContent = formatTime(action.timeSpent);
 

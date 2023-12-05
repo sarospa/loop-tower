@@ -31,7 +31,7 @@ function Actions() {
         // restrict to the number of ticks it takes to get to a next level
         availableMana = Math.min(availableMana, getMaxTicksForAction(curAction));
         // restrict to the number of ticks it takes to finish the current action
-        availableMana = Math.min(availableMana, Math.ceil(curAction.adjustedTicks - curAction.ticks));
+        availableMana = Math.min(availableMana, Mana.ceil(curAction.adjustedTicks - curAction.ticks));
         // just in case
         if (availableMana < 0) availableMana = 0;
 
@@ -294,8 +294,8 @@ function setAdjustedTicks(action) {
     for (const actionStatName in action.stats){
         newCost += action.stats[actionStatName] / (1 + getLevel(actionStatName) / 100);
     }
-    action.rawTicks = action.manaCost() * newCost - 0.000001;
-    action.adjustedTicks = Math.max(1, Math.ceil(action.rawTicks));
+    action.rawTicks = action.manaCost() * newCost - (options.fractionalMana ? 0 : 0.000001);
+    action.adjustedTicks = Math.max(options.fractionalMana ? 0 : 1, Mana.ceil(action.rawTicks));
 }
 
 function calcSoulstoneMult(soulstones) {
@@ -314,7 +314,7 @@ function getMaxTicksForAction(action) {
     for (const stat in stats) {
         const expToNext = getExpToLevel(stat);
         const statMultiplier = expMultiplier * ((action.stats[stat]??0)+overFlow) * getTotalBonusXP(stat);
-        maxTicks = Math.min(maxTicks, Math.ceil(expToNext / statMultiplier));
+        maxTicks = Math.min(maxTicks, Mana.ceil(expToNext / statMultiplier));
     }
     return maxTicks;
 }

@@ -2158,7 +2158,7 @@ const Koviko = {
       tooltip+= '<tr><td><b>TIME</b></td><td>' + precision3(resources.totalTicks/50, 1) + '</td><td>(+' + precision3(resources.actionTicks/50, 1) + ')</td></tr>';
 
       var Affec = affected.map(name => {
-        if ( resources[name] != 0 ) return ('<li class='+name+' title='+name.charAt(0).toUpperCase() + name.slice(1)+'>'+resources[name].toLocaleString('en', {useGrouping:true})+'</li>');
+        if ( resources[name] != 0 ) return `<li class="${name}" title="${capitalizeFirst(name)}: ${formatNumber(resources[name])}">${intToString(resources[name], 1)}</li>`;
         else return "";
       }).join('');
       return `<ul class='koviko ${isValid}'>` + Affec + `</ul><div class='koviko showthis'><table>${tooltip || '<b>N/A</b>'}</table></div>`;

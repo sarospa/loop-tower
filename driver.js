@@ -113,9 +113,9 @@ function tick() {
     // convert "gameTicksLeft" (actually milliseconds) into equivalent base-mana count, aka actual game ticks
     // including the gameSpeed multiplier here because it is effectively constant over the course of a single
     // update, and it affects how many actual game ticks pass in a given span of realtime.
-    let baseManaToBurn = Math.floor(gameTicksLeft * baseManaPerSecond * gameSpeed / 1000);
+    let baseManaToBurn = Mana.floor(gameTicksLeft * baseManaPerSecond * gameSpeed / 1000);
 
-    while (baseManaToBurn * bonusSpeed >= 1 && performance.now() < deadline) {
+    while (baseManaToBurn * bonusSpeed >= (options.fractionalMana ? 0.01 : 1) && performance.now() < deadline) {
         if (stop) {
             break;
         }
@@ -132,7 +132,7 @@ function tick() {
 
         if (bonusSpeed > 1) {
             // can't spend more mana than offline time available
-            manaAvailable = Math.min(manaAvailable, Math.ceil(totalOfflineMs * baseManaPerSecond * gameSpeed * bonusSpeed / 1000));
+            manaAvailable = Math.min(manaAvailable, Mana.ceil(totalOfflineMs * baseManaPerSecond * gameSpeed * bonusSpeed / 1000));
         }
 
         // next, roll in the multiplier from skills/etc
@@ -148,8 +148,9 @@ function tick() {
             manaAvailable = Math.min(manaAvailable, 1);
         }
 
-        // a single action may not use a partial tick, so ceil() to be sure
-        const manaSpent = Math.ceil(actions.tick(manaAvailable));
+        // a single action may not use a partial tick, so ceil() to be sure unless fractionalMana.
+        // Even with fractionalMana, we need to set a minimum so that mana usages aren't lost to floating-point precision.
+        const manaSpent = Mana.ceil(actions.tick(manaAvailable), timer / 1e15);
 
         // okay, so the current action has used manaSpent effective ticks. figure out how much of our realtime
         // that accounts for, in base ticks and in seconds.
