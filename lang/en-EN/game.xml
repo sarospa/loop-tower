@@ -16,6 +16,7 @@
             • Adding an experimental Action Log, which reports interesting things that happen (currently: global stories, action stories, and soulstones from dungeons) during a play session.<br>
             • Fixed a mana accounting bug that could cause up to double mana consumption in some cases.<br>
             • Actions with multipart progress bars will no longer go past their expected limits if too much progress is made in 1 tick.<br>
+            • Options that change the game balance have been moved to the Extras menu.<br>
             ]]></version>
             <version verNum="3.P16.7"><![CDATA[
             <b> Dec 3rd, 2023</b>
@@ -451,6 +452,7 @@
         <options>
             <meta>
                 <title>Options</title>
+                <extras>Extras</extras>
             </meta>
             <localization_title>Language</localization_title>
             <theme_title>Theme</theme_title>
@@ -479,6 +481,10 @@
             </discord>
             <adblock_warning>WARNING: For some reason, Adblock Plus can cause massive lag. This game won't ever have ads, so if your game is freezing frequently, please disable it on this page.
             </adblock_warning>
+            <extras_warning>
+                The options in this menu allow you to customize the balance and functionality of the game in ways that affect the play experience. If experiencing the "vanilla" Idle Loops experience is
+                important to you, leave these options unchanged. Otherwise, have fun!
+            </extras_warning>
             <responsive_ui>Experimental responsive UI</responsive_ui>
             <action_log>Experimental action log</action_log>
             <fractional_mana>Fractional mana consumption</fractional_mana>

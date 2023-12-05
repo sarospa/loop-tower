@@ -6,6 +6,7 @@ Views.registerView("menu", {
         html += Views.menu.htmlSaveMenu();
         html += Views.menu.htmlFAQMenu();
         html += Views.menu.htmlOptionsMenu();
+        html += Views.menu.htmlExtrasMenu();
         html += Views.menu.htmlChallengeMenu();
         html += Views.menu.htmlTotalsMenu();
         html += Views.menu.htmlPrestigeMenu();
@@ -98,9 +99,6 @@ Views.registerView("menu", {
                 <input id='actionLogInput' type='checkbox' onchange='setOption("actionLog", this.checked)'/>
                     <label for='actionLogInput'>${_txt("menu>options>action_log")}</label>
                 <br>
-                <input id='fractionalManaInput' type='checkbox' onchange='setOption("fractionalMana", this.checked)'/>
-                    <label for='fractionalManaInput'>${_txt("menu>options>fractional_mana")}</label>
-                <br>
                 <input id='highlightNewInput' type='checkbox' onchange='setOption("highlightNew", this.checked)'/>
                     <label for='highlightNewInput'>${_txt("menu>options>highlight_new")}</label>
                 <br>
@@ -120,26 +118,6 @@ Views.registerView("menu", {
                     <label class='showthat' for='hotkeysInput'>${_txt("menu>options>hotkeys")}
                     <div class='showthis'>${_txt("menu>options>hotkeys_tooltip")}</div>
                 </label>
-                <br>
-                <input id='predictorInput' type='checkbox' onchange='setOption("predictor", this.checked)'/>
-                    <label for='predictorInput'>${_txt("menu>options>predictor")}</label>
-                <br>
-                <div class='control'>
-                    <input type='checkbox' id='speedIncrease10xInput' onchange='setOption("speedIncrease10x", this.checked)'>
-                    <label for='speedIncrease10xInput'>${_txt("menu>options>speedIncrease10x_text")}</label>
-                </div>
-                <br>
-                <div class='control'>
-                    <input type='checkbox' id='speedIncrease20xInput' onchange='setOption("speedIncrease20x", this.checked)'>
-                    <label for='speedIncrease20xInput'>${_txt("menu>options>speedIncrease20x_text")}</label>
-                </div>
-                <br>
-                ${_txt("menu>options>speedIncreaseCustom_text")}
-                <input id='speedIncreaseCustomInput' type='number' value='5' min='1' style='width: 50px;transform: translateY(-2px);' oninput='setOption("speedIncreaseCustom", parseInt(this.value))' />
-                <br>
-                ${_txt("menu>options>speedIncreaseBackground_text")}
-                <input id='speedIncreaseBackgroundInput' type='number' value='' placeholder='same' min='0' style='width: 50px;transform: translateY(-2px);' oninput='setOption("speedIncreaseBackground", parseFloat(this.value))' />
-                <div id='speedIncreaseBackgroundWarning' class='small block' style='display:none'>${_txt("menu>options>speedIncreaseBackground_warning")}</div>
                 <br>
                 ${_txt("menu>options>update_rate")}
                 <input id='updateRateInput' type='number' value='50' min='1' style='width: 50px;transform: translateY(-2px);' oninput='setOption("updateRate", parseInt(this.value))' />
@@ -175,6 +153,40 @@ Views.registerView("menu", {
             });
         });
         html += "</select></div>"
+        return html;
+    },
+    htmlExtrasMenu() {
+        const html =
+            `<div style='display:inline-block;height:30px;margin-left:10px;' class='showthatH'>
+            ${_txt("menu>options>meta>extras")}
+            <div class='showthisH' style='padding-top:1ex'>
+                ${_txt("menu>options>extras_warning")}<br>
+                <br>
+                <input id='fractionalManaInput' type='checkbox' onchange='setOption("fractionalMana", this.checked)'/>
+                    <label for='fractionalManaInput'>${_txt("menu>options>fractional_mana")}</label>
+                <br>
+                <input id='predictorInput' type='checkbox' onchange='setOption("predictor", this.checked)'/>
+                    <label for='predictorInput'>${_txt("menu>options>predictor")}</label>
+                <br>
+                <div class='control'>
+                    <input type='checkbox' id='speedIncrease10xInput' onchange='setOption("speedIncrease10x", this.checked)'>
+                    <label for='speedIncrease10xInput'>${_txt("menu>options>speedIncrease10x_text")}</label>
+                </div>
+                <br>
+                <div class='control'>
+                    <input type='checkbox' id='speedIncrease20xInput' onchange='setOption("speedIncrease20x", this.checked)'>
+                    <label for='speedIncrease20xInput'>${_txt("menu>options>speedIncrease20x_text")}</label>
+                </div>
+                <br>
+                ${_txt("menu>options>speedIncreaseCustom_text")}
+                <input id='speedIncreaseCustomInput' type='number' value='5' min='1' style='width: 50px;transform: translateY(-2px);' oninput='setOption("speedIncreaseCustom", parseInt(this.value))' />
+                <br>
+                ${_txt("menu>options>speedIncreaseBackground_text")}
+                <input id='speedIncreaseBackgroundInput' type='number' value='' placeholder='same' min='0' style='width: 50px;transform: translateY(-2px);' oninput='setOption("speedIncreaseBackground", parseFloat(this.value))' />
+                <div id='speedIncreaseBackgroundWarning' class='small block' style='display:none'>${_txt("menu>options>speedIncreaseBackground_warning")}</div>
+                <br>
+            </div>
+        </div>`;
         return html;
     },
     htmlChallengeMenu() {
