@@ -21,6 +21,7 @@ function Actions() {
 
     this.tick = function(availableMana) {
         availableMana ??= 1;
+        availableMana = Mana.floor(availableMana);
 
         const curAction = this.getNextValidAction();
         // out of actions
