@@ -17,6 +17,7 @@
             • Fixed a mana accounting bug that could cause up to double mana consumption in some cases.<br>
             • Actions with multipart progress bars will no longer go past their expected limits if too much progress is made in 1 tick.<br>
             • Options that change the game balance have been moved to the Extras menu.<br>
+            • Fixed a game-breaking bug, whoops. Sorry folks!<br>
             ]]></version>
             <version verNum="3.P16.7"><![CDATA[
             <b> Dec 3rd, 2023</b>

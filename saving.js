@@ -89,6 +89,7 @@ let curTown = 0;
 
 
 const statList = /** @type {const} */(["Dex", "Str", "Con", "Spd", "Per", "Cha", "Int", "Luck", "Soul"]);
+/** @type {{[K in typeof statList[number]]?: {exp: number, talent: number, soulstone: number}}} */
 const stats = {};
 let totalTalent = 0;
 // eslint-disable-next-line prefer-const
@@ -143,9 +144,10 @@ let curLoadout = 0;
 let loadouts;
 let loadoutnames;
 //let loadoutnames = ["1", "2", "3", "4", "5"];
-const skillList = ["Combat", "Magic", "Practical", "Alchemy", "Crafting", "Dark", "Chronomancy", "Pyromancy", "Restoration", "Spatiomancy", "Mercantilism", "Divine", "Commune", "Wunderkind", "Gluttony", "Thievery", "Leadership", "Assassin"];
+const skillList = /** @type {const} */(["Combat", "Magic", "Practical", "Alchemy", "Crafting", "Dark", "Chronomancy", "Pyromancy", "Restoration", "Spatiomancy", "Mercantilism", "Divine", "Commune", "Wunderkind", "Gluttony", "Thievery", "Leadership", "Assassin"]);
+/** @type {{[K in typeof skillList[number]]?: {exp: number}}} */
 const skills = {};
-const buffList = ["Ritual", 
+const buffList = /** @type {const} */(["Ritual", 
     "Imbuement", 
     "Imbuement2", 
     "Feast", 
@@ -159,7 +161,7 @@ const buffList = ["Ritual",
     "PrestigeChronomancy",
     "PrestigeBartering",
     "PrestigeExpOverflow"
-];
+]);
 
 const dungeonFloors = [6, 9, 20];
 const trialFloors = [50, 100, 7, 1000, 25];
@@ -195,6 +197,7 @@ const buffCaps = {
     PrestigeBartering: 100,
     PrestigeExpOverflow: 100
 };
+/** @type {{[K in typeof buffList[number]]?: {amt: number}}} */
 const buffs = {};
 const prestigeValues = {};
 let goldInvested = 0;
@@ -446,6 +449,8 @@ let totalOfflineMs = 0;
 let bonusSpeed = 1;
 let bonusActive = false;
 let currentLoop = 0;
+/** @type {Action & ActionExtras} */
+let currentAction = null;
 const offlineRatio = 1;
 let totals = {
     time: 0,
