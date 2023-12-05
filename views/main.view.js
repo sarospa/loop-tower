@@ -468,9 +468,9 @@ function View() {
                     draggable='true' data-index='${i}'
                     style='background: ${color}; ${opacity}; ${display};'
                 >
-                    <div><img src='img/${imageName}.svg' class='smallIcon imageDragFix'> x
+                    <div class='nextActionLoops'><img src='img/${imageName}.svg' class='smallIcon imageDragFix'> x
                     <div class='bold'>${actionLoops}</div></div>
-                    <div style='float:right; margin-top: 1px; margin-right: 3px;'>
+                    <div class='nextActionButtons'>
                         ${capButton}
                         ${isSingular ? "" : `<i id='plusButton${i}' onclick='addLoop(${i})' class='actionIcon fas fa-plus'></i>`}
                         ${isSingular ? "" : `<i id='minusButton${i}' onclick='removeLoop(${i})' class='actionIcon fas fa-minus'></i>`}

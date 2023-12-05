@@ -569,6 +569,12 @@ input[type="number"] {
     width: 205px;
     height: 20px;
 }
+.nextActionButtons {
+    margin-top: 1px;
+    margin-right: 3px;
+    margin-left: auto;
+    order: 1;
+}
 .curActionContainer {
     width: 102px;
     height: 20px;
@@ -586,12 +592,26 @@ input[type="number"] {
     width: 100%;
 }
 
+#curActionsManaUsed {
+    position:absolute;
+    bottom:0;
+    left:0;
+    width:100%;
+}
+
 #nextActionsList {
     margin-top: 10px;
     width: 100%;
     text-align: left;
     max-height: 457px;
     overflow: auto;
+}
+
+#nextActionsAmountButtons {
+    position:absolute;
+    bottom:0;
+    left:0;
+    width:100%;
 }
 
 #nextActionsList::-webkit-scrollbar, #curActionsList::-webkit-scrollbar, .showthis2::-webkit-scrollbar  {
@@ -768,13 +788,14 @@ input[type="number"] {
 
 :root.responsive {
     height: 100%;
+    overflow: hidden;
 }
 
 .responsive body {
     display:grid;
     grid:
         "header header header" max-content
-        "actions town stats" 1fr
+        "actions town stats" minmax(0, 1fr)
         / minmax(350px, 1fr) minmax(535px, 2fr) minmax(316px, 1fr)
         ;
     justify-items: stretch;
@@ -822,6 +843,9 @@ input[type="number"] {
     width: auto !important;
     overflow-x: hidden;
     overflow-y: auto;
+    padding-bottom: 2ex;
+    flex-direction: column;
+    display: flex;
 }
 
 .responsive #statsColumn {
@@ -842,8 +866,8 @@ input[type="number"] {
 
 .responsive #actionsColumn {
     grid-area: actions;
-    margin: 0 1em 1em;
-    overflow: visible;
+    margin: 0 1em;
+    overflow: hidden;
 }
 
 .responsive #actionList {
@@ -857,8 +881,6 @@ input[type="number"] {
 
 .responsive #townColumn {
     grid-area: town;
-    display: flex;
-    flex-direction: column;
 }
 
 .responsive #townWindow {
@@ -892,19 +914,43 @@ input[type="number"] {
     width: auto;
     display: block;
 }
+.responsive #curActionsListContainer, .responsive #nextActionsListContainer {
+    display: flex;
+    flex-direction: column;
+}
 
 .responsive #curActionsList, .responsive #nextActionsList {
-    position: absolute;
-    inset: 0;
-    padding-bottom: 4ex;
+    padding-bottom: 2ex;
     max-height: none !important;
+    width: auto;
+    display: flex !important;
+    flex-direction: column;
+    flex: 1;
+}
+
+.responsive #nextActionsList[style*="none"] {
+    visibility: collapse;
+}
+
+.responsive #curActionsManaUsed, .responsive #nextActionsAmountButtons {
+    position: static;
+    width: auto;
+    margin-top: auto;
+}
+
+.responsive .curActionContainer, .responsive .nextActionContainer {
     width: auto;
 }
 
+.responsive .nextActionButtons {
+    margin-right: 10px;
+}
+
+
 .responsive #expandableList {
-    height:auto !important;
-    flex-grow: 1;
+    flex: 1;
     display: flex;
+    height:  20px !important;
 }
 
 .responsive .actionOptions {
