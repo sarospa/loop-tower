@@ -92,7 +92,7 @@ function intToStringNegative(value, amount) {
 
 function intToString(value, amount) {
     const prefix = value < 0 ? "-" : "";
-    value = Math.abs(value);
+    value = Math.abs(parseFloat(value));
     if (value >= 10000) {
         return prefix + nFormatter(value, 3);
     }
