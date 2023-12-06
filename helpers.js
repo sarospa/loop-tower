@@ -462,6 +462,74 @@ function roughSizeOfObject(object) {
     return bytes;
 }
 
+/** @type {(object: any, strings?: (string|number)[], map?: Record<string, number>) => any} */
+function extractStrings(object, strings, map) {
+    const isToplevel = strings == undefined;
+    strings ??= [];
+    map ??= {};
+    function extract(v) {
+        if (typeof v === "string" || typeof v === "number") {
+            if (!(v in map)) {
+                map[v] = strings.length;
+                strings.push(v);
+            }
+            return map[v];
+        }
+        return extractStrings(v, strings, map);
+    }
+    if (object?.toJSON) object = object.toJSON();
+    if (Array.isArray(object)) {
+        const arr = [];
+        for (const i in object) {
+            arr[i] = extract(object[i]);
+        }
+        return isToplevel ? [strings, arr] : arr;
+    } else if (object && typeof object === "object") {
+        const exObj = {};
+        for (const prop in object) {
+            const idx = extract(prop);
+            const v = extract(object[prop]);
+            exObj[idx] = v;
+        }
+        return isToplevel ? {"": strings, ...exObj} : exObj;
+    }
+    return object;
+}
+
+/** @type {(object: any, strings?: (string|number)[]) => any} */
+function restoreStrings(object, strings) {
+    const isTopLevel = strings == undefined;
+    if (isTopLevel) {
+        if (Array.isArray(object)) {
+            [strings, object] = object;
+        } else {
+            let {"": s, ...o} = object;
+            strings = s;
+            object = o;
+        }
+    }
+    function restore(v) {
+        if (typeof v === "string") v = parseInt(v);
+        if (typeof v === "number") return strings[v];
+        return restoreStrings(v, strings);
+    }
+    if (Array.isArray(object)) {
+        const arr = [];
+        for (const i in object) {
+            arr[i] = restore(object[i]);
+        }
+        return arr;
+    } else if (object && typeof object === "object") {
+        const resObj = {};
+        for (const prop in object) {
+            const v = object[prop];
+            resObj[restore(prop)] = restore(v);
+        }
+        return resObj;
+    }
+    return object;
+}
+
 // modified from: https://stackoverflow.com/questions/879152/how-do-i-make-javascript-beep/13194087#13194087
 function beep(duration) {
     const ctxClass = window.audioContext || window.AudioContext || window.AudioContext || window.webkitAudioContext;

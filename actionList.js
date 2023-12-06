@@ -1,9 +1,21 @@
 "use strict";
 
+/** @param {string} name  */
 function withoutSpaces(name) {
     return name.replace(/ /gu, "");
 }
 
+/** @param {string} name @returns {Action & ActionExtras | false}  */
+function getActionPrototype(name) {
+    const nameWithoutSpaces = withoutSpaces(name);
+    if (nameWithoutSpaces in Action && Action[nameWithoutSpaces] instanceof Action) {
+        return Action[nameWithoutSpaces];
+    }
+    console.log(`error trying to create ${name}`);
+    return false;
+}
+
+/** @param {string} name @returns {Action & ActionExtras | false} */
 function translateClassNames(name) {
     // construct a new action object with appropriate prototype
     const nameWithoutSpaces = withoutSpaces(name);

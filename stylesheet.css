@@ -210,6 +210,9 @@ body:not(.loading) > .hideWhenLoaded {
 .bold {
     font-weight:bold;
 }
+.italic {
+    font-style: italic;
+}
 .underline {
     text-decoration: underline;
 }
@@ -528,6 +531,26 @@ input[type="number"] {
     min-height: 100px;
     max-height: 400px;
     overflow: auto;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+}
+
+.actionLogEntry {
+    margin-left: 40px;
+}
+
+li#actionLogLoadPrevious {
+    display: none;
+    text-align: center;
+    cursor: pointer;
+    align-self: center;
+    margin: 0 0 1ex;
+    opacity: 0.8;
+}
+
+#actionLog.hasPrevious > #actionLogLoadPrevious {
+    display: inline-block;
 }
 
 #curActionsListContainer {

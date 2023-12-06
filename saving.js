@@ -743,6 +743,10 @@ function load(inChallenge) {
         }
     }
 
+    if (toLoad.actionLog !== undefined) {
+        actionLog.load(toLoad.actionLog);
+    }
+
     if (toLoad.totalTalent === undefined) {
         let temptotalTalent = 0;
         for (const property in toLoad.stats) {
@@ -1061,6 +1065,7 @@ function save() {
     toSave.storyMax = storyMax;
     toSave.storyReqs = storyReqs;
     toSave.unreadActionStories = unreadActionStories;
+    toSave.actionLog = actionLog;
     toSave.buffCaps = buffCaps;
 
     toSave.date = new Date();

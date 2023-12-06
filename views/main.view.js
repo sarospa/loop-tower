@@ -590,7 +590,17 @@ function View() {
     };
 
     this.updateActionLogEntry = function(index) {
-        const entry = actionLog.entries[index];
+        const log = document.getElementById("actionLog");
+        this.actionLogClearHTML ??= log.innerHTML;
+        if (index === "clear") {
+            log.innerHTML = this.actionLogClearHTML; // nuke it, dot it
+        }
+        const entry = actionLog.getEntry(index);
+        if (actionLog.hasPrevious()) {
+            log.classList.add("hasPrevious");
+        } else {
+            log.classList.remove("hasPrevious");
+        }
         if (!entry) return;
         let element = document.getElementById(`actionLogEntry${index}`);
         if (element) {
@@ -599,8 +609,8 @@ function View() {
         } else {
             element = entry.createElement();
             element.id = `actionLogEntry${index}`;
-            
-            const log = document.getElementById("actionLog");
+            element.style.order = index;
+
             log.appendChild(element);
         }
     }
