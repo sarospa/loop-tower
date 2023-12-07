@@ -42,6 +42,8 @@ class ActionLog {
             this.firstNewEntry = null;
             this.earliestShownEntry = null;
             return null;
+        } else if (index < (this.earliestShownEntry ?? Infinity)) {
+            this.earliestShownEntry = index;
         }
         return this.entries[index];
     }
@@ -53,6 +55,7 @@ class ActionLog {
     /** @param {unknown} data  */
     load(data) {
         this.entries = [];
+        this.#uniqueEntries = {};
         this.firstNewEntry = null;
         this.earliestShownEntry = null;
         view.requestUpdate("updateActionLogEntry", "clear");
@@ -73,6 +76,13 @@ class ActionLog {
     loadHistoryBackTo(index) {
         this.earliestShownEntry ??= this.entries.length;
         while (this.earliestShownEntry > Math.max(0, index)) {
+            view.requestUpdate("updateActionLogEntry", --this.earliestShownEntry);
+        }
+    }
+
+    loadRecent() {
+        this.earliestShownEntry ??= this.entries.length;
+        while (this.earliestShownEntry > 0 && this.entries[this.earliestShownEntry - 1].repeatable) {
             view.requestUpdate("updateActionLogEntry", --this.earliestShownEntry);
         }
     }

@@ -757,6 +757,7 @@ function load(inChallenge) {
 
     if (toLoad.actionLog !== undefined) {
         actionLog.load(toLoad.actionLog);
+        actionLog.loadRecent();
     }
 
     if (toLoad.totalTalent === undefined) {
