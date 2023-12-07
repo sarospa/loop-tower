@@ -59,6 +59,12 @@ Views.registerView("menu", {
                 <div class='button' style='margin-top: 1px;' onclick='openSaveFile()'>${_txt("menu>save>importfile_button")}</div>
                 <input id="SaveFileInput" type='file' style="visibility:hidden;" onchange="importSaveFile(event)" />
                 <br>
+                <div id="cloud_save" class="block" style="display:none">
+                    ${_txt("menu>save>cloud_label")}<br>
+                    <div class='button' style='margin-top: 5px; margin-right: 2px;' onclick='googleCloud.exportSave()'>${_txt("menu>save>exportcloud_button")}</div>
+                    <div class='button' style='margin-top: 1px;' onclick='googleCloud.loadSaves()'>${_txt("menu>save>importcloud_button")}</div>
+                    <ul id='cloud_save_result'></ul>
+                </div>
             </div>
         </div>`;
         return html;
@@ -98,6 +104,9 @@ Views.registerView("menu", {
                 <br>
                 <input id='actionLogInput' type='checkbox' onchange='setOption("actionLog", this.checked)'/>
                     <label for='actionLogInput'>${_txt("menu>options>action_log")}</label>
+                <br>
+                <input id='googleCloudInput' type='checkbox' onchange='setOption("googleCloud", this.checked)'/>
+                    <label for='googleCloudInput'>${_txt("menu>options>google_cloud")}</label>
                 <br>
                 <input id='highlightNewInput' type='checkbox' onchange='setOption("highlightNew", this.checked)'/>
                     <label for='highlightNewInput'>${_txt("menu>options>highlight_new")}</label>

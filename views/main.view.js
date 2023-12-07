@@ -126,6 +126,7 @@ function View() {
         updateMultiPart: [],
         updateMultiPartActions: [],
         updateNextActions: [],
+        updateCloudSave: [],
         updateTime: [],
         updateOffline: [],
         updateTotals: [],
@@ -318,6 +319,38 @@ function View() {
             this.updateBuff(buff);
         }
     };
+
+    /** @param {string|gapi.client.drive.File} fileOrText */
+    this.updateCloudSave = function(fileOrText) {
+        const list = document.getElementById("cloud_save_result");
+        if (typeof fileOrText === "string") {
+            list.innerHTML = fileOrText;
+        } else if (fileOrText) {
+            const fileId = fileOrText.id;
+            const fileName = fileOrText.name;
+            let li = document.getElementById(`cloud_save_${fileId}`);
+            if (li && !fileName) {
+                li.remove();
+                return;
+            }
+            if (!li) {
+                li = document.createElement("li");
+                list.appendChild(li);
+            }
+            li.className = "cloud_save";
+            li.id = `cloud_save_${fileId}`;
+            li.dataset.fileId = fileId;
+            li.dataset.fileName = fileName;
+            li.innerHTML = `
+                <i onclick='startRenameCloudSave("${fileId}")' class='cloud_rename actionIcon fas fa-pencil-alt'></i>
+                <div class="cloud_save_name"'>
+                    ${fileName}
+                </div>
+                <div class='button cloud_import' style='margin-top: 1px;' onclick='googleCloud.importFile("${fileId}")'>${_txt("menu>save>import_button")}</div>
+                <div class='button cloud_delete' style='margin-top: 1px;' onclick='askDeleteCloudSave("${fileId}")'>${_txt("menu>save>delete_button")}</div>
+            `;
+        }
+    }
 
     this.updateTime = function() {
         document.getElementById("timeBar").style.width = `${100 - timer / timeNeeded * 100}%`;
@@ -1376,6 +1409,45 @@ function View() {
         document.getElementById('prestigeChronomancyNextCost').textContent = `${formatNumber(getPrestigeCost("PrestigeChronomancy"))}`;
         document.getElementById('prestigeBarteringNextCost').textContent = `${formatNumber(getPrestigeCost("PrestigeBartering"))}`;
         document.getElementById('prestigeExpOverflowNextCost').textContent = `${formatNumber(getPrestigeCost("PrestigeExpOverflow"))}`;        
+    }
+}
+
+function startRenameCloudSave(fileId) {
+    const li = document.getElementById(`cloud_save_${fileId}`);
+    const nameInput = li?.querySelector(".cloud_save_name");
+    if (!nameInput) return;
+    if (nameInput instanceof HTMLInputElement) {
+        if (!nameInput.value || nameInput.value === li.dataset.fileName) {
+            const div = document.createElement("div");
+            div.className = nameInput.className;
+            div.textContent = li.dataset.fileName;
+            li.replaceChild(div, nameInput);
+        } else {
+            googleCloud.renameFile(fileId, nameInput.value);
+        }
+    } else {
+        const input = document.createElement("input");
+        input.className = nameInput.className;
+        input.style.width = `${nameInput.clientWidth}px`;
+        input.value = li.dataset.fileName;
+        input.onkeydown = (e) => e.key === "Enter" && startRenameCloudSave(fileId) || true;
+        li.replaceChild(input, nameInput);
+        input.focus();
+    }
+}
+
+async function askDeleteCloudSave(fileId) {
+    const li = document.getElementById(`cloud_save_${fileId}`);
+    const button = li?.querySelector(".button.cloud_delete");
+    if (!button) return;
+    if (button.classList.contains("warning")) {
+        googleCloud.deleteFile(fileId);
+    } else {
+        button.textContent = _txt("menu>save>confirm_button");
+        button.classList.add("warning");
+        await new Promise(r => setTimeout(r, 3000));
+        button.classList.remove("warning");
+        button.textContent = _txt("menu>save>delete_button");
     }
 }
 

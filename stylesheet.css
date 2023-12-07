@@ -35,6 +35,11 @@ body {
     place-self: center;
 }
 
+#cloud_save_result {
+    padding: 0;
+    list-style-type: none;
+}
+
 body.loading > *:not(.showWhileLoading),
 body:not(.loading) > .hideWhenLoaded {
     visibility: hidden;
@@ -330,6 +335,10 @@ input[type="number"] {
     background-color: #3e8e41;
     box-shadow: 0 1px #666;
     transform: translateY(0px);
+}
+
+.button.warning {
+    background-color: #AF4C50;
 }
 
 .loadoutbutton {

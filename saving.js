@@ -483,6 +483,7 @@ let curGodsSegment = 0;
 
 /** @type {Notification} */
 let pauseNotification = null;
+const googleCloud = new GoogleCloud();
 
 const options = {
     theme: "normal",
@@ -509,6 +510,7 @@ const options = {
     autoMaxTraining: false,
     hotkeys: true,
     predictor:  false,
+    googleCloud: false,
     updateRate: 50,
     autosaveRate: 30,
 };
@@ -541,14 +543,15 @@ const isStandardOption = {
     autoMaxTraining: true,
     hotkeys: true,
     predictor: false,
+    googleCloud: false,
     updateRate: true,
     autosaveRate: true,
 };
 
-/** @type {{[K in keyof typeof options]?: (value: any, init: boolean) => void}} */
+/** @type {{[K in keyof typeof options]?: (value: any, init: boolean, getInput: () => HTMLInputElement) => void}} */
 const optionValueHandlers = {
-    notifyOnPause(value, init) {
-        const input = /** @type {HTMLInputElement} */(document.getElementById("notifyOnPauseInput"));
+    notifyOnPause(value, init, getInput) {
+        const input = getInput();
         if (value && !init) {
             if (Notification && Notification.permission === "default") {
                 input.checked = false;
@@ -589,6 +592,15 @@ const optionValueHandlers = {
     predictor(value, init) {
         localStorage["loadPredictor"] = value || "";
     },
+    googleCloud(value, init, getInput) {
+        if (value) {
+            googleCloud.init();
+            document.getElementById("cloud_save").style.display="";
+        } else {
+            document.getElementById("cloud_save").style.display="none";
+        }
+        if (!init && !value) googleCloud.revoke();
+    },
     speedIncrease10x: checkExtraSpeed,
     speedIncrease20x: checkExtraSpeed,
     speedIncreaseCustom: checkExtraSpeed,
@@ -604,7 +616,7 @@ const optionValueHandlers = {
 
 function setOption(option, value) {
     options[option] = value;
-    optionValueHandlers[option]?.(value, false);
+    optionValueHandlers[option]?.(value, false, () => document.getElementById(`${option}Input`));
 }
 
 function loadOption(option, value) {
@@ -613,7 +625,7 @@ function loadOption(option, value) {
     if (input.type === "checkbox") input.checked = value;
     else if (option === "speedIncreaseBackground" && (typeof value !== "number" || isNaN(value) || value < 0)) input.value = "";
     else input.value = value;
-    optionValueHandlers[option]?.(value, true);
+    optionValueHandlers[option]?.(value, true, () => input);
 }
 
 function showPauseNotification(message) {
@@ -1078,6 +1090,10 @@ function save() {
 
     window.localStorage[saveName] = JSON.stringify(toSave);
     window.localStorage["updateRate"] = options.updateRate;
+}
+
+function currentSaveData() {
+    return `ILSV01${LZString.compressToBase64(window.localStorage[saveName])}`;
 }
 
 function exportSave() {
