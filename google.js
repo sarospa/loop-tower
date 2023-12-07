@@ -32,7 +32,7 @@ class GoogleCloud {
         if (!gapi?.client?.drive) {
             while (!gapi) {
                 console.error("gapi not loaded? something has gone wrong, hopefully waiting fixes it");
-                await new Promise(r => setTimeout(r, 1000));
+                await delay(1000);
             }
             await new Promise((callback, onerror) => gapi.load("client", {callback, onerror}));
             await gapi.client.init({
@@ -55,7 +55,7 @@ class GoogleCloud {
         console.log("starting authorize for",{userRequest,promise:this.#authzPromise,token:gapi.client.getToken(),expiry:this.tokenExpiry});
         this.#authzPromise ??= this.init().then(
             () => new Promise((resolve, reject) => {
-                if (gapi.client.getToken() == null || Date.now() > this.tokenExpiry) {
+                if (userRequest && (gapi.client.getToken() == null || Date.now() > this.tokenExpiry)) {
                     console.log("requesting access token");
                     this.#tokenHandler = success => success ? resolve(this.tokenResponse?.access_token) : reject(this.tokenError?.message);
                     this.tokenClient.requestAccessToken({
@@ -142,11 +142,13 @@ class GoogleCloud {
             parents: ["appDataFolder"],
         }, "text/plain", data);
         view.requestUpdate("updateCloudSave", _txt("menu>save>cloud_saved").replace("{name}", name));
-        console.log("cloud save complete");
+        console.log("cloud save complete, waiting and then triggering optimistic reload");
+        await delay(1000);
+        this.loadSaves(false);
     }
 
-    async loadSaves() {
-        if (!await this.authorize("load")) return;
+    async loadSaves(fromUserRequest) {
+        if (!await this.authorize(fromUserRequest && "load")) return;
         console.log("performing cloud load");
         const response = await gapi.client.drive.files.list({
             spaces: "appDataFolder",

@@ -1445,7 +1445,7 @@ async function askDeleteCloudSave(fileId) {
     } else {
         button.textContent = _txt("menu>save>confirm_button");
         button.classList.add("warning");
-        await new Promise(r => setTimeout(r, 3000));
+        await delay(3000);
         button.classList.remove("warning");
         button.textContent = _txt("menu>save>delete_button");
     }

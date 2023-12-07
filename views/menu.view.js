@@ -62,7 +62,7 @@ Views.registerView("menu", {
                 <div id="cloud_save" class="block" style="display:none">
                     ${_txt("menu>save>cloud_label")}<br>
                     <div class='button' style='margin-top: 5px; margin-right: 2px;' onclick='googleCloud.exportSave()'>${_txt("menu>save>exportcloud_button")}</div>
-                    <div class='button' style='margin-top: 1px;' onclick='googleCloud.loadSaves()'>${_txt("menu>save>importcloud_button")}</div>
+                    <div class='button' style='margin-top: 1px;' onclick='googleCloud.loadSaves(true)'>${_txt("menu>save>importcloud_button")}</div>
                     <ul id='cloud_save_result'></ul>
                 </div>
             </div>

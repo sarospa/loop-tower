@@ -530,6 +530,21 @@ function restoreStrings(object, strings) {
     return object;
 }
 
+async function delay(milliseconds) {
+    await new Promise(r => setTimeout(r, milliseconds));    
+}
+
+/** @returns {Promise<DOMHighResTimeStamp>} */
+function nextAnimationFrame() {
+    /** @param {FrameRequestCallback} r */
+    return new Promise(r => requestAnimationFrame(r));
+}
+
+/** @param {IdleRequestOptions} idleRequestOptions @returns {Promise<IdleDeadline>} */
+function nextIdle(idleRequestOptions) {
+    return new Promise(r => requestIdleCallback(r, idleRequestOptions));
+}
+
 // modified from: https://stackoverflow.com/questions/879152/how-do-i-make-javascript-beep/13194087#13194087
 function beep(duration) {
     const ctxClass = window.audioContext || window.AudioContext || window.AudioContext || window.webkitAudioContext;
