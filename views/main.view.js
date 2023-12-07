@@ -349,6 +349,9 @@ function View() {
                 <div class='button cloud_import' style='margin-top: 1px;' onclick='googleCloud.importFile("${fileId}")'>${_txt("menu>save>import_button")}</div>
                 <div class='button cloud_delete' style='margin-top: 1px;' onclick='askDeleteCloudSave("${fileId}")'>${_txt("menu>save>delete_button")}</div>
             `;
+            const name = li.querySelector(".cloud_save_name");
+            name.textContent = fileName;
+            name.title = fileName;
         }
     }
 
@@ -1421,6 +1424,7 @@ function startRenameCloudSave(fileId) {
             const div = document.createElement("div");
             div.className = nameInput.className;
             div.textContent = li.dataset.fileName;
+            div.title = li.dataset.fileName;
             li.replaceChild(div, nameInput);
         } else {
             googleCloud.renameFile(fileId, nameInput.value);

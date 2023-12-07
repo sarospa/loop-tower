@@ -40,6 +40,20 @@ body {
     list-style-type: none;
 }
 
+.cloud_save {
+    display: flex;
+    gap: 0.5em;
+    align-items: baseline;
+}
+
+.cloud_save_name {
+    flex-grow: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+}
+
 body.loading > *:not(.showWhileLoading),
 body:not(.loading) > .hideWhenLoaded {
     visibility: hidden;
