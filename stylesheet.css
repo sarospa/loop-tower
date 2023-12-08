@@ -11,13 +11,19 @@ menu {
     padding: 0;
 }
 
-menu > li:focus-visible {
+menu > li:focus-within, #story_control:focus-within, #story_control:focus-within > div:first-child  {
     text-decoration: underline;
     outline: none;
 }
 
 button {
     font: inherit;
+    padding: unset;
+    border: unset;
+    background: unset;
+    color: unset;
+    margin: unset;
+    box-sizing: unset;
 }
 
 body {
@@ -92,12 +98,12 @@ body:not(.loading) > .hideWhenLoaded {
     visibility: visible;
     opacity: 1;
 }
-.showthat:hover .showthis.when-locked,
-.showthat.locked:hover .showthis.when-unlocked
+.showthat:hover .showthis.when-locked, .showthat:focus-within .showthis.when-locked,
+.showthat.locked:hover .showthis.when-unlocked, .showthat.locked:focus-within .showthis.when-unlocked
 {
     visibility: hidden;
 }
-.showthat.locked:hover .showthis.when-locked
+.showthat.locked:hover .showthis.when-locked, .showthat.locked:focus-within .showthis.when-locked
 {
     display: block;
     visibility: visible;
@@ -358,7 +364,7 @@ input[type="number"] {
 
 .button:hover, .loadoutbutton:hover {background-color: #3e8e41}
 
-.button:active, .loadoutbutton:active {
+.button:active, .loadoutbutton:active, .showthatloadout:focus-within, .showthatloadout:hover {
     background-color: #3e8e41;
     box-shadow: 0 1px #666;
     top: 0;

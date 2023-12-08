@@ -419,7 +419,7 @@ function View() {
             li.dataset.fileId = fileId;
             li.dataset.fileName = fileName;
             li.innerHTML = `
-                <i onclick='startRenameCloudSave("${fileId}")' class='cloud_rename actionIcon fas fa-pencil-alt'></i>
+                <button onclick='startRenameCloudSave("${fileId}")' class='cloud_rename actionIcon fas fa-pencil-alt'></button>
                 <div class="cloud_save_name"'>
                     ${fileName}
                 </div>
@@ -541,9 +541,9 @@ function View() {
                 }
             });
             if (hasLimit(action.name)) {
-                capButton = `<i id='capButton${i}' onclick='capAmount(${i}, ${townNum})' class='actionIcon far fa-circle'></i>`;
+                capButton = `<button id='capButton${i}' onclick='capAmount(${i}, ${townNum})' class='actionIcon far fa-circle'></button>`;
             } else if (isTraining(action.name)) {
-                capButton = `<i id='capButton${i}' onclick='capTraining(${i})' class='actionIcon far fa-circle'></i>`;
+                capButton = `<button id='capButton${i}' onclick='capTraining(${i})' class='actionIcon far fa-circle'></button>`;
             }
             let isSingular;
             if (translatedAction.allowed === undefined) {
@@ -585,14 +585,14 @@ function View() {
                     <div class='bold'>${actionLoops}</div></div>
                     <div class='nextActionButtons'>
                         ${capButton}
-                        ${isSingular ? "" : `<i id='plusButton${i}' onclick='addLoop(${i})' class='actionIcon fas fa-plus'></i>`}
-                        ${isSingular ? "" : `<i id='minusButton${i}' onclick='removeLoop(${i})' class='actionIcon fas fa-minus'></i>`}
-                        ${isSingular ? "" : `<i id='splitButton${i}' onclick='split(${i})' class='actionIcon fas fa-arrows-alt-h'></i>`}
-                        ${travelNum ? `<i id='collapseButton${i}' onclick='collapse(${i})' class='actionIcon fas fa-${action.collapsed ? "expand" : "compress"}-alt'></i>` : ""}
-                        <i id='upButton${i}' onclick='moveUp(${i})' class='actionIcon fas fa-sort-up'></i>
-                        <i id='downButton${i}' onclick='moveDown(${i})' class='actionIcon fas fa-sort-down'></i>
-                        <i id='skipButton${i}' onclick='disableAction(${i})' class='actionIcon far fa-${action.disabled ? "check" : "times"}-circle'></i>
-                        <i id='removeButton${i}' onclick='removeAction(${i})' class='actionIcon fas fa-times'></i>
+                        ${isSingular ? "" : `<button id='plusButton${i}' onclick='addLoop(${i})' class='actionIcon fas fa-plus'></button>`}
+                        ${isSingular ? "" : `<button id='minusButton${i}' onclick='removeLoop(${i})' class='actionIcon fas fa-minus'></button>`}
+                        ${isSingular ? "" : `<button id='splitButton${i}' onclick='split(${i})' class='actionIcon fas fa-arrows-alt-h'></button>`}
+                        ${travelNum ? `<button id='collapseButton${i}' onclick='collapse(${i})' class='actionIcon fas fa-${action.collapsed ? "expand" : "compress"}-alt'></button>` : ""}
+                        <button id='upButton${i}' onclick='moveUp(${i})' class='actionIcon fas fa-sort-up'></button>
+                        <button id='downButton${i}' onclick='moveDown(${i})' class='actionIcon fas fa-sort-down'></button>
+                        <button id='skipButton${i}' onclick='disableAction(${i})' class='actionIcon far fa-${action.disabled ? "check" : "times"}-circle'></button>
+                        <button id='removeButton${i}' onclick='removeAction(${i})' class='actionIcon fas fa-times'></button>
                     </div>
                 </div>`;
         }
@@ -1054,7 +1054,7 @@ function View() {
         const unlockConditions = /<br>Unlocked (.*?)(?:<br>|$)/is.exec(`${action.tooltip}${action.goldCost === undefined ? "" : action.tooltip2}`)?.[1]; // I hate this but wygd
         const lockedText = unlockConditions ? `${_txt("actions>tooltip>locked_tooltip")}<br>Will unlock ${unlockConditions}` : `${action.tooltip}${action.goldCost === undefined ? "" : action.tooltip2}`;
         const totalDivText =
-            `<div
+            `<button
                 id='container${action.varName}'
                 class='${divClass}'
                 draggable='true'
@@ -1085,7 +1085,7 @@ function View() {
                     ${lockedSkills}
                     ${lockedStats}
                 </div>
-            </div>`;
+            </button>`;
 
         const actionsDiv = document.createElement("div");
         actionsDiv.innerHTML = totalDivText;
