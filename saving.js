@@ -489,7 +489,7 @@ const options = {
     theme: "normal",
     themeVariant: "",
     responsiveUI: false,
-    actionLog: false,
+    actionLog: true,
     fractionalMana: false,
     keepCurrentList: false,
     repeatLastAction: false,

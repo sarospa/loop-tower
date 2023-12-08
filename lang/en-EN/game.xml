@@ -12,8 +12,9 @@
             <version verNum="3.P16.9"><![CDATA[
             <b> Dec 7th, 2023</b>
             • Added cloud saves via Google Drive. Many thanks to Mawan from the discord for the testing help!<br>
-            • More improvements to the Action Log.<br>
+            • Many improvements to the Action Log. Enabled by default and no longer marked experimental!<br>
             • Tooltip display has been improved, and menus will no longer close if the focus is inside them.<br>
+            • Town progress displays now align column-wise in both the classic and responsive UI, from a great suggestion by Ham5terzilla on the discord!<br>
             ]]></version>
             <version verNum="3.P16.8"><![CDATA[
             <b> Dec 4th, 2023</b>
@@ -499,7 +500,7 @@
                 important to you, leave these options unchanged. Otherwise, have fun!
             </extras_warning>
             <responsive_ui>Experimental responsive UI</responsive_ui>
-            <action_log>Experimental action log</action_log>
+            <action_log>Show action log</action_log>
             <fractional_mana>Fractional mana consumption</fractional_mana>
             <highlight_new>Highlight new actions</highlight_new>
             <stat_colors>Use stat colors on menu (requires save and refresh)</stat_colors>
@@ -1563,7 +1564,7 @@
         </train_strength>
         <short_quest>
             <label>Short Quest</label>
-            <label_done>Short Quests Accomplished</label_done>
+            <label_done>Short Quests Done</label_done>
             <info_text1>Quests with loot left</info_text1>
             <info_text2>Quests with loot total</info_text2>
             <info_text3>Quests to finish</info_text3>
@@ -1591,7 +1592,7 @@
         </investigate>
         <long_quest>
             <label>Long Quest</label>
-            <label_done>Long Quests Accomplished</label_done>
+            <label_done>Long Quests Done</label_done>
             <info_text1>Quests with loot left</info_text1>
             <info_text2>Quests with loot total</info_text2>
             <info_text3>Quests to finish</info_text3>

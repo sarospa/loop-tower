@@ -259,7 +259,7 @@ function View() {
         tooltipRect.x = Math.max(tooltipRect.x, viewportRect.left);
         tooltipRect.y = Math.max(tooltipRect.y, viewportRect.top);
 
-        console.log("Fixing tooltip:",{tooltip,tooltipRect,trigger,triggerRect,event});
+        // console.log("Fixing tooltip:",{tooltip,tooltipRect,trigger,triggerRect,event});
 
         tooltip.style.position = "fixed";
         tooltip.style.left = `${tooltipRect.x - viewportRect.x}px`;
@@ -655,7 +655,7 @@ function View() {
         if (action.errorMessage) {
             document.getElementById(`action${index}Failed`).textContent = action.loopsLeft;
             document.getElementById(`action${index}Error`).textContent = action.errorMessage;
-            document.getElementById(`action${index}HasFailed`).style.display = "block";
+            document.getElementById(`action${index}HasFailed`).style.display = "";
             div.style.width = "100%";
             div.style.backgroundColor = "#ff0000";
             div.style.height = "30%";
@@ -890,9 +890,9 @@ function View() {
             actionStoriesTown[i].style.display = "none";
             townInfos[i].style.display = "none";
         }
-        if (actionStoriesShowing) actionStoriesTown[townNum].style.display = "block";
-        else actionOptionsTown[townNum].style.display = "block";
-        townInfos[townNum].style.display = "block";
+        if (actionStoriesShowing) actionStoriesTown[townNum].style.display = "";
+        else actionOptionsTown[townNum].style.display = "";
+        townInfos[townNum].style.display = "";
         $("#TownSelect").val(townNum);
         document.getElementById("townDesc").textContent = _txt(`towns>town${townNum}>desc`);
         townShowing = townNum;
@@ -907,11 +907,11 @@ function View() {
         if (stories) {
             document.getElementById("actionsViewLeft").style.visibility = "";
             document.getElementById("actionsViewRight").style.visibility = "hidden";
-            actionStoriesTown[townShowing].style.display = "block";
+            actionStoriesTown[townShowing].style.display = "";
         } else {
             document.getElementById("actionsViewLeft").style.visibility = "hidden";
             document.getElementById("actionsViewRight").style.visibility = "";
-            actionOptionsTown[townShowing].style.display = "block";
+            actionOptionsTown[townShowing].style.display = "";
         }
 
         document.getElementById("actionsTitle").textContent = _txt(`actions>title${(stories) ? "_stories" : ""}`);
@@ -984,8 +984,9 @@ function View() {
             </div>
         </div>`;
         const progressDiv = document.createElement("div");
+        progressDiv.className = "townContainer progressType";
         progressDiv.id = `infoContainer${action.varName}`;
-        progressDiv.style.display = "block";
+        progressDiv.style.display = "";
         progressDiv.innerHTML = totalDivText;
         townInfos[action.townNum].appendChild(progressDiv);
     };
@@ -1166,19 +1167,21 @@ function View() {
 
     this.createTownInfo = function(action) {
         const totalInfoText =
+            // important that there be 8 element children of townInfoContainer (excluding the showthis popup)
             `<div class='townInfoContainer showthat'>
                 <div class='bold townLabel'>${action.labelDone}</div>
-                <div id='goodTemp${action.varName}'>0</div> <i class='fa fa-arrow-left'></i>
-                <div id='good${action.varName}'>0</div> <i class='fa fa-arrow-left'></i>
-                <div id='unchecked${action.varName}'>0</div>
+                <div class='numeric goodTemp' id='goodTemp${action.varName}'>0</div> <i class='fa fa-arrow-left'></i>
+                <div class='numeric good' id='good${action.varName}'>0</div> <i class='fa fa-arrow-left'></i>
+                <div class='numeric unchecked' id='unchecked${action.varName}'>0</div>
                 <input type='checkbox' id='searchToggler${action.varName}' style='margin-left:10px;'>
                 <label for='searchToggler${action.varName}'> Lootable first</label>
                 <div class='showthis'>${action.infoText()}</div>
             </div><br>`;
 
         const infoDiv = document.createElement("div");
+        infoDiv.className = "townContainer infoType";
         infoDiv.id = `infoContainer${action.varName}`;
-        infoDiv.style.display = "block";
+        infoDiv.style.display = "";
         infoDiv.innerHTML = totalInfoText;
         townInfos[action.townNum].appendChild(infoDiv);
     };
@@ -1217,7 +1220,8 @@ function View() {
             </div>`;
 
         const progressDiv = document.createElement("div");
-        progressDiv.style.display = "block";
+        progressDiv.className = "townContainer multipartType";
+        progressDiv.style.display = "";
         progressDiv.innerHTML = totalDivText;
         townInfos[action.townNum].appendChild(progressDiv);
     };
