@@ -63,8 +63,8 @@ body:not(.loading) > .hideWhenLoaded {
     visibility: hidden;
 }
 
-.showthis:hover {
-    visibility: hidden !important;
+.showthis {
+    pointer-events: none;
 }
 
 .showthatO {
