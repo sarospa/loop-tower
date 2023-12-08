@@ -14,6 +14,7 @@
             • Added Dark Cubic theme, for people who really like square borders but don't like eye strain, because why not.<br>
             • Fixed tab navigation on most controls; the game should now be playable by keyboard. Can't say it'll be easy but it should work, at least.<br>
             • As a happy side effect of the above, most tooltip-style popovers should stay visible if you click to focus in them. Accessibility benefits everyone!<br>
+            • Fixed a bug that could cause the game to freeze at extremely high Talent levels.<br>
             ]]></version>
             <version verNum="3.P16.9"><![CDATA[
             <b> Dec 7th, 2023</b>

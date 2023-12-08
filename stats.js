@@ -54,6 +54,10 @@ function getExpOfLevel(level) {
     return level * (level + 1) * 50;
 }
 
+function getExpOfSingleLevel(level) {
+    return level * 100;
+}
+
 function getTalent(stat) {
     return getLevelFromTalent(stats[stat].talent);
 }
@@ -64,6 +68,10 @@ function getLevelFromTalent(exp) {
 
 function getExpOfTalent(level) {
     return level * (level + 1) * 50;
+}
+
+function getExpOfSingleTalent(level) {
+    return level * 100;
 }
 
 function getPrcToNextLevel(stat) {
@@ -190,8 +198,10 @@ function addBuffAmt(name, amount) {
 
 // how much "addExp" would you have to do to get this stat to the next exp or talent level
 function getExpToLevel(name) {
-    const expToNext = getExpOfLevel(getLevel(name) + 1) - stats[name].exp;
-    const talentToNext = getExpOfTalent(getTalent(name) + 1) - stats[name].talent;
+    const curLevel = getLevel(name);
+    const curTalent = getTalent(name);
+    const expToNext = getExpOfSingleLevel(curLevel + 1) - (stats[name].exp - getExpOfLevel(curLevel));
+    const talentToNext = getExpOfSingleTalent(curTalent + 1) - (stats[name].talent - getExpOfTalent(curTalent));
     const aspirantBonus = getBuffLevel("Aspirant") ?  getBuffLevel("Aspirant") * 0.01 : 0;
     const talentMultiplier = (getSkillBonus("Wunderkind") + aspirantBonus) / 100;
     return Math.ceil(Math.min(expToNext, talentToNext / talentMultiplier));
