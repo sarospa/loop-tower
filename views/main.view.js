@@ -724,6 +724,11 @@ function View() {
 
             log.appendChild(element);
         }
+        if ((actionLog.firstNewOrUpdatedEntry ?? Infinity) <= index) {
+            element.classList.add("highlight");
+            element.scrollIntoView({block: "nearest", inline: "nearest", behavior: "auto"});
+            setTimeout(() => element.classList.remove("highlight"), 1);
+        }
     }
 
     this.mouseoverAction = function(index, isShowing) {

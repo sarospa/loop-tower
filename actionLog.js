@@ -5,7 +5,7 @@ class ActionLog {
     /** @type {Record<string, UniqueLogEntry>} */
     #uniqueEntries = {};
     /** @type {number | null} */
-    firstNewEntry = null;
+    firstNewOrUpdatedEntry = null;
     /** @type {number | null} */
     earliestShownEntry = null;
 
@@ -25,8 +25,11 @@ class ActionLog {
             this.entries.push(entry);
         }
         if (!init && options.actionLog) {
-            this.firstNewEntry ??= entry.entryIndex;
+            this.firstNewOrUpdatedEntry = Math.min(this.firstNewOrUpdatedEntry ?? Infinity, entry.entryIndex);
             this.earliestShownEntry ??= entry.entryIndex;
+            if (this.earliestShownEntry > entry.entryIndex + 1) {
+                this.loadHistoryBackTo(entry.entryIndex + 1);
+            }
             view.requestUpdate("updateActionLogEntry", entry.entryIndex);
         }
         return entry;
@@ -39,7 +42,7 @@ class ActionLog {
 
     getEntry(index) {
         if (index === "clear") {
-            this.firstNewEntry = null;
+            this.firstNewOrUpdatedEntry = null;
             this.earliestShownEntry = null;
             return null;
         } else if (index < (this.earliestShownEntry ?? Infinity)) {
@@ -56,7 +59,7 @@ class ActionLog {
     load(data) {
         this.entries = [];
         this.#uniqueEntries = {};
-        this.firstNewEntry = null;
+        this.firstNewOrUpdatedEntry = null;
         this.earliestShownEntry = null;
         view.requestUpdate("updateActionLogEntry", "clear");
         if (!Array.isArray(data)) return;

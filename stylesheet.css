@@ -587,6 +587,19 @@ input[type="number"] {
 
 .actionLogEntry {
     margin-left: 40px;
+    position: relative;
+}
+.actionLogEntry::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 0 -40px;
+    z-index: -1;
+    background-color: rgba(194, 230, 204, 0);
+    transition: background-color 1s ease-in 0.25s;
+}
+.actionLogEntry.highlight::before {
+    background-color: #c2e6cc;
+    transition: none;
 }
 
 li#actionLogLoadPrevious {
