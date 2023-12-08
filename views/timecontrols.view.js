@@ -14,17 +14,17 @@ Views.registerView("timeControls", {
     html() {
     // todo: add talent tree
         const html =
-        `<div id='pausePlay' onclick='pauseGame()'' class='button control'>${_txt("time_controls>pause_button")}</div>
-        <div onclick='manualRestart()' class='button showthatO control'>${_txt("time_controls>restart_button")}
+        `<button id='pausePlay' onclick='pauseGame()'' class='button control'>${_txt("time_controls>pause_button")}</button>
+        <button onclick='manualRestart()' class='button showthatO control'>${_txt("time_controls>restart_button")}
             <div class='showthis' style='color:black;width:230px;'>${_txt("time_controls>restart_text")}</div>
-        </div>
-        <div class='button showthatO control' onclick='toggleOffline()'>${_txt("time_controls>bonus_seconds>title")}
+        </button>
+        <button class='button showthatO control' onclick='toggleOffline()'>${_txt("time_controls>bonus_seconds>title")}
             <div class='showthis' style='width:230px;color:black;'>${_txt("time_controls>bonus_seconds>main_text")}
                 <div class='bold' id='isBonusOn'>${_txt("time_controls>bonus_seconds>state>off")}</div><br>
                 <div class='bold'>${_txt("time_controls>bonus_seconds>counter_text")}</div> <div id='bonusSeconds'></div>
             </div>
-        </div>
-        <div id='talentTreeBtn' style='display: none;' onclick='view.showTalents()'' class='button control'>${_txt("time_controls>talents_button")}</div>
+        </button>
+        <button id='talentTreeBtn' style='display: none;' onclick='view.showTalents()'' class='button control'>${_txt("time_controls>talents_button")}</button>
         <div class='control'>
             <div id='story_control' class='showthatO' onmouseover='view.updateStory(storyShowing)' style='height:30px;'>
                 <div class='large bold'>${_txt("time_controls>story_title")}</div>

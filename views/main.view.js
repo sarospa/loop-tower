@@ -44,11 +44,13 @@ function View() {
         this.updateActionTooltips();
         document.body.removeEventListener("mouseover", this.mouseoverHandler, {passive: true});
         document.body.addEventListener("mouseover", this.mouseoverHandler, {passive: true});
+        document.body.removeEventListener("focusin", this.mouseoverHandler, {passive: true});
+        document.body.addEventListener("focusin", this.mouseoverHandler, {passive: true});
         this.tooltipTriggerMap = new WeakMap();
         this.mouseoverCount = 0;
     };
 
-    /** @this {View} @param {MouseEvent} event */
+    /** @this {View} @param {UIEvent} event */
     this.mouseoverHandler = function(event) {
         const trigger = this.getClosestTrigger(event.target);
         this.mouseoverCount++;
@@ -213,7 +215,7 @@ function View() {
     /**
      * @param {HTMLElement} tooltip 
      * @param {HTMLElement} trigger 
-     * @param {MouseEvent} event 
+     * @param {UIEvent} event 
      */
     this.fixTooltipPosition = function(tooltip, trigger, event) {
         if (tooltip.contains(event.target)) {
@@ -421,8 +423,8 @@ function View() {
                 <div class="cloud_save_name"'>
                     ${fileName}
                 </div>
-                <div class='button cloud_import' style='margin-top: 1px;' onclick='googleCloud.importFile("${fileId}")'>${_txt("menu>save>import_button")}</div>
-                <div class='button cloud_delete' style='margin-top: 1px;' onclick='askDeleteCloudSave("${fileId}")'>${_txt("menu>save>delete_button")}</div>
+                <button class='button cloud_import' style='margin-top: 1px;' onclick='googleCloud.importFile("${fileId}")'>${_txt("menu>save>import_button")}</button>
+                <button class='button cloud_delete' style='margin-top: 1px;' onclick='askDeleteCloudSave("${fileId}")'>${_txt("menu>save>delete_button")}</button>
             `;
             const name = li.querySelector(".cloud_save_name");
             name.textContent = fileName;

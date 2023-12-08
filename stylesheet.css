@@ -6,6 +6,16 @@ div.block {
     display: block;
 }
 
+menu {
+    margin: 0;
+    padding: 0;
+}
+
+menu > li:focus-visible {
+    text-decoration: underline;
+    outline: none;
+}
+
 button {
     font: inherit;
 }
@@ -355,14 +365,9 @@ input[type="number"] {
 }
 
 /* Focus ring for keyboard navigation */
-.button:focus-visible::after, .loadoutbutton:focus-visible::after {
-    content: "";
-    position: absolute;
-    pointer-events: none;
-    inset: -4px;
-    border-radius: 8px;
-    border: 2px solid #3e8e41;
-    z-index: -1;
+.button:focus-visible, .loadoutbutton:focus-visible {
+    outline: 2px solid #3e8e41;
+    outline-offset: 2px;
 }
 
 /* Give buttons a bit of leeway while pressed */

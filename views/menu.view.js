@@ -28,45 +28,45 @@ Views.registerView("menu", {
     },
     htmlChangelog() {
         const html =
-        `<div style='display:inline-block;height:30px;margin-left:10px;' class='showthatH'>
+        `<li tabindex='0' style='display:inline-block;height:30px;margin-left:10px;' class='showthatH'>
             ${_txt("menu>changelog>meta>title")}
             <div style='max-width:110px;' class='showthisH' id='changelog'>
                 ${this.versions()}
             </div>
-        </div>`;
+        </li>`;
         return html;
     },
     htmlSaveMenu() {
         const html =
-        `<div style='display:inline-block;height:30px;margin-left:10px;' class='showthatH'>
+        `<li tabindex='0' style='display:inline-block;height:30px;margin-left:10px;' class='showthatH'>
             ${_txt("menu>save>meta>title")}
             <div class='showthisH'>
-                <div class='button' onclick='save()'>${_txt("menu>save>manual_save")}</div>
+                <button class='button' onclick='save()'>${_txt("menu>save>manual_save")}</button>
                 <br>
                 <textarea id='exportImportList'></textarea><label for='exportImportList'> ${_txt("menu>save>list_label")}</label>
                 <br>
-                <div class='button' style='margin-right: 2px;' onclick='exportCurrentList()'>${_txt("menu>save>export_button")}</div>
-                <div class='button' onclick='importCurrentList()'>${_txt("menu>save>import_button")}</div>
+                <button class='button' style='margin-right: 2px;' onclick='exportCurrentList()'>${_txt("menu>save>export_button")}</button>
+                <button class='button' onclick='importCurrentList()'>${_txt("menu>save>import_button")}</button>
                 <br>
                 ${_txt("menu>save>list_comment")}
                 <br><br>
                 <input id='exportImport'><label for='exportImport'> ${_txt("menu>save>input_label")}</label><br>
-                <div class='button' style='margin-top: 5px; margin-right: 2px;' onclick='exportSave()'>${_txt("menu>save>export_button")}</div>
-                <div class='button' style='margin-top: 1px;' onclick='importSave()'>${_txt("menu>save>import_button")}</div><br>
+                <button class='button' style='margin-top: 5px; margin-right: 2px;' onclick='exportSave()'>${_txt("menu>save>export_button")}</button>
+                <button class='button' style='margin-top: 1px;' onclick='importSave()'>${_txt("menu>save>import_button")}</button><br>
                 ${_txt("menu>save>export_comment")}<br>
                 ${_txt("menu>save>import_comment")}<br>
-                <div class='button' style='margin-top: 5px; margin-right: 2px;' onclick='exportSaveFile()'>${_txt("menu>save>exportfile_button")}</div>
-                <div class='button' style='margin-top: 1px;' onclick='openSaveFile()'>${_txt("menu>save>importfile_button")}</div>
+                <button class='button' style='margin-top: 5px; margin-right: 2px;' onclick='exportSaveFile()'>${_txt("menu>save>exportfile_button")}</button>
+                <button class='button' style='margin-top: 1px;' onclick='openSaveFile()'>${_txt("menu>save>importfile_button")}</button>
                 <input id="SaveFileInput" type='file' style="visibility:hidden;" onchange="importSaveFile(event)" />
                 <br>
                 <div id="cloud_save" class="block" style="display:none">
                     ${_txt("menu>save>cloud_label")}<br>
-                    <div class='button' style='margin-top: 5px; margin-right: 2px;' onclick='googleCloud.exportSave()'>${_txt("menu>save>exportcloud_button")}</div>
-                    <div class='button' style='margin-top: 1px;' onclick='googleCloud.loadSaves(true)'>${_txt("menu>save>importcloud_button")}</div>
+                    <button class='button' style='margin-top: 5px; margin-right: 2px;' onclick='googleCloud.exportSave()'>${_txt("menu>save>exportcloud_button")}</button>
+                    <button class='button' style='margin-top: 1px;' onclick='googleCloud.loadSaves(true)'>${_txt("menu>save>importcloud_button")}</button>
                     <ul id='cloud_save_result'></ul>
                 </div>
             </div>
-        </div>`;
+        </li>`;
         return html;
     },
     FAQs() {
@@ -82,17 +82,17 @@ Views.registerView("menu", {
     },
     htmlFAQMenu() {
         const html = 
-        `<div style='display:inline-block;height:30px;margin-left:10px;' class='showthatH'>
+        `<li tabindex='0' style='display:inline-block;height:30px;margin-left:10px;' class='showthatH'>
             ${_txt("menu>faq>meta>title")}
             <div class='showthisH'>
                 ${this.FAQs()}
             </div>
-        </div>`;
+        </li>`;
         return html;
     },
     htmlOptionsMenu() {
         const html =
-            `<div style='display:inline-block;height:30px;margin-left:10px;' class='showthatH'>
+            `<li tabindex='0' style='display:inline-block;height:30px;margin-left:10px;' class='showthatH'>
             ${_txt("menu>options>meta>title")}
             <div class='showthisH'>
                 <a target='_blank' href='${_txt("menu>options>discord>link")}'>${_txt("menu>options>discord>title")}</a><br>
@@ -135,7 +135,7 @@ Views.registerView("menu", {
                 <input id='autosaveRateInput' type='number' value='30' min='1' style='width: 50px;transform: translateY(-2px);' oninput='setOption("autosaveRate", parseInt(this.value))' />
                 <br>
             </div>
-        </div>`;
+        </li>`;
         return html;
     },
     htmlLocalizationMenu() {
@@ -166,7 +166,7 @@ Views.registerView("menu", {
     },
     htmlExtrasMenu() {
         const html =
-            `<div style='display:inline-block;height:30px;margin-left:10px;' class='showthatH'>
+            `<li tabindex='0' style='display:inline-block;height:30px;margin-left:10px;' class='showthatH'>
             ${_txt("menu>options>meta>extras")}
             <div class='showthisH' style='padding-top:1ex'>
                 ${_txt("menu>options>extras_warning")}<br>
@@ -195,37 +195,37 @@ Views.registerView("menu", {
                 <div id='speedIncreaseBackgroundWarning' class='small block' style='display:none'>${_txt("menu>options>speedIncreaseBackground_warning")}</div>
                 <br>
             </div>
-        </div>`;
+        </li>`;
         return html;
     },
     htmlChallengeMenu() {
         const html = 
-        `<div style='display:inline-block;height:30px;margin-left:10px;' class='showthatH'>
+        `<li tabindex='0' style='display:inline-block;height:30px;margin-left:10px;' class='showthatH'>
             ${_txt("menu>challenges>meta>title")}
             <div class='showthisH'>
                 ${this.challenges()}
             </div>
-        </div>`;
+        </li>`;
         return html;
     },
     htmlTotalsMenu() {
         const html = 
-        `<div style='display:inline-block;height:30px;margin-left:10px;' class='showthatH'>
+        `<li tabindex='0' style='display:inline-block;height:30px;margin-left:10px;' class='showthatH'>
             ${_txt("menu>totals>meta>title")}
             <div class='showthisH'>
                 ${this.totals()}
             </div>
-        </div>`;
+        </li>`;
         return html;
     },
     htmlPrestigeMenu() {
         const html = 
-        `<div style='display:inline-block;height:30px;margin-left:10px;' class='showthatH'>
+        `<li tabindex='0' style='display:inline-block;height:30px;margin-left:10px;' class='showthatH'>
             ${_txt("menu>prestige_bonus>meta>title")}
             <div class='showthisH'>
                 ${this.prestige_bonuses()}
             </div>
-        </div>`;
+        </li>`;
         return html;
     },
     challenges() {
@@ -237,20 +237,20 @@ Views.registerView("menu", {
             <b>Beginning a challenge will permanently delete your current save.</b><br>
             `;
         if (challengeSave.challengeMode !== 0 || 1===1)
-            html += `<div class='button showthat control' style='margin-top: 2px;' onclick='exitChallenge()'>Exit Challenge 
-                </div>
-                <div class='button showthat control' style='margin-top: 2px;' onclick='resumeChallenge()'>Resume Challenge 
-                </div><br>`;
+            html += `<button class='button showthat control' style='margin-top: 2px;' onclick='exitChallenge()'>Exit Challenge 
+                </button>
+                <button class='button showthat control' style='margin-top: 2px;' onclick='resumeChallenge()'>Resume Challenge 
+                </button><br>`;
         html += 
-        `<div class='button showthat control' style='margin-top: 2px;' onclick='beginChallenge(1)'>Mana Drought 
-            <div class='showthis' style='color:black;width:230px;margin-left:100px;'>${_txt("menu>challenges>mana_drought")}</div>
-        </div><br>
-        <div class='button showthat control' style='margin-top: 2px;' onclick='beginChallenge(2)'>Noodle Arms
-            <div class='showthis' style='color:black;width:230px;margin-left:100px;'>${_txt("menu>challenges>noodle_arms")}</div>
-        </div><br>
-        <div class='button showthat control' style='margin-top: 2px;' onclick='beginChallenge(3)'>Mana Burn
-            <div class='showthis' style='color:black;width:230px;margin-left:100px;'>${_txt("menu>challenges>mana_burn")}</div>
-        </div><br>`
+        `<button class='button showthat control' style='margin-top: 2px;' onclick='beginChallenge(1)'>Mana Drought 
+            <button class='showthis' style='color:black;width:230px;margin-left:100px;'>${_txt("menu>challenges>mana_drought")}</button>
+        </button><br>
+        <button class='button showthat control' style='margin-top: 2px;' onclick='beginChallenge(2)'>Noodle Arms
+            <button class='showthis' style='color:black;width:230px;margin-left:100px;'>${_txt("menu>challenges>noodle_arms")}</button>
+        </button><br>
+        <button class='button showthat control' style='margin-top: 2px;' onclick='beginChallenge(3)'>Mana Burn
+            <button class='showthis' style='color:black;width:230px;margin-left:100px;'>${_txt("menu>challenges>mana_burn")}</button>
+        </button><br>`
         html += `</div>`
         return html;
     },
@@ -290,69 +290,69 @@ Views.registerView("menu", {
         
         `
         <br>
-        <div class='button showthat control' style='margin-top: -50px;' onclick='prestigeUpgrade("PrestigePhysical")'>Prestige Physical
+        <button class='button showthat control' style='margin-top: -50px;' onclick='prestigeUpgrade("PrestigePhysical")'>Prestige Physical
             <div class='showthis' style='color:black;width:230px;margin-left:200px;'>${_txt("menu>prestige_bonus>PrestigePhysical")}
                 <br><br>
                 Current Bonus: <div id='prestigePhysicalCurrentBonus'></div>%<br>
                 Next level cost: <div id='prestigePhysicalNextCost'></div> points<br> 
             </div>
-        </div><br>
+        </button><br>
 
-        <div class='button showthat control' style='margin-top: -50px;' onclick='prestigeUpgrade("PrestigeMental")'>Prestige Mental
+        <button class='button showthat control' style='margin-top: -50px;' onclick='prestigeUpgrade("PrestigeMental")'>Prestige Mental
         <div class='showthis' style='color:black;width:230px;margin-left:200px;'>${_txt("menu>prestige_bonus>PrestigeMental")}
             <br><br>
             Current Bonus: <div id='prestigeMentalCurrentBonus'></div>%<br>
             Next level cost: <div id='prestigeMentalNextCost'></div> points<br> 
         </div>
-        </div><br>
+        </button><br>
 
 
-        <div class='button showthat control' style='margin-top: -50px;' onclick='prestigeUpgrade("PrestigeCombat")'>Prestige Combat
+        <button class='button showthat control' style='margin-top: -50px;' onclick='prestigeUpgrade("PrestigeCombat")'>Prestige Combat
             <div class='showthis' style='color:black;width:230px;margin-left:200px;'>${_txt("menu>prestige_bonus>PrestigeCombat")}
                 <br><br>
                 Current Bonus: <div id='prestigeCombatCurrentBonus'></div>%<br>
                 Next level cost: <div id='prestigeCombatNextCost'></div> points<br> 
             </div>
-        </div><br>
+        </button><br>
 
-        <div class='button showthat control' style='margin-top: -50px;' onclick='prestigeUpgrade("PrestigeSpatiomancy")'>Prestige Spatiomancy
+        <button class='button showthat control' style='margin-top: -50px;' onclick='prestigeUpgrade("PrestigeSpatiomancy")'>Prestige Spatiomancy
             <div class='showthis' style='color:black;width:230px;margin-left:200px;'>${_txt("menu>prestige_bonus>PrestigeSpatiomancy")}
                 <br><br>
                 Current Bonus: <div id='prestigeSpatiomancyCurrentBonus'></div>%<br>
                 Next level cost: <div id='prestigeSpatiomancyNextCost'></div> points<br> 
             </div>
-        </div><br>
+        </button><br>
 
-        <div class='button showthat control' style='margin-top: -50px;' onclick='prestigeUpgrade("PrestigeChronomancy")'>Prestige Chronomancy
+        <button class='button showthat control' style='margin-top: -50px;' onclick='prestigeUpgrade("PrestigeChronomancy")'>Prestige Chronomancy
             <div class='showthis' style='color:black;width:230px;margin-left:200px;'>${_txt("menu>prestige_bonus>PrestigeChronomancy")}
                 <br><br>
                 Current Bonus: <div id='prestigeChronomancyCurrentBonus'></div>%<br>
                 Next level cost: <div id='prestigeChronomancyNextCost'></div> points<br> 
             </div>
-        </div><br>
+        </button><br>
 
-        <div class='button showthat control' style='margin-top: -50px;' onclick='prestigeUpgrade("PrestigeBartering")'>Prestige Bartering
+        <button class='button showthat control' style='margin-top: -50px;' onclick='prestigeUpgrade("PrestigeBartering")'>Prestige Bartering
             <div class='showthis' style='color:black;width:230px;margin-left:200px;'>${_txt("menu>prestige_bonus>PrestigeBartering")}
                 <br><br>
                 Current Bonus: <div id='prestigeBarteringCurrentBonus'></div>%<br>
                 Next level cost: <div id='prestigeBarteringNextCost'></div> points<br> 
             </div>
-        </div><br>
+        </button><br>
 
-        <div class='button showthat control' style='margin-top: -50px;' onclick='prestigeUpgrade("PrestigeExpOverflow")'>Prestige Experience Overflow
+        <button class='button showthat control' style='margin-top: -50px;' onclick='prestigeUpgrade("PrestigeExpOverflow")'>Prestige Experience Overflow
             <div class='showthis' style='color:black;width:230px;margin-left:200px;'>${_txt("menu>prestige_bonus>PrestigeExpOverflow")}
                 <br><br>
                 Current Bonus: <div id='prestigeExpOverflowCurrentBonus'></div>%<br>
                 Next level cost: <div id='prestigeExpOverflowNextCost'></div> points<br> 
             </div>
-        </div><br>
+        </button><br>
 
         <br><br>
 
-        <div class='button showthat control' style='margin-top: -50px;' onclick='resetAllPrestiges()'>Reset All Prestiges
+        <button class='button showthat control' style='margin-top: -50px;' onclick='resetAllPrestiges()'>Reset All Prestiges
             <div class='showthis' style='color:black;width:230px;margin-left:200px;'>${_txt("menu>prestige_bonus>PrestigeResetAll")}
             </div>
-        </div><br>
+        </button><br>
 
         `
 
