@@ -229,12 +229,12 @@ function View() {
             bottom: viewportRect.bottom - triggerRect.bottom,
             left: triggerRect.left - viewportRect.left,
         };
-        const inActionList = document.getElementById("nextActionsList").contains(trigger);
+        const wantsSidePosition = document.getElementById("nextActionsList").contains(trigger) || document.getElementById("changelog").contains(trigger);
 
-        // We prefer to display tooltips above or below the trigger, except in the action list
+        // We prefer to display tooltips above or below the trigger, except in the action list and the changelog
         let displayOverUnder = true;
         if (tooltipRect.height > Math.max(viewportMargins.top, viewportMargins.bottom)) displayOverUnder = false;
-        if (inActionList && tooltipRect.width <= Math.max(viewportMargins.left, viewportMargins.right)) displayOverUnder = false;
+        if (wantsSidePosition && tooltipRect.width <= Math.max(viewportMargins.left, viewportMargins.right)) displayOverUnder = false;
 
         if (displayOverUnder) {
             tooltipRect.y = viewportMargins.top > viewportMargins.bottom
@@ -871,13 +871,13 @@ function View() {
         if (townNum === 0) {
             document.getElementById("townViewLeft").style.visibility = "hidden";
         } else {
-            document.getElementById("townViewLeft").style.visibility = "visible";
+            document.getElementById("townViewLeft").style.visibility = "";
         }
 
         if (townNum === Math.max(...townsUnlocked)) {
             document.getElementById("townViewRight").style.visibility = "hidden";
         } else {
-            document.getElementById("townViewRight").style.visibility = "visible";
+            document.getElementById("townViewRight").style.visibility = "";
         }
 
         for (let i = 0; i < actionOptionsTown.length; i++) {
@@ -900,12 +900,12 @@ function View() {
         }
 
         if (stories) {
-            document.getElementById("actionsViewLeft").style.visibility = "visible";
+            document.getElementById("actionsViewLeft").style.visibility = "";
             document.getElementById("actionsViewRight").style.visibility = "hidden";
             actionStoriesTown[townShowing].style.display = "block";
         } else {
             document.getElementById("actionsViewLeft").style.visibility = "hidden";
-            document.getElementById("actionsViewRight").style.visibility = "visible";
+            document.getElementById("actionsViewRight").style.visibility = "";
             actionOptionsTown[townShowing].style.display = "block";
         }
 
@@ -1349,14 +1349,14 @@ function View() {
             num = 0;
             document.getElementById("storyLeft").style.visibility = "hidden";
         } else {
-            document.getElementById("storyLeft").style.visibility = "visible";
+            document.getElementById("storyLeft").style.visibility = "";
         }
 
         if (num >= storyMax) {
             num = storyMax;
             document.getElementById("storyRight").style.visibility = "hidden";
         } else {
-            document.getElementById("storyRight").style.visibility = "visible";
+            document.getElementById("storyRight").style.visibility = "";
         }
         //Hard coded story count - need to fix this
         for (let i = 0; i <= 12; i++) {

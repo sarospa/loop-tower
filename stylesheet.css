@@ -6,6 +6,10 @@ div.block {
     display: block;
 }
 
+button {
+    font: inherit;
+}
+
 body {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -66,15 +70,8 @@ body:not(.loading) > .hideWhenLoaded {
 .showthatO {
     position:relative;
 }
-.showthatH:hover .showthisH, .showthatH:focus-within .showthisH{
-    display: block;
-    visibility: visible;
-}
-.showthatloadout:hover .showthisloadout, .showthisloadout:hover, .showthatloadout:focus-within .showthisloadout
-{
-    display: block;
-    visibility: visible;
-}
+.showthatH:hover .showthisH, .showthatH:focus-within .showthisH,
+.showthatloadout:hover .showthisloadout, .showthisloadout:hover, .showthatloadout:focus-within .showthisloadout,
 .showthat:hover .showthis, .showthat:focus-within .showthis, 
 .showthatO:hover .showthis, .showthatO:focus-within .showthis, 
 .showthatO:hover .showthisH, .showthatO:focus-within .showthisH, 
@@ -83,6 +80,7 @@ body:not(.loading) > .hideWhenLoaded {
 {
     display: block;
     visibility: visible;
+    opacity: 1;
 }
 .showthat:hover .showthis.when-locked,
 .showthat.locked:hover .showthis.when-unlocked
@@ -93,10 +91,13 @@ body:not(.loading) > .hideWhenLoaded {
 {
     display: block;
     visibility: visible;
+    opacity: 1;
 }
 
 .showthat2:hover .showthis2 {
     display: flex;
+    visibility: visible;
+    opacity: 1;
 }
 
 #changelog .showthat2:hover {
@@ -109,6 +110,7 @@ body:not(.loading) > .hideWhenLoaded {
 
 .showthis, .showthis2, .showthisH {
     visibility: hidden;
+    opacity: 0;
     width: max-content;
     max-width: 400px;
     position:absolute;
@@ -142,7 +144,8 @@ body:not(.loading) > .hideWhenLoaded {
 }
 
 .showthisname {
-    display:none;
+    visibility: hidden;
+    opacity: 0;
     position:absolute;
     color: black;
     background-color: #c0e4c7;
@@ -172,7 +175,8 @@ body:not(.loading) > .hideWhenLoaded {
     margin-bottom:2px;
 }
 .showthisloadout {
-    display:none;
+    visibility: hidden;
+    opacity: 0;
     position:absolute;
     height: 425px;
     width: 215px;
@@ -190,7 +194,8 @@ body:not(.loading) > .hideWhenLoaded {
 }
 
 .showthisstory {
-    display:none;
+    visibility: hidden;
+    opacity: 0;
     position:absolute;
     color: black;
     background: url(img/misc/textureDesaturated.png);
@@ -347,10 +352,29 @@ input[type="number"] {
 
 .button:hover, .loadoutbutton:hover {background-color: #3e8e41}
 
-.button:active, .loadoutbutton:hover {
+.button:active, .loadoutbutton:active {
     background-color: #3e8e41;
     box-shadow: 0 1px #666;
     top: 0;
+}
+
+/* Focus ring for keyboard navigation */
+.button:focus-visible::after, .loadoutbutton:focus-visible::after {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+    inset: -4px;
+    border-radius: 8px;
+    border: 2px solid #3e8e41;
+    z-index: -1;
+}
+
+/* Give buttons a bit of leeway while pressed */
+.button:active::before, .loadoutbutton:active::before {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    z-index: -1;
 }
 
 .button.warning {
