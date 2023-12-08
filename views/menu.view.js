@@ -148,17 +148,17 @@ Views.registerView("menu", {
         return html;
     },
     htmlThemeMenu() {
-        const themeList = ["normal", "dark", "cubic"];
+        const themeList = ["normal", "dark", "cubic", "cubic t-dark"];
         const themes = _txtsObj("menu>options>theme");
         let html = `${_txt("menu>options>theme_title")}: <select id='themeInput' onchange='view.changeTheme();'>`;
         $(themes).each((index, theme) => {
-            html += `<option value='${themeList[index]}'>${$(theme).find(themeList[index]).text()}</option>`;
+            html += `<option value='${themeList[index]}'>${$(theme).find(themeList[index].replaceAll(" ","_")).text()}</option>`;
         });
         html += "</select><br>";
         html += `<div class='block' id='themeVariantSection'>${_txt("menu>options>theme_variant_title")}: <select id='themeVariantInput' onchange='view.changeTheme();'>`;
         $(themes).each((index, theme) => {
             $(theme).find("variants>*").each((vindex, variant) => {
-                html += `<option class='variant-${themeList[index]}' value='${variant.tagName}'>${$(variant).text()}</option>`;
+                html += `<option class='variant-${themeList[index].replaceAll(" ","_")}' value='${variant.tagName}'>${$(variant).text()}</option>`;
             });
         });
         html += "</select></div>"

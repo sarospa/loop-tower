@@ -9,6 +9,10 @@
                 <title>Changelog</title>
                 <version_prefix>Version</version_prefix>
             </meta>
+            <version verNum="3.P16.10"><![CDATA[
+            <b> Dec 7th, 2023</b>
+            • Added Dark Cubic theme, for people who really like square borders but don't like eye strain, because why not.<br>
+            ]]></version>
             <version verNum="3.P16.9"><![CDATA[
             <b> Dec 7th, 2023</b>
             • Added cloud saves via Google Drive. Many thanks to Mawan from the discord for the testing help!<br>
@@ -487,6 +491,17 @@
             </theme>
             <theme>
                 <cubic>Cubic</cubic>
+            </theme>
+            <theme>
+                <cubic_t-dark>Cubic Dark</cubic_t-dark>
+                <variants>
+                    <inverted>Classic</inverted>
+                    <invertrotate>Rotated Classic</invertrotate>
+                    <inversion1>Matrix 1</inversion1>
+                    <inversion2>Matrix 2</inversion2>
+                    <inversion3>Matrix 3</inversion3>
+                    <inversion4>Matrix 4</inversion4>
+                </variants>
             </theme>
             <!--changed discord link for analytical reasons-->
             <discord>

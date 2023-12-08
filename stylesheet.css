@@ -551,16 +551,24 @@ div.townInfoContainer > .numeric {
     min-height:470px;
 }
 
-.actionContainer {
+.actionContainer, .travelContainer {
     cursor:pointer;
     position: relative;
-    width:96px;
     height:50px;
-    vertical-align:top;
-    margin:0 2px;
     font-size: 13px;
     border: 3px solid transparent;
+    border-radius: 10px;
 }
+.actionContainer {
+    width:96px;
+    margin:0 2px;
+}
+.travelContainer {
+    display:block;
+    width:205px;
+    margin:2px auto;
+}
+
 .actionContainer:hover, .travelContainer:hover {
     background-color: #bef8ff;
 }
@@ -589,16 +597,6 @@ div.townInfoContainer > .numeric {
 .storyContainerCompleted {
     color: #b89651;
     background: url(img/misc/texture.png);
-}
-
-.travelContainer {
-    cursor:pointer;
-    position: relative;
-    display:block;
-    width:205px;
-    height:50px;
-    margin:2px auto;
-    font-size: 13px;
 }
 
 #actionLog {
@@ -1139,6 +1137,10 @@ li#actionLogLoadPrevious {
 
 /* cubic theme */
 
+.t-cubic * {
+    border-radius: 0;
+}
+
 .t-cubic .thickProgressBar {
     border: 1px solid black;
     margin: 0 0 2px 2px;
@@ -1246,9 +1248,13 @@ li#actionLogLoadPrevious {
 
 select.bold {
     text-align: center;
-    border: none;
+    border: 1px solid transparent;
     background: none;
     font-size: 16px;
     font-family: Arial, Helvetica, serif;
     padding: 0;
+}
+
+select.bold:focus {
+    border-color: rgba(0,0,0,0.25);
 }

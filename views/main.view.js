@@ -1410,7 +1410,7 @@ function View() {
         if (init) themeVariantInput.value = options.themeVariant;
         options.theme = themeInput.value;
         options.themeVariant = themeVariantInput.value;
-        const variants = $(themeVariantInput).find(`.variant-${options.theme}`);
+        const variants = $(themeVariantInput).find(`.variant-${options.theme.replaceAll(" ","_")}`);
         if (variants.length) {
             document.getElementById("themeVariantSection").style.display = "";
             $(themeVariantInput).find("option").css("display", "none");
