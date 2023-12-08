@@ -13,6 +13,7 @@
             <b> Dec 7th, 2023</b>
             • Added cloud saves via Google Drive. Many thanks to Mawan from the discord for the testing help!<br>
             • More improvements to the Action Log.<br>
+            • Tooltip display has been improved, and menus will no longer close if the focus is inside them.<br>
             ]]></version>
             <version verNum="3.P16.8"><![CDATA[
             <b> Dec 4th, 2023</b>

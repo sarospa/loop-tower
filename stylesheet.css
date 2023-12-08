@@ -60,31 +60,39 @@ body:not(.loading) > .hideWhenLoaded {
 }
 
 .showthis:hover {
-    display: none !important;
+    visibility: hidden !important;
 }
 
 .showthatO {
     position:relative;
 }
-.showthatH:hover .showthisH{
+.showthatH:hover .showthisH, .showthatH:focus-within .showthisH{
     display: block;
+    visibility: visible;
 }
-.showthatloadout:hover .showthisloadout, .showthisloadout:hover
+.showthatloadout:hover .showthisloadout, .showthisloadout:hover, .showthatloadout:focus-within .showthisloadout
 {
     display: block;
+    visibility: visible;
 }
-.showthat:hover .showthis, .showthat:hover .showthisToTheTop, .showthat:hover .showthisToTheLeft, .showthatO:hover .showthis, .showthatO:hover .showthisH, .showthat:hover .showthisname, .showthat:hover .showthisstory
+.showthat:hover .showthis, .showthat:focus-within .showthis, 
+.showthatO:hover .showthis, .showthatO:focus-within .showthis, 
+.showthatO:hover .showthisH, .showthatO:focus-within .showthisH, 
+.showthat:hover .showthisname, .showthat:focus-within .showthisname, 
+.showthat:hover .showthisstory, .showthat:focus-within .showthisstory
 {
     display: block;
+    visibility: visible;
 }
 .showthat:hover .showthis.when-locked,
 .showthat.locked:hover .showthis.when-unlocked
 {
-    display: none;
+    visibility: hidden;
 }
 .showthat.locked:hover .showthis.when-locked
 {
     display: block;
+    visibility: visible;
 }
 
 .showthat2:hover .showthis2 {
@@ -100,7 +108,7 @@ body:not(.loading) > .hideWhenLoaded {
 }
 
 .showthis, .showthis2, .showthisH {
-    display:none;
+    visibility: hidden;
     width: max-content;
     max-width: 400px;
     position:absolute;
@@ -112,14 +120,6 @@ body:not(.loading) > .hideWhenLoaded {
     margin-top:5px;
     z-index: 999999;
     text-align:left;
-}
-
-.showthisToTheTop {
-    bottom:100%;
-}
-
-.showthisToTheLeft {
-    right:0%;
 }
 
 .showthat2 {
@@ -166,7 +166,8 @@ body:not(.loading) > .hideWhenLoaded {
     border: none;
     border-radius: 6px;
     box-shadow: 0 3px #999;
-    transform: translateY(-2px);
+    position: relative;
+    top: -2px;
     z-index: 999;
     margin-bottom:2px;
 }
@@ -338,7 +339,8 @@ input[type="number"] {
     border: none;
     border-radius: 6px;
     box-shadow: 0 3px #999;
-    transform: translateY(-2px);
+    position: relative;
+    top: -2px;
     z-index: 999;
     margin-bottom:2px;
 }
@@ -348,7 +350,7 @@ input[type="number"] {
 .button:active, .loadoutbutton:hover {
     background-color: #3e8e41;
     box-shadow: 0 1px #666;
-    transform: translateY(0px);
+    top: 0;
 }
 
 .button.warning {

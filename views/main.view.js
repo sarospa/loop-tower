@@ -42,6 +42,32 @@ function View() {
             }, 2000);
         adjustAll();
         this.updateActionTooltips();
+        document.body.removeEventListener("mouseover", this.mouseoverHandler, {passive: true});
+        document.body.addEventListener("mouseover", this.mouseoverHandler, {passive: true});
+        this.tooltipTriggerMap = new WeakMap();
+        this.mouseoverCount = 0;
+    };
+
+    /** @this {View} @param {MouseEvent} event */
+    this.mouseoverHandler = function(event) {
+        const trigger = this.getClosestTrigger(event.target);
+        this.mouseoverCount++;
+        if (trigger) {
+            for (const tooltip of trigger.querySelectorAll(".showthis,.showthisO,.showthis2,.showthisH,.showthisloadout")) {
+                this.fixTooltipPosition(tooltip, trigger, event);
+            }
+        }
+    };
+    this.mouseoverHandler = this.mouseoverHandler.bind(this);
+
+    /** @this {View} @param {HTMLElement} element */
+    this.getClosestTrigger = function(element) {
+        let trigger = /** @type {WeakMap<HTMLElement, HTMLElement>} */(this.tooltipTriggerMap).get(element);
+        if (trigger == null) {
+            trigger = element.closest(".showthat,.showthatO,.showthat2,.showthatH,.showthatloadout") || false;
+            this.tooltipTriggerMap.set(element, trigger);
+        }
+        return trigger;
     };
 
     this.statLocs = [
@@ -176,22 +202,71 @@ function View() {
 
 
     this.adjustTooltipPosition = function(tooltipDiv) {
-        const parent = tooltipDiv.parentNode;
-        const boundingRect = parent.getBoundingClientRect();
+        // this is a no-op now, all repositioning happens dynamically on mouseover.
+        // if the delegation in mouseoverHandler ends up being too costly, though, this is where
+        // we'll bind discrete mouseenter handlers, like so:
 
-        const borderY = (window.innerHeight / 2) + window.scrollY;
-        if (boundingRect.y > borderY) {
-            tooltipDiv.classList.add("showthisToTheTop");
+        // const trigger = /** @type {HTMLElement} */(tooltipDiv.closest(".showthat,.showthatO,.showthat2,.showthatH,.showthatloadout"));
+        // trigger.onmouseenter = e => this.fixTooltipPosition(tooltipDiv, trigger, e);
+    }
+
+    /**
+     * @param {HTMLElement} tooltip 
+     * @param {HTMLElement} trigger 
+     * @param {MouseEvent} event 
+     */
+    this.fixTooltipPosition = function(tooltip, trigger, event) {
+        if (tooltip.contains(event.target)) {
+            // console.log("Not fixing tooltip while cursor is inside",{tooltip,trigger,event});
+            return;
+        }
+        const triggerRect = trigger.getBoundingClientRect();
+        const tooltipRect = tooltip.getBoundingClientRect();
+        const viewportRect = document.documentElement.getBoundingClientRect();
+        const viewportMargins = {
+            top: triggerRect.top - viewportRect.top,
+            right: viewportRect.right - triggerRect.right,
+            bottom: viewportRect.bottom - triggerRect.bottom,
+            left: triggerRect.left - viewportRect.left,
+        };
+        const inActionList = document.getElementById("nextActionsList").contains(trigger);
+
+        // We prefer to display tooltips above or below the trigger, except in the action list
+        let displayOverUnder = true;
+        if (tooltipRect.height > Math.max(viewportMargins.top, viewportMargins.bottom)) displayOverUnder = false;
+        if (inActionList && tooltipRect.width <= Math.max(viewportMargins.left, viewportMargins.right)) displayOverUnder = false;
+
+        if (displayOverUnder) {
+            tooltipRect.y = viewportMargins.top > viewportMargins.bottom
+                          ? triggerRect.top - tooltipRect.height
+                          : triggerRect.bottom;
+            tooltipRect.x = viewportMargins.left > viewportMargins.right && tooltipRect.width > triggerRect.width
+                          ? triggerRect.right - tooltipRect.width
+                          : triggerRect.left;
         } else {
-            tooltipDiv.classList.remove("showthisToTheTop");
+            tooltipRect.x = viewportMargins.left > viewportMargins.right
+                          ? triggerRect.left - tooltipRect.width
+                          : triggerRect.right;
+            tooltipRect.y = viewportMargins.top > viewportMargins.bottom
+                          ? triggerRect.bottom - tooltipRect.height
+                          : triggerRect.top;
         }
 
-        const borderX = (window.innerWidth / 2) + window.scrollX;
-        if (boundingRect.x > borderX) {
-            tooltipDiv.classList.add("showthisToTheLeft");
-        } else {
-            tooltipDiv.classList.remove("showthisToTheLeft");
-        }
+        // check all bounds and nudge the tooltip back onto the screen if necessary, favoring the
+        // top and left edges. don't trust the trbl on tooltipRect, since adjusting those isn't in spec.
+        tooltipRect.x = Math.min(tooltipRect.x, viewportRect.right - tooltipRect.width);
+        tooltipRect.y = Math.min(tooltipRect.y, viewportRect.bottom - tooltipRect.height);
+        tooltipRect.x = Math.max(tooltipRect.x, viewportRect.left);
+        tooltipRect.y = Math.max(tooltipRect.y, viewportRect.top);
+
+        console.log("Fixing tooltip:",{tooltip,tooltipRect,trigger,triggerRect,event});
+
+        tooltip.style.position = "fixed";
+        tooltip.style.left = `${tooltipRect.x - viewportRect.x}px`;
+        tooltip.style.top = `${tooltipRect.y - viewportRect.y}px`;
+        tooltip.style.right = "auto";
+        tooltip.style.bottom = "auto";
+        tooltip.style.margin = "0";
     }
 
     this.showStat = function(stat) {
