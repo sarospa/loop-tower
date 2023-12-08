@@ -171,7 +171,6 @@ body:not(.loading) > .hideWhenLoaded {
     box-shadow: 0 3px #999;
     position: relative;
     top: -2px;
-    z-index: 999;
     margin-bottom:2px;
 }
 .showthisloadout {
@@ -344,7 +343,6 @@ input[type="number"] {
     box-shadow: 0 3px #999;
     position: relative;
     top: -2px;
-    z-index: 999;
     margin-bottom:2px;
 }
 
