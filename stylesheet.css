@@ -26,6 +26,11 @@ button {
     box-sizing: unset;
 }
 
+:root {
+    /* 16 px default * 7/8 = 14px */
+    font-size: 0.875em;
+}
+
 body {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -34,11 +39,16 @@ body {
     user-select: none;
     font-family:Arial, Helvetica, serif;
     color:black;
-    font-size: 14px;
+    font-size: 1rem;
     height:100%;
     margin:0;
     background-color: #e4ece5;
     cursor:default;
+}
+
+/* These are only used in mobile view  */
+main, #shortTownColumn, #actionLogContainer, #timeControlsMain {
+    display: contents;
 }
 
 #loadingBox {
@@ -231,7 +241,8 @@ body:not(.loading) > .hideWhenLoaded {
 }
 
 .title {
-    font-size:16px;
+    /* 1.14286 ≅ 8/7, 14px * 8/7 = 16px */
+    font-size:1.14286rem;
     font-weight:bold;
     display:block;
     text-align:center;
@@ -239,13 +250,14 @@ body:not(.loading) > .hideWhenLoaded {
 
 
 .large {
-    font-size:16px;
+    font-size:1.14286rem;
 }
 .medium {
-    font-size:14px;
+    font-size:1rem;
 }
 .small {
-    font-size:12px;
+    /* 0.857143 ≅ 6/7, 14px * 6/7 = 12px */
+    font-size:0.857143rem;
 }
 .bold {
     font-weight:bold;
@@ -317,7 +329,7 @@ input {
     height: 12px;
     border: none;
     background: none;
-    font-size: 14px;
+    font-size: 1rem;
 }
 
 input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button {
@@ -432,7 +444,7 @@ input[type="number"] {
 .buffNumContainer {
     flex-direction: row;
     text-align: right;
-    font-size: 14px;
+    font-size: 1rem;
     justify-content: flex-end;
     flex: 1;
     margin-right: 7px;
@@ -566,7 +578,8 @@ div.townInfoContainer > .numeric {
     cursor:pointer;
     position: relative;
     height:50px;
-    font-size: 13px;
+    /* 0.928571 ≅ 13/14, 14px * 13/14 = 13px */
+    font-size: 0.928571rem;
     border: 3px solid transparent;
     border-radius: 10px;
 }
@@ -592,7 +605,7 @@ div.townInfoContainer > .numeric {
     width: 102px;
     height: 50px;
     vertical-align: top;
-    font-size: 13px;
+    font-size: 0.928571rem;
     border: 1px solid #b89651;
     color: #b5a585;
     background: url(img/misc/textureDesaturated.png);
@@ -908,199 +921,437 @@ li#actionLogLoadPrevious {
 :root.responsive {
     height: 100%;
     overflow: hidden;
+    /* Default browser font size = 16px, 16px * 7/8 = 14px */
+    font-size: 0.875rem;
 }
 
-.responsive body {
-    display:grid;
-    grid:
-        "header header header" max-content
-        "actions town stats" minmax(0, 1fr)
-        / minmax(350px, 1fr) minmax(535px, 2fr) minmax(316px, 1fr)
-        ;
-    justify-items: stretch;
-}
+.responsive {
+    & body {
+        min-width: 0 !important;
+        display:grid;
+        grid:
+            "header header header" max-content
+            "actions town stats" minmax(0, 1fr)
+            / minmax(350px, 1fr) minmax(535px, 2fr) minmax(316px, 1fr)
+            ;
+        justify-items: stretch;
+    }
 
-.responsive #timeInfo {
-    grid-area: header;
-    display: grid;
-    grid:
-        "time time time" 10px
-        "menu resources ." 16px
-        "menu controls ." auto
-        / 1fr max-content 1fr;
-    gap: 2px;
-}
+    & #timeInfo {
+        grid-area: header;
+        display: grid;
+        grid:
+            "time time time" 10px
+            "menu resources ." 16px
+            "menu controls ." auto
+            / 1fr max-content 1fr;
+        gap: 2px;
+    }
 
-.responsive body > br, .responsive #timeInfo > br {
-    display: none;
-}
+    & body > br, & #timeInfo > br {
+        display: none;
+    }
 
-.responsive #timeBarContainer {
-    grid-area: time;
-}
+    & #timeBarContainer {
+        grid-area: time;
+    }
 
-.responsive #menu {
-    grid-area: menu;
-    text-align: left;
-    min-height: 30px;
-    height: auto !important;
-    margin-right: 0 !important;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-}
+    & #menu {
+        grid-area: menu;
+        text-align: left;
+        min-height: 30px;
+        height: auto !important;
+        margin-right: 0 !important;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+    }
 
-.responsive #trackedResources {
-    grid-area: resources;
-}
+    & #trackedResources {
+        grid-area: resources;
+    }
 
-.responsive #timeControls {
-    grid-area: controls;
-}
+    & #timeControls {
+        grid-area: controls;
+    }
 
-.responsive #statsColumn, .responsive #actionsColumn, .responsive #townColumn {
-    width: auto !important;
-    overflow-x: hidden;
-    overflow-y: auto;
-    padding-bottom: 2ex;
-    flex-direction: column;
-    display: flex;
-}
+    & #statsColumn, & #actionsColumn, & #townColumn {
+        width: auto !important;
+        overflow-x: hidden;
+        overflow-y: auto;
+        padding-bottom: 2ex;
+        flex-direction: column;
+        display: flex;
+    }
 
-.responsive #statsColumn {
-  grid-area: stats;  
-}  
+    & #statsColumn {
+    grid-area: stats;  
+    }  
 
-.responsive #statsWindow > .showthat > .showthis {
-    right:0%;
-}
+    & #statsWindow > .showthat > .showthis {
+        right:0%;
+    }
 
-.responsive #buffList {
-    position: relative;
-}
+    & #buffList {
+        position: relative;
+    }
 
-.responsive #buffList > .showthat > .showthis {
-    bottom:100%;
-}
+    & #buffList > .showthat > .showthis {
+        bottom:100%;
+    }
 
-.responsive #actionsColumn {
-    grid-area: actions;
-    margin: 0 1em;
-    overflow: hidden;
-}
+    & #actionsColumn {
+        grid-area: actions;
+        margin: 0 1em;
+        overflow: hidden;
+    }
 
-.responsive #actionList {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-.responsive #actionList > *:not(.showthat, #actionChanges, #expandableList) {
-    display: none;
-}
-
-.responsive #townColumn {
-    grid-area: town;
-}
-
-.responsive #townWindow {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-shrink: 0;
-}
-
-.responsive #townWindow > div.showthat {
-    margin: 0 20px;
-}
-
-.responsive #townWindow > div.showthat {
-    display: flex;
-    justify-content: center;
-}
-
-.responsive #townInfos, .responsive #townActions {
-    display: flex;
-    align-items: start;
-    overflow: clip visible;
-}
-
-.responsive #townInfos > *, .responsive #townActions > * {
-    flex: 0 0 100%;
-}
-
-.responsive #townInfos > *[style*="none"], .responsive #townActions > *[style*="none"] {
-    display:block !important;
-    visibility: hidden;
-    width: 100%;
-    order: 1;
-}
-
-
-.responsive #actionsTitle {
-    margin: 0 40px;
-}
-
-.responsive .actionOptions {
-    min-height:auto;
-}
-.responsive .actionStories {
-    min-height:auto;
-}
-
-.responsive .townStatContainer, .responsive .townInfoContainer {
-    width: auto;
-    display: block;
-}
-.responsive #curActionsListContainer, .responsive #nextActionsListContainer {
+    & #actionList {
     display: flex;
     flex-direction: column;
+    height: 100%;
+    }
+    & #actionList > *:not(.showthat, #actionChanges, #expandableList) {
+        display: none;
+    }
+
+    & #townColumn {
+        grid-area: town;
+    }
+
+    & #townWindow {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-shrink: 0;
+    }
+
+    & #townWindow > div.showthat {
+        margin: 0 20px;
+    }
+
+    & #townWindow > div.showthat {
+        display: flex;
+        justify-content: center;
+    }
+
+    & #townInfos, & #townActions {
+        display: flex;
+        align-items: start;
+        overflow: clip visible;
+    }
+
+    & #townInfos > *, & #townActions > * {
+        flex: 0 0 100%;
+    }
+
+    & #townInfos > *[style*="none"], & #townActions > *[style*="none"] {
+        display:block !important;
+        visibility: hidden;
+        width: 100%;
+        order: 1;
+    }
+
+
+    & #actionsTitle {
+        margin: 0 40px;
+    }
+
+    & .actionOptions {
+        min-height:auto;
+    }
+    & .actionStories {
+        min-height:auto;
+    }
+
+    & .townStatContainer, & .townInfoContainer {
+        width: auto;
+        display: block;
+    }
+    & #curActionsListContainer {
+        flex: 1;
+    }
+    & #nextActionsListContainer {
+        flex: 3;
+    }
+    & #curActionsListContainer, & #nextActionsListContainer {
+        display: flex;
+        flex-direction: column;
+    }
+
+    & #curActionsList, & #nextActionsList {
+        padding-bottom: 2ex;
+        max-height: none !important;
+        width: auto;
+        display: flex !important;
+        flex-direction: column;
+        flex: 1;
+    }
+
+    & #nextActionsList[style*="none"] {
+        visibility: collapse;
+    }
+
+    & #curActionsManaUsed, & #nextActionsAmountButtons {
+        position: static;
+        width: auto;
+        margin-top: auto;
+    }
+
+    & .curActionContainer, & .nextActionContainer {
+        width: auto;
+    }
+
+    & .nextActionButtons {
+        margin-right: 10px;
+    }
+
+
+    & #expandableList {
+        flex: 1;
+        display: flex;
+        height:  20px !important;
+    }
+
+    & .actionOptions {
+        min-height: none;
+    }
+
+    & #trackedResources {
+        margin-bottom: 0;
+    }
+
+    & #actionLog {
+        max-height: none;
+        flex-grow: 1;
+    }
 }
 
-.responsive #curActionsList, .responsive #nextActionsList {
-    padding-bottom: 2ex;
-    max-height: none !important;
-    width: auto;
-    display: flex !important;
-    flex-direction: column;
-    flex: 1;
-}
+/* mobile support, only for responsive */
+@media (max-width: 1250px) {
+    :root.responsive {
+        height: 100%;
+        overflow: hidden;
+    }
+    
+    .responsive {
+        & body {
+            width: 100vw;
+            display:grid;
+            grid:
+                "header" max-content
+                "main" max-content
+                / 100vw
+                ;
+            justify-items: stretch;
+            overflow: hidden auto;
+        }
 
-.responsive #nextActionsList[style*="none"] {
-    visibility: collapse;
-}
+        & main {
+            display: grid;
+            grid-area: main;
+            grid: "town actions log stats" max-content;
+            grid-template-columns: repeat(4, 100vw);
+            overflow: auto clip;
+            scroll-snap-type: x mandatory;
+        }
+        & #townColumn {
+            display: contents;
+        }
 
-.responsive #curActionsManaUsed, .responsive #nextActionsAmountButtons {
-    position: static;
-    width: auto;
-    margin-top: auto;
-}
+        & #timeInfo {
+            grid-area: header;
+            display: grid;
+            grid:
+                "time" 10px
+                "resources" 16px
+                "controls" auto
+                "menu" auto;
+            gap: 2px;
+        }
+    
+        & body > br, & #timeInfo > br {
+            display: none;
+        }
+    
+        & #timeBarContainer {
+            grid-area: time;
+            position: sticky !important;
+            top: 0px;
+        }
 
-.responsive .curActionContainer, .responsive .nextActionContainer {
-    width: auto;
-}
-
-.responsive .nextActionButtons {
-    margin-right: 10px;
-}
-
-
-.responsive #expandableList {
-    flex: 1;
-    display: flex;
-    height:  20px !important;
-}
-
-.responsive .actionOptions {
-    min-height: none;
-}
-
-.responsive #trackedResources {
-    margin-bottom: 0;
-}
-
-.responsive #actionLog {
-    max-height: none;
-    flex-grow: 1;
+        & #menu {
+            grid-area: menu;
+            text-align: left;
+            min-height: 30px;
+            height: auto !important;
+            margin-right: 0 !important;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+    
+        & #trackedResources {
+            grid-area: resources;
+            position: sticky;
+            top: 10px;
+        }
+    
+        & #timeControlsMain {
+            display: block;
+            position: sticky;
+            top: 26px;
+        }
+    
+        & #timeControls {
+            grid-area: controls;
+        }
+    
+        & #statsColumn, & #actionsColumn, & #shortTownColumn, & #actionLogContainer {
+            width: auto !important;
+            overflow: hidden;
+            padding-bottom: 2ex;
+            flex-direction: column;
+            display: flex;
+            scroll-snap-align: center;
+        }
+    
+        & #statsColumn {
+            grid-area: stats;  
+        }  
+    
+        & #statsWindow > .showthat > .showthis {
+            right:0%;
+        }
+    
+        & #buffList {
+            position: relative;
+        }
+    
+        & #buffList > .showthat > .showthis {
+            bottom:100%;
+        }
+    
+        & #actionsColumn {
+            grid-area: actions;
+            margin: 0 1em;
+            overflow: hidden;
+        }
+    
+        & #actionList {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        & #actionList > *:not(.showthat, #actionChanges, #expandableList) {
+            display: none;
+        }
+    
+        & #shortTownColumn {
+            grid-area: town;
+        }
+    
+        & #townWindow {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-shrink: 0;
+        }
+    
+        & #townWindow > div.showthat {
+            margin: 0 20px;
+        }
+    
+        & #townWindow > div.showthat {
+            display: flex;
+            justify-content: center;
+        }
+    
+        & #townInfos, & #townActions {
+            display: flex;
+            align-items: start;
+            overflow: clip visible;
+        }
+    
+        & #townInfos > *, & #townActions > * {
+            flex: 0 0 100%;
+        }
+    
+        & #townInfos > *[style*="none"], & #townActions > *[style*="none"] {
+            display:block !important;
+            visibility: hidden;
+            width: 100%;
+            order: 1;
+        }
+    
+    
+        & #actionsTitle {
+            margin: 0 40px;
+        }
+    
+        & .actionOptions {
+            min-height:auto;
+        }
+        & .actionStories {
+            min-height:auto;
+        }
+    
+        & .townStatContainer, & .townInfoContainer {
+            width: auto;
+            display: block;
+        }
+        & #curActionsListContainer, & #nextActionsListContainer {
+            display: flex;
+            flex-direction: column;
+        }
+    
+        & #curActionsList, & #nextActionsList {
+            padding-bottom: 2ex;
+            max-height: none !important;
+            width: auto;
+            display: flex !important;
+            flex-direction: column;
+            flex: 1;
+        }
+    
+        & #nextActionsList[style*="none"] {
+            visibility: collapse;
+        }
+    
+        & #curActionsManaUsed, & #nextActionsAmountButtons {
+            position: static;
+            width: auto;
+            margin-top: auto;
+        }
+    
+        & .curActionContainer, & .nextActionContainer {
+            width: auto;
+        }
+    
+        & .nextActionButtons {
+            margin-right: 10px;
+        }
+    
+    
+        & #expandableList {
+            flex: 1;
+            display: flex;
+            height:  20px !important;
+        }
+    
+        & .actionOptions {
+            min-height: none;
+        }
+    
+        & #trackedResources {
+            margin-bottom: 0;
+        }
+    
+        & #actionLog {
+            max-height: none;
+            flex-grow: 1;
+        }
+    }
 }
 
 /* dark theme */
@@ -1261,7 +1512,7 @@ select.bold {
     text-align: center;
     border: 1px solid transparent;
     background: none;
-    font-size: 16px;
+    font-size: 1.14286rem;
     font-family: Arial, Helvetica, serif;
     padding: 0;
 }
