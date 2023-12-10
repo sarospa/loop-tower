@@ -3683,7 +3683,7 @@ Action.LoopingPotion = new Action("Looping Potion", {
     },
     story(completed) {
         unlockStory("loopingPotionMade");
-        unlockGlobalStory(6);
+        unlockGlobalStory(9);
     }
 });
 
@@ -4142,11 +4142,11 @@ Action.FaceJudgement = new Action("Face Judgement", {
         unlockStory("judgementFaced");
         if (resources.reputation >= 50) {
             unlockStory("acceptedIntoValhalla");
-            unlockGlobalStory(7);
+            unlockGlobalStory(6);
             unlockTown(4);
         } else if (resources.reputation <= -50) {
             unlockStory("castIntoShadowRealm");
-            unlockGlobalStory(8);
+            unlockGlobalStory(7);
             unlockTown(5);
         }
     },
@@ -5722,7 +5722,7 @@ Action.JourneyForth = new Action("Journey Forth", {
         unlockTown(6);
     },
     story(completed) {
-        unlockGlobalStory(9);
+        unlockGlobalStory(8);
     }
 });
 

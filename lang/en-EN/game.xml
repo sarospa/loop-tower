@@ -9,6 +9,10 @@
                 <title>Changelog</title>
                 <version_prefix>Version</version_prefix>
             </meta>
+            <version verNum="3.P16.11"><![CDATA[
+            <b> Dec 10th, 2023</b>
+            • Fixed story unlock conditions for global story chapters 7-10.<br>
+            ]]></version>
             <version verNum="3.P16.10"><![CDATA[
             <b> Dec 8th, 2023</b>
             • Added Dark Cubic theme, for people who really like square borders but don't like eye strain, because why not.<br>
@@ -815,7 +819,7 @@
 			<story num="7"> <!--Bad Reputation Story--> <!--Change 7 to Startington-->
                 A booming voice rings out as the clouds part overhead, and you instinctively cover your ears as every word makes your bones rattle:
                 "YOU HAVE BEEN JUDGED!" The world around you becomes a blur, and it takes a second before you realize you are falling off the side of
-                Mt. Olymups. Even as the wind pulls on your skin, you can tell that you're not just falling in a physical sense as the world around
+                Mt. Olympus. Even as the wind pulls on your skin, you can tell that you're not just falling in a physical sense as the world around
                 you is drained of every last bit of colour, the last streak of purple light off in the distance by the time you realize you've stopped
                 falling some time ago. Pushing yourself to your feet, you look around and find yourself right in front of a very familiar town-gate.
                 The purple light is coming from a massive pillar reaching up from the center of town, casting the only light for miles around in this,
