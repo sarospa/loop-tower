@@ -159,6 +159,7 @@ function View() {
         updateOffline: [],
         updateTotals: [],
         updateStories: [],
+        updateGlobalStory: [],
         updateActionLogEntry: [],
         updateCurrentActionBar: [],
         updateCurrentActionsDivs: [],
@@ -834,6 +835,10 @@ function View() {
             document.getElementById("buffList").style.display = "none";
         }
     };
+
+    this.updateGlobalStory = function(num) {
+        actionLog.addGlobalStory(num);
+    }
 
     this.updateStories = function(init) {
         // ~1.56ms cost per run. run once every 2000ms on an interval
@@ -1555,7 +1560,7 @@ function unlockGlobalStory(num) {
     if (num > storyMax) {
         document.getElementById("newStory").style.display = "inline-block";
         storyMax = num;
-        actionLog.addGlobalStory(num);
+        view.requestUpdate("updateGlobalStory", num);
     }
 }
 
