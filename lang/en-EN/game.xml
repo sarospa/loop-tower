@@ -581,7 +581,12 @@
             <PrestigeExpOverflow>Experience earned is spread amongst all stats by 2% per level.</PrestigeExpOverflow>
             <PrestigeResetAll>Resets all current prestige bonuses, giving you back the points to allocate again. Note, this DOES trigger a reset, so this cannot be done mid-playthrough.</PrestigeResetAll>
         </prestige_bonus>
-
+        <navigation>
+            <town>Location</town>
+            <actions>Actions</actions>
+            <action_log>Log</action_log>
+            <stats>Stats</stats>
+        </navigation>
     </menu>
     <tutorial><![CDATA[
       TUTORIAL:<br>

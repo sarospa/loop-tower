@@ -586,8 +586,8 @@ const optionValueHandlers = {
         }
     },
     actionLog(value, init) {
-        document.getElementById("actionLog").style.display = value ? "" : "none";
-        document.getElementById("actionLogTitle").style.display = value ? "" : "none";
+        document.getElementById("actionLogContainer").style.display = value ? "" : "none";
+        document.getElementById("navbar_action_log").style.display = value ? "" : "none";
     },
     predictor(value, init) {
         localStorage["loadPredictor"] = value || "";

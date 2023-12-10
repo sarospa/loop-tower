@@ -14,6 +14,14 @@ menu {
 menu > li:focus-within, #story_control:focus-within, #story_control:focus-within > div:first-child  {
     text-decoration: underline;
     outline: none;
+    pointer-events: none; /* a second click bleeds through to base and defocuses the element */
+    & > * {
+        /* but children/tooltips are clickable */
+        pointer-events: initial;
+    }
+}
+#story_control:focus-within > div:first-child {
+    pointer-events: none; /* repeating to override the initial */
 }
 
 button {
@@ -27,8 +35,8 @@ button {
 }
 
 :root {
-    /* 16 px default * 7/8 = 14px */
-    font-size: 0.875em;
+    /* non-responsive view sets pixel-based font size */
+    font-size: 14px;
 }
 
 body {
@@ -47,8 +55,11 @@ body {
 }
 
 /* These are only used in mobile view  */
-main, #shortTownColumn, #actionLogContainer, #timeControlsMain {
+main, #shortTownColumn, #actionLogContainer, #timeControlsMain, #timeControlsOptions {
     display: contents;
+}
+#navbar {
+    display: none;
 }
 
 #loadingBox {
@@ -81,7 +92,6 @@ main, #shortTownColumn, #actionLogContainer, #timeControlsMain {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-
 }
 
 body.loading > *:not(.showWhileLoading),
@@ -920,9 +930,11 @@ li#actionLogLoadPrevious {
 
 :root.responsive {
     height: 100%;
-    overflow: hidden;
+    overflow: clip;
     /* Default browser font size = 16px, 16px * 7/8 = 14px */
     font-size: 0.875rem;
+    /* don't let anything bleed outside and cause overscrolling issues */
+    contain: strict;
 }
 
 .responsive {
@@ -1130,46 +1142,58 @@ li#actionLogLoadPrevious {
 /* mobile support, only for responsive */
 @media (max-width: 1250px) {
     :root.responsive {
-        height: 100%;
-        overflow: hidden;
+        height: auto;
+        min-height: 100%;
+        overflow: initial;
+        contain: content;
     }
     
     .responsive {
         & body {
             width: 100vw;
+            min-height: 100vh;
             display:grid;
             grid:
-                "header" max-content
-                "main" max-content
+                "menu" 30px
+                "time" 10px
+                "resources" 18px
+                "controls-main" min-content
+                "controls-options" min-content
+                "main" minmax(max-content, 1fr)
+                "navbar" max-content
                 / 100vw
                 ;
             justify-items: stretch;
-            overflow: hidden auto;
+            overflow: initial;
         }
 
-        & main {
-            display: grid;
-            grid-area: main;
-            grid: "town actions log stats" max-content;
-            grid-template-columns: repeat(4, 100vw);
-            overflow: auto clip;
-            scroll-snap-type: x mandatory;
+        /* Header area */
+
+        /* menu is at the top in mobile, but it doesn't stick */
+        & #menu {
+            grid-area: menu;
+            text-align: left;
+            min-height: 30px;
+            height: 30px !important;
+            width: 100%;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            display: flex;
+            flex-wrap: nowrap;
+            align-items: center;
+            justify-content: space-around;
+            & li {
+                height: auto !important;
+                font-size: 0.9rem;
+                margin: 0 !important;
+            }
         }
-        & #townColumn {
+
+        /* sticky elements need to be at root grid level */
+        & #timeInfo, & #timeControls {
             display: contents;
         }
-
-        & #timeInfo {
-            grid-area: header;
-            display: grid;
-            grid:
-                "time" 10px
-                "resources" 16px
-                "controls" auto
-                "menu" auto;
-            gap: 2px;
-        }
-    
+        /* these will cause problems with grid/flex */
         & body > br, & #timeInfo > br {
             display: none;
         }
@@ -1177,43 +1201,110 @@ li#actionLogLoadPrevious {
         & #timeBarContainer {
             grid-area: time;
             position: sticky !important;
+            z-index: 1;
             top: 0px;
         }
 
-        & #menu {
-            grid-area: menu;
-            text-align: left;
-            min-height: 30px;
-            height: auto !important;
-            margin-right: 0 !important;
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-    
         & #trackedResources {
             grid-area: resources;
             position: sticky;
+            z-index: 1;
+            background-color: #e4ece5;
+            padding-top:2px;
             top: 10px;
+        }
+
+        & .t-dark #trackedResources {
+            background-color: #eee;
         }
     
         & #timeControlsMain {
+            grid-area: controls-main;
             display: block;
             position: sticky;
-            top: 26px;
+            z-index: 1;
+            background: linear-gradient(rgb(228, 236, 229) 50%, rgba(228, 236, 229, 0) 100%);
+            padding-top:2px;
+            top: 28px;
+        }
+
+        & .t-dark #timeControlsMain {
+            background: linear-gradient(rgb(238, 238, 238) 50%, rgba(238, 238, 238, 0) 100%);
         }
     
-        & #timeControls {
-            grid-area: controls;
+        & #timeControlsOptions {
+            grid-area: controls-options;
+            display: block;
         }
     
-        & #statsColumn, & #actionsColumn, & #shortTownColumn, & #actionLogContainer {
+        /* Navbar */
+
+        & #navbar {
+            grid-area: navbar;
+            display: flex;
+            position: sticky;
+            inset: auto 0 0 0;
+            height: 50px;
+            z-index: 1000;
+            background-color: #a8a8a8;
+            gap: 1px;
+
+            & > a {
+                position: relative;
+                padding: 1em 0;
+                text-decoration: none;
+                background-color: #bfbfbf;
+                flex: 1;
+                text-align: center;
+                text-decoration: none;
+                font-weight: bold;
+                color: black;
+                
+                &:hover {
+                    background-color: #a8a8a8;
+                }
+            }
+        }
+
+        /* Main content area */
+    
+        & main {
+            grid-area: main main main none;
+            display: flex;
+
+            overflow: auto clip;
+            scroll-snap-type: x mandatory;
             width: auto !important;
+        }
+
+        & #townColumn {
+            display: contents;
+        }
+
+        & #statsColumn, & #actionsColumn, & #shortTownColumn, & #actionLogContainer {
+            width: 100vw !important;
+            flex: none;
             overflow: hidden;
             padding-bottom: 2ex;
             flex-direction: column;
             display: flex;
             scroll-snap-align: center;
+        }
+
+        & #shortTownColumn {
+            order: 1;
+        }
+
+        & #actionsColumn {
+            order: 2;
+        }
+
+        & #actionLogContainer {
+            order: 3;
+        }
+
+        & #statsColumn {
+            order: 4;
         }
     
         & #statsColumn {
@@ -1288,7 +1379,9 @@ li#actionLogLoadPrevious {
         & #actionsTitle {
             margin: 0 40px;
         }
-    
+        & #actionsViewLeft, & #actionsViewRight {
+            margin: 0 !important;
+        }
         & .actionOptions {
             min-height:auto;
         }
@@ -1356,11 +1449,57 @@ li#actionLogLoadPrevious {
 
 /* dark theme */
 
+/*
+        Thanks to https://github.com/mlaily/NegativeScreen for these matrices
+        <svg xmlns="http://www.w3.org/2000/svg">
+            <filter id="inversion1" color-interpolation-filters="sRGB">
+                <feColorMatrix
+                    in="SourceGraphic"
+                    type="matrix"
+                    values="-1  0  0 0 1
+                             0 -1  0 0 1
+                             0  0 -1 0 1
+                             0  0  0 1 0" />
+            </filter>
+            <filter id="inversion2" color-interpolation-filters="sRGB">
+                <feColorMatrix
+                    in="SourceGraphic"
+                    type="matrix"
+                    values=" 0.3333333 -0.6666667 -0.6666667 0 1
+                            -0.6666667  0.3333333 -0.6666667 0 1
+                            -0.6666667 -0.6666667  0.3333333 0 1
+                             0 0 0 1 0" />
+            </filter>
+            <filter id="inversion3" color-interpolation-filters="sRGB">
+                <feColorMatrix
+                    in="SourceGraphic"
+                    type="matrix"
+                    values=" 1 -1 -1 0 1
+                            -1  1 -1 0 1
+                            -1 -1  1 0 1
+                             0  0  0 1 0" />
+            </filter>
+            <filter id="inversion4" color-interpolation-filters="sRGB">
+                <feColorMatrix
+                    in="SourceGraphic"
+                    type="matrix"
+                    values=" 0.50 -0.56 -0.94 0 1
+                            -0.78  0.72 -0.94 0 1
+                            -0.78 -0.56  0.34 0 1
+                             0 0 0 1 0" />
+            </filter>
+        </svg>
+*/
+
 .t-dark {
     filter: invert(1) hue-rotate(180deg);
-    filter: url(#inversion4);
+    filter: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"><filter id="inversion4" color-interpolation-filters="sRGB"><feColorMatrix in="SourceGraphic" values="0.50 -0.56 -0.94 0 1 -0.78 0.72 -0.94 0 1 -0.78 -0.56 0.34 0 1 0 0 0 1 0"/></filter></svg>#inversion4');
     background: #111;
     color: #222;
+}
+:root.responsive .t-dark {
+    /* the contain: on the root element causes background to be included in the filter */
+    background: #eee;
 }
 .t-dark.inverted {
     filter: invert(1);
@@ -1369,16 +1508,16 @@ li#actionLogLoadPrevious {
     filter: invert(1) hue-rotate(180deg);
 }
 .t-dark.inversion1 {
-    filter: url(#inversion1);
+    filter: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"><filter id="inversion1" color-interpolation-filters="sRGB"><feColorMatrix in="SourceGraphic" values="-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0"/></filter></svg>#inversion1')
 }
 .t-dark.inversion2 {
-    filter: url(#inversion2);
+    filter: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"><filter id="inversion2" color-interpolation-filters="sRGB"><feColorMatrix in="SourceGraphic" values="0.3333333 -0.6666667 -0.6666667 0 1 -0.6666667 0.3333333 -0.6666667 0 1 -0.6666667 -0.6666667 0.3333333 0 1 0 0 0 1 0"/></filter></svg>#inversion2');
 }
 .t-dark.inversion3 {
-    filter: url(#inversion3);
+    filter: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"><filter id="inversion3" color-interpolation-filters="sRGB"><feColorMatrix in="SourceGraphic" values="1 -1 -1 0 1 -1 1 -1 0 1 -1 -1 1 0 1 0 0 0 1 0"/></filter></svg>#inversion3');
 }
 .t-dark.inversion4 {
-    filter: url(#inversion4);
+    filter: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"><filter id="inversion4" color-interpolation-filters="sRGB"><feColorMatrix in="SourceGraphic" values="0.50 -0.56 -0.94 0 1 -0.78 0.72 -0.94 0 1 -0.78 -0.56 0.34 0 1 0 0 0 1 0"/></filter></svg>#inversion4');
 }
 
 .t-dark .buffmaxinput {

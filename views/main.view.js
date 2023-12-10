@@ -176,7 +176,8 @@ function View() {
         adjustGoldCosts: [],
         adjustExpGain: [],
         removeAllHighlights: [],
-        highlightIncompleteActions: []
+        highlightIncompleteActions: [],
+        highlightAction: [],
     };
 
     // requesting an update will call that update on the next view.update tick (based off player set UPS)
@@ -488,6 +489,15 @@ function View() {
         "rgba(103, 58, 183, 0.4)", //Valley of Olympus
         //"rgba(103, 58, 183, 0.2)"
     ];
+    this.highlightAction = function(index) {
+        const element = document.getElementById(`nextActionContainer${index}`);
+        if (!(element instanceof HTMLElement)) return;
+        element.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+            inline: "nearest",
+        })
+    };
     this.updateNextActions = function() {
         let count = 0;
         while (nextActionsDiv.firstChild) {
@@ -1554,6 +1564,21 @@ function unlockStory(name) {
         storyReqs[name] = true;
         if (options.actionLog) view.requestUpdate("updateStories", false);
     }
+}
+
+function scrollToPanel(event, target) {
+    event.preventDefault();
+    const element = document.getElementById(target);
+    const main = document.getElementById("main");
+
+    if (element instanceof HTMLElement && main) {
+        main.scroll({
+            behavior: "smooth",
+            left: element.offsetLeft,
+        });
+    }
+
+    return false;
 }
 
 const curActionsDiv = document.getElementById("curActionsList");

@@ -316,13 +316,15 @@ function addActionToList(name, townNum, isTravelAction, insertAtIndex) {
                 }
                 if (isTravelAction) {
                     actionTownNum = townNum + 1;
-                    actions.addAction(name, 1, insertAtIndex);
+                    const index = actions.addAction(name, 1, insertAtIndex);
+                    view.requestUpdate("highlightAction", index);
                 } else {
-                    actions.addAction(name, addAmount, insertAtIndex);
+                    const index = actions.addAction(name, addAmount, insertAtIndex);
+                    view.requestUpdate("highlightAction", index);
                     if (shiftDown && hasLimit(name)) {
-                        capAmount((insertAtIndex) ? insertAtIndex : actions.next.length - 1, townNum);
+                        capAmount(index, townNum);
                     } else if (shiftDown && isTraining(name)) {
-                        capTraining((insertAtIndex) ? insertAtIndex : actions.next.length - 1, townNum);
+                        capTraining(index, townNum);
                     }
                 }
             }

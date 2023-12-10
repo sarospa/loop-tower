@@ -23,6 +23,16 @@ class GoogleCloud {
     #tokenHandler;
 
     async init() {
+        if (!window.google || !window.gapi) {
+            let timeoutCounter = 100; // 10 seconds
+            console.log("Waiting on gapi and gsi to load...");
+            while (!window.google || !window.gapi) {
+                await delay(100);
+                if (timeoutCounter-- === 0) {
+                    console.error("Google API taking a long time to load? Hopefully waiting longer fixes it");
+                }
+            }
+        }
         this.tokenClient ??= google.accounts.oauth2.initTokenClient({
             client_id: GoogleCloud.#CLIENT_ID,
             scope: this.scope,

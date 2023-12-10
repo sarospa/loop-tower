@@ -290,13 +290,16 @@ function Actions() {
         if (initialOrder === undefined) {
             if (options.addActionsToTop) {
                 this.next.splice(0, 0, toAdd);
+                initialOrder = 0;
             } else {
+                initialOrder = this.next.length;
                 this.next.push(toAdd);
             }
         } else {
             // insert at index
             this.next.splice(initialOrder, 0, toAdd);
         }
+        return initialOrder;
     };
 }
 
