@@ -106,13 +106,16 @@ body:not(.loading) > .hideWhenLoaded {
 .showthatO {
     position:relative;
 }
+
+/* Top menus and loadouts can have focusable children in the popup, so they're sticky (they use focus-within) */
 .showthatH:hover .showthisH, .showthatH:focus-within .showthisH,
 .showthatloadout:hover .showthisloadout, .showthisloadout:hover, .showthatloadout:focus-within .showthisloadout,
-.showthat:hover .showthis, .showthat:focus-within .showthis, 
-.showthatO:hover .showthis, .showthatO:focus-within .showthis, 
-.showthatO:hover .showthisH, .showthatO:focus-within .showthisH, 
-.showthat:hover .showthisname, .showthat:focus-within .showthisname, 
-.showthat:hover .showthisstory, .showthat:focus-within .showthisstory
+
+/* Other popups only focus on the trigger, so they use focus-visible to only sticky when using keyboard nav */
+.showthat:hover .showthis, .showthat:focus-visible .showthis, 
+.showthatO:hover .showthis, .showthatO:focus-visible .showthis, 
+.showthat:hover .showthisname, .showthat:focus-visible .showthisname, 
+.showthat:hover .showthisstory, .showthat:focus-visible .showthisstory
 {
     display: block;
     visibility: visible;

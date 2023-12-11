@@ -27,7 +27,7 @@ Views.registerView("timeControls", {
             </button>
             <button id='talentTreeBtn' style='display: none;' onclick='view.showTalents()'' class='button control'>${_txt("time_controls>talents_button")}</button>
             <div class='control'>
-                <div tabindex='0' id='story_control' class='showthatO' onmouseover='view.updateStory(storyShowing)' onfocus='view.updateStory(storyShowing)' style='height:30px;'>
+                <div tabindex='0' id='story_control' class='showthatH' onmouseover='view.updateStory(storyShowing)' onfocus='view.updateStory(storyShowing)' style='height:30px;'>
                     <div class='large bold'>${_txt("time_controls>story_title")}</div>
                     <div id='newStory' style='color:red;display:none;'>(!)</div>
                     <div id='story_tooltip' class='showthisH' style='width:400px;'>
