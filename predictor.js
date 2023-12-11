@@ -1608,6 +1608,7 @@ const Koviko = {
      */
     async update(actions, container, isDebug) {
 
+      performance.mark("start-predictor-update");
       if(this.update.pre?.length){
         Array.from(container.children).map((element, i) => {
           if(i < this.update.pre.length){
@@ -1733,8 +1734,46 @@ const Koviko = {
       while ((finalIndex>0) && (actions[finalIndex].disabled)) {
         finalIndex--;
       }
+
+      performance.mark("enter-predictor-idle");
+      performance.measure("predictor-preidle", "start-predictor-update", "enter-predictor-idle");
+
+      const runInfo = await new class RunInfo {
+        async start() {
+          this.deadline = await nextIdle();
+          const timeRemaining = this.deadline.timeRemaining();
+          this.lastMark = this.#mark("start-predictoridle", timeRemaining);
+          return this;
+        }
+
+        async pauseIfNeeded() {
+          let timeRemaining = this.deadline.timeRemaining();
+          if (timeRemaining <= 1) {
+            const pauseMark = this.#mark("pause-predictoridle", timeRemaining);
+            performance.measure("predictoridle-cycle", this.lastMark.name, pauseMark.name);
+            this.deadline = await nextIdle();
+  
+          timeRemaining = this.deadline.timeRemaining();
+          this.lastMark = this.#mark("continue-predictoridle", timeRemaining);
+            return true;
+          }
+          return false;
+        }
+
+        finish() {
+          const timeRemaining = this.deadline.timeRemaining();
+          const finishMark = this.#mark("finish-predictoridle-loop", timeRemaining);
+          performance.measure("predictoridle-cycle", this.lastMark.name, finishMark.name);
+        }
+
+        #mark(name, timeRemaining) {
+          return performance.mark(`${name}:${timeRemaining}`, { detail: { timeRemaining } });
+        }
+      }().start();
+
       // Run through the action list and update the view for each action
       for(const [i, listedAction] of actions.entries()) {
+        if (await runInfo.pauseIfNeeded() && id != this.update.id) return;
 
         // If the cache hit the last time
         if(cache && i !== finalIndex) {
@@ -1861,15 +1900,8 @@ const Koviko = {
                   this.cache.add(key, [state, loop + 1, total, isValid]);
                 }
 
-                // Sleep every 100ms to avoid hanging the game
-                if(Date.now() % 100 === 0){
-                  await new Promise(r => setTimeout(r, 1));
-
-                  // If id != update.id, then another update was triggered and we need to stop processing this one
-                  if(id != this.update.id) {
-                    return;
-                  }
-                }
+                // If id != update.id, then another update was triggered and we need to stop processing this one
+                if (await runInfo.pauseIfNeeded() && id != this.update.id) return;
               }
             }
 
@@ -1903,6 +1935,8 @@ const Koviko = {
           }
         }
       }
+
+      runInfo.finish();
 
       let totalMinutes = state.resources.totalTicks / 50 / 60
 
