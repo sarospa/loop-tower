@@ -243,13 +243,13 @@ Views.registerView("menu", {
                 </button><br>`;
         html += 
         `<button class='button showthat control' style='margin-top: 2px;' onclick='beginChallenge(1)'>Mana Drought 
-            <button class='showthis' style='color:black;width:230px;margin-left:100px;'>${_txt("menu>challenges>mana_drought")}</button>
+            <div class='showthis' style='color:black;width:230px;margin-left:100px;'>${_txt("menu>challenges>mana_drought")}</div>
         </button><br>
         <button class='button showthat control' style='margin-top: 2px;' onclick='beginChallenge(2)'>Noodle Arms
-            <button class='showthis' style='color:black;width:230px;margin-left:100px;'>${_txt("menu>challenges>noodle_arms")}</button>
+            <div class='showthis' style='color:black;width:230px;margin-left:100px;'>${_txt("menu>challenges>noodle_arms")}</div>
         </button><br>
         <button class='button showthat control' style='margin-top: 2px;' onclick='beginChallenge(3)'>Mana Burn
-            <button class='showthis' style='color:black;width:230px;margin-left:100px;'>${_txt("menu>challenges>mana_burn")}</button>
+            <div class='showthis' style='color:black;width:230px;margin-left:100px;'>${_txt("menu>challenges>mana_burn")}</div>
         </button><br>`
         html += `</div>`
         return html;

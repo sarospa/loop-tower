@@ -11,7 +11,9 @@
             </meta>
             <version verNum="3.P16.11"><![CDATA[
             <b> Dec 10th, 2023</b>
-            • Fixed story unlock conditions for global story chapters 7-10.<br>
+            • Fixed story unlock conditions for global story chapters 7-10, so that the game doesn't tell you about [redacted] before you even see [redacted].<br>
+            • Fixed a bug that could cause a softlock with multipart action bars when fractional mana consumption was enabled. Thanks very much to potetgull from the discord for the reproduction!<br>
+            • Fixed the tooltips not displaying over each Challenge type, so you know what you're getting into before you click.<br>
             ]]></version>
             <version verNum="3.P16.10"><![CDATA[
             <b> Dec 8th, 2023</b>
