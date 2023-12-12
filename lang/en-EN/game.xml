@@ -16,6 +16,7 @@
             • Fixed the tooltips not displaying over each Challenge type, so you know what you're getting into before you click.<br>
             • Tooltips are a little less sticky now, so you don't have to keep clicking on the background to dismiss them.<br>
             • The predictor should cause less UI lag now. (This may cause predictions to take longer, but you should still be able to modify the action list while it's going.)<br>
+            • Added unlock conditions to the "Buy Supplies" tooltip. Thanks to Velociraptured on the discord for the report!<br>
             ]]></version>
             <version verNum="3.P16.10"><![CDATA[
             <b> Dec 8th, 2023</b>
@@ -1812,7 +1813,7 @@
         <buy_supplies>
             <label>Buy Supplies</label>
             <tooltip><![CDATA[
-            Prepare to move on.<br>Costs <div id='suppliesCost'></div> gold.<br>You only need one set of supplies.
+            Prepare to move on.<br>Costs <div id='suppliesCost'></div> gold.<br>You only need one set of supplies.<br>Unlocked at a combined Combat and Magic skill of 35.
             ]]></tooltip>
             <story_1><![CDATA[<b>Supplies bought:</b>⮀ A tent, enough rations to last for a month, portable cooking equipment and other assorted paraphernalia for your trip. The tent is durable and the rations don't taste bland and lifeless. It was probably worth the 300 gold asking price. Good thing you knew how to haggle.]]></story_1>
             <story_2><![CDATA[<b>Supplies bought without haggling:</b>⮀ How luxurious! You had the gold to just throw it away now, even though the mana would've been more beneficial in the long run, not having to haggle once in awhile was surprisingly nice. Truly, you have grown luxuriant.]]></story_2>
