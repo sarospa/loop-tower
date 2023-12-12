@@ -13,6 +13,7 @@ Views.registerView("timeControls", {
     },
     html() {
     // todo: add talent tree
+            // <button id='rewindButton' class='button control'>${_txt("time_controls>rewind_button")}</button>
         const html =
         `<div id='timeControlsMain'>
             <button id='pausePlay' onclick='pauseGame()'' class='button control'>${_txt("time_controls>pause_button")}</button>

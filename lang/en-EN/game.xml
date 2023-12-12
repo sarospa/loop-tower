@@ -751,6 +751,7 @@
     <time_controls>
         <play_button>Play</play_button>
         <pause_button>Pause</pause_button>
+        <rewind_button>Rewind</rewind_button>
         <pause_before_restart>Pause before restart</pause_before_restart>
         <pause_on_failed_loop>Pause on failed loop</pause_on_failed_loop>
         <pause_on_complete>Pause on progress complete</pause_on_complete>

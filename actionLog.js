@@ -85,7 +85,7 @@ class ActionLog {
 
     loadRecent() {
         this.earliestShownEntry ??= this.entries.length;
-        while (this.earliestShownEntry > 0 && this.entries[this.earliestShownEntry - 1].repeatable) {
+        while (this.earliestShownEntry > 0 && (this.entries[this.earliestShownEntry - 1].repeatable || this.earliestShownEntry > this.entries.length - 3)) {
             view.requestUpdate("updateActionLogEntry", --this.earliestShownEntry);
         }
     }

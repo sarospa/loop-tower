@@ -70,9 +70,10 @@ function singleTick() {
 
 let lastAnimationTime = 0;
 let animationFrameRequest = 0;
+let animationTicksEnabled = true;
 
 function animationTick(animationTime) {
-    if (animationTime == lastAnimationTime) {
+    if (animationTime == lastAnimationTime || !animationTicksEnabled) {
         // double tick in the same frame, drop this one
         return;
     }
@@ -101,6 +102,22 @@ function tick() {
         return;
     }
 
+    // if (document.getElementById("rewindButton")?.matches(":active")) {
+    //     addOffline(gameTicksLeft * offlineRatio);
+    //     gameTicksLeft = 0;
+    //     if (Data.snapshotStack.length > 2) {
+    //         Data.revertToSnapshot(-1);
+    //         view.requestUpdate("updateTime", null);
+    //         view.requestUpdate("updateCurrentActionLoops", actions.currentPos);
+    //         view.requestUpdate("updateCurrentActionBar", actions.currentPos);
+    //         view.updateStats();
+    //         view.updateSkills();
+    //         view.updateBuffs();
+    //     }
+    //     view.update();
+    //     return;
+    // }
+
     if (stop) {
         addOffline(gameTicksLeft * offlineRatio);
         view.update();
@@ -109,7 +126,12 @@ function tick() {
     }
 
     const deadline = performance.now() + 1000 / window.fps; // don't go past the current frame update time
+    // Data.recordSnapshot("tick");
 
+    executeGameTicks(deadline);
+}
+
+function executeGameTicks(deadline) {
     // convert "gameTicksLeft" (actually milliseconds) into equivalent base-mana count, aka actual game ticks
     // including the gameSpeed multiplier here because it is effectively constant over the course of a single
     // update, and it affects how many actual game ticks pass in a given span of realtime.

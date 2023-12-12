@@ -481,6 +481,66 @@ let curThievesGuildSegment = 0;
 // eslint-disable-next-line prefer-const
 let curGodsSegment = 0;
 
+// register all the object variables assigned in this file
+Data.registerAll({
+    actions,
+    towns,
+    stats,
+    resources,
+    hearts,
+    skills,
+    buffs,
+    prestigeValues,
+    townsUnlocked,
+    completedActions,
+    storyReqs,
+    totals,
+});
+
+// If we want to be able to iterate through the scalar global variables, they have to be assigned to an object. If we want to read or write them programmatically, we have to
+// be able to access a syntactic variable via indirection, which can only be done by eval (or its cousin, new Function).
+// the shorthand object initializer syntax here is just an easy way to get variable names into a call.
+const globalVariables = virtualizeGlobalVariables({
+    timer,
+    timeNeeded,
+    curTown,
+    totalTalent,
+    shouldRestart,
+    guild,
+    escapeStarted,
+    portalUsed,
+    stoneLoc,
+    goldInvested,
+    stonesUsed,
+    actionTownNum,
+    trainingLimits,
+    storyMax,
+    unreadActionStories,
+    totalMerchantMana,
+    curAdvGuildSegment,
+    curCraftGuildSegment,
+    curWizCollegeSegment,
+    curFightFrostGiantsSegment,
+    curFightJungleMonstersSegment,
+    curThievesGuildSegment,
+    curGodsSegment,
+});
+
+function virtualizeGlobalVariables(variables) {
+    const globals = Data.rootObjects.globals ?? {};
+    for (const name in variables) {
+        const get = /** @type {() => any} */(new Function(`return ${name};`));
+        const set = /** @type {(any) => void} */(new Function("v__", `${name} = v__`));
+        Object.defineProperty(globals, name, {
+            get,
+            set,
+            enumerable: true,
+            configurable: true,
+        });
+    }
+    return Data.register("globals", globals);
+}
+
 /** @type {Notification} */
 let pauseNotification = null;
 const googleCloud = new GoogleCloud();
@@ -621,7 +681,7 @@ function setOption(option, value) {
 
 function loadOption(option, value) {
     const input = document.getElementById(`${option}Input`);
-    if (!input) return;
+    if (!input || !(input instanceof HTMLInputElement)) return;
     if (input.type === "checkbox") input.checked = value;
     else if (option === "speedIncreaseBackground" && (typeof value !== "number" || isNaN(value) || value < 0)) input.value = "";
     else input.value = value;
@@ -1024,6 +1084,7 @@ function load(inChallenge) {
     recalcInterval(options.updateRate);
     pauseGame();
 
+    Data.recordBase();
 }
 
 function save() {

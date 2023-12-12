@@ -595,16 +595,17 @@ function statistics() {
     return list;
 }
 
-function benchmark(code, iterations) {
-    // supposed to kinda account for the cost of just running the eval
-    const baseCost = iterations / 20;
-    const before = Date.now();
+const nullFunc = () => {};
+function benchmark(func, iterations, returnTimeOnly) {
+    const baseCost = (func === nullFunc && returnTimeOnly) ? 0 : benchmark(nullFunc, iterations, true);
+    const before = performance.mark("benchmark-start");
     for (let i = 0; i < iterations; i++) {
-        // eslint-disable-next-line no-eval
-        eval(code);
+        func();
     }
-    const after = Date.now();
-    return `Total cost: ${after - before - baseCost}ms\n Cost per iteration: ~${(after - before - baseCost) / iterations}ms`;
+    const after = performance.mark("benchmark-end");
+    const measure = performance.measure("benchmark", "benchmark-start", "benchmark-end");
+    if (returnTimeOnly) return (measure.duration - baseCost);
+    return `Total cost: ${measure.duration - baseCost}ms\n Cost per iteration: ~${(measure.duration - baseCost) / iterations}ms`;
 }
 
 // make a lazy getter for an object (most useful for prototypes), which executes the
