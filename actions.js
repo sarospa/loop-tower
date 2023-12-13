@@ -97,6 +97,7 @@ function Actions() {
                         towns[curAction.townNum][`${curAction.varName}LoopCounter`] += curAction.segments;
                         towns[curAction.townNum][`total${curAction.varName}`]++;
                         segment -= curAction.segments;
+                        loopCosts = {};
                         curAction.loopsFinished();
                         partUpdateRequired = true;
                         if (curAction.canStart && !curAction.canStart()) {
