@@ -479,6 +479,12 @@
                 Of course, the choice is up to you and there may be cases where it's better to perform it sooner or later.
                 </a>
             </q_a>
+            <q_a>
+                <q>I found a bug!</q>
+                <a>Please join the Discord (link under Options) and report it in the #loops-bugs channel! I try to resolve
+                bug reports as quickly as I can, and I always appreciate hearing about them!
+                </a>
+            </q_a>
         </faq>
         <options>
             <meta>
@@ -543,6 +549,13 @@
             <speedIncreaseCustom_text> Custom Bonus Speed </speedIncreaseCustom_text>
             <speedIncreaseBackground_text>Background Bonus Speed</speedIncreaseBackground_text>
             <speedIncreaseBackground_warning>(This will apply even if bonus is inactive. To make the game run at full speed in the background, unset this or set it to 1 or greater)</speedIncreaseBackground_warning>
+            <borrow_time>Borrow Time</borrow_time>
+            <return_time>Return Time</return_time>
+            <time_borrowed>Time borrowed:</time_borrowed>
+            <borrow_time_tooltip>
+                You can grant yourself extra Bonus Seconds with this button, in one-day increments. You will always be able to see how much time you have borrowed in this way, but it will never
+                have any impact on gameplay. You can return time you've borrowed if you want to get the number back down to zero, but you aren't required to.
+            </borrow_time_tooltip>
             <hotkeys_tooltip><![CDATA[
                 Spacebar: Pause/play<br>
                 R: Restart<br>

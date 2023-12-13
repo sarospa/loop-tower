@@ -858,7 +858,7 @@ function View() {
                             storyTooltipText += storyText[0] + storyText[1];
                             lastInBranch = false;
                             storiesUnlocked++;
-                            if (action.visible() && action.unlocked()) {
+                            if (action.visible() && action.unlocked() && completedActions.includes(action.varName)) {
                                 actionLog.addActionStory(action, i, init);
                             }
                         } else if (lastInBranch) {
