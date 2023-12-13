@@ -458,6 +458,7 @@ const offlineRatio = 1;
 let totals = {
     time: 0,
     effectiveTime: 0,
+    borrowedTime: 0,
     loops: 0,
     actions: 0
 };
@@ -1038,10 +1039,11 @@ function load(inChallenge) {
     if (toLoad.totals != undefined) {
         totals.time = toLoad.totals.time === undefined ? 0 : toLoad.totals.time;
         totals.effectiveTime = toLoad.totals.effectiveTime === undefined ? 0 : toLoad.totals.effectiveTime;
+        totals.borrowedTime = toLoad.totals.borrowedTime ?? 0;
         totals.loops = toLoad.totals.loops === undefined ? 0 : toLoad.totals.loops;
         totals.actions = toLoad.totals.actions === undefined ? 0 : toLoad.totals.actions;
     }
-    else totals = {time: 0, effectiveTime: 0, loops: 0, actions: 0};
+    else totals = {time: 0, effectiveTime: 0, borrowedTime: 0, loops: 0, actions: 0};
     currentLoop = totals.loops;
     view.updateTotals();
     console.log("Updating prestige values from load")

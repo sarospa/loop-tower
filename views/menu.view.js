@@ -194,6 +194,13 @@ Views.registerView("menu", {
                 <input id='speedIncreaseBackgroundInput' type='number' value='' placeholder='same' min='0' style='width: 50px;transform: translateY(-2px);' oninput='setOption("speedIncreaseBackground", parseFloat(this.value))' />
                 <div id='speedIncreaseBackgroundWarning' class='small block' style='display:none'>${_txt("menu>options>speedIncreaseBackground_warning")}</div>
                 <br>
+                <button id='borrowTimeButton' class='button showthat control' onclick='borrowTime()'>${_txt("menu>options>borrow_time")}
+                    <div class='showthis'>${_txt("menu>options>borrow_time_tooltip")}</div>
+                </button>
+                <div class='show-when-time-borrowed'>
+                    <button id='returnTimeButton' class='button control' onclick='returnTime()'>${_txt("menu>options>return_time")}</button>
+                    ${_txt("menu>options>time_borrowed")} <span id='borrowedTimeDays'></span>
+                </div><br>
             </div>
         </li>`;
         return html;
@@ -259,6 +266,7 @@ Views.registerView("menu", {
         `<div>
         Effective Time: <div id='totalEffectiveTime'></div><br>
         Running Time: <div id='totalPlaytime'></div><br>
+        <span class='show-when-time-borrowed'>${_txt("menu>options>time_borrowed")} <div id='borrowedTimeBalance'></div><br></span>
         Loops: <div id='totalLoops'></div><br>
         Actions: <div id='totalActions'></div><br>
         </div>`;

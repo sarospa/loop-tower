@@ -9,6 +9,14 @@
                 <title>Changelog</title>
                 <version_prefix>Version</version_prefix>
             </meta>
+            <version verNum="3.P16.12"><![CDATA[
+            <b> Dec 12th, 2023</b>
+            • Many, many small optimizations, and many more yet to come. This probably won't affect you... unless you like setting your Bonus Speed really high. In that case, you might find that you can set it even higher.<br>
+            • Added unlock conditions to the "Buy Supplies" tooltip in Beginnersville. Thanks to Velociraptured on the discord for the report!<br>
+            • Action stories will not show up in the Action Log until you've completed the associated action at least once.<br>
+            • The extra settings for the predictor are available in the Extras menu again. Whoops.<br>
+            • You can now borrow Bonus Seconds from the Extras menu. It's up to you whether the Extras menu gets them back.<br>
+            ]]></version>
             <version verNum="3.P16.11"><![CDATA[
             <b> Dec 10th, 2023</b>
             • Fixed story unlock conditions for global story chapters 7-10, so that the game doesn't tell you about [redacted] before you even see [redacted].<br>
@@ -16,7 +24,6 @@
             • Fixed the tooltips not displaying over each Challenge type, so you know what you're getting into before you click.<br>
             • Tooltips are a little less sticky now, so you don't have to keep clicking on the background to dismiss them.<br>
             • The predictor should cause less UI lag now. (This may cause predictions to take longer, but you should still be able to modify the action list while it's going.)<br>
-            • Added unlock conditions to the "Buy Supplies" tooltip. Thanks to Velociraptured on the discord for the report!<br>
             ]]></version>
             <version verNum="3.P16.10"><![CDATA[
             <b> Dec 8th, 2023</b>
@@ -553,8 +560,8 @@
             <return_time>Return Time</return_time>
             <time_borrowed>Time borrowed:</time_borrowed>
             <borrow_time_tooltip>
-                You can grant yourself extra Bonus Seconds with this button, in one-day increments. You will always be able to see how much time you have borrowed in this way, but it will never
-                have any impact on gameplay. You can return time you've borrowed if you want to get the number back down to zero, but you aren't required to.
+                You can grant yourself extra Bonus Seconds with this button, in one-day increments. You will always be able to see how much time you have borrowed in this way, and it will never
+                have any impact on anything else in the game. You can return time you've borrowed if you want to get the number back down to zero, but you aren't required to.
             </borrow_time_tooltip>
             <hotkeys_tooltip><![CDATA[
                 Spacebar: Pause/play<br>

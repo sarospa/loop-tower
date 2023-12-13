@@ -253,6 +253,14 @@ body:not(.loading) > .hideWhenLoaded {
     margin-top: 15px;
 }
 
+.show-when-time-borrowed {
+    display: none;
+}
+:root.time-borrowed .show-when-time-borrowed {
+    display: initial;
+}
+
+
 .title {
     /* 1.14286 ≅ 8/7, 14px * 8/7 = 16px */
     font-size:1.14286rem;
@@ -387,12 +395,17 @@ input[type="number"] {
     margin-bottom:2px;
 }
 
-.button:hover, .loadoutbutton:hover {background-color: #3e8e41}
+.button:hover:not([disabled]), .loadoutbutton:hover {background-color: #3e8e41}
 
-.button:active, .loadoutbutton:active, .showthatloadout:focus-within, .showthatloadout:hover {
+.button:active:not([disabled]), .loadoutbutton:active, .showthatloadout:focus-within, .showthatloadout:hover {
     background-color: #3e8e41;
     box-shadow: 0 1px #666;
     top: 0;
+}
+
+.button[disabled] {
+    background-color: #777;
+    box-shadow: 0 3px #aaa;
 }
 
 /* Focus ring for keyboard navigation */
@@ -1534,6 +1547,12 @@ li#actionLogLoadPrevious {
 .t-dark .button {
     box-shadow: 0 3px #99d98c;
 }
+
+.t-dark .button[disabled] {
+    background-color: #777;
+    box-shadow: 0 3px #aaa;
+}
+
 
 .t-dark img {
     filter: invert(0.2);

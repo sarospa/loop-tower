@@ -728,6 +728,22 @@ function removeAction(index) {
     view.requestUpdate("updateLockedHidden", null);
 }
 
+function borrowTime() {
+    addOffline(86400_000);
+    totals.borrowedTime += 86400;
+    view.requestUpdate("updateOffline", null);
+    view.requestUpdate("updateTotals", null);
+}
+
+function returnTime() {
+    if (totalOfflineMs >= 86400_000) {
+        addOffline(-86400_000);
+        totals.borrowedTime -= 86400;
+        view.requestUpdate("updateOffline", null);
+        view.requestUpdate("updateTotals", null);
+    }
+}
+
 function addOffline(num) {
     if (num) {
         if (totalOfflineMs + num < 0 && bonusSpeed > 1) {

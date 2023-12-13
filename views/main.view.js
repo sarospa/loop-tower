@@ -439,6 +439,10 @@ function View() {
     };
     this.updateOffline = function() {
         document.getElementById("bonusSeconds").textContent = formatTime(totalOfflineMs / 1000);
+        const returnTimeButton = document.getElementById("returnTimeButton");
+        if (returnTimeButton instanceof HTMLButtonElement) {
+            returnTimeButton.disabled = totalOfflineMs < 86400_000;
+        }
     }
     this.updateTotalTicks = function() {
         document.getElementById("totalTicks").textContent = `${formatNumber(actions.completedTicks)} | ${formatTime(timeCounter)}`;
@@ -1490,8 +1494,12 @@ function View() {
     this.updateTotals = function() {
         document.getElementById('totalPlaytime').textContent = `${formatTime(totals.time)}`;
         document.getElementById('totalEffectiveTime').textContent = `${formatTime(totals.effectiveTime)}`;
+        document.getElementById('borrowedTimeBalance').textContent = formatTime(totals.borrowedTime);
+        document.getElementById('borrowedTimeDays').textContent = `${Math.floor(formatNumber(totals.borrowedTime / 86400))}${_txt("time_controls>days")}`;
         document.getElementById('totalLoops').textContent = `${formatNumber(totals.loops)}`;
         document.getElementById('totalActions').textContent = `${formatNumber(totals.actions)}`;
+        if (totals.borrowedTime > 0) document.documentElement.classList.add("time-borrowed");
+        else document.documentElement.classList.remove("time-borrowed");
     }
 
     this.updatePrestigeValues = function() {
