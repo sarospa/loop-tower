@@ -530,7 +530,7 @@ const Koviko = {
       }
 
       //Adds more to the Options panel
-      $('#menu div:nth-child(5) .showthisH').append("<div id='preditorSettings'><br /><b>Predictor Settings</b></div>")
+      $('#menu li:nth-child(5) .showthisH').append("<div id='preditorSettings'><br /><b>Predictor Settings</b></div>")
       $('#preditorSettings').append("<br /><label>Degrees of precision on Time</label><input id='updateTimePrecision' type='number' value='1' min='0' max='10' style='width: 50px;'>");
       $('#updateTimePrecision').focusout(function() {
       $(this).val(Math.floor($(this).val()))
