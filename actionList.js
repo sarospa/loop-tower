@@ -4081,9 +4081,9 @@ Action.ImbueBody = new MultipartAction("Imbue Body", {
         return getSkillLevel("Magic") * (1 + getLevel(this.loopStats[(towns[3].ImbueBodyLoopCounter + offset) % this.loopStats.length]) / 100);
     },
     loopsFinished() {
-        for (const stat in stats) {
+        for (const stat of statList) {
             let targetTalentLevel = getTalent(stat) - getBuffLevel("Imbuement2") - 1;
-            stats[stat].talent = getExpOfLevel(targetTalentLevel);
+            stats[stat].talentLevelExp.setLevel(targetTalentLevel);
         }
         view.updateStats();
         addBuffAmt("Imbuement2", 1);
@@ -6903,8 +6903,8 @@ Action.ImbueSoul = new MultipartAction("Imbue Soul", {
         return getSkillLevel("Magic") * (1 + getLevel(this.loopStats[(towns[8].ImbueSoulLoopCounter + offset) % this.loopStats.length]) / 100);
     },
     loopsFinished() {
-        for (const stat in stats) {
-            stats[stat].talent = 0;
+        for (const stat of statList) {
+            stats[stat].talentLevelExp.setLevel(0);
             stats[stat].soulstone = 0;
             view.requestUpdate("updateStat", stat);
         }

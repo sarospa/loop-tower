@@ -40,9 +40,9 @@ function cheatProgress()
 function cheatTalent(stat, targetTalentLevel)
 {
     if (stat === "all" || stat === "All")
-        for (const stat in stats)
-        stats[stat].talent = getExpOfLevel(targetTalentLevel);
-    else stats[stat].talent = getExpOfLevel(targetTalentLevel);
+        for (const stat of statList)
+        stats[stat].talentLevelExp.setLevel(targetTalentLevel);
+    else stats[stat].talentLevelExp.setLevel(targetTalentLevel);
     view.updateStats();
 }
 
@@ -58,9 +58,9 @@ function cheatSoulstone(stat, targetSS)
 function cheatSkill(skill, targetSkillLevel)
 {
     if (skill === "all" || skill === "All")
-        for (const skill in skills)
-            skill[skill].exp = getExpOfLevel(targetSkillLevel);
-    else skills[skill].exp = getExpOfLevel(targetSkillLevel);
+        for (const skill of skillList)
+            skills[skill].levelExp.setLevel(targetSkillLevel);
+    else skills[skill].levelExp.setLevel(targetSkillLevel);
     view.updateSkills();
 }
 

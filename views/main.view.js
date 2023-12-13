@@ -319,7 +319,7 @@ function View() {
 
     /** @param {SkillName} skill */
     this.updateSkill = function(skill) {
-        if (skills[skill].exp === 0) {
+        if (skills[skill].levelExp.level === 0) {
             document.getElementById(`skill${skill}Container`).style.display = "none";
             return;
         }
