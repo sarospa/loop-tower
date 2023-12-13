@@ -772,14 +772,14 @@ function load(inChallenge) {
     if (challengeSave.challengeMode !== 0)
         saveName = challengeSaveName;
 
-    for (const property of Object.getOwnPropertyNames(toLoad.stats)) {
+    for (const property of Object.getOwnPropertyNames(toLoad.stats ?? {})) {
         if (property in stats) {
             stats[property].load(toLoad.stats[property]);
         }
     }
 
 
-    for (const property of Object.getOwnPropertyNames(toLoad.skills)) {
+    for (const property of Object.getOwnPropertyNames(toLoad.skills ?? {})) {
         if (property in skills) {
             skills[property].load(toLoad.skills[property]);
         }

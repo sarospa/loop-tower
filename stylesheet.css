@@ -960,7 +960,7 @@ li#actionLogLoadPrevious {
         grid:
             "header header header" max-content
             "actions town stats" minmax(0, 1fr)
-            / minmax(350px, 1fr) minmax(535px, 2fr) minmax(316px, 1fr)
+            / minmax(max-content, 1fr) minmax(535px, 2fr) minmax(316px, 1fr)
             ;
         justify-items: stretch;
     }
@@ -1096,11 +1096,31 @@ li#actionLogLoadPrevious {
         width: auto;
         display: block;
     }
+
+    & #actionChanges {
+        gap: 8px;
+    }
+    & #actionChanges > * {
+        flex: 1 1 content;
+        width: auto !important;
+    }
+
+    & #actionChangeButtons {
+        display: grid;
+        grid-template-columns: repeat(2, auto);
+        grid-template-rows: repeat(2, max-content);
+        grid-auto-flow: column dense;
+        align-items: center;
+        gap: 2px;
+    }
+
     & #curActionsListContainer {
-        flex: 1;
+        flex: 1 1 content;
+        width: auto !important;
     }
     & #nextActionsListContainer {
-        flex: 3;
+        flex: 3 1 content;
+        width: auto !important;
     }
     & #curActionsListContainer, & #nextActionsListContainer {
         display: flex;

@@ -343,7 +343,7 @@
                     </div>
                 </div>
                 <div id="actionChanges" style="display:flex;text-align:left;width:100%;margin-top:5px;">
-                    <div style="width:50%;">
+                    <div id="actionChangeOptions" style="width:50%;">
                         <input type="checkbox" id="keepCurrentListInput" class="checkbox" onchange="setOption('keepCurrentList', this.checked)">
                         <label for="keepCurrentListInput" class="localized" data-lockey="actions>tooltip>current_list_active"></label><br>
                         <input type="checkbox" id="repeatLastActionInput" class="checkbox" onchange="setOption('repeatLastAction', this.checked)">
@@ -351,7 +351,7 @@
                         <input type="checkbox" id="addActionsToTopInput" class="checkbox" onchange="setOption('addActionsToTop', this.checked)">
                         <label for="addActionsToTopInput" class="localized" data-lockey="actions>tooltip>add_action_top"></label>
                     </div>
-                    <div style="margin-left:-4px;text-align:right;width:50%;">
+                    <div id="actionChangeButtons" style="margin-left:-4px;text-align:right;width:50%;">
                         <button id="maxTraining" class="button localized" style="margin-right:0px;display:none" onclick="capAllTraining()" data-lockey="actions>tooltip>max_training"></button>
                         <button class="button localized" style="margin-right:0px;" onclick="clearList()" data-lockey="actions>tooltip>clear_list"></button>
                         <div tabindex="0" class="showthatloadout">Manage Loadouts
