@@ -34,8 +34,8 @@ function Actions() {
         // this is how much mana is actually getting spent during this call to tick().
         let manaToSpend = availableMana;
 
-        // restrict to the number of ticks it takes to get to a next level
-        manaToSpend = Math.min(manaToSpend, getMaxTicksForAction(curAction));
+        // restrict to the number of ticks it takes to get to a next talent level.
+        manaToSpend = Math.min(manaToSpend, getMaxTicksForAction(curAction, true));
         // restrict to the number of ticks it takes to finish the current action
         manaToSpend = Math.min(manaToSpend, Mana.ceil(curAction.adjustedTicks - curAction.ticks));
         // just in case
@@ -49,35 +49,45 @@ function Actions() {
 
         // only for multi-part progress bars
         if (curAction.loopStats) {
+            let loopCosts = {};
+
+            function loopCost(segment) {
+                return loopCosts[segment] ??= curAction.loopCost(segment);
+            }
+
             let segment = 0;
             let curProgress = towns[curAction.townNum][curAction.varName];
-            while (curProgress >= curAction.loopCost(segment)) {
-                curProgress -= curAction.loopCost(segment);
+            while (curProgress >= loopCost(segment)) {
+                curProgress -= loopCost(segment);
                 segment++;
             }
             // segment is 0,1,2
 
             // thanks to Gustav on the discord for the multipart loop code
             let manaLeft = manaToSpend;
+            // don't go any further than will get to the next level of whatever stat is being used for this segment
+            let manaLeftForCurrentSegment = Math.min(manaLeft, getMaxTicksForStat(curAction, curAction.loopStats[segment], false));
             manaToSpend = 0;
             const tickMultiplier = (curAction.manaCost() / curAction.adjustedTicks);
             let partUpdateRequired = false;
 
             manaLoop:
-            while (manaLeft > 0 && curAction.canMakeProgress(segment)) {
+            while (manaLeftForCurrentSegment > 0 && curAction.canMakeProgress(segment)) {
                 //const toAdd = curAction.tickProgress(segment) * (curAction.manaCost() / curAction.adjustedTicks);
                 const progressMultiplier = curAction.tickProgress(segment) * tickMultiplier;
                 const toAdd = Math.min(
-                    manaLeft * progressMultiplier, // how much progress would we make if we spend all available mana?
-                    curAction.loopCost(segment) - curProgress // how much progress would it take to complete this segment?
+                    manaLeftForCurrentSegment * progressMultiplier, // how much progress would we make if we spend all available mana?
+                    loopCost(segment) - curProgress // how much progress would it take to complete this segment?
                 );
-                manaLeft -= toAdd / progressMultiplier;
-                manaToSpend += toAdd / progressMultiplier;
+                const manaUsed = toAdd / progressMultiplier;
+                manaLeftForCurrentSegment -= manaUsed;
+                manaLeft -= manaUsed;
+                manaToSpend += manaUsed;
                 // console.log("using: "+curAction.loopStats[(towns[curAction.townNum][curAction.varName + "LoopCounter"]+segment) % curAction.loopStats.length]+" to add: " + toAdd + " to segment: " + segment + " and part " +towns[curAction.townNum][curAction.varName + "LoopCounter"]+" of progress " + curProgress + " which costs: " + curAction.loopCost(segment));
                 towns[curAction.townNum][curAction.varName] += toAdd;
                 curProgress += toAdd;
-                while (curProgress >= curAction.loopCost(segment)) {
-                    curProgress -= curAction.loopCost(segment);
+                while (curProgress >= loopCost(segment)) {
+                    curProgress -= loopCost(segment);
                     // segment finished
                     if (segment === curAction.segments - 1) {
                         // part finished
@@ -107,6 +117,7 @@ function Actions() {
                         partUpdateRequired = true;
                     }
                     segment++;
+                    manaLeftForCurrentSegment = Math.min(manaLeft, getMaxTicksForStat(curAction, curAction.loopStats[segment], false));
                 }
             }
 
@@ -306,7 +317,7 @@ function Actions() {
 function setAdjustedTicks(action) {
     let newCost = 0;
     for (const actionStatName in action.stats){
-        newCost += action.stats[actionStatName] / (1 + getLevel(actionStatName) / 100);
+        newCost += action.stats[actionStatName] * stats[actionStatName].manaMultiplier;
     }
     action.rawTicks = action.manaCost() * newCost - (options.fractionalMana ? 0 : 0.000001);
     action.adjustedTicks = Math.max(options.fractionalMana ? 0 : 1, Mana.ceil(action.rawTicks));
@@ -321,21 +332,30 @@ function calcTalentMult(talent) {
 }
 
 // how many ticks would it take to get to the first level up
-function getMaxTicksForAction(action) {
+function getMaxTicksForAction(action, talentOnly=false) {
     let maxTicks = Number.MAX_SAFE_INTEGER;
     const expMultiplier = action.expMult * (action.manaCost() / action.adjustedTicks);
-    const overFlow=Math.pow(PRESTIGE_EXP_OVERFLOW_BASE, getBuffLevel("PrestigeExpOverflow")) - 1;
+    const overFlow=prestigeBonus(PRESTIGE_EXP_OVERFLOW_BASE, "PrestigeExpOverflow") - 1;
     for (const stat in stats) {
-        const expToNext = getExpToLevel(stat);
+        const expToNext = getExpToLevel(stat, talentOnly);
         const statMultiplier = expMultiplier * ((action.stats[stat]??0)+overFlow) * getTotalBonusXP(stat);
         maxTicks = Math.min(maxTicks, Mana.ceil(expToNext / statMultiplier));
     }
     return maxTicks;
 }
 
+/** @param {StatName} stat  */
+function getMaxTicksForStat(action, stat, talentOnly=false) {
+    const expMultiplier = action.expMult * (action.manaCost() / action.adjustedTicks);
+    const overFlow=prestigeBonus(PRESTIGE_EXP_OVERFLOW_BASE, "PrestigeExpOverflow") - 1;
+    const expToNext = getExpToLevel(stat, talentOnly);
+    const statMultiplier = expMultiplier * ((action.stats[stat]??0)+overFlow) * getTotalBonusXP(stat);
+    return Mana.ceil(expToNext / statMultiplier);
+}
+
 function addExpFromAction(action, manaCount) {
     const adjustedExp = manaCount * action.expMult * (action.manaCost() / action.adjustedTicks);
-    const overFlow=Math.pow(PRESTIGE_EXP_OVERFLOW_BASE, getBuffLevel("PrestigeExpOverflow")) - 1;
+    const overFlow=prestigeBonus(PRESTIGE_EXP_OVERFLOW_BASE, "PrestigeExpOverflow") - 1;
     for (const stat in stats) {
         const expToAdd = ((action.stats[stat]??0)+overFlow) * adjustedExp * getTotalBonusXP(stat);
 

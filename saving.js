@@ -89,7 +89,8 @@ let curTown = 0;
 
 
 const statList = /** @type {const} */(["Dex", "Str", "Con", "Spd", "Per", "Cha", "Int", "Luck", "Soul"]);
-/** @type {{[K in typeof statList[number]]?: {exp: number, talent: number, soulstone: number}}} */
+/** @typedef {typeof statList[number]} StatName */
+/** @type {{[K in StatName]?: Stat}} */
 const stats = {};
 let totalTalent = 0;
 // eslint-disable-next-line prefer-const
@@ -145,7 +146,8 @@ let loadouts;
 let loadoutnames;
 //let loadoutnames = ["1", "2", "3", "4", "5"];
 const skillList = /** @type {const} */(["Combat", "Magic", "Practical", "Alchemy", "Crafting", "Dark", "Chronomancy", "Pyromancy", "Restoration", "Spatiomancy", "Mercantilism", "Divine", "Commune", "Wunderkind", "Gluttony", "Thievery", "Leadership", "Assassin"]);
-/** @type {{[K in typeof skillList[number]]?: {exp: number}}} */
+/** @typedef {typeof skillList[number]} SkillName */
+/** @type {{[K in SkillName]?: Skill}} */
 const skills = {};
 const buffList = /** @type {const} */(["Ritual", 
     "Imbuement", 
@@ -162,6 +164,7 @@ const buffList = /** @type {const} */(["Ritual",
     "PrestigeBartering",
     "PrestigeExpOverflow"
 ]);
+/** @typedef {typeof buffList[number]} BuffName */
 
 const dungeonFloors = [6, 9, 20];
 const trialFloors = [50, 100, 7, 1000, 25];
@@ -197,7 +200,7 @@ const buffCaps = {
     PrestigeBartering: 100,
     PrestigeExpOverflow: 100
 };
-/** @type {{[K in typeof buffList[number]]?: {amt: number}}} */
+/** @type {{[K in BuffName]?: Buff}} */
 const buffs = {};
 const prestigeValues = {};
 let goldInvested = 0;
@@ -768,17 +771,16 @@ function load(inChallenge) {
     if (challengeSave.challengeMode !== 0)
         saveName = challengeSaveName;
 
-    for (const property in toLoad.stats) {
-        if (toLoad.stats.hasOwnProperty(property)) {
-            stats[property].talent =  toLoad.stats[property].talent > 0 ? toLoad.stats[property].talent : 0;
-            stats[property].soulstone = toLoad.stats[property].soulstone > 0 ? toLoad.stats[property].soulstone : 0;
+    for (const property of Object.getOwnPropertyNames(toLoad.stats)) {
+        if (property in stats) {
+            stats[property].load(toLoad.stats[property]);
         }
     }
 
 
-    for (const property in toLoad.skills) {
-        if (toLoad.skills.hasOwnProperty(property)) {
-            skills[property].exp = toLoad.skills[property].exp > 0 ? toLoad.skills[property].exp : toLoad.skills[property].exp;
+    for (const property of Object.getOwnPropertyNames(toLoad.skills)) {
+        if (property in skills) {
+            skills[property].load(toLoad.skills[property]);
         }
     }
 

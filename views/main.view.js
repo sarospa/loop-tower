@@ -280,6 +280,7 @@ function View() {
 
     this.updateStatGraphNeeded = false;
 
+    /** @param {typeof statList[number]} stat */
     this.updateStat = function(stat) {
         const level = getLevel(stat);
         const talent = getTalent(stat);
@@ -292,16 +293,14 @@ function View() {
 
         if (statShowing === stat || document.getElementById(`stat${stat}LevelExp`).innerHTML === "") {
             document.getElementById(`stat${stat}Level2`).textContent = intToString(level, 1);
-            const expOfLevel = getExpOfLevel(level);
-            document.getElementById(`stat${stat}LevelExp`).textContent = intToString(stats[stat].exp - expOfLevel, 1);
-            document.getElementById(`stat${stat}LevelExpNeeded`).textContent = intToString(`${getExpOfLevel(level + 1) - expOfLevel}`, 1);
+            document.getElementById(`stat${stat}LevelExp`).textContent = intToString(stats[stat].statLevelExp.exp, 1);
+            document.getElementById(`stat${stat}LevelExpNeeded`).textContent = intToString(stats[stat].statLevelExp.expRequiredForNextLevel, 1);
             document.getElementById(`stat${stat}LevelProgress`).textContent = intToString(levelPrc, 2);
 
             document.getElementById(`stat${stat}Talent2`).textContent = intToString(talent, 1);
-            const expOfTalent = getExpOfTalent(talent);
-            document.getElementById(`stat${stat}TalentExp`).textContent = intToString(stats[stat].talent - expOfTalent, 1);
-            document.getElementById(`stat${stat}TalentExpNeeded`).textContent = intToString(`${getExpOfTalent(talent + 1) - expOfTalent}`, 1);
-            document.getElementById(`stat${stat}TalentMult`).textContent = intToString(calcTalentMult(talent), 3);
+            document.getElementById(`stat${stat}TalentExp`).textContent = intToString(stats[stat].talentLevelExp.exp, 1);
+            document.getElementById(`stat${stat}TalentExpNeeded`).textContent = intToString(stats[stat].talentLevelExp.expRequiredForNextLevel, 1);
+            document.getElementById(`stat${stat}TalentMult`).textContent = intToString(stats[stat].talentMult, 3);
             document.getElementById(`stat${stat}TalentProgress`).textContent = intToString(talentPrc, 2);
             document.getElementById(`stat${stat}TotalMult`).textContent = intToString(getTotalBonusXP(stat), 3);
         }
@@ -318,6 +317,7 @@ function View() {
         if (skill !== undefined) this.updateSkill(skill);
     };
 
+    /** @param {SkillName} skill */
     this.updateSkill = function(skill) {
         if (skills[skill].exp === 0) {
             document.getElementById(`skill${skill}Container`).style.display = "none";
@@ -334,9 +334,8 @@ function View() {
         document.getElementById(`skill${skill}LevelBar`).style.width = `${levelPrc}%`;
 
         if (skillShowing === skill) {
-            const expOfLevel = getExpOfSkillLevel(getSkillLevel(skill));
-            document.getElementById(`skill${skill}LevelExp`).textContent = intToString(skills[skill].exp - expOfLevel, 1);
-            document.getElementById(`skill${skill}LevelExpNeeded`).textContent = intToString(`${getExpOfSkillLevel(getSkillLevel(skill) + 1) - expOfLevel}`, 1);
+            document.getElementById(`skill${skill}LevelExp`).textContent = intToString(skills[skill].levelExp.exp, 1);
+            document.getElementById(`skill${skill}LevelExpNeeded`).textContent = intToString(skills[skill].levelExp.expRequiredForNextLevel, 1);
             document.getElementById(`skill${skill}LevelProgress`).textContent = intToString(levelPrc, 2);
 
             if (skill === "Dark") {
@@ -1160,10 +1159,15 @@ function View() {
         document.getElementById(`expMult${action.varName}`).textContent = formatNumber(action.expMult * 100);
     };
 
+    this.goldCosts = {};
+
     this.adjustGoldCost = function(updateInfo) {
         const varName = updateInfo.varName;
         const amount = updateInfo.cost;
-        document.getElementById(`goldCost${varName}`).textContent = formatNumber(amount);
+        if (this.goldCosts[varName] !== amount) {
+            document.getElementById(`goldCost${varName}`).textContent = formatNumber(amount);
+            this.goldCosts[varName] = amount;
+        }
     };
     this.adjustGoldCosts = function() {
         for (const action of actionsWithGoldCost) {
@@ -1333,7 +1337,7 @@ function View() {
             if (stats[stat].soulstone) {
                 document.getElementById(`ss${stat}Container`).style.display = "inline-block";
                 document.getElementById(`ss${stat}`).textContent = intToString(stats[stat].soulstone, 1);
-                document.getElementById(`stat${stat}SSBonus`).textContent = intToString(stats[stat].soulstone ? calcSoulstoneMult(stats[stat].soulstone) : 0);
+                document.getElementById(`stat${stat}SSBonus`).textContent = intToString(stats[stat].soulstone ? stats[stat].soulstoneMult : 0);
                 document.getElementById(`stat${stat}ss`).textContent = intToString(stats[stat].soulstone, 1);
             } else {
                 document.getElementById(`ss${stat}Container`).style.display = "none";

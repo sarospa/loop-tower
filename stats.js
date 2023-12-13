@@ -1,4 +1,216 @@
 "use strict";
+
+class LevelExp {
+    level = 0;
+    exp = 0;
+
+    static expRequiredForLevel(level) {
+        return level * 100;
+    }
+    static totalExpForLevel(level) {
+        return level * (level + 1) * 50;
+    }
+    static levelForTotalExp(totalExp) {
+        return Math.max(Math.floor((Math.sqrt(8 * totalExp / 100 + 1) - 1) / 2), 0);
+    }
+
+    get expToNextLevel() {
+        return this.expRequiredForNextLevel - this.exp;
+    }
+
+    /** @type {number} */
+    #expRequiredForNextLevel;
+    get expRequiredForNextLevel() {
+        return this.#expRequiredForNextLevel ??= LevelExp.expRequiredForLevel(this.level + 1);
+    }
+
+    /** @type {number} */
+    #totalExpForThisLevel;
+    get totalExpForThisLevel() {
+        return this.#totalExpForThisLevel ??= LevelExp.totalExpForLevel(this.level);
+    }
+
+    get totalExp() {
+        return this.totalExpForThisLevel + this.exp;
+    }
+
+    set totalExp(totalExp) {
+        this.level = LevelExp.levelForTotalExp(totalExp);
+        this.exp = 0;
+        this.exp = totalExp - this.totalExp;
+    }
+
+    /** @param {number} [levelOrTotalExp] @param {number} [exp]  */
+    constructor(levelOrTotalExp, exp) {
+        if (typeof levelOrTotalExp === "number") {
+            if (typeof exp === "number") {
+                this.level = levelOrTotalExp;
+                this.exp = exp;
+            } else {
+                this.totalExp = levelOrTotalExp;
+            }
+        }
+    }
+
+    recalc() {
+        this.#expRequiredForNextLevel = this.#totalExpForThisLevel = undefined;
+    }
+
+    setLevel(level, exp=0) {
+        this.level = level;
+        this.exp = exp;
+        this.recalc();
+    }
+
+    levelUp() {
+        while (this.exp >= this.expRequiredForNextLevel) {
+            this.exp -= this.expRequiredForNextLevel;
+            this.level++;
+            this.recalc();
+        }
+        while (this.exp < 0 && this.level > 0) {
+            this.level--;
+            this.exp += this.expRequiredForNextLevel;
+            this.recalc();
+        }
+    }
+
+    addExp(exp) {
+        this.exp += exp;
+        this.levelUp();
+    }
+
+    load(toLoad, totalExp) {
+        if (!toLoad || typeof toLoad !== "object") toLoad = {};
+        if (toLoad.level >= 0 && toLoad.exp >= 0) {
+            this.level = toLoad.level;
+            this.exp = toLoad.exp;
+        } else if (totalExp > 0) {
+            this.totalExp = totalExp;
+        } else {
+            this.level = this.exp = 0;
+        }
+        this.recalc();
+    }
+}
+
+class Stat {
+    statLevelExp = new LevelExp();
+    talentLevelExp = new LevelExp();
+    soulstone = 0;
+
+    get exp() {
+        return this.statLevelExp.totalExp;
+    }
+    set exp(totalExp) {
+        throw new Error(`Tried to set stat.exp to ${totalExp}, should set stat.statLevelExp.totalExp instead`);
+        // this.statLevelExp.totalExp = totalExp;
+    }
+
+    get talent() {
+        return this.talentLevelExp.totalExp;
+    }
+    set talent(totalExp) {
+        throw new Error(`Tried to set stat.talent to ${totalExp}, should set stat.talentLevelExp.totalExp instead`);
+        // this.talentLevelExp.totalExp = totalExp;
+    }
+
+    #soulstoneCalc;
+    #soulstoneMult;
+    get soulstoneMult() {
+        if (this.#soulstoneCalc !== this.soulstone) {
+            this.#soulstoneMult = 1 + Math.pow(this.soulstone, 0.8) / 30;
+            this.#soulstoneCalc = this.soulstone;
+        }
+        return this.#soulstoneMult;
+    }
+    
+    #talentCalc;
+    #talentMult;
+    get talentMult() {
+        if (this.#talentCalc !== this.talentLevelExp.level) {
+            this.#talentMult = 1 + Math.pow(this.talentLevelExp.level, 0.4) / 3;
+            this.#talentCalc = this.talentLevelExp.level;
+        }
+        return this.#talentMult;
+    }
+
+    #levelCalc;
+    #manaMultiplier
+    get manaMultiplier() {
+        if (this.#levelCalc !== this.statLevelExp.level) {
+            this.#manaMultiplier = 1 / (1 + this.statLevelExp.level / 100);
+            this.#levelCalc = this.statLevelExp.level;
+        }
+        return this.#manaMultiplier;
+    }
+    
+    toJSON() {
+        const toSave = {...this};
+        // Backwards compatibility
+        toSave.exp = this.exp;
+        toSave.talent = this.talent;
+        return toSave;
+    }
+
+    load(toLoad) {
+        if (!toLoad || typeof toLoad !== "object") return false;
+        // stat level doesn't get touched during load bc no saving partial loops yet
+        // this.statLevelExp.load(toLoad.statLevelExp, toLoad.exp);
+        this.talentLevelExp.load(toLoad.talentLevelExp, toLoad.talent);
+        this.soulstone = toLoad.soulstone > 0 ? toLoad.soulstone : 0;
+        return true;
+    }
+}
+
+const Skill_increase = 1;
+const Skill_decrease = 2;
+const Skill_custom = 3;
+
+class Skill {
+    levelExp = new LevelExp();
+    /** @type {Skill_increase | Skill_decrease | Skill_custom | 0} */
+    change = 0;
+
+    get exp() {
+        return this.levelExp.totalExp;
+    }
+    set exp(totalExp) {
+        throw new Error(`Tried to set skill.exp to ${totalExp}, should set skill.levelExp.totalExp instead`);
+        // this.levelExp.totalExp = totalExp;
+    }
+
+    toJSON() {
+        const toSave = {...this};
+        toSave.exp = this.exp;
+        return toSave;
+    }
+
+    load(toLoad) {
+        if (!toLoad || typeof toLoad !== "object") return false;
+        this.levelExp.load(toLoad.statLevelExp, toLoad.exp);
+    }
+
+    /** @type {number} */
+    #bonusCalc;
+    /** @type {number} */
+    #bonus;
+    getBonus() {
+        if (this.#bonusCalc !== this.levelExp.level) {
+            this.#bonus = (this.change === Skill_increase) ? Math.pow(1 + this.levelExp.level / 60, 0.25)
+                        : (this.change === Skill_decrease) ? 1 / (1 + this.levelExp.level / 100)
+                        : (this.change === Skill_custom) ? 1 / (1 + this.levelExp.level / 2000)
+                        : 0;
+            this.#bonusCalc = this.levelExp.level;
+        }
+        return this.#bonus;
+    }
+}
+
+class Buff {
+    amt = 0;
+}
+
 function initializeStats() {
     for (let i = 0; i < statList.length; i++) {
         addNewStat(statList[i]);
@@ -6,10 +218,7 @@ function initializeStats() {
 }
 
 function addNewStat(name) {
-    stats[name] = {};
-    stats[name].exp = 0;
-    stats[name].talent = 0;
-    stats[name].soulstone = 0;
+    stats[name] = new Stat();
 }
 
 function initializeSkills() {
@@ -19,8 +228,8 @@ function initializeSkills() {
 }
 
 function addNewSkill(name) {
-    skills[name] = {};
-    skills[name].exp = 0;
+    skills[name] = new Skill();
+    setSkillBonusType(name);
 }
 
 function initializeBuffs() {
@@ -30,12 +239,12 @@ function initializeBuffs() {
 }
 
 function addNewBuff(name) {
-    buffs[name] = {};
-    buffs[name].amt = 0;
+    buffs[name] = new Buff();
 }
 
+/** @param {StatName} stat */
 function getLevel(stat) {
-    return getLevelFromExp(stats[stat].exp);
+    return stats[stat].statLevelExp.level
 }
 
 function getTotalTalentLevel() {
@@ -58,8 +267,9 @@ function getExpOfSingleLevel(level) {
     return level * 100;
 }
 
+/** @param {StatName} stat  */
 function getTalent(stat) {
-    return getLevelFromTalent(stats[stat].talent);
+    return stats[stat].talentLevelExp.level;
 }
 
 function getLevelFromTalent(exp) {
@@ -74,17 +284,17 @@ function getExpOfSingleTalent(level) {
     return level * 100;
 }
 
+/** @param {StatName} stat */
 function getPrcToNextLevel(stat) {
-    const expOfCurLevel = getExpOfLevel(getLevel(stat));
-    const curLevelProgress = stats[stat].exp - expOfCurLevel;
-    const nextLevelNeeds = getExpOfLevel(getLevel(stat) + 1) - expOfCurLevel;
+    const curLevelProgress = stats[stat].statLevelExp.exp;
+    const nextLevelNeeds = stats[stat].statLevelExp.expRequiredForNextLevel;
     return Math.floor(curLevelProgress / nextLevelNeeds * 100 * 10) / 10;
 }
 
+/** @param {StatName} stat */
 function getPrcToNextTalent(stat) {
-    const expOfCurLevel = getExpOfTalent(getTalent(stat));
-    const curLevelProgress = stats[stat].talent - expOfCurLevel;
-    const nextLevelNeeds = getExpOfTalent(getTalent(stat) + 1) - expOfCurLevel;
+    const curLevelProgress = stats[stat].talentLevelExp.exp;
+    const nextLevelNeeds = stats[stat].talentLevelExp.expRequiredForNextLevel;
     return Math.floor(curLevelProgress / nextLevelNeeds * 100 * 10) / 10;
 }
 
@@ -96,28 +306,39 @@ function getExpOfSkillLevel(level) {
     return level * (level + 1) * 50;
 }
 
+/** @param {SkillName} skill */
 function getSkillLevel(skill) {
-    return getSkillLevelFromExp(skills[skill].exp);
+    return skills[skill].levelExp.level;
 }
 
+/** @param {SkillName} skill */
 function getSkillBonus(skill) {
+    const bonus = skills[skill].getBonus();
+    if (bonus === 0) {
+        console.warn("Skill does not have curve set:", skill);
+    }
+    return bonus;
+}
+/** @param {SkillName} skill */
+function setSkillBonusType(skill) {
     let change;
     if (skill === "Dark" || skill === "Chronomancy" || skill === "Mercantilism" || skill === "Divine" || skill === "Wunderkind" || skill === "Thievery" || skill === "Leadership") change = "increase";
     else if (skill === "Practical" || skill === "Spatiomancy" || skill === "Commune" || skill === "Gluttony") change = "decrease";
     else if (skill === "Assassin") change = "custom";
-    else console.log("Skill not found:" + skill);
 
-    if(change == "increase") return Math.pow(1 + getSkillLevel(skill) / 60, 0.25);
-    else if (change == "decrease") return 1 / (1 + getSkillLevel(skill) / 100);
-    else if (change == "custom") return 1 / (1 + getSkillLevel(skill) / 2000);
-    else return 0;
+    if(change == "increase") skills[skill].change = Skill_increase;
+    else if (change == "decrease") skills[skill].change = Skill_decrease;
+    else if (change == "custom") skills[skill].change = Skill_custom;
+    else return skills[skill].change = 0;
 }
 
+/** @param {SkillName} name */
 function getSkillMod(name, min, max, percentChange) {
     if (getSkillLevel(name) < min) return 1;
     else return 1 + Math.min(getSkillLevel(name) - min, max-min) * percentChange / 100;
 }
 
+/** @param {BuffName} buff */
 function getBuffLevel(buff) {
     return buffs[buff].amt;
 }
@@ -141,7 +362,7 @@ function getSelfCombat() {
     return ((getSkillLevel("Combat") + getSkillLevel("Pyromancy") * 5) 
                 * getArmorLevel() 
                 * (1 + getBuffLevel("Feast") * .05)) 
-                * Math.pow(PRESTIGE_COMBAT_BASE, getBuffLevel("PrestigeCombat"));
+                * prestigeBonus(PRESTIGE_COMBAT_BASE, "PrestigeCombat");
 }
 
 function getZombieStrength() {
@@ -149,7 +370,7 @@ function getZombieStrength() {
                 * resources.zombie / 2 
                 * Math.max(getBuffLevel("Ritual") / 100, 1) 
                 * (1 + getBuffLevel("Feast") * .05)  
-                * Math.pow(PRESTIGE_COMBAT_BASE, getBuffLevel("PrestigeCombat"));
+                * prestigeBonus(PRESTIGE_COMBAT_BASE, "PrestigeCombat");
 }
 
 function getTeamStrength() {
@@ -157,24 +378,25 @@ function getTeamStrength() {
                 * (resources.teamMembers / 2) 
                 * getAdvGuildRank().bonus * getSkillBonus("Leadership") 
                 * (1 + getBuffLevel("Feast") * .05))
-                * Math.pow(PRESTIGE_COMBAT_BASE, getBuffLevel("PrestigeCombat"));
+                * prestigeBonus(PRESTIGE_COMBAT_BASE, "PrestigeCombat");
 }
 
 function getTeamCombat() {
     return getSelfCombat() + getZombieStrength() + getTeamStrength();
 }
 
+/** @param {SkillName} skill */
 function getPrcToNextSkillLevel(skill) {
-    const expOfCurLevel = getExpOfSkillLevel(getSkillLevel(skill));
-    const curLevelProgress = skills[skill].exp - expOfCurLevel;
-    const nextLevelNeeds = getExpOfSkillLevel(getSkillLevel(skill) + 1) - expOfCurLevel;
+    const curLevelProgress = skills[skill].levelExp.exp;
+    const nextLevelNeeds = skills[skill].levelExp.expRequiredForNextLevel;
     return Math.floor(curLevelProgress / nextLevelNeeds * 100 * 10) / 10;
 }
 
+/** @param {SkillName} name */
 function addSkillExp(name, amount) {
     if (name === "Combat" || name === "Pyromancy" || name === "Restoration") amount *= 1 + getBuffLevel("Heroism") * 0.02;
     const oldLevel = getSkillLevel(name);
-    skills[name].exp += amount;
+    skills[name].levelExp.addExp(amount);
     const newLevel = getSkillLevel(name);
     if (oldLevel !== newLevel) {
         actionLog.addSkillLevel(currentAction, name, newLevel, oldLevel);
@@ -196,44 +418,58 @@ function addBuffAmt(name, amount) {
     view.requestUpdate("updateBuff",name);
 }
 
-// how much "addExp" would you have to do to get this stat to the next exp or talent level
-function getExpToLevel(name) {
-    const curLevel = getLevel(name);
-    const curTalent = getTalent(name);
-    const expToNext = getExpOfSingleLevel(curLevel + 1) - (stats[name].exp - getExpOfLevel(curLevel));
-    const talentToNext = getExpOfSingleTalent(curTalent + 1) - (stats[name].talent - getExpOfTalent(curTalent));
-    const aspirantBonus = getBuffLevel("Aspirant") ?  getBuffLevel("Aspirant") * 0.01 : 0;
-    const talentMultiplier = (getSkillBonus("Wunderkind") + aspirantBonus) / 100;
-    return Math.ceil(Math.min(expToNext, talentToNext / talentMultiplier));
+const talentMultiplierCache = {
+    aspirant: -1,
+    wunderkind: -1,
+    talentMultiplier: -1,
+}
+function getTalentMultiplier() {
+    if (talentMultiplierCache.aspirant !== getBuffLevel("Aspirant") || talentMultiplierCache.wunderkind !== getSkillBonus("Wunderkind")) {
+        talentMultiplierCache.aspirant = getBuffLevel("Aspirant");
+        talentMultiplierCache.wunderkind = getSkillBonus("Wunderkind");
+        const aspirantBonus = getBuffLevel("Aspirant") ?  getBuffLevel("Aspirant") * 0.01 : 0;
+        talentMultiplierCache.talentMultiplier = (getSkillBonus("Wunderkind") + aspirantBonus) / 100;
+    }
+    return talentMultiplierCache.talentMultiplier;
 }
 
+// how much "addExp" would you have to do to get this stat to the next exp or talent level
+/** @param {StatName} name */
+function getExpToLevel(name, talentOnly=false) {
+    const expToNext = stats[name].statLevelExp.expToNextLevel;
+    const talentToNext = stats[name].talentLevelExp.expToNextLevel;
+    const talentMultiplier = getTalentMultiplier();
+    return Math.ceil(Math.min(talentOnly ? Infinity : expToNext, talentToNext / talentMultiplier));
+}
+
+/** @param {StatName} name */
 function addExp(name, amount) {
-    stats[name].exp += amount;
-    const aspirantBonus = getBuffLevel("Aspirant") ?  getBuffLevel("Aspirant") * 0.01 : 0;
-    let talentGain = (amount * getSkillBonus("Wunderkind") + amount * aspirantBonus) / 100;
-    stats[name].talent += talentGain;
+    stats[name].statLevelExp.addExp(amount);
+    let talentGain = amount * getTalentMultiplier();
+    stats[name].talentLevelExp.addExp(talentGain);
     totalTalent += talentGain;
     view.requestUpdate("updateStat", name);
 }
 
 function restartStats() {
     for (let i = 0; i < statList.length; i++) {
-        if(getSkillLevel("Wunderkind") > 0) stats[statList[i]].exp = getExpOfLevel(getBuffLevel("Imbuement2") * 2);
-        else stats[statList[i]].exp = getExpOfLevel(getBuffLevel("Imbuement2"));
+        if(getSkillLevel("Wunderkind") > 0) stats[statList[i]].statLevelExp.setLevel(getBuffLevel("Imbuement2") * 2);
+        else stats[statList[i]].statLevelExp.setLevel(getBuffLevel("Imbuement2"));
         view.requestUpdate("updateStat", statList[i]);
     }
 }
 
+/** @param {typeof statList[number]} statName */
 function getTotalBonusXP(statName) {
-    const soulstoneBonus = stats[statName].soulstone ? calcSoulstoneMult(stats[statName].soulstone) : 1;
+    const soulstoneBonus = stats[statName].soulstoneMult;
 
         var statBonus=1
         if (["Str","Dex","Con","Spd","Per"].includes(statName)) {
-            statBonus *= Math.pow(PRESTIGE_PHYSICAL_BASE, getBuffLevel("PrestigePhysical"))
+            statBonus *= prestigeBonus(PRESTIGE_PHYSICAL_BASE, "PrestigePhysical")
         }
         if (["Cha","Int","Soul","Luck"].includes(statName)) {
-            statBonus *= Math.pow(PRESTIGE_MENTAL_BASE, getBuffLevel("PrestigeMental"))
+            statBonus *= prestigeBonus(PRESTIGE_MENTAL_BASE, "PrestigeMental")
         }
         
-    return statBonus * soulstoneBonus * calcTalentMult(getTalent(statName));
+    return statBonus * soulstoneBonus * stats[statName].talentMult;
 }

@@ -96,7 +96,7 @@ const townNames = ["Beginnersville", "Forest Path", "Merchanton", "Mt. Olympus",
  * @prop {number} expMult
  * @prop {number} townNum
  * @prop {(storyNum: number) => boolean} storyReqs
- * @prop {{[K in typeof statList[number]]?: number}} stats
+ * @prop {{[K in StatName]?: number}} stats
  * @prop {() => boolean} canStart
  * @prop {() => number} manaCost
  * @prop {() => boolean} visible
@@ -7218,10 +7218,28 @@ const actionsWithGoldCost = Object.values(Action).filter(
 
 
 // Prestige Functions
+
+/** @type {{[buff: BuffName]?: {calc: number, bonus: number}>}} */
+const prestigeCache = {};
+
+/** @param {number} base @param {BuffName} buff  */
+function prestigeBonus(base, buff) {
+    const cache = prestigeCache[buff] ??= {
+        calc: -1,
+        bonus: -1,
+    };
+    const level = getBuffLevel(buff);
+    if (level !== cache.calc) {
+        cache.bonus = Math.pow(base, level);
+        cache.calc = level;
+    }
+    return cache.bonus;
+}
+
 function adjustContentFromPrestige() {
-    return Math.pow(PRESTIGE_SPATIOMANCY_BASE, getBuffLevel("PrestigeSpatiomancy"))
+    return prestigeBonus(PRESTIGE_SPATIOMANCY_BASE, "PrestigeSpatiomancy")
 }
 
 function adjustGoldCostFromPrestige() {
-    return Math.pow(PRESTIGE_BARTERING_BASE, getBuffLevel("PrestigeBartering"))
+    return prestigeBonus(PRESTIGE_BARTERING_BASE, "PrestigeBartering")
 }

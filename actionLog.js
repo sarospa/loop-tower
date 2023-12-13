@@ -119,13 +119,13 @@ class ActionLog {
         this.addEntry(entry, false);
     }
 
-    /** @type {(action: Action, stat: typeof statList[number], count: number, init: boolean) => void} */
+    /** @type {(action: Action, stat: StatName, count: number, init: boolean) => void} */
     addSoulstones(action, stat, count, init) {
         const entry = new SoulstoneEntry(action).addSoulstones(stat, count);
         this.addOrUpdateEntry(entry, init);
     }
 
-    /** @type {(action: Action, skill: typeof skillList[number], toLevel: number, fromLevel?: number, init?: boolean) => void} */
+    /** @type {(action: Action, skill: SkillName, toLevel: number, fromLevel?: number, init?: boolean) => void} */
     addSkillLevel(action, skill, toLevel, fromLevel, init) {
         const entry = new SkillEntry(action, skill, toLevel, fromLevel);
         this.addOrUpdateEntry(entry, init);
@@ -348,7 +348,7 @@ class GlobalStoryEntry extends UniqueLogEntry {
 
 class SoulstoneEntry extends RepeatableLogEntry {
     count = 0;
-    /** @type {{[K in typeof statList[number]]?: number}} */
+    /** @type {{[K in StatName]?: number}} */
     stones = {};
 
     /**
@@ -371,7 +371,7 @@ class SoulstoneEntry extends RepeatableLogEntry {
         }
     }
 
-    /** @type {(stat: typeof statList[number], count: number) => SoulstoneEntry} */
+    /** @type {(stat: StatName, count: number) => SoulstoneEntry} */
     addSoulstones(stat, count) {
         this.stones[stat] ??= 0;
         this.stones[stat] += count;
@@ -435,7 +435,7 @@ class SkillEntry extends RepeatableLogEntry {
 
     /**
      * @param {Action=} action
-     * @param {typeof skillList[number]=} skill
+     * @param {SkillName=} skill
      * @param {number=} toLevel
      * @param {number=} fromLevel
      * @param {(number | [loopStart: number, loopEnd: number])=} loop
