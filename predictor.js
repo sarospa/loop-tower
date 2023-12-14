@@ -1997,9 +1997,9 @@ const Koviko = {
       }
 
       if (this.resourcePerMinute>newStatisticValue) {
-        this.statisticDisplay.style='color: #FF0000';
+        this.statisticDisplay.style='color: var(--predictor-worse-color)';
       } else {
-        this.statisticDisplay.style='color: #8293ff'
+        this.statisticDisplay.style='color: var(--predictor-better-color)'
       }
      this.resourcePerMinute=newStatisticValue;
 
@@ -2007,7 +2007,7 @@ const Koviko = {
 
       if (getNumOnCurList("Open Portal")>0 && (getNumOnList("Open Portal")==0)) {
         this.totalDisplay.innerHTML +="PORTAL MISSING";
-        this.totalDisplay.style.color="#ff00ff";
+        this.totalDisplay.style.color="var(--predictor-warning-color)";
       } else {
         this.totalDisplay.style.color="";
       }

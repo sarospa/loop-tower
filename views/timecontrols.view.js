@@ -18,10 +18,10 @@ Views.registerView("timeControls", {
         `<div id='timeControlsMain'>
             <button id='pausePlay' onclick='pauseGame()'' class='button control'>${_txt("time_controls>pause_button")}</button>
             <button onclick='manualRestart()' class='button showthatO control'>${_txt("time_controls>restart_button")}
-                <div class='showthis' style='color:black;width:230px;'>${_txt("time_controls>restart_text")}</div>
+                <div class='showthis' style='color:var(--default-color);width:230px;'>${_txt("time_controls>restart_text")}</div>
             </button>
             <button class='button showthatO control' onclick='toggleOffline()'>${_txt("time_controls>bonus_seconds>title")}
-                <div class='showthis' style='width:230px;color:black;'>${_txt("time_controls>bonus_seconds>main_text")}
+                <div class='showthis' style='width:230px;color:var(--default-color);'>${_txt("time_controls>bonus_seconds>main_text")}
                     <div class='bold' id='isBonusOn'>${_txt("time_controls>bonus_seconds>state>off")}</div><br>
                     <div class='bold'>${_txt("time_controls>bonus_seconds>counter_text")}</div> <div id='bonusSeconds'></div>
                 </div>
@@ -30,7 +30,7 @@ Views.registerView("timeControls", {
             <div class='control'>
                 <div tabindex='0' id='story_control' class='showthatH' onmouseover='view.updateStory(storyShowing)' onfocus='view.updateStory(storyShowing)' style='height:30px;'>
                     <div class='large bold'>${_txt("time_controls>story_title")}</div>
-                    <div id='newStory' style='color:red;display:none;'>(!)</div>
+                    <div id='newStory' style='color:var(--alert-color);display:none;'>(!)</div>
                     <div id='story_tooltip' class='showthisH' style='width:400px;'>
                         <button style='margin-left:175px;' class='actionIcon fa fa-arrow-left control' id='storyLeft' onclick='view.updateStory(storyShowing-1)'></button>
                         <div style='' id='storyPage' class='bold control'></div>

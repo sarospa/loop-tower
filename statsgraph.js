@@ -67,12 +67,12 @@ const statGraph = {
                 label: _txt("stats>tooltip>mana_cost_reduction"),
                 data: [],
                 fill: true,
-                backgroundColor: "rgba(157, 103, 205, 0.2)",
-                borderColor: "rgb(157, 103, 205)",
-                pointBackgroundColor: "rgb(157, 103, 205)",
-                pointBorderColor: "#fff",
-                pointHoverBackgroundColor: "#fff",
-                pointHoverBorderColor: "rgb(157, 103, 205)",
+                backgroundColor: "var(--graph-background-color)",
+                borderColor: "var(--graph-border-color)",
+                pointBackgroundColor: "var(--graph-point-background-color)",
+                pointBorderColor: "var(--graph-point-border-color)",
+                pointHoverBackgroundColor: "var(--graph-point-hover-background-color)",
+                pointHoverBorderColor: "var(--graph-point-hover-border-color)",
             }
         ];
         for (let i = 0; i < statList.length; i++) {

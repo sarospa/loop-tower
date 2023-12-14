@@ -9,6 +9,10 @@
                 <title>Changelog</title>
                 <version_prefix>Version</version_prefix>
             </meta>
+            <version verNum="3.P16.13"><![CDATA[
+            <b> Dec 13th, 2023</b>
+            • The Dark theme has been completely redone using actual colors rather than a CSS inversion filter. All text should now be readable without having to switch filters around. (This does break the radar graph view of stats, sorry. I'm working on that.)<br>
+            ]]></version>
             <version verNum="3.P16.12"><![CDATA[
             <b> Dec 12th, 2023</b>
             • Many, many small optimizations, and many more yet to come. This probably won't affect you... unless you like setting your Bonus Speed really high. In that case, you might find that you can set it even higher.<br>
@@ -506,28 +510,12 @@
             </theme>
             <theme>
                 <dark>Dark</dark>
-                <variants>
-                    <inverted>Classic</inverted>
-                    <invertrotate>Rotated Classic</invertrotate>
-                    <inversion1>Matrix 1</inversion1>
-                    <inversion2>Matrix 2</inversion2>
-                    <inversion3>Matrix 3</inversion3>
-                    <inversion4>Matrix 4</inversion4>
-                </variants>
             </theme>
             <theme>
                 <cubic>Cubic</cubic>
             </theme>
             <theme>
                 <cubic_t-dark>Cubic Dark</cubic_t-dark>
-                <variants>
-                    <inverted>Classic</inverted>
-                    <invertrotate>Rotated Classic</invertrotate>
-                    <inversion1>Matrix 1</inversion1>
-                    <inversion2>Matrix 2</inversion2>
-                    <inversion3>Matrix 3</inversion3>
-                    <inversion4>Matrix 4</inversion4>
-                </variants>
             </theme>
             <!--changed discord link for analytical reasons-->
             <discord>

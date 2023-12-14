@@ -34,6 +34,16 @@ button {
     box-sizing: unset;
 }
 
+:link {
+    color: var(--link-color);
+}
+:visited {
+    color: var(--link-visited-color);
+}
+:link:active, :visited:active {
+    color: var(--link-active-color);
+}
+
 :root {
     /* non-responsive view sets pixel-based font size */
     font-size: 14px;
@@ -46,11 +56,11 @@ body {
     -ms-user-select: none;
     user-select: none;
     font-family:Arial, Helvetica, serif;
-    color:black;
+    color: var(--default-color);
     font-size: 1rem;
     height:100%;
     margin:0;
-    background-color: #e4ece5;
+    background-color: var(--body-background);
     cursor:default;
 }
 
@@ -140,8 +150,8 @@ body:not(.loading) > .hideWhenLoaded {
 }
 
 #changelog .showthat2:hover {
-    background: #4caf50;
-    border: 1px solid black;
+    background: var(--popup-background);
+    border: 1px solid var(--popup-border);
     margin: -1px 0;
     margin-left: -6px;
     padding-left: 5px;
@@ -153,8 +163,8 @@ body:not(.loading) > .hideWhenLoaded {
     width: max-content;
     max-width: 400px;
     position:absolute;
-    color: black;
-    background-color: #c0e4c7;
+    color: var(--popup-color);
+    background-color: var(--popup-background);
     border:1px solid;
     padding:3px 5px;
     border-radius:4px;
@@ -186,8 +196,8 @@ body:not(.loading) > .hideWhenLoaded {
     visibility: hidden;
     opacity: 0;
     position:absolute;
-    color: black;
-    background-color: #c0e4c7;
+    color: var(--popup-color);
+    background-color: var(--popup-background);
     border:1px solid;
     padding:3px 5px;
     border-radius:4px;
@@ -203,11 +213,11 @@ body:not(.loading) > .hideWhenLoaded {
     min-width: 20px;
     cursor: pointer;
     outline: none;
-    color: #e1e1e1;
-    background-color: #4CAF50;
+    color: var(--button-color);
+    background-color: var(--button-background);
     border: none;
     border-radius: 6px;
-    box-shadow: 0 3px #999;
+    box-shadow: 0 3px var(--button-shadow);
     position: relative;
     top: -2px;
     margin-bottom:2px;
@@ -218,8 +228,8 @@ body:not(.loading) > .hideWhenLoaded {
     position:absolute;
     height: 425px;
     width: 215px;
-    color: black;
-    background-color: #c0e4c7;
+    color: var(--popup-color);
+    background-color: var(--popup-background);
     border:1px solid;
     padding:3px 5px;
     border-radius:4px;
@@ -235,9 +245,9 @@ body:not(.loading) > .hideWhenLoaded {
     visibility: hidden;
     opacity: 0;
     position:absolute;
-    color: black;
-    background: url(img/misc/textureDesaturated.png);
-    border:1px solid #b89651;
+    color: var(--story-color);
+    background: var(--story-background);
+    border:1px solid var(--story-border);
     padding:3px 5px;
     margin-top:-2px;
     margin-left:-1px;
@@ -246,7 +256,7 @@ body:not(.loading) > .hideWhenLoaded {
 }
 
 .storyContainerCompleted .showthisstory {
-    background: url(img/misc/texture.png);
+    background: var(--story-completed-background);
 }
 
 .thickProgressBar .showthis {
@@ -326,11 +336,11 @@ body:not(.loading) > .hideWhenLoaded {
     bottom: 4px;
     width: 15px;
     height: 15px;
-    border: 1px solid #b89651;
+    border: 1px solid var(--story-border);
 }
 
 .storyContainer .superLargeIcon, .storyContainer .smallIcon {
-    filter: drop-shadow(-1px 1px 1px #444);
+    filter: drop-shadow(-1px 1px 1px var(--story-icon-shadow-color));
     mix-blend-mode: overlay;
 }
 
@@ -342,6 +352,11 @@ input {
     margin-left: 0;
     font-family: Arial, Helvetica, serif;
 }
+input, textarea, select {
+    background: var(--input-background);
+    color: var(--input-color);
+    border-color: var(--input-border);
+}
 
 .buffmaxinput {
     top: 0px;
@@ -351,6 +366,7 @@ input {
     border: none;
     background: none;
     font-size: 1rem;
+    color: var(--default-color);
 }
 
 input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button {
@@ -385,32 +401,32 @@ input[type="number"] {
     min-width: 9px;
     cursor: pointer;
     outline: none;
-    color: #e1e1e1;
-    background-color: #4CAF50;
+    color: var(--button-color);
+    background-color: var(--button-background);
     border: none;
     border-radius: 6px;
-    box-shadow: 0 3px #999;
+    box-shadow: 0 3px var(--button-shadow);
     position: relative;
     top: -2px;
     margin-bottom:2px;
 }
 
-.button:hover:not([disabled]), .loadoutbutton:hover {background-color: #3e8e41}
+.button:hover:not([disabled]), .loadoutbutton:hover {background-color: var(--button-active-background)}
 
 .button:active:not([disabled]), .loadoutbutton:active, .showthatloadout:focus-within, .showthatloadout:hover {
-    background-color: #3e8e41;
-    box-shadow: 0 1px #666;
+    background-color: var(--button-active-background);
+    box-shadow: 0 1px var(--button-active-shadow);
     top: 0;
 }
 
 .button[disabled] {
-    background-color: #777;
-    box-shadow: 0 3px #aaa;
+    background-color: var(--button-disabled-background);
+    box-shadow: 0 3px var(--button-disabled-shadow);
 }
 
 /* Focus ring for keyboard navigation */
 .button:focus-visible, .loadoutbutton:focus-visible {
-    outline: 2px solid #3e8e41;
+    outline: 2px solid var(--button-background);
     outline-offset: 2px;
 }
 
@@ -423,7 +439,7 @@ input[type="number"] {
 }
 
 .button.warning {
-    background-color: #AF4C50;
+    background-color: var(--button-warning-background);
 }
 
 .loadoutbutton {
@@ -431,9 +447,11 @@ input[type="number"] {
 }
 
 .unused {
-    background-color: #99c193;
+    background-color: var(--button-inactive-background);
+    box-shadow: 0 3px var(--button-inactive-shadow)
 }
 
+/* Apparently unused?
 .container {
     border:1px solid black;
     margin:10px;
@@ -448,6 +466,7 @@ input[type="number"] {
 .container:hover {
     opacity:1;
 }
+*/
 
 .skillContainer {
     width:100%;
@@ -485,7 +504,7 @@ input[type="number"] {
     width:100%;
 }
 .statRegularContainer:hover {
-    background-color: #ccded1;
+    background-color: var(--stat-container-hover-background);
 }
 .statLabelContainer {
     width:100%;
@@ -505,7 +524,7 @@ input[type="number"] {
 
 .thinProgressBarUpper, .thinProgressBarLower {
     width:90%;
-    background-color:white;
+    background-color: var(--progress-bar-background);
     display:block;
     margin:0 auto 2px auto;
 }
@@ -513,7 +532,7 @@ input[type="number"] {
 .thinProgressBarLower { height:3px; }
 
 .thickProgressBar {
-    background-color:white;
+    background-color: var(--progress-bar-background);
     display:inline-block;
     margin:0 2px 2px 2px;
     height:8px;
@@ -525,13 +544,13 @@ input[type="number"] {
     display:block;
 }
 .statLevelBar, .townExpBar, .skillExpBar {
-    background-color: #9d67cd;
+    background-color: var(--progress-bar-primary-color);
 }
 .statTalentBar {
-    background-color: #ffb45b;
+    background-color: var(--progress-bar-talent-color);
 }
 .townBar {
-    background-color: #95afff;
+    background-color: var(--progress-bar-town-color);
 }
 .segmentBar {
     height:100%;
@@ -608,6 +627,7 @@ div.townInfoContainer > .numeric {
     font-size: 0.928571rem;
     border: 3px solid transparent;
     border-radius: 10px;
+    background: var(--action-background);
 }
 .actionContainer {
     width:96px;
@@ -620,10 +640,11 @@ div.townInfoContainer > .numeric {
 }
 
 .actionContainer:hover, .travelContainer:hover {
-    background-color: #bef8ff;
+    background-color: var(--action-hover-background);
 }
 .actionHighlight {
-    border: 3px solid #7caf74;
+    background: var(--action-highlight-background);
+    border: 3px solid var(--action-highlight-border);
     border-radius: 10px;
 }
 
@@ -632,21 +653,21 @@ div.townInfoContainer > .numeric {
     height: 50px;
     vertical-align: top;
     font-size: 0.928571rem;
-    border: 1px solid #b89651;
-    color: #b5a585;
-    background: url(img/misc/textureDesaturated.png);
-    box-shadow: -2px 2px 1px #bbb;
+    border: 1px solid var(--story-border);
+    color: var(--story-button-color);
+    background: var(--story-background);
+    box-shadow: -2px 2px 1px var(--story-button-shadow);
     border-radius: 5px;
     margin: 3px;
-    fill: white;
+    fill: var(--story-button-fill);
 }
 .storyContainer:hover {
     border-radius: 0px;
     box-shadow: none;
 }
 .storyContainerCompleted {
-    color: #b89651;
-    background: url(img/misc/texture.png);
+    color: var(--story-button-completed-color);
+    background: var(--story-completed-background);
 }
 
 #actionLog {
@@ -667,11 +688,11 @@ div.townInfoContainer > .numeric {
     position: absolute;
     inset: 0 0 0 -40px;
     z-index: -1;
-    background-color: rgba(194, 230, 204, 0);
+    background-color: var(--action-log-highlight-background-transparent);
     transition: background-color 1s ease-in 0.25s;
 }
 .actionLogEntry.highlight::before {
-    background-color: #c2e6cc;
+    background-color: var(--action-log-highlight-background);
     transition: none;
 }
 
@@ -691,7 +712,7 @@ li#actionLogLoadPrevious {
 #curActionsListContainer {
     width: 35%;
     height: 100%;
-    background-color: #c2e6cc;
+    background-color: var(--cur-actions-background);
     position: relative;
     border-bottom-left-radius: 6px;
     border-top-left-radius: 6px;
@@ -700,7 +721,7 @@ li#actionLogLoadPrevious {
 #nextActionsListContainer {
     width: 65%;
     height: 100%;
-    background-color: #cdded2;
+    background-color: var(--next-actions-background);
     vertical-align: top;
     margin-left: -4px;
     position: relative;
@@ -719,7 +740,7 @@ li#actionLogLoadPrevious {
     margin-left:3px;
     padding-top:1px;
     padding-bottom:1px;
-    border-bottom:1px solid #b9b9b9;
+    border-bottom:1px solid var(--action-separator-border);
     position:relative;
 }
 .nextActionContainer {
@@ -772,53 +793,81 @@ li#actionLogLoadPrevious {
     width:100%;
 }
 
-#nextActionsList::-webkit-scrollbar, #curActionsList::-webkit-scrollbar, .showthis2::-webkit-scrollbar  {
-    background: #cdded2;
+/* General scrollbar styling */
+* {
+    &::-webkit-scrollbar  {
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: var(--scrollbar-track-background);
+    }
+
+    &::-webkit-scrollbar-thumb   {
+        background: var(--scrollbar-button-background);
+    }
+
+    &::-webkit-scrollbar-thumb:hover  {
+        background: var(--scrollbar-button-hover-background);
+    }
+
+    &::-webkit-scrollbar-button  {
+        color: var(--scrollbar-button-color);
+        background-color: var(--scrollbar-button-background);
+    }
+
+    &::-webkit-scrollbar-button:vertical:decrement {
+        background-image: var(--scrollbar-button-vertical-decrement-background);
+        background-size: 17px 17px;
+        border-top-left-radius: 6px;
+        border-top-right-radius: 6px;
+    }
+
+    &::-webkit-scrollbar-button:vertical:increment {
+        background-image: var(--scrollbar-button-vertical-increment-background);
+        background-size: 17px 17px;
+        border-bottom-left-radius: 6px;
+        border-bottom-right-radius: 6px;
+    }
+
+    &::-webkit-scrollbar-button:vertical:decrement:end, &::-webkit-scrollbar-button:vertical:increment:start {
+        display: none;
+    }
+
+    &::-webkit-scrollbar-button:hover {
+        background-color: var(--scrollbar-button-hover-background);
+    }
+
+    /*styled scrollbar for firefox ( why can't there just be one browser that everybody uses :( )*/
+
+    scrollbar-color: var(--scrollbar-button-background) var(--scrollbar-track-background);
 }
 
-#nextActionsList::-webkit-scrollbar-track, #curActionsList::-webkit-scrollbar-track, .showthis2::-webkit-scrollbar-track  {
-    background: #99c193;
-}
-
-#nextActionsList::-webkit-scrollbar-thumb, #curActionsList::-webkit-scrollbar-thumb, .showthis2::-webkit-scrollbar-thumb   {
-    background: #4caf50;
-}
-
-#nextActionsList::-webkit-scrollbar-thumb:hover, #curActionsList::-webkit-scrollbar-thumb:hover, .showthis2::-webkit-scrollbar-thumb:hover  {
-    background: #3e8e41;
-}
-
-#nextActionsList::-webkit-scrollbar-button, #curActionsList::-webkit-scrollbar-button, .showthis2::-webkit-scrollbar-button  {
-    color: black;
-    background-color: #4caf50;
-}
-
-#nextActionsList::-webkit-scrollbar-button:vertical:decrement, #curActionsList::-webkit-scrollbar-button:vertical:decrement, .showthis2::-webkit-scrollbar-button:vertical:decrement {
-    background-image: url("img/misc/arrowUpLight.svg");
-    background-size: 17px 17px;
-    border-top-left-radius: 6px;
-    border-top-right-radius: 6px;
-}
-
-#nextActionsList::-webkit-scrollbar-button:vertical:increment, #curActionsList::-webkit-scrollbar-button:vertical:increment, .showthis2::-webkit-scrollbar-button:vertical:increment {
-    background-image: url("img/misc/arrowDownLight.svg");
-    background-size: 17px 17px;
-    border-bottom-left-radius: 6px;
-    border-bottom-right-radius: 6px;
-}
-
-.showthis2::-webkit-scrollbar-button:vertical:decrement:end, .showthis2::-webkit-scrollbar-button:vertical:increment:start {
-    display: none;
-}
-
-#nextActionsList::-webkit-scrollbar-button:hover, #curActionsList::-webkit-scrollbar-button:hover, .showthis2::-webkit-scrollbar-button:hover {
-    background-color: #3e8e41;
-}
-
-/*styled scrollbar for firefox ( why can't there just be one browser that everybody uses :( )*/
-
+/* Actions scrollbar styling */
 #nextActionsList, #curActionsList, .showthis2 {
-    scrollbar-color: #4caf50 #99c193;
+    &::-webkit-scrollbar-track {
+        background: var(--actions-scrollbar-track-background);
+    }
+
+    &::-webkit-scrollbar-thumb   {
+        background: var(--actions-scrollbar-button-background);
+    }
+
+    &::-webkit-scrollbar-thumb:hover  {
+        background: var(--actions-scrollbar-button-hover-background);
+    }
+
+    &::-webkit-scrollbar-button  {
+        color: var(--actions-scrollbar-button-color);
+        background-color: var(--actions-scrollbar-button-background);
+    }
+
+    &::-webkit-scrollbar-button:hover {
+        background-color: var(--actions-scrollbar-button-hover-background);
+    }
+
+    /* styled scrollbar for standards-conformant browsers (look how much simpler this is) */
+    scrollbar-color: var(--actions-scrollbar-button-background) var(--actions-scrollbar-track-background);
 }
 
 .actionIcon {
@@ -826,15 +875,15 @@ li#actionLogLoadPrevious {
     width:12px;
 }
 .actionIcon:hover {
-    color:red;
+    color: var(--action-icon-hover-color);
     cursor:pointer;
-    background-color:rgba(0, 0, 0, 0.2);
+    background-color: var(--action-icon-hover-background);
 }
 
 .curActionBar {
     height:100%;
     width:0;
-    background-color: #ff907d;
+    background-color: var(--cur-action-inprogress-background);
     position:absolute;
     opacity:.5;
 }
@@ -842,7 +891,7 @@ li#actionLogLoadPrevious {
 .actionSelectedIndicator {
     position: absolute;
     opacity: 0;
-    background-color: #4caf50;
+    background-color: var(--cur-action-selected-indicator);
     width: 3px;
     height: 100%;
     left: -3px;
@@ -862,21 +911,21 @@ li#actionLogLoadPrevious {
 }
 
 .locked {
-    background-color: #d2acac;
+    background-color: var(--action-locked-background);
     cursor:default;
     border-radius:10px;
 }
 .locked:hover {
-    background-color: #c28e8e;
+    background-color: var(--action-locked-hover-background);
 }
 
 .capped {
-    background-color: #bfbfbf;
+    background-color: var(--action-capped-background);
     cursor:default;
     border-radius:10px;
 }
 .capped:hover {
-    background-color: #a8a8a8;
+    background-color: var(--action-capped-hover-background);
 }
 
 .statTooltipPerc {
@@ -894,6 +943,7 @@ li#actionLogLoadPrevious {
     width:100%;
 }
 
+/* Unused
 .resizable {
     width: 10px;
     height: 10px;
@@ -903,9 +953,10 @@ li#actionLogLoadPrevious {
     bottom: 0;
     cursor: se-resize;
 }
+*/
 
 .draggedOverAction {
-    background:#bef8ff !important;
+    background: var(--action-hover-background) !important;
 }
 
 .draggedAction{
@@ -936,11 +987,13 @@ li#actionLogLoadPrevious {
     height: 16px;
 }
 
+/* Unused
 #talentTree {
     height: 700px;
     width: 500px;
     background: #e4ece5;
 }
+*/
 
 /* responsive layout */
 
@@ -966,6 +1019,7 @@ li#actionLogLoadPrevious {
     }
 
     & #timeInfo {
+        width: 100vw !important;
         grid-area: header;
         display: grid;
         grid:
@@ -1245,13 +1299,13 @@ li#actionLogLoadPrevious {
             grid-area: resources;
             position: sticky;
             z-index: 1;
-            background-color: #e4ece5;
+            background-color: var(--body-background);
             padding-top:2px;
             top: 10px;
         }
 
         & .t-dark #trackedResources {
-            background-color: #eee;
+            background-color: var(--body-background);
         }
     
         & #timeControlsMain {
@@ -1259,13 +1313,13 @@ li#actionLogLoadPrevious {
             display: block;
             position: sticky;
             z-index: 1;
-            background: linear-gradient(rgb(228, 236, 229) 50%, rgba(228, 236, 229, 0) 100%);
+            background: linear-gradient(var(--body-background) 50%, var(--body-background-transparent) 100%);
             padding-top:2px;
             top: 28px;
         }
 
         & .t-dark #timeControlsMain {
-            background: linear-gradient(rgb(238, 238, 238) 50%, rgba(238, 238, 238, 0) 100%);
+            background: linear-gradient(var(--body-background) 50%, var(--body-background-transparent) 100%);
         }
     
         & #timeControlsOptions {
@@ -1282,22 +1336,22 @@ li#actionLogLoadPrevious {
             inset: auto 0 0 0;
             height: 50px;
             z-index: 1000;
-            background-color: #a8a8a8;
+            background-color: var(--navbar-background);
             gap: 1px;
 
             & > a {
                 position: relative;
                 padding: 1em 0;
                 text-decoration: none;
-                background-color: #bfbfbf;
+                background-color: var(--navbar-link-inactive-background);
                 flex: 1;
                 text-align: center;
                 text-decoration: none;
                 font-weight: bold;
-                color: black;
+                color: var(--navbar-link-inactive-color);
                 
                 &:hover {
-                    background-color: #a8a8a8;
+                    background-color: var(--navbar-link-inactive-hover-color);
                 }
             }
         }
@@ -1485,97 +1539,13 @@ li#actionLogLoadPrevious {
 
 /* dark theme */
 
-/*
-        Thanks to https://github.com/mlaily/NegativeScreen for these matrices
-        <svg xmlns="http://www.w3.org/2000/svg">
-            <filter id="inversion1" color-interpolation-filters="sRGB">
-                <feColorMatrix
-                    in="SourceGraphic"
-                    type="matrix"
-                    values="-1  0  0 0 1
-                             0 -1  0 0 1
-                             0  0 -1 0 1
-                             0  0  0 1 0" />
-            </filter>
-            <filter id="inversion2" color-interpolation-filters="sRGB">
-                <feColorMatrix
-                    in="SourceGraphic"
-                    type="matrix"
-                    values=" 0.3333333 -0.6666667 -0.6666667 0 1
-                            -0.6666667  0.3333333 -0.6666667 0 1
-                            -0.6666667 -0.6666667  0.3333333 0 1
-                             0 0 0 1 0" />
-            </filter>
-            <filter id="inversion3" color-interpolation-filters="sRGB">
-                <feColorMatrix
-                    in="SourceGraphic"
-                    type="matrix"
-                    values=" 1 -1 -1 0 1
-                            -1  1 -1 0 1
-                            -1 -1  1 0 1
-                             0  0  0 1 0" />
-            </filter>
-            <filter id="inversion4" color-interpolation-filters="sRGB">
-                <feColorMatrix
-                    in="SourceGraphic"
-                    type="matrix"
-                    values=" 0.50 -0.56 -0.94 0 1
-                            -0.78  0.72 -0.94 0 1
-                            -0.78 -0.56  0.34 0 1
-                             0 0 0 1 0" />
-            </filter>
-        </svg>
-*/
-
-.t-dark {
-    filter: invert(1) hue-rotate(180deg);
-    filter: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"><filter id="inversion4" color-interpolation-filters="sRGB"><feColorMatrix in="SourceGraphic" values="0.50 -0.56 -0.94 0 1 -0.78 0.72 -0.94 0 1 -0.78 -0.56 0.34 0 1 0 0 0 1 0"/></filter></svg>#inversion4');
-    background: #111;
-    color: #222;
+.t-dark .storyContainer .superLargeIcon,
+.t-dark .storyContainer .smallIcon {
+    filter: invert(0.8) hue-rotate(180deg) drop-shadow(-1px 1px 1px var(--story-icon-shadow-color));
 }
-:root.responsive .t-dark {
-    /* the contain: on the root element causes background to be included in the filter */
-    background: #eee;
-}
-.t-dark.inverted {
-    filter: invert(1);
-}
-.t-dark.invertrotate {
-    filter: invert(1) hue-rotate(180deg);
-}
-.t-dark.inversion1 {
-    filter: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"><filter id="inversion1" color-interpolation-filters="sRGB"><feColorMatrix in="SourceGraphic" values="-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0"/></filter></svg>#inversion1')
-}
-.t-dark.inversion2 {
-    filter: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"><filter id="inversion2" color-interpolation-filters="sRGB"><feColorMatrix in="SourceGraphic" values="0.3333333 -0.6666667 -0.6666667 0 1 -0.6666667 0.3333333 -0.6666667 0 1 -0.6666667 -0.6666667 0.3333333 0 1 0 0 0 1 0"/></filter></svg>#inversion2');
-}
-.t-dark.inversion3 {
-    filter: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"><filter id="inversion3" color-interpolation-filters="sRGB"><feColorMatrix in="SourceGraphic" values="1 -1 -1 0 1 -1 1 -1 0 1 -1 -1 1 0 1 0 0 0 1 0"/></filter></svg>#inversion3');
-}
-.t-dark.inversion4 {
-    filter: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"><filter id="inversion4" color-interpolation-filters="sRGB"><feColorMatrix in="SourceGraphic" values="0.50 -0.56 -0.94 0 1 -0.78 0.72 -0.94 0 1 -0.78 -0.56 0.34 0 1 0 0 0 1 0"/></filter></svg>#inversion4');
-}
-
-.t-dark .buffmaxinput {
-    color: #222;
-}
-
-.t-dark .storyContainer {
-    box-shadow: -2px 2px 1px #fff;
-}
-
-.t-dark .button {
-    box-shadow: 0 3px #99d98c;
-}
-
-.t-dark .button[disabled] {
-    background-color: #777;
-    box-shadow: 0 3px #aaa;
-}
-
 
 .t-dark img {
-    filter: invert(0.2);
+    filter: invert(0.8) hue-rotate(180deg);
 }
 
 /* cubic theme */
@@ -1585,51 +1555,30 @@ li#actionLogLoadPrevious {
 }
 
 .t-cubic .thickProgressBar {
-    border: 1px solid black;
+    border: 1px solid var(--default-border);
     margin: 0 0 2px 2px;
 }
 
 .t-cubic .thinProgressBarUpper, .t-cubic .thinProgressBarLower {
-    border: 1px solid black;
+    border: 1px solid var(--default-border);
 }
 
 .t-cubic .thinProgressBarLower {
     margin-top: -3px;
 }
 
-.t-cubic .statLevelBar, .t-cubic .townExpBar, .t-cubic .skillExpBar {
-    background-color: #ba68c8;
-}
-
-.t-cubic .statTalentBar {
-    background-color: #ffb74d;
-}
-
-.t-cubic .townBar {
-    background-color: #64b5f6;
-}
-
 .t-cubic #timeBarContainer {
-    border: 1px solid black;
+    border: 1px solid var(--default-border);
     border-left: none;
     border-right: none;
 }
 
 .t-cubic .button {
     border-radius: 0;
-    box-shadow: 0 3px #3d8a3f;
-}
-
-.t-cubic .button:hover, .t-cubic .button:active {
-    box-shadow: 0 3px #2f6a31;
-}
-
-.t-cubic .unused {
-    box-shadow: 0 3px #7caf74;
 }
 
 .t-cubic .showthis, .t-cubic .showthis2, .t-cubic .showthisH, .t-cubic .showthisname {
-    border: 1px solid black;
+    border: 1px solid var(--default-border);
     border-radius: 0;
 }
 
@@ -1644,25 +1593,18 @@ li#actionLogLoadPrevious {
 }
 
 .t-cubic .actionContainer {
-    background: #c0e4c7;
     margin: -0.5px -0.5px;
-    border: 1px solid black;
+    border: 1px solid var(--default-border);
 }
 
 .t-cubic .actionHighlight {
-    border: 1px solid black;
+    border: 1px solid var(--default-border);
     border-radius: 0px;
-    background: #7caf74;
 }
 
 .t-cubic .travelContainer {
-    background: #c0e4c7;
     margin-top: -0.5px;
-    border: 1px solid black;
-}
-
-.t-cubic .actionContainer:hover, .t-cubic .travelContainer:hover {
-    background-color: #e2f3e6;
+    border: 1px solid var(--default-border);
 }
 
 .t-cubic .storyContainer {
@@ -1673,31 +1615,23 @@ li#actionLogLoadPrevious {
 }
 
 .t-cubic .locked {
-    background-color: #d2acac;
     border-radius: 0;
-}
-
-.t-cubic .locked:hover {
-    background-color: #c28e8e;
 }
 
 .t-cubic .capped {
-    background-color: #bdbdbd;
     border-radius: 0;
-}
-.t-cubic .capped:hover {
-    background-color: #9e9e9e;
 }
 
 select.bold {
     text-align: center;
     border: 1px solid transparent;
-    background: none;
+    background: var(--body-background);
     font-size: 1.14286rem;
     font-family: Arial, Helvetica, serif;
     padding: 0;
+    color: var(--default-color);
 }
 
 select.bold:focus {
-    border-color: rgba(0,0,0,0.25);
+    border-color: var(--town-select-focus-border);
 }

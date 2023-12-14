@@ -250,13 +250,13 @@ Views.registerView("menu", {
                 </button><br>`;
         html += 
         `<button class='button showthat control' style='margin-top: 2px;' onclick='beginChallenge(1)'>Mana Drought 
-            <div class='showthis' style='color:black;width:230px;margin-left:100px;'>${_txt("menu>challenges>mana_drought")}</div>
+            <div class='showthis' style='color:var(--default-color);width:230px;margin-left:100px;'>${_txt("menu>challenges>mana_drought")}</div>
         </button><br>
         <button class='button showthat control' style='margin-top: 2px;' onclick='beginChallenge(2)'>Noodle Arms
-            <div class='showthis' style='color:black;width:230px;margin-left:100px;'>${_txt("menu>challenges>noodle_arms")}</div>
+            <div class='showthis' style='color:var(--default-color);width:230px;margin-left:100px;'>${_txt("menu>challenges>noodle_arms")}</div>
         </button><br>
         <button class='button showthat control' style='margin-top: 2px;' onclick='beginChallenge(3)'>Mana Burn
-            <div class='showthis' style='color:black;width:230px;margin-left:100px;'>${_txt("menu>challenges>mana_burn")}</div>
+            <div class='showthis' style='color:var(--default-color);width:230px;margin-left:100px;'>${_txt("menu>challenges>mana_burn")}</div>
         </button><br>`
         html += `</div>`
         return html;
@@ -299,7 +299,7 @@ Views.registerView("menu", {
         `
         <br>
         <button class='button showthat control' style='margin-top: -50px;' onclick='prestigeUpgrade("PrestigePhysical")'>Prestige Physical
-            <div class='showthis' style='color:black;width:230px;margin-left:200px;'>${_txt("menu>prestige_bonus>PrestigePhysical")}
+            <div class='showthis' style='color:var(--default-color);width:230px;margin-left:200px;'>${_txt("menu>prestige_bonus>PrestigePhysical")}
                 <br><br>
                 Current Bonus: <div id='prestigePhysicalCurrentBonus'></div>%<br>
                 Next level cost: <div id='prestigePhysicalNextCost'></div> points<br> 
@@ -307,7 +307,7 @@ Views.registerView("menu", {
         </button><br>
 
         <button class='button showthat control' style='margin-top: -50px;' onclick='prestigeUpgrade("PrestigeMental")'>Prestige Mental
-        <div class='showthis' style='color:black;width:230px;margin-left:200px;'>${_txt("menu>prestige_bonus>PrestigeMental")}
+        <div class='showthis' style='color:var(--default-color);width:230px;margin-left:200px;'>${_txt("menu>prestige_bonus>PrestigeMental")}
             <br><br>
             Current Bonus: <div id='prestigeMentalCurrentBonus'></div>%<br>
             Next level cost: <div id='prestigeMentalNextCost'></div> points<br> 
@@ -316,7 +316,7 @@ Views.registerView("menu", {
 
 
         <button class='button showthat control' style='margin-top: -50px;' onclick='prestigeUpgrade("PrestigeCombat")'>Prestige Combat
-            <div class='showthis' style='color:black;width:230px;margin-left:200px;'>${_txt("menu>prestige_bonus>PrestigeCombat")}
+            <div class='showthis' style='color:var(--default-color);width:230px;margin-left:200px;'>${_txt("menu>prestige_bonus>PrestigeCombat")}
                 <br><br>
                 Current Bonus: <div id='prestigeCombatCurrentBonus'></div>%<br>
                 Next level cost: <div id='prestigeCombatNextCost'></div> points<br> 
@@ -324,7 +324,7 @@ Views.registerView("menu", {
         </button><br>
 
         <button class='button showthat control' style='margin-top: -50px;' onclick='prestigeUpgrade("PrestigeSpatiomancy")'>Prestige Spatiomancy
-            <div class='showthis' style='color:black;width:230px;margin-left:200px;'>${_txt("menu>prestige_bonus>PrestigeSpatiomancy")}
+            <div class='showthis' style='color:var(--default-color);width:230px;margin-left:200px;'>${_txt("menu>prestige_bonus>PrestigeSpatiomancy")}
                 <br><br>
                 Current Bonus: <div id='prestigeSpatiomancyCurrentBonus'></div>%<br>
                 Next level cost: <div id='prestigeSpatiomancyNextCost'></div> points<br> 
@@ -332,7 +332,7 @@ Views.registerView("menu", {
         </button><br>
 
         <button class='button showthat control' style='margin-top: -50px;' onclick='prestigeUpgrade("PrestigeChronomancy")'>Prestige Chronomancy
-            <div class='showthis' style='color:black;width:230px;margin-left:200px;'>${_txt("menu>prestige_bonus>PrestigeChronomancy")}
+            <div class='showthis' style='color:var(--default-color);width:230px;margin-left:200px;'>${_txt("menu>prestige_bonus>PrestigeChronomancy")}
                 <br><br>
                 Current Bonus: <div id='prestigeChronomancyCurrentBonus'></div>%<br>
                 Next level cost: <div id='prestigeChronomancyNextCost'></div> points<br> 
@@ -340,7 +340,7 @@ Views.registerView("menu", {
         </button><br>
 
         <button class='button showthat control' style='margin-top: -50px;' onclick='prestigeUpgrade("PrestigeBartering")'>Prestige Bartering
-            <div class='showthis' style='color:black;width:230px;margin-left:200px;'>${_txt("menu>prestige_bonus>PrestigeBartering")}
+            <div class='showthis' style='color:var(--default-color);width:230px;margin-left:200px;'>${_txt("menu>prestige_bonus>PrestigeBartering")}
                 <br><br>
                 Current Bonus: <div id='prestigeBarteringCurrentBonus'></div>%<br>
                 Next level cost: <div id='prestigeBarteringNextCost'></div> points<br> 
@@ -348,7 +348,7 @@ Views.registerView("menu", {
         </button><br>
 
         <button class='button showthat control' style='margin-top: -50px;' onclick='prestigeUpgrade("PrestigeExpOverflow")'>Prestige Experience Overflow
-            <div class='showthis' style='color:black;width:230px;margin-left:200px;'>${_txt("menu>prestige_bonus>PrestigeExpOverflow")}
+            <div class='showthis' style='color:var(--default-color);width:230px;margin-left:200px;'>${_txt("menu>prestige_bonus>PrestigeExpOverflow")}
                 <br><br>
                 Current Bonus: <div id='prestigeExpOverflowCurrentBonus'></div>%<br>
                 Next level cost: <div id='prestigeExpOverflowNextCost'></div> points<br> 
@@ -358,7 +358,7 @@ Views.registerView("menu", {
         <br><br>
 
         <button class='button showthat control' style='margin-top: -50px;' onclick='resetAllPrestiges()'>Reset All Prestiges
-            <div class='showthis' style='color:black;width:230px;margin-left:200px;'>${_txt("menu>prestige_bonus>PrestigeResetAll")}
+            <div class='showthis' style='color:var(--default-color);width:230px;margin-left:200px;'>${_txt("menu>prestige_bonus>PrestigeResetAll")}
             </div>
         </button><br>
 

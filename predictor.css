@@ -10,32 +10,32 @@
 .usePredictor #actionList>div:nth-child(2){left: 53px !important}
 .usePredictor #nextActionsList.disabled ul.koviko{display:none;}
 .usePredictor .nextActionContainer:nth-child(1n+9) .showthis {bottom: 5px; top: unset;}
-.usePredictor span.koviko{font-weight:bold;color:#8293ff;}
+.usePredictor span.koviko{font-weight:bold;color:var(--predictor-color);}
 .usePredictor div.koviko{top:-5px;left:auto;right:100%}
 .usePredictor ul.koviko{list-style:none;margin:0;padding:0;pointer-events:none;display:flex;}
 .usePredictor ul.koviko li{display:inline-block;margin: 0 2px;font-weight:bold;font-size:90%}
-.usePredictor ul.koviko.invalid li{color:#c00!important}
-.usePredictor ul.koviko.expired li, .usePredictor .expired .koviko{color:#777!important}
-.usePredictor ul.koviko .mana{color:#8293ff}
-.usePredictor ul.koviko .manaBought{color:#6371ca}
-.usePredictor ul.koviko .gold{color:#d09249}
-.usePredictor ul.koviko .rep{color:#b06f37}
-.usePredictor ul.koviko .soul{color:#9d67cd}
-.usePredictor ul.koviko .herbs{color:#4caf50}
-.usePredictor ul.koviko .hide{color:#663300}
-.usePredictor ul.koviko .potions{color:#00b2ee}
-.usePredictor ul.koviko .lpotions{color:#436ef7}
-.usePredictor ul.koviko .blood{color:#8b0000}
-.usePredictor ul.koviko .crafts{color:#777777}
-.usePredictor ul.koviko .adventures{color:#191919}
-.usePredictor ul.koviko .ritual{color:#ff1493}
-.usePredictor ul.koviko .artifacts{color:#ffd700}
-.usePredictor ul.koviko .mind{color:#006400}
-.usePredictor ul.koviko .stone{color:#ff0000}
-.usePredictor ul.koviko .heroism{color:#ff0000}
-.usePredictor ul.koviko .power{color:#0000ff}
-.usePredictor ul.koviko .map{color:#2ea9bd}
-.usePredictor ul.koviko .completedMap{color:#45e5ff}
-.usePredictor ul.koviko .finLoops{color:#777777}
-.usePredictor ul.koviko .heart{color:#ca0b0b}
-.usePredictor ul.koviko .giants{color:#6ba9c4}
+.usePredictor ul.koviko.invalid li{color:var(--predictor-invalid-color)!important}
+.usePredictor ul.koviko.expired li, .usePredictor .expired .koviko{color:var(--predictor-expired-color)!important}
+.usePredictor ul.koviko .mana{color:var(--predictor-mana-color)}
+.usePredictor ul.koviko .manaBought{color:var(--predictor-manaBought-color)}
+.usePredictor ul.koviko .gold{color:var(--predictor-gold-color)}
+.usePredictor ul.koviko .rep{color:var(--predictor-rep-color)}
+.usePredictor ul.koviko .soul{color:var(--predictor-soul-color)}
+.usePredictor ul.koviko .herbs{color:var(--predictor-herbs-color)}
+.usePredictor ul.koviko .hide{color:var(--predictor-hide-color)}
+.usePredictor ul.koviko .potions{color:var(--predictor-potions-color)}
+.usePredictor ul.koviko .lpotions{color:var(--predictor-lpotions-color)}
+.usePredictor ul.koviko .blood{color:var(--predictor-blood-color)}
+.usePredictor ul.koviko .crafts{color:var(--predictor-crafts-color)}
+.usePredictor ul.koviko .adventures{color:var(--predictor-adventures-color)}
+.usePredictor ul.koviko .ritual{color:var(--predictor-ritual-color)}
+.usePredictor ul.koviko .artifacts{color:var(--predictor-artifacts-color)}
+.usePredictor ul.koviko .mind{color:var(--predictor-mind-color)}
+.usePredictor ul.koviko .stone{color:var(--predictor-stone-color)}
+.usePredictor ul.koviko .heroism{color:var(--predictor-heroism-color)}
+.usePredictor ul.koviko .power{color:var(--predictor-power-color)}
+.usePredictor ul.koviko .map{color:var(--predictor-map-color)}
+.usePredictor ul.koviko .completedMap{color:var(--predictor-completedMap-color)}
+.usePredictor ul.koviko .finLoops{color:var(--predictor-finLoops-color)}
+.usePredictor ul.koviko .heart{color:var(--predictor-heart-color)}
+.usePredictor ul.koviko .giants{color:var(--predictor-giants-color)}

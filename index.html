@@ -12,8 +12,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 
     <title>Idle Loops</title>
-    <link rel="stylesheet" href="stylesheet.css">
+    <link rel="stylesheet" href="themes.css">
     <link rel="stylesheet" href="predictor.css">
+    <link rel="stylesheet" href="stylesheet.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.13.1/css/all.css" crossorigin="anonymous">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
@@ -47,8 +48,8 @@
     <div id="talentTree" style="display: none;"></div>
     <header id="timeInfo" style="width:100%;text-align:center;">
         <button id="cheat" class="button showthat control" style="display: none; margin-top: 5px;" onclick="cheat()">Cheat</button>
-        <div id="timeBarContainer" style="width:100%;height:10px;background:white;text-align:center;position:relative;">
-            <div id="timeBar" style="height:100%;width:20%;background-color:#8293ff;display:block;margin:auto;"></div>
+        <div id="timeBarContainer" style="width:100%;height:10px;background:var(--progress-bar-background);text-align:center;position:relative;">
+            <div id="timeBar" style="height:100%;width:20%;background-color:var(--progress-bar-mana-color);display:block;margin:auto;"></div>
         </div>
         <menu id='menu' style='float: left; height: 30px; margin-left: 24px; margin-right: -24px;'></menu>
         <div id='trackedResources'></div>
@@ -338,7 +339,7 @@
                             <button class="button" id="amount1" onclick="changeActionAmount(1, 1)">1</button>
                             <button class="button" id="amount2" onclick="changeActionAmount(5, 2)">5</button>
                             <button class="button" id="amount3" onclick="changeActionAmount(10, 3)">10</button>
-                            <input id="amountCustom" oninput="setCustomActionAmount()" value="1" style="width: 75px; position: relative; left: 0; top: -2px; border: 1px solid black; height: 16px;">
+                            <input id="amountCustom" oninput="setCustomActionAmount()" value="1" style="width: 75px; position: relative; left: 0; top: -2px; border: 1px solid var(--input-border); height: 16px;">
                         </div>
                     </div>
                 </div>
@@ -389,7 +390,7 @@
                                 <button class="loadoutbutton localized" style="margin-bottom:5px;margin-top:3px;" onclick="saveList()" data-lockey="actions>tooltip>save_loadout"></button>
                                 <button class="loadoutbutton localized" style="margin-bottom:5px;" onclick="loadList()" data-lockey="actions>tooltip>load_loadout"></button>
                                 <br>
-                                <input id="renameLoadout" value="Loadout Name" style="width: 100px; height: 16px; border: 1px solid black; margin-left: 5px; margin-bottom: 2px;">
+                                <input id="renameLoadout" value="Loadout Name" style="width: 100px; height: 16px; border: 1px solid var(--input-border); margin-left: 5px; margin-bottom: 2px;">
                                 <button class="loadoutbutton" style="margin-bottom:5px;margin-top:3px;margin-right:-4px;" onclick="nameList(true)">Rename</button>
                             </div>
                         </div>
@@ -477,7 +478,7 @@
 
     <div id="tutorial" style="position:absolute;width:100%;height:100%;left:0;top:0;z-index:9999;">
         <div style="width:100%;height:100%;background-color:grey;position:relative;opacity:.5"></div>
-        <div style="padding:20px;background-color:#e4ece5;border:1px solid black;position:absolute;text-align:left;left:150px;top:150px;">
+        <div style="padding:20px;background-color:var(--body-background);border:1px solid var(--input-border);position:absolute;text-align:left;left:150px;top:150px;">
             <span class="localized" data-lockey="tutorial"></span>
             <button class="button" onclick="closeTutorial()">OK</button>
         </div>

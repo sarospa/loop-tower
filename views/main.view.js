@@ -97,7 +97,7 @@ function View() {
             `<div class='statRadarContainer showthat' style='left:${loc.x}px;top:${loc.y}px;' onmouseover='view.showStat("${stat}")' onmouseout='view.showStat(undefined)'>
                 <div class='statLabelContainer'>
                     <div class='medium bold' style='margin-left:18px;margin-top:5px;'>${_txt(`stats>${stat}>long_form`)}</div>
-                    <div style='color:#737373;' class='statNum'><div class='medium' id='stat${stat}ss'></div></div>
+                    <div style='color:var(--stat-soulstone-color);' class='statNum'><div class='medium' id='stat${stat}ss'></div></div>
                     <div class='statNum'><div class='medium' id='stat${stat}Talent'>0</div></div>
                     <div class='medium statNum bold' id='stat${stat}Level'>0</div>
                 </div>
@@ -482,16 +482,15 @@ function View() {
         }
     };
     this.zoneTints = [
-        "rgba(255, 152, 0, 0.2)", //Beginnersville
-        "rgba(76, 175, 80, 0.2)", //Forest Path
-        "rgba(255, 235, 59, 0.2)", //Merchanton
-        "rgba(96, 125, 139, 0.2)", //Mt Olympus
-        "rgba(255, 255, 255, 0.2)", //Valhalla
-        "rgba(103, 58, 183, 0.2)", //Startington
-        "rgba(76, 175, 80, 0.4)", //Jungle Path
-        "rgba(255, 235, 59, 0.4)", //Commerceville
-        "rgba(103, 58, 183, 0.4)", //Valley of Olympus
-        //"rgba(103, 58, 183, 0.2)"
+        "var(--zone-tint-1)", //Beginnersville
+        "var(--zone-tint-2)", //Forest Path
+        "var(--zone-tint-3)", //Merchanton
+        "var(--zone-tint-4)", //Mt Olympus
+        "var(--zone-tint-5)", //Valhalla
+        "var(--zone-tint-6)", //Startington
+        "var(--zone-tint-7)", //Jungle Path
+        "var(--zone-tint-8)", //Commerceville
+        "var(--zone-tint-9)", //Valley of Olympus
     ];
     this.highlightAction = function(index) {
         const element = document.getElementById(`nextActionContainer${index}`);
@@ -573,11 +572,11 @@ function View() {
             }
             let color;
             if (action.name === "Face Judgement") {
-                color = "linear-gradient(to bottom, rgb(183, 203, 196) 49%, transparent 51%), linear-gradient(to right, rgba(255, 255, 255, 0.2) 50%, rgba(103, 58, 183, 0.2) 51%)";
+                color = "linear-gradient(to bottom, var(--zone-tint-4-opaque) 49%, transparent 51%), linear-gradient(to right, var(--zone-tint-5) 50%, var(--zone-tint-6) 51%)";
             } else if (action.name === "Fall From Grace") {
-                color = "linear-gradient(to bottom, rgb(255, 255, 255, 0.2) 49%, rgba(103, 58, 183, 0.2) 51%)";
+                color = "linear-gradient(to bottom, var(--zone-tint-5) 49%, var(--zone-tint-6) 51%)";
             } else if (action.name === "Open Rift") {
-                color = "linear-gradient(to bottom, rgb(255, 152, 0, 0.2) 49%, rgba(103, 58, 183, 0.2) 51%)";
+                color = "linear-gradient(to bottom, var(--zone-tint-1) 49%, var(--zone-tint-6) 51%)";
             } else {
                 color = (travelNum > 0 || travelNum == -5) ? `linear-gradient(${this.zoneTints[townNum]} 49%, ${this.zoneTints[townNum + travelNum]} 51%)` : this.zoneTints[townNum];
             }
@@ -627,7 +626,7 @@ function View() {
                     <div class='curActionBar' id='action${i}Bar'></div>
                     <div class='actionSelectedIndicator' id='action${i}Selected'></div>
                     <img src='img/${imageName}.svg' class='smallIcon'>
-                    <div id='action${i}LoopsDone' style='margin-left:3px; border-left: 1px solid #b9b9b9;padding-left: 3px;'>${actionLoopsDone}</div>
+                    <div id='action${i}LoopsDone' style='margin-left:3px; border-left: 1px solid var(--action-separator-border);padding-left: 3px;'>${actionLoopsDone}</div>
                     /<div id='action${i}Loops'>${actionLoops}</div>
                 </div>`;
         }
@@ -673,7 +672,7 @@ function View() {
             document.getElementById(`action${index}Error`).textContent = action.errorMessage;
             document.getElementById(`action${index}HasFailed`).style.display = "";
             div.style.width = "100%";
-            div.style.backgroundColor = "#ff0000";
+            div.style.backgroundColor = "var(--cur-action-error-indicator)";
             div.style.height = "30%";
             div.style.marginTop = "5px";
             if (action.name === "Heal The Sick") unlockStory("failedHeal");
@@ -688,7 +687,7 @@ function View() {
             if (action.name === "Raise Zombie") unlockStory("failedRaiseZombie")
         } else if (action.loopsLeft === 0) {
             div.style.width = "100%";
-            div.style.backgroundColor = "#6d6d6d";
+            div.style.backgroundColor = "var(--cur-action-completed-background)";
         } else {
             div.style.width = `${100 * action.ticks / action.adjustedTicks}%`;
         }
@@ -1611,23 +1610,23 @@ for (let i = 0; i <= 8; i++) {
 
 function addStatColors(theDiv, stat) {
     if (stat === "Str") {
-        theDiv.style.backgroundColor = "#d70037";
+        theDiv.style.backgroundColor = "var(--stat-str-color)";
     } else if (stat === "Dex") {
-        theDiv.style.backgroundColor = "#9fd430";
+        theDiv.style.backgroundColor = "var(--stat-dex-color)";
     } else if (stat === "Con") {
-        theDiv.style.backgroundColor = "#b06f37";
+        theDiv.style.backgroundColor = "var(--stat-con-color)";
     } else if (stat === "Per") {
-        theDiv.style.backgroundColor = "#4ce2e9";
+        theDiv.style.backgroundColor = "var(--stat-per-color)";
     } else if (stat === "Int") {
-        theDiv.style.backgroundColor = "#2640b2";
+        theDiv.style.backgroundColor = "var(--stat-int-color)";
     } else if (stat === "Cha") {
-        theDiv.style.backgroundColor = "#F48FB1";
+        theDiv.style.backgroundColor = "var(--stat-cha-color)";
     } else if (stat === "Spd") {
-        theDiv.style.backgroundColor = "#f6e300";
+        theDiv.style.backgroundColor = "var(--stat-spd-color)";
     } else if (stat === "Luck") {
-        theDiv.style.backgroundColor = "#3feb53";
+        theDiv.style.backgroundColor = "var(--stat-luck-color)";
     } else if (stat === "Soul") {
-        theDiv.style.backgroundColor = "#AB47BC";
+        theDiv.style.backgroundColor = "var(--stat-soul-color)";
     }
 }
 
