@@ -468,6 +468,35 @@ input[type="number"] {
 }
 */
 
+#statsWindow {
+    display: grid;
+    grid:
+        "title"
+        "selector"
+        "stats"
+        "skills"
+        "buffs";
+}
+
+#statsTitle {
+    grid-area: title;
+}
+#statViewSelector {
+    grid-area: selector;
+}
+#radarChart {
+    grid-area: stats;
+}
+#statsContainer {
+    grid-area: stats;
+}
+#skillList {
+    grid-area: skills;
+}
+#buffList {
+    grid-area: buffs;
+}
+
 .skillContainer {
     width:100%;
     position:relative;
@@ -495,17 +524,50 @@ input[type="number"] {
     margin-right: 7px;
 }
 
-.statRadarContainer {
-    width:40px;
-    padding-top:20px;
-    position:absolute;
+/* Radar stat view */
+#statsWindow[data-view=radar] {
+    & #statsContainer {
+        position: absolute;
+        /* This sets scale+origin for matching the svg's viewBox using % */
+        inset: 50% 25% 25% 50%;
+        pointer-events: none;
+        & > * {
+            pointer-events: initial;
+        }
+    }
+
+    & .statContainer {
+        width:40px;
+        margin: -20px 0 0 -20px;
+        padding-top:20px;
+        position:absolute;
+    }
+
+    & .statContainer > .statLabelContainer {
+        display: none;
+    }
+
+    & #skillList {
+        margin-top: -25px;
+    }
 }
-.statRegularContainer {
-    width:100%;
+
+/* Regular stat view */
+#statsWindow[data-view=regular] {
+    & #radarChart {
+       display: none;
+    }
+    & #statsContainer {
+        margin-bottom: 25px;
+    }
+    & .statContainer {
+        width:100%;
+    }
+    & .statContainer:hover {
+        background-color: var(--stat-container-hover-background);
+    }
 }
-.statRegularContainer:hover {
-    background-color: var(--stat-container-hover-background);
-}
+
 .statLabelContainer {
     width:100%;
     position:relative;

@@ -1,22 +1,7 @@
 Views.registerView("buffsContainer", {
     selector: "#buffsContainer",
     html() {
-        const fullNames = {
-            Ritual: "Dark Ritual",
-            Imbuement: "Imbue Mind",
-            Imbuement2: "Imbue Body",
-            Feast: "Great Feast",
-            Aspirant: "Aspirant",
-            Heroism: "Heroism",
-            Imbuement3: "Imbue Soul",
-            PrestigePhysical: "Prestige - Physical",
-            PrestigeMental: "Prestige - Mental",
-            PrestigeCombat: "Prestige - Combat",
-            PrestigeSpatiomancy: "Prestige - Spatiomancy",
-            PrestigeChronomancy: "Prestige - Chronomancy",
-            PrestigeBartering: "Prestige - Bartering",
-            PrestigeExpOverflow: "Prestige - Experience Overflow",
-        };
+        const fullNames = Buff.fullNames;
         let html = "";
         for (const buff of buffList) {
             const fullName = fullNames[buff];

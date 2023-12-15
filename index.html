@@ -15,13 +15,14 @@
     <link rel="stylesheet" href="themes.css">
     <link rel="stylesheet" href="predictor.css">
     <link rel="stylesheet" href="stylesheet.css">
+    <link rel="stylesheet" href="statsgraph.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.13.1/css/all.css" crossorigin="anonymous">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
     
     <script src='lib/jquery.min.js'></script>
     <script src='lib/lz-string.min.js'></script>
-    <script src='lib/chart.min.js'></script>
+    <script src='lib/d3.v7.min.js'></script>
     <script src='lib/mousetrap.min.js'></script>
 
 </head>
@@ -59,21 +60,24 @@
 
     <main id="main">
         <div id="statsColumn" style="width:410px;vertical-align:top;">
-            <div id="statsWindow" style="width:90%;margin-left:12px;text-align:center;position:relative;overflow:visible;">
-                <div class="showthat">
+            <!-- The stat view starts out in radar mode so that init() can get text lengths -->
+            <div id="statsWindow" data-view="radar" style="width:90%;margin-left:12px;text-align:center;position:relative;overflow:visible;">
+                <div id="statsTitle" class="showthat block">
                     <div class="large bold localized" data-lockey="stats>title"></div>
                     <div class="showthis localized" data-lockey="stats>tooltip>explanation" style="width:550px;"></div>
-                </div><br>
-                <input type="radio" id="regularStats" name="statView" onclick="view.changeStatView()" checked />
-                <label for="regularStats" class="localized" data-lockey="stats>view>regular"></label>
-                <input type="radio" id="radarStats" name="statView" onclick="view.changeStatView()" />
-                <label for="radarStats" class="localized" data-lockey="stats>view>radar"></label>
-                <div class="showthat" id="radarChart">
-                    <canvas id="statChartCtx" width="350" height="350"></canvas>
+                </div>
+                <div id="statViewSelector" class="block">
+                    <input type="radio" id="regularStats" name="statView" onclick="view.changeStatView()" checked />
+                    <label for="regularStats" class="localized" data-lockey="stats>view>regular"></label>
+                    <input type="radio" id="radarStats" name="statView" onclick="view.changeStatView()" />
+                    <label for="radarStats" class="localized" data-lockey="stats>view>radar"></label>
+                </div>
+                <div class="showthat block" id="radarChart">
+                    <svg id="statChart" class="radar-chart" viewBox="-200 -200 400 400" preserveAspectRatio="xMidYMin meet"></svg>
                     <div class="showthis localized" style="margin-top:20px;width:375px" data-lockey="stats>tooltip>graph_legend"></div>
                 </div>
-                <div id="statContainer" style="width:100%;position:absolute;top:18px;left:0;"></div><br>
-                <div id="skillList" style="width:100%;margin-top:25px;display:none">
+                <div id="statsContainer"></div>
+                <div id="skillList" style="width:100%;display:none">
                     <div class="showthat">
                         <div class="large bold localized" data-lockey="skills>title"></div>
                         <div class="showthis localized" data-lockey="skills>tooltip>no_reset_on_restart"></div>

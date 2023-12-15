@@ -1,3 +1,4 @@
+// @ts-check
 "use strict";
 
 class LevelExp {
@@ -94,10 +95,18 @@ class LevelExp {
     }
 }
 
-class Stat {
+class Stat extends Localizable {
+    /** @type {StatName} */
+    name;
     statLevelExp = new LevelExp();
     talentLevelExp = new LevelExp();
     soulstone = 0;
+
+    /** @param {StatName} name */
+    constructor(name) {
+        super(`stats>${name}`);
+        Object.defineProperty(this, "name", {value: name});
+    }
 
     get exp() {
         return this.statLevelExp.totalExp;
@@ -113,6 +122,18 @@ class Stat {
     set talent(totalExp) {
         throw new Error(`Tried to set stat.talent to ${totalExp}, should set stat.talentLevelExp.totalExp instead`);
         // this.talentLevelExp.totalExp = totalExp;
+    }
+
+    get blurb() {
+        return this.memoize("blurb");
+    }
+
+    get short_form() {
+        return this.memoize("short_form");
+    }
+
+    get long_form() {
+        return this.memoize("long_form");
     }
 
     #soulstoneCalc;
@@ -167,10 +188,18 @@ const Skill_increase = 1;
 const Skill_decrease = 2;
 const Skill_custom = 3;
 
-class Skill {
+class Skill extends Localizable {
+    /** @type {SkillName} */
+    name;
     levelExp = new LevelExp();
     /** @type {Skill_increase | Skill_decrease | Skill_custom | 0} */
     change = 0;
+
+    /** @param {SkillName} name */
+    constructor(name) {
+        super(`skills>${name}`)
+        Object.defineProperty(this, "name", {value: name});
+    }
 
     get exp() {
         return this.levelExp.totalExp;
@@ -178,6 +207,16 @@ class Skill {
     set exp(totalExp) {
         throw new Error(`Tried to set skill.exp to ${totalExp}, should set skill.levelExp.totalExp instead`);
         // this.levelExp.totalExp = totalExp;
+    }
+
+    get label() {
+        return this.memoize("label");
+    }
+    get desc() {
+        return this.memoize("desc");
+    }
+    get desc2() {
+        return this.memoize("desc2");
     }
 
     toJSON() {
@@ -207,8 +246,42 @@ class Skill {
     }
 }
 
-class Buff {
+class Buff extends Localizable {
+    // why in valhalla's name are we using localized text as a key, wtaf
+    /** @readonly */
+    static fullNames = /** @type {const} */ ({
+        Ritual: "Dark Ritual",
+        Imbuement: "Imbue Mind",
+        Imbuement2: "Imbue Body",
+        Feast: "Great Feast",
+        Aspirant: "Aspirant",
+        Heroism: "Heroism",
+        Imbuement3: "Imbue Soul",
+        PrestigePhysical: "Prestige - Physical",
+        PrestigeMental: "Prestige - Mental",
+        PrestigeCombat: "Prestige - Combat",
+        PrestigeSpatiomancy: "Prestige - Spatiomancy",
+        PrestigeChronomancy: "Prestige - Chronomancy",
+        PrestigeBartering: "Prestige - Bartering",
+        PrestigeExpOverflow: "Prestige - Experience Overflow",
+    });
+
+    /** @type {BuffName} */
+    name;
     amt = 0;
+
+    get label() {
+        return this.memoize("label");
+    }
+    get desc() {
+        return this.memoize("desc");
+    }
+
+    /** @param {BuffName} name */
+    constructor(name) {
+        super(`buffs>${getXMLName(Buff.fullNames[name])}`);
+        Object.defineProperty(this, "name", {value: name});
+    }
 }
 
 function initializeStats() {
@@ -217,8 +290,9 @@ function initializeStats() {
     }
 }
 
+/** @param {StatName} name */
 function addNewStat(name) {
-    stats[name] = new Stat();
+    stats[name] = new Stat(name);
 }
 
 function initializeSkills() {
@@ -227,8 +301,9 @@ function initializeSkills() {
     }
 }
 
+/** @param {SkillName} name */
 function addNewSkill(name) {
-    skills[name] = new Skill();
+    skills[name] = new Skill(name);
     setSkillBonusType(name);
 }
 
@@ -238,8 +313,9 @@ function initializeBuffs() {
     }
 }
 
+/** @param {BuffName} name */
 function addNewBuff(name) {
-    buffs[name] = new Buff();
+    buffs[name] = new Buff(name);
 }
 
 /** @param {StatName} stat */
@@ -404,10 +480,21 @@ function addSkillExp(name, amount) {
     view.requestUpdate("updateSkill", name);
 }
 
+/** @param {Partial<Record<SkillName, number | (() => number)>>} list  */
 function handleSkillExp(list) {
     for (const skill in list) {
-        if (Number.isInteger(list[skill])) addSkillExp(skill, list[skill]);
-        else addSkillExp(skill, list[skill]());
+        if (!isSkillName(skill)) {
+            console.warn(`Unknown skill in handleSkillExp:`, skill);
+            continue;
+        }
+        let exp = list[skill];
+        if (typeof exp === "function") {
+            exp = exp();
+        }
+        if (Number.isInteger(exp)) addSkillExp(skill, exp);
+        else {
+            console.warn(`Invalid exp for ${skill} in skill list:`, list[skill]);
+        }
     }
 }
 

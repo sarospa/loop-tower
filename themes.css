@@ -113,6 +113,8 @@
     --navbar-link-inactive-color: black;
     --navbar-link-inactive-hover-background: #a8a8a8;
 
+    --graph-axis-color: #dbd3da;
+    --graph-text-color: #666;
     --graph-background-color: rgba(157, 103, 205, 0.2);
     --graph-border-color: rgb(157, 103, 205);
     --graph-point-background-color: rgb(157, 103, 205);
@@ -285,11 +287,13 @@
     --navbar-link-inactive-color: var(--default-color);
     --navbar-link-inactive-hover-background: #575757;
 
+    --graph-axis-color: #262626;
+    --graph-text-color: #999;
     --graph-background-color: rgba(157, 103, 205, 0.2);
     --graph-border-color: rgb(157, 103, 205);
     --graph-point-background-color: rgb(157, 103, 205);
-    --graph-point-border-color: #fff;
-    --graph-point-hover-background-color: #fff;
+    --graph-point-border-color: black;
+    --graph-point-hover-background-color: black;
     --graph-point-hover-border-color: rgb(157, 103, 205);
   
     --predictor-color: #8293ff;

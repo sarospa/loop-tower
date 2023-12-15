@@ -97,3 +97,43 @@ let locCheck = false;
 Localization.loadLib("fallback", () => {
     Localization.loadLib("game", () => locCheck = true);
 });
+
+/**
+ * Represents a localization subtree; intended as a base class for a piece of game data
+ * with associated localization
+ */
+class Localizable {
+    /** @type {JQuery<Element>} */
+    #txtsObj;
+    #rootPath;
+    #lib;
+
+    get rootPath() { return this.#rootPath; }
+    get lib() { return this.#lib; }
+    get txtsObj() {
+        return this.#txtsObj ??= _txtsObj(this.#rootPath, this.#lib);
+    }
+
+    /** @param {string} rootPath @param {string} [lib] */
+    constructor(rootPath, lib) {
+        this.#rootPath = rootPath;
+        this.#lib = lib;
+    }
+
+    /** @param {string} subPath  */
+    txt(subPath) {
+        const txt = this.txtsObj.find(subPath).text();
+        return txt !== "" ? txt : _txt(this.#rootPath + subPath, this.#lib);
+    }
+
+    /** @param {string} property @param {string} [subPath] */
+    memoize(property, subPath) {
+        subPath ??= `>${property}`;
+        const value = this.txt(subPath);
+        if (Object.hasOwn(this, property)) {
+            delete this[property];
+        }
+        Object.defineProperty(this, property, {value, configurable: true});
+        return value;
+    }
+}

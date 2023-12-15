@@ -72,29 +72,9 @@ function View() {
         return trigger;
     };
 
-    this.statLocs = [
-        { x: 166, y: 45 },
-        { x: 267, y: 80 },
-        { x: 321, y: 167 },
-        { x: 303, y: 279 },
-        { x: 224, y: 343 },
-        { x: 106, y: 343 },
-        { x: 33, y: 278 },
-        { x: 10, y: 167 },
-        { x: 61, y: 80 }
-    ];
     this.createStats = function() {
-        statGraph.init();
-        const statContainer = document.getElementById("statContainer");
-        while (statContainer.firstChild) {
-            statContainer.removeChild(statContainer.firstChild);
-        }
-        let totalStatDiv = "";
-        for (let i = 0; i < statList.length; i++) {
-            const stat = statList[i];
-            const loc = this.statLocs[i];
-            totalStatDiv +=
-            `<div class='statRadarContainer showthat' style='left:${loc.x}px;top:${loc.y}px;' onmouseover='view.showStat("${stat}")' onmouseout='view.showStat(undefined)'>
+        statGraph.init(document.getElementById("statsContainer"), stat =>
+            `<div class='statContainer showthat' onmouseover='view.showStat("${stat}")' onmouseout='view.showStat(undefined)'>
                 <div class='statLabelContainer'>
                     <div class='medium bold' style='margin-left:18px;margin-top:5px;'>${_txt(`stats>${stat}>long_form`)}</div>
                     <div style='color:var(--stat-soulstone-color);' class='statNum'><div class='medium' id='stat${stat}ss'></div></div>
@@ -128,10 +108,7 @@ function View() {
                     </div><br>
                     <div class='medium bold'>${_txt("stats>tooltip>total_multiplier")}:</div> x<div id='stat${stat}TotalMult'></div>
                 </div>
-            </div>`;
-        }
-
-        statContainer.innerHTML = totalStatDiv;
+            </div>`);
 
         if (options.statColors)
             Array.from(document.getElementsByClassName("statLevelBar")).forEach((div, index) => {
@@ -826,13 +803,13 @@ function View() {
             }
         }
         if (totalActionList.filter(action => action.finish.toString().includes("handleSkillExp")).filter(action => action.unlocked()).length > 0) {
-            document.getElementById("skillList").style.display = "inline-block";
+            document.getElementById("skillList").style.display = "";
         } else {
             document.getElementById("skillList").style.display = "none";
         }
         if (totalActionList.filter(action => action.finish.toString().includes("updateBuff")).filter(action => action.unlocked()).length > 0 ||
             prestigeValues["completedAnyPrestige"]) {
-            document.getElementById("buffList").style.display = "flex";
+            document.getElementById("buffList").style.display = "";
         } else {
             document.getElementById("buffList").style.display = "none";
         }
@@ -1404,24 +1381,12 @@ function View() {
     };
 
     this.changeStatView = function() {
-        const statContainer = document.getElementById("statContainer");
+        const statsWindow = document.getElementById("statsWindow");
         if (document.getElementById("regularStats").checked) {
-            document.getElementById("radarChart").style.display = "none";
-            statContainer.style.position = "relative";
-            for (const node of statContainer.childNodes) {
-                removeClassFromDiv(node, "statRadarContainer");
-                addClassToDiv(node, "statRegularContainer");
-                node.children[0].style.display = "inline-block";
-            }
+            statsWindow.dataset.view = "regular";
             document.getElementById("statsColumn").style.width = "316px";
         } else {
-            document.getElementById("radarChart").style.display = "inline-block";
-            statContainer.style.position = "absolute";
-            for (const node of statContainer.childNodes) {
-                addClassToDiv(node, "statRadarContainer");
-                removeClassFromDiv(node, "statRegularContainer");
-                node.children[0].style.display = "none";
-            }
+            statsWindow.dataset.view = "radar";
             document.getElementById("statsColumn").style.width = "410px";
             statGraph.update();
         }

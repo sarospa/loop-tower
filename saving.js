@@ -90,7 +90,7 @@ let curTown = 0;
 
 const statList = /** @type {const} */(["Dex", "Str", "Con", "Spd", "Per", "Cha", "Int", "Luck", "Soul"]);
 /** @typedef {typeof statList[number]} StatName */
-/** @type {{[K in StatName]?: Stat}} */
+/** @type {{[K in StatName]: Stat}} */
 const stats = {};
 let totalTalent = 0;
 // eslint-disable-next-line prefer-const
@@ -147,7 +147,7 @@ let loadoutnames;
 //let loadoutnames = ["1", "2", "3", "4", "5"];
 const skillList = /** @type {const} */(["Combat", "Magic", "Practical", "Alchemy", "Crafting", "Dark", "Chronomancy", "Pyromancy", "Restoration", "Spatiomancy", "Mercantilism", "Divine", "Commune", "Wunderkind", "Gluttony", "Thievery", "Leadership", "Assassin"]);
 /** @typedef {typeof skillList[number]} SkillName */
-/** @type {{[K in SkillName]?: Skill}} */
+/** @type {{[K in SkillName]: Skill}} */
 const skills = {};
 const buffList = /** @type {const} */(["Ritual", 
     "Imbuement", 
@@ -165,6 +165,13 @@ const buffList = /** @type {const} */(["Ritual",
     "PrestigeExpOverflow"
 ]);
 /** @typedef {typeof buffList[number]} BuffName */
+
+/** @returns {name is StatName} */
+function isStatName(name) { return statList.includes(name); }
+/** @returns {name is SkillName} */
+function isSkillName(name) { return skillList.includes(name); }
+/** @returns {name is BuffName} */
+function isBuffName(name) { return buffList.includes(name); }
 
 const dungeonFloors = [6, 9, 20];
 const trialFloors = [50, 100, 7, 1000, 25];
@@ -200,7 +207,7 @@ const buffCaps = {
     PrestigeBartering: 100,
     PrestigeExpOverflow: 100
 };
-/** @type {{[K in BuffName]?: Buff}} */
+/** @type {{[K in BuffName]: Buff}} */
 const buffs = {};
 const prestigeValues = {};
 let goldInvested = 0;
