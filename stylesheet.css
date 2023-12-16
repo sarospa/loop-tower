@@ -571,8 +571,9 @@ input[type="number"] {
         grid-template:
             "name level talent soulstone"
             "upper-bar upper-bar upper-bar upper-bar"
-            "lower-bar lower-bar lower-bar lower-bar"
-            / subgrid;
+            "lower-bar lower-bar lower-bar lower-bar";
+        /* Chrome etc don't support subgrid in the grid-template value? */
+        grid-template-columns: subgrid;
 
         &:hover {
             background-color: var(--stat-container-hover-background);
