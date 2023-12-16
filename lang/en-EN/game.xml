@@ -13,6 +13,7 @@
             <b> Dec 16th, 2023</b>
             • Initial reimplementation of the radar graph in SVG, using the D3 library.<br>
             • Fixed alignment errors with multipart progress bars and with stats, when text overflows.<br>
+            • Progress bar actions now display a full, rather than an empty, Exp bar once progress reaches 100% - thanks to Velociraptured from the discord for the suggestion!<br>
             ]]></version>
             <version verNum="3.P16.13"><![CDATA[
             <b> Dec 13th, 2023</b>
