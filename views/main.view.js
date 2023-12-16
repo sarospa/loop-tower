@@ -76,10 +76,10 @@ function View() {
         statGraph.init(document.getElementById("statsContainer"), stat =>
             `<div class='statContainer showthat' onmouseover='view.showStat("${stat}")' onmouseout='view.showStat(undefined)'>
                 <div class='statLabelContainer'>
-                    <div class='medium bold' style='margin-left:18px;margin-top:5px;'>${_txt(`stats>${stat}>long_form`)}</div>
-                    <div style='color:var(--stat-soulstone-color);' class='statNum'><div class='medium' id='stat${stat}ss'></div></div>
-                    <div class='statNum'><div class='medium' id='stat${stat}Talent'>0</div></div>
-                    <div class='medium statNum bold' id='stat${stat}Level'>0</div>
+                    <div class='medium bold stat-name' style='margin-left:18px;margin-top:5px;'>${_txt(`stats>${stat}>long_form`)}</div>
+                    <div class='medium statNum stat-soulstone' style='color:var(--stat-soulstone-color);' id='stat${stat}ss'></div>
+                    <div class='medium statNum stat-talent' id='stat${stat}Talent'>0</div>
+                    <div class='medium statNum stat-level bold' id='stat${stat}Level'>0</div>
                 </div>
                 <div class='thinProgressBarUpper'><div class='statBar statLevelBar' id='stat${stat}LevelBar'></div></div>
                 <div class='thinProgressBarLower'><div class='statBar statTalentBar' id='stat${stat}TalentBar'></div></div>
@@ -970,7 +970,8 @@ function View() {
     this.createActionProgress = function(action) {
         const totalDivText =
         `<div class='townStatContainer showthat'>
-            <div class='bold townLabel'>${action.labelDone} </div> <div id='prc${action.varName}'>5</div>%
+            <div class='bold townLabel'>${action.labelDone}</div>
+            <div class='progressValue' id='prc${action.varName}'>5</div><div class='percentSign'>%</div>
             <div class='thinProgressBarUpper'><div id='expBar${action.varName}' class='statBar townExpBar'></div></div>
             <div class='thinProgressBarLower'><div id='bar${action.varName}' class='statBar townBar'></div></div>
 
@@ -1207,17 +1208,22 @@ function View() {
         else if (varName === "LDungeon") mouseOver = "onmouseover='view.showDungeon(1)' onmouseout='view.showDungeon(undefined)'";
         else if (varName === "TheSpire") mouseOver = "onmouseover='view.showDungeon(2)' onmouseout='view.showDungeon(undefined)'";
         const totalDivText =
-            `<div class='townStatContainer' style='text-align:center' id='infoContainer${varName}'>
-                <div class='bold townLabel' style='float:left' id='multiPartName${varName}'></div>
-                <div class='completedInfo showthat' ${mouseOver}>
-                    <div class='bold'>${action.labelDone}</div>
-                    <div id='completed${varName}'></div>
-                    ${completedTooltip === "" ? "" : `<div class='showthis' id='completedContainer${varName}'>
-                        ${completedTooltip}
-                    </div>`}
+            `<div class='townStatContainer' id='infoContainer${varName}'>
+                <div class='multipartLabel'>
+                    <div class='flexMargin'></div>
+                    <div class='bold townLabel' id='multiPartName${varName}'></div>
+                    <div class='completedInfo showthat' ${mouseOver}>
+                        <div class='bold'>${action.labelDone}</div>
+                        <div id='completed${varName}'></div>
+                        ${completedTooltip === "" ? "" : `<div class='showthis' id='completedContainer${varName}'>
+                            ${completedTooltip}
+                        </div>`}
+                    </div>
+                    <div class='flexMargin'></div>
                 </div>
-                <br>
-                ${pbars}
+                <div class='multipartBars'>
+                    ${pbars}
+                </div>
             </div>`;
 
         const progressDiv = document.createElement("div");

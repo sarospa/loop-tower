@@ -55,6 +55,7 @@ function Town(index) {
 
     this.getPrcToNext = function(varName) {
         const level = this.getLevel(varName);
+        if (level >= 100) return 100;
         const expOfCurLevel = this.expFromLevel(level);
         const curLevelProgress = this[`exp${varName}`] - expOfCurLevel;
         const nextLevelNeeds = this.expFromLevel(level + 1) - expOfCurLevel;

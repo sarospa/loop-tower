@@ -366,6 +366,7 @@ input, textarea, select {
     border: none;
     background: none;
     font-size: 1rem;
+    text-align: right;
     color: var(--default-color);
 }
 
@@ -471,11 +472,12 @@ input[type="number"] {
 #statsWindow {
     display: grid;
     grid:
-        "title"
-        "selector"
-        "stats"
-        "skills"
-        "buffs";
+        "title title title title"
+        "selector selector selector selector"
+        "stats stats stats stats"
+        "skills skills skills skills"
+        "buffs buffs buffs buffs"
+        / [fullrow-start] 1fr max-content max-content max-content [fullrow-end];
 }
 
 #statsTitle {
@@ -558,14 +560,46 @@ input[type="number"] {
        display: none;
     }
     & #statsContainer {
-        margin-bottom: 25px;
+        margin: 15px 0;
+        display: grid;
+        grid-template-columns: subgrid;
     }
     & .statContainer {
         width:100%;
+        display: grid;
+        grid-column: fullrow;
+        grid-template:
+            "name level talent soulstone"
+            "upper-bar upper-bar upper-bar upper-bar"
+            "lower-bar lower-bar lower-bar lower-bar"
+            / subgrid;
+
+        &:hover {
+            background-color: var(--stat-container-hover-background);
+        }
+        & > .statLabelContainer {
+            display: contents;
+        }
+        & .stat-name {
+            grid-area: name;
+        }
+        & .stat-level {
+            grid-area: level;
+        }
+        & .stat-talent {
+            grid-area: talent;
+        }
+        & .stat-soulstone {
+            grid-area: soulstone;
+        }
+        & .thinProgressBarUpper {
+            grid-area: upper-bar;
+        }
+        & .thinProgressBarLower {
+            grid-area: lower-bar;
+        }
     }
-    & .statContainer:hover {
-        background-color: var(--stat-container-hover-background);
-    }
+
 }
 
 .statLabelContainer {
@@ -627,16 +661,12 @@ input[type="number"] {
 
 .townStatContainer {
     width:100%;
-    height:23px;
     text-align:left;
     padding:0 10px 0;
-    margin-bottom:5px;
-    margin-top:10px;
 }
 
 .townInfoContainer {
     width:100%;
-    height:15px;
     text-align:left;
     padding:0 10px 0;
 }
@@ -644,9 +674,10 @@ input[type="number"] {
 .townInfo {
     display:grid;
     text-align:left;
-    grid-template-columns: [full-row-start] repeat(8, max-content) 1fr [full-row-end];
-    grid-auto-rows: 1fr;
+    grid-template-columns: [full-row-start] repeat(2, max-content) [progress-value-start] repeat(2, max-content) [progress-value-end] repeat(4, max-content) 1fr [full-row-end];
+    grid-auto-rows: minmax(32px,1fr);
     align-items: center;
+    gap: 4px;
 }
 
 .townContainer {
@@ -666,10 +697,68 @@ input[type="number"] {
     display: grid;
     grid-template-columns: subgrid;
     gap: 0.5em;
-    align-items: baseline;
+    align-items: center;
 }
 div.townInfoContainer > .numeric {
-    text-align: right
+    text-align: right;
+}
+
+.townContainer.progressType > div.townStatContainer {
+    display: grid;
+    grid-template-columns: subgrid;
+    row-gap: 2px;
+}
+
+.townContainer.progressType .townLabel {
+    grid-column-start: full-row-start;
+    grid-column-end: progress-value-start;
+}
+
+.townContainer.progressType .thinProgressBarUpper,
+.townContainer.progressType .thinProgressBarLower {
+    grid-column: full-row;
+    margin: 0 25px;
+    width: auto;
+}
+
+.townContainer.progressType .progressValue {
+    grid-column: progress-value;
+    text-align: right;
+}
+
+.townContainer.multipartType {
+    & > div.townStatContainer {
+        display: flex;
+        flex-direction: column;
+    }
+    & .flexMargin {
+        flex: 0 1 25px;
+    }
+    & .multipartLabel {
+        display: flex;
+        & .townLabel {
+            margin: 0 0 0 0;
+        }
+        & .completedInfo {
+            margin: 0 0 0 auto;
+            text-align: right;
+        }
+        flex-wrap: wrap;
+    }
+    & .multipartBars {
+        display: flex;
+        margin: 0 25px;
+        justify-content: stretch;
+        & .thickProgressBar {
+            flex: 1;
+            margin: 0;
+        }
+        gap: 4px;
+    }
+
+}
+.multibars {
+    display: flex;
 }
 
 .actionOptions {
@@ -1189,12 +1278,14 @@ li#actionLogLoadPrevious {
         flex: 0 0 100%;
     }
 
+    /* This has to do with keeping towns the same height, but not doing that for now
     & #townInfos > *[style*="none"], & #townActions > *[style*="none"] {
         display:block !important;
         visibility: hidden;
         width: 100%;
         order: 1;
     }
+    */
 
 
     & #actionsTitle {
