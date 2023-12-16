@@ -9,6 +9,11 @@
                 <title>Changelog</title>
                 <version_prefix>Version</version_prefix>
             </meta>
+            <version verNum="3.P16.14"><![CDATA[
+            <b> Dec 16th, 2023</b>
+            • Initial reimplementation of the radar graph in SVG, using the D3 library.<br>
+            • Fixed alignment errors with multipart progress bars and with stats, when text overflows.<br>
+            ]]></version>
             <version verNum="3.P16.13"><![CDATA[
             <b> Dec 13th, 2023</b>
             • The Dark theme has been completely redone using actual colors rather than a CSS inversion filter. All text should now be readable without having to switch filters around. (This does break the radar graph view of stats, sorry. I'm working on that.)<br>
