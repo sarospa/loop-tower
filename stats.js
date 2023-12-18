@@ -491,9 +491,9 @@ function handleSkillExp(list) {
         if (typeof exp === "function") {
             exp = exp();
         }
-        if (Number.isInteger(exp)) addSkillExp(skill, exp);
+        if (Number.isFinite(exp)) addSkillExp(skill, exp);
         else {
-            console.warn(`Invalid exp for ${skill} in skill list:`, list[skill]);
+            console.warn(`Invalid exp for ${skill} in skill list:`, list[skill], exp);
         }
     }
 }

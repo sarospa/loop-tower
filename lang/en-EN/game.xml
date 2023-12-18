@@ -9,6 +9,10 @@
                 <title>Changelog</title>
                 <version_prefix>Version</version_prefix>
             </meta>
+            <version verNum="3.P16.15"><![CDATA[
+            <b> Dec 18th, 2023</b>
+            • Fixed a bug where skill experience would not get awarded if the amount of exp wasn't an integer.<br>
+            ]]></version>
             <version verNum="3.P16.14"><![CDATA[
             <b> Dec 16th, 2023</b>
             • Initial reimplementation of the radar graph in SVG, using the D3 library.<br>
