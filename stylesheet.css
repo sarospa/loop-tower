@@ -562,6 +562,7 @@ input[type="number"] {
     & #statsContainer {
         margin: 15px 0;
         display: grid;
+        grid-template-columns: [fullrow-start] 1fr max-content max-content max-content [fullrow-end];
         grid-template-columns: subgrid;
     }
     & .statContainer {
@@ -573,6 +574,7 @@ input[type="number"] {
             "upper-bar upper-bar upper-bar upper-bar"
             "lower-bar lower-bar lower-bar lower-bar";
         /* Chrome etc don't support subgrid in the grid-template value? */
+        grid-template-columns: [fullrow-start] 1fr max-content max-content max-content [fullrow-end];
         grid-template-columns: subgrid;
 
         &:hover {
@@ -696,6 +698,7 @@ input[type="number"] {
 }
 .townContainer.infoType > div.townInfoContainer {
     display: grid;
+    grid-template-columns: [full-row-start] repeat(2, max-content) [progress-value-start] repeat(2, max-content) [progress-value-end] repeat(4, max-content) 1fr [full-row-end];
     grid-template-columns: subgrid;
     gap: 0.5em;
     align-items: center;
@@ -706,6 +709,7 @@ div.townInfoContainer > .numeric {
 
 .townContainer.progressType > div.townStatContainer {
     display: grid;
+    grid-template-columns: [full-row-start] repeat(2, max-content) [progress-value-start] repeat(2, max-content) [progress-value-end] repeat(4, max-content) 1fr [full-row-end];
     grid-template-columns: subgrid;
     row-gap: 2px;
 }

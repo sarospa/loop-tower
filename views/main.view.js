@@ -1465,7 +1465,7 @@ function View() {
         document.getElementById('totalPlaytime').textContent = `${formatTime(totals.time)}`;
         document.getElementById('totalEffectiveTime').textContent = `${formatTime(totals.effectiveTime)}`;
         document.getElementById('borrowedTimeBalance').textContent = formatTime(totals.borrowedTime);
-        document.getElementById('borrowedTimeDays').textContent = `${Math.floor(formatNumber(totals.borrowedTime / 86400))}${_txt("time_controls>days")}`;
+        document.getElementById('borrowedTimeDays').textContent = `${formatNumber(Math.floor(totals.borrowedTime / 86400))}${_txt("time_controls>days")}`;
         document.getElementById('totalLoops').textContent = `${formatNumber(totals.loops)}`;
         document.getElementById('totalActions').textContent = `${formatNumber(totals.actions)}`;
         if (totals.borrowedTime > 0) document.documentElement.classList.add("time-borrowed");
