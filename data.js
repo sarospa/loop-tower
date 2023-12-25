@@ -485,7 +485,7 @@ class DataSnapshot {
         }
         seen ??= new Set();
         if (seen.has(object)) {
-            console.error(`Object ${name} has already been recorded!`, object, this.objects.get(object));
+            console.debug(`Object ${name} has already been recorded!`, object, this.objects.get(object));
             return;
         }
         seen.add(object);

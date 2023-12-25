@@ -206,7 +206,7 @@ class Action extends Localizable {
     get tooltip() { return this.memoize("tooltip"); }
     get tooltip2() { return this.memoize("tooltip2"); }
     get label() { return this.memoize("label"); }
-    get label_done() { return this.memoize("label_done"); }
+    get labelDone() { return this.memoize("labelDone", ">label_done"); }
     
     // all actions to date with info text have the same info text, so presently this is
     // centralized here (function will not be called by the game code if info text is not
