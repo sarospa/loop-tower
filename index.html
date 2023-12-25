@@ -10,7 +10,7 @@
     <meta http-equiv="pragma" content="no-cache" />
     <!-- mobile support -->
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-
+    
     <title>Idle Loops</title>
     <link rel="stylesheet" href="themes.css">
     <link rel="stylesheet" href="predictor.css">
@@ -19,6 +19,7 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.13.1/css/all.css" crossorigin="anonymous">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="manifest" href="manifest.webmanifest">
     
     <script src='lib/jquery.min.js'></script>
     <script src='lib/lz-string.min.js'></script>
@@ -500,11 +501,11 @@
     </script>
 
     <script src="data.js"></script>
+    <script src="localization.js"></script>
     <script src="helpers.js"></script>
     <script src="google.js"></script>
     <script src="actionList.js"></script>
     <script src="actionLog.js"></script>
-    <script src="localization.js"></script>
     <script src="interval.js"></script>
     <script src="driver.js"></script>
     <script src="stats.js"></script>
@@ -523,10 +524,6 @@
     <script src="views/buffs.view.js"></script>
     <script src="views/talenttree.view.js"></script>
     <script>
-        let totalActionList = [];
-        let dungeons = [[], [], []];
-        let trials = [[], [], [], [], []];
-        virtualizeGlobalVariables({dungeons, trials});
         Data.recordDefaults();
         let initInterval = setInterval(() => {
             if (locCheck) {

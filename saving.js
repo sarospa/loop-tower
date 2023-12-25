@@ -459,7 +459,7 @@ let totalOfflineMs = 0;
 let bonusSpeed = 1;
 let bonusActive = false;
 let currentLoop = 0;
-/** @type {Action & ActionExtras} */
+/** @type {AnyActionEntry} */
 let currentAction = null;
 const offlineRatio = 1;
 let totals = {
@@ -491,6 +491,11 @@ let curFightJungleMonstersSegment = 0;
 let curThievesGuildSegment = 0;
 // eslint-disable-next-line prefer-const
 let curGodsSegment = 0;
+
+let totalActionList = [];
+let dungeons = [[], [], []];
+/** @type {(any[] & {highestFloor?:number})[]} */
+let trials = [[], [], [], [], []];
 
 // register all the object variables assigned in this file
 Data.registerAll({
@@ -535,6 +540,8 @@ const globalVariables = virtualizeGlobalVariables({
     curFightJungleMonstersSegment,
     curThievesGuildSegment,
     curGodsSegment,
+    dungeons,
+    trials,
 });
 
 function virtualizeGlobalVariables(variables) {
@@ -1258,9 +1265,17 @@ function importCurrentList() {
         }
         const name = toImport[i].substr(toImport[i].indexOf("x") + 1).trim();
         const loops = toImport[i].substr(0, toImport[i].indexOf("x"));
-        const action = translateClassNames(name);
-        if (action && action.unlocked()) {
-            actions.next.push({ name, loops: Number(loops), disabled: false });
+        try {
+            const action = translateClassNames(name);
+            if (action.unlocked()) {
+                actions.next.push({ name, loops: Number(loops), disabled: false });
+            }
+        } catch (e) {
+            if (e instanceof ClassNameNotFoundError) {
+                console.log(e.message);
+            } else {
+                throw e;
+            }
         }
     }
     view.updateNextActions();

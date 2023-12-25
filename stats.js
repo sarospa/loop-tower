@@ -419,6 +419,16 @@ function getBuffLevel(buff) {
     return buffs[buff].amt;
 }
 
+/** @param {BuffName} buff */
+function getBuffCap(buff) {
+    // Fixme please! I need to have a storage in data space
+    const input = document.getElementById(`buff${buff}Cap`);
+    if (input instanceof HTMLInputElement) {
+        return parseInt(input.value)
+    }
+    throw Error(`buff${buff}Cap not HTMLInputElement?`);
+}
+
 function getRitualBonus(min, max, speed)
 {
     if (getBuffLevel("Ritual") < min) return 1;

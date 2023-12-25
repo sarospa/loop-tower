@@ -119,8 +119,8 @@ class ActionLog {
         this.addEntry(entry, false);
     }
 
-    /** @type {(action: Action, stat: StatName, count: number, init: boolean) => void} */
-    addSoulstones(action, stat, count, init) {
+    /** @type {(action: Action, stat: StatName, count: number, init?: boolean) => void} */
+    addSoulstones(action, stat, count, init=false) {
         const entry = new SoulstoneEntry(action).addSoulstones(stat, count);
         this.addOrUpdateEntry(entry, init);
     }

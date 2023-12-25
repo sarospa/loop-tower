@@ -1,4 +1,6 @@
-const Localization = window.Localization = {
+// @ts-check
+
+const Localization = window["Localization"] = {
     // config
     // set to true for more console.log
     debug: false,
@@ -81,8 +83,8 @@ const Localization = window.Localization = {
     },
     getUrlVars() {
         const vars = {};
-        parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/giu, (_m, key, value) => {
-            vars[key] = value;
+        const _ = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/giu, (_m, key, value) => {
+            return vars[key] = value;
         });
         return vars;
     },
@@ -90,8 +92,8 @@ const Localization = window.Localization = {
 
 Localization.init();
 // binding the _txt function for simplier use
-const _txt = window._txt = Localization.txt;
-const _txtsObj = window._txtsObj = Localization.txtsObj;
+const _txt = window["_txt"] = Localization.txt;
+const _txtsObj = window["_txtsObj"] = Localization.txtsObj;
 
 let locCheck = false;
 Localization.loadLib("fallback", () => {
@@ -126,14 +128,29 @@ class Localizable {
         return txt !== "" ? txt : _txt(this.#rootPath + subPath, this.#lib);
     }
 
-    /** @param {string} property @param {string} [subPath] */
-    memoize(property, subPath) {
-        subPath ??= `>${property}`;
-        const value = this.txt(subPath);
+    /**
+     * @template {keyof this} K
+     * @template {this[K]} V
+     * @param {K} property
+     * @param {V} value  
+     */
+    memoizeValue(property, value) {
         if (Object.hasOwn(this, property)) {
             delete this[property];
         }
         Object.defineProperty(this, property, {value, configurable: true});
         return value;
+    }
+
+    /** 
+     * @param {keyof this} property Property to update on this object
+     * @param {string} [subPath] Subpath of localization object, defaults to `">${`{@link property}`}"`
+     * @returns {string}
+     */
+    memoize(property, subPath) {
+        subPath ??= `>${String(property)}`;
+        const value = this.txt(subPath);
+        // @ts-ignore
+        return this.memoizeValue(property, value);
     }
 }

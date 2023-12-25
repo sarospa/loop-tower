@@ -5,6 +5,6 @@
         "checkJs": false,
         "moduleResolution": "node",
     },
-    "include": ["*.js", "views/*.js"],
-    "files": ["index.html"],
+    "include": ["*.js", "views/*.js", "*.d.ts", "index.html", "types.d.ts"],
+    "files": ["index.html", "types.d.ts"],
 }

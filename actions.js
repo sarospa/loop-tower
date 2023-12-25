@@ -1,3 +1,4 @@
+// @ts-check
 "use strict";
 
 // Constants used as the base for Prestige exponential bonuses.
@@ -9,17 +10,41 @@ const PRESTIGE_SPATIOMANCY_BASE  = 1.10;
 const PRESTIGE_CHRONOMANCY_BASE  = 1.05;
 const PRESTIGE_EXP_OVERFLOW_BASE = 1.00222;
 
-function Actions() {
-    this.current = [];
-    this.next = [];
-    this.addAmount = 1;
+/**
+ * @typedef {{
+ *      loops: number;
+ *      loopsLeft: number;
+ *      extraLoops: number;
+ *      ticks: number;
+ *      adjustedTicks?: number;
+ *      rawTicks?: number;
+ *      manaUsed: number;
+ *      lastMana: number;
+ *      manaRemaining: number;
+ *      goldRemaining: number;
+ *      timeSpent: number;
+ *      errorMessage?: string;
+ * }} CurrentActionEntry
+ * @typedef {CurrentActionEntry & AnyActionType} AnyActionEntry
+ */
 
-    this.totalNeeded = 0;
-    this.completedTicks = 0;
-    this.currentPos = 0;
-    this.timeSinceLastUpdate = 0;
+/** @param {AnyActionEntry} action @returns {action is MultipartAction} */
+function isMultipartAction(action) {
+    return 'loopStats' in action;
+}
 
-    this.tick = function(availableMana) {
+class Actions {
+    /** @type {AnyActionEntry[]} */
+    current = [];
+    next = [];
+    addAmount = 1;
+
+    totalNeeded = 0;
+    completedTicks = 0;
+    currentPos = 0;
+    timeSinceLastUpdate = 0;
+
+    tick(availableMana) {
         availableMana ??= 1;
         availableMana = Mana.floor(availableMana);
 
@@ -48,10 +73,11 @@ function Actions() {
         // represent any number of ticks, all of which process at the existing levels
 
         // only for multi-part progress bars
-        if (curAction.loopStats) {
+        if (isMultipartAction(curAction)) {
             let loopCosts = {};
 
             function loopCost(segment) {
+                // @ts-ignore
                 return loopCosts[segment] ??= curAction.loopCost(segment);
             }
 
@@ -168,9 +194,10 @@ function Actions() {
         currentAction = null;
 
         return manaToSpend;
-    };
+    }
 
-    this.getNextValidAction = function() {
+    /** @returns {CurrentActionEntry & Action | CurrentActionEntry & MultipartAction} */
+    getNextValidAction() {
         let curAction = this.current[this.currentPos];
         if (!curAction) {
             return curAction;
@@ -192,9 +219,9 @@ function Actions() {
             curAction = this.current[this.currentPos];
         }
         return curAction;
-    };
+    }
 
-    this.getErrorMessage = function(action) {
+    getErrorMessage(action) {
         if (action.townNum !== curTown) {
             return `You were in zone ${curTown + 1} when you tried this action, and needed to be in zone ${action.townNum + 1}`;
         }
@@ -202,9 +229,9 @@ function Actions() {
             return "You could not make the cost for this action.";
         }
         return "??";
-    };
+    }
 
-    this.restart = function() {
+    restart() {
         this.currentPos = 0;
         this.completedTicks = 0;
         curTown = 0;
@@ -254,7 +281,7 @@ function Actions() {
                 if (action.loops === 0 || action.disabled) {
                     continue;
                 }
-                const toAdd = translateClassNames(action.name);
+                const toAdd = /** @type {AnyActionEntry} */(translateClassNames(action.name));
 
                 toAdd.loops = action.loops;
                 toAdd.loopsLeft = action.loops;
@@ -277,9 +304,9 @@ function Actions() {
         view.requestUpdate("updateNextActions");
         view.requestUpdate("updateTime");
         view.requestUpdate("updateActionTooltips");
-    };
+    }
 
-    this.adjustTicksNeeded = function() {
+    adjustTicksNeeded() {
         let remainingTicks = 0;
         for (let i = this.currentPos; i < this.current.length; i++) {
             const action = this.current[i];
@@ -288,10 +315,10 @@ function Actions() {
         }
         this.totalNeeded = this.completedTicks + remainingTicks;
         view.requestUpdate("updateTotalTicks", null);
-    };
+    }
 
 
-    this.addAction = function(action, loops, initialOrder, disabled) {
+    addAction(action, loops, initialOrder, disabled) {
         const toAdd = {};
         toAdd.name = action;
         if (disabled) toAdd.disabled = true;
@@ -312,7 +339,7 @@ function Actions() {
             this.next.splice(initialOrder, 0, toAdd);
         }
         return initialOrder;
-    };
+    }
 }
 
 function setAdjustedTicks(action) {
@@ -337,7 +364,7 @@ function getMaxTicksForAction(action, talentOnly=false) {
     let maxTicks = Number.MAX_SAFE_INTEGER;
     const expMultiplier = action.expMult * (action.manaCost() / action.adjustedTicks);
     const overFlow=prestigeBonus(PRESTIGE_EXP_OVERFLOW_BASE, "PrestigeExpOverflow") - 1;
-    for (const stat in stats) {
+    for (const stat of statList) {
         const expToNext = getExpToLevel(stat, talentOnly);
         const statMultiplier = expMultiplier * ((action.stats[stat]??0)+overFlow) * getTotalBonusXP(stat);
         maxTicks = Math.min(maxTicks, Mana.ceil(expToNext / statMultiplier));
@@ -357,7 +384,7 @@ function getMaxTicksForStat(action, stat, talentOnly=false) {
 function addExpFromAction(action, manaCount) {
     const adjustedExp = manaCount * action.expMult * (action.manaCost() / action.adjustedTicks);
     const overFlow=prestigeBonus(PRESTIGE_EXP_OVERFLOW_BASE, "PrestigeExpOverflow") - 1;
-    for (const stat in stats) {
+    for (const stat of statList) {
         const expToAdd = ((action.stats[stat]??0)+overFlow) * adjustedExp * getTotalBonusXP(stat);
 
         // Used for updating the menus when hovering over a completed item in the actionList

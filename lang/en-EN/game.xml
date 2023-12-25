@@ -1378,6 +1378,13 @@
             Gives progress equal to (Sqrt(Practical) + Thievery + Assassin) * Stat/1000 * Sqrt(Completions/100) / Abs(reputation) / hearts^2.<br>
             Rewards a heart.
             ]]></tooltip>
+            <segment_names>
+                <name>Scout Target</name>
+                <name>Devise Plan</name>
+                <name>Kill Target</name>
+                <name>Destroy Evidence</name>
+                <name>Flee Scene</name>
+            </segment_names>
         </assassin>
         <assassinz0>
 		    <story_1><![CDATA[<b>Target Assassinated:</b>⮀ His name was Ethan, you met him on your fifteenth loop. Always seemed to be getting into some sort of trouble. You ambush him as he strolls down an alley and carve out his heart before he knows what happened. He'll be fine next loop, you tell yourself.]]></story_1>
