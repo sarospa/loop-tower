@@ -203,7 +203,13 @@ function View() {
         }
         const triggerRect = trigger.getBoundingClientRect();
         const tooltipRect = tooltip.getBoundingClientRect();
-        const viewportRect = document.documentElement.getBoundingClientRect();
+        const viewportRect = {
+            // document.documentElement.getBoundingClientRect();
+            top: 0,
+            left: 0,
+            right: window.innerWidth,
+            bottom: window.innerHeight,
+        };
         const viewportMargins = {
             top: triggerRect.top - viewportRect.top,
             right: viewportRect.right - triggerRect.right,
@@ -243,8 +249,8 @@ function View() {
         // console.log("Fixing tooltip:",{tooltip,tooltipRect,trigger,triggerRect,event});
 
         tooltip.style.position = "fixed";
-        tooltip.style.left = `${tooltipRect.x - viewportRect.x}px`;
-        tooltip.style.top = `${tooltipRect.y - viewportRect.y}px`;
+        tooltip.style.left = `${tooltipRect.x - viewportRect.left}px`;
+        tooltip.style.top = `${tooltipRect.y - viewportRect.top}px`;
         tooltip.style.right = "auto";
         tooltip.style.bottom = "auto";
         tooltip.style.margin = "0";
