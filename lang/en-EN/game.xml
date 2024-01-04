@@ -902,10 +902,18 @@
         <bonus_seconds>
             <title>Bonus Seconds</title>
             <main_text><![CDATA[
-          While this bonus is on, you get 4 extra seconds per second (5x faster).<br>
-          Accrue 1 bonus second per second when paused or offline. (capped at 1 month per offline period)<br>
-          Bonus is
+          <p>While this bonus is on, you get {speed-1} extra seconds per second ({speed}x game speed).</p>
+          <p>{background_info}</p>
+          <p>Accrue 1 bonus second per second when paused or offline. (capped at 1 month per offline period)</p>
+          <p>Bonus is {state}</p>
+          <p>{counter_text} {bonusSeconds}</p>
         ]]></main_text>
+            <background_disabled>You can adjust this speed or set a different speed for while this tab is in the background in the Extras menu.</background_disabled>
+            <background_0x>While this tab is in the background (regardless of if this bonus is on or off), the game will not run, and you will gain bonus time as though paused.</background_0x>
+            <background_regen>While this tab is in the background (regardless of if this bonus is on or off), the game will run at {background_speed}x speed, and you will gain bonus time at a rate of {1-background_speed} bonus seconds per second.</background_regen>
+            <background_1x>While this tab is in the background (regardless of if this bonus is on or off), the game will run at normal speed and consume no bonus time.</background_1x>
+            <background_slower>While the bonus is on and this tab is in the background, the game will only consume {background_speed-1} seconds of bonus time per second ({background_speed}x game speed).</background_slower>
+            <background_faster>While the bonus is on and this tab is in the background, the game will consume an additional {background_speed-speed} seconds of bonus time per second ({background_speed}x game speed).</background_faster>
             <state>
                 <on>ON</on>
                 <off>OFF</off>

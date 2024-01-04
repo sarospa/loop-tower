@@ -684,7 +684,7 @@ const optionValueHandlers = {
     speedIncreaseCustom: checkExtraSpeed,
     speedIncreaseBackground(value, init) {
         checkExtraSpeed();
-        if (typeof value === "number" && !isNaN(value) && value < 1) {
+        if (typeof value === "number" && !isNaN(value) && value < 1 && value >= 0) {
             document.getElementById("speedIncreaseBackgroundWarning").style.display = "";
         } else {
             document.getElementById("speedIncreaseBackgroundWarning").style.display = "none";

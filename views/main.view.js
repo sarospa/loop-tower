@@ -427,6 +427,54 @@ function View() {
             returnTimeButton.disabled = totalOfflineMs < 86400_000;
         }
     }
+    this.updateBonusText = function() {
+        document.getElementById("bonusText").innerHTML = this.getBonusText();
+    }
+    this.getBonusText = function() {
+        let text = _txt("time_controls>bonus_seconds>main_text");
+        let lastText = null;
+        while (lastText !== text) {
+            lastText = text;
+            text = text.replace(/{([^+{}-]*)([+-]?)(.*?)}/g, (_str, lhs, op, rhs) => this.getBonusReplacement(lhs, op, rhs));
+        }
+        return text;
+    }
+    /** @type {(lhs: string, op?: string, rhs?: string) => string} */
+    this.getBonusReplacement = function(lhs, op, rhs) {
+        // this is the second time I've manually implemented this text-replacement pattern (first was for Action Log entries). Next time I need to make it a
+        // generic operation on Localization; I think I'm beginning to figure out what will be needed for it
+        const fgSpeed = Math.max(5, options.speedIncrease10x ? 10 : 0, options.speedIncrease20x ? 20 : 0, options.speedIncreaseCustom);
+        const bgSpeed = !isFinite(options.speedIncreaseBackground) ? -1 : options.speedIncreaseBackground ?? -1;
+        const variables = {
+            __proto__: null, // toString is not a valid replacement name
+            get background_info() {
+                if (bgSpeed < 0 || bgSpeed === fgSpeed) {
+                    return _txt("time_controls>bonus_seconds>background_disabled");
+                } else if (bgSpeed === 0) {
+                    return _txt("time_controls>bonus_seconds>background_0x");
+                } else if (bgSpeed < 1) {
+                    return _txt("time_controls>bonus_seconds>background_regen");
+                } else if (bgSpeed === 1) {
+                    return _txt("time_controls>bonus_seconds>background_1x");
+                } else if (bgSpeed < fgSpeed) {
+                    return _txt("time_controls>bonus_seconds>background_slower");
+                } else {
+                    return _txt("time_controls>bonus_seconds>background_faster");
+                }
+            },
+            get state() {return `<span class='bold' id='isBonusOn'>${_txt(`time_controls>bonus_seconds>state>${isBonusActive() ? "on" : "off"}`)}</span>`},
+            get counter_text() {return `<span class='bold'>${_txt("time_controls>bonus_seconds>counter_text")}</span>`},
+            get bonusSeconds() {return `<span id='bonusSeconds'>${formatTime(totalOfflineMs / 1000)}</span>`},
+            speed: fgSpeed,
+            background_speed: bgSpeed,
+        }
+        const lval = variables[lhs] ?? (parseFloat(lhs) || 0);
+        const rval = variables[rhs] ?? (parseFloat(rhs) || 0);
+        return String(
+            op === "+" ? lval + rval
+            : op === "-" ? lval - rval
+            : lval);
+    }
     this.updateTotalTicks = function() {
         document.getElementById("totalTicks").textContent = `${formatNumber(actions.completedTicks)} | ${formatTime(timeCounter)}`;
         document.getElementById("effectiveTime").textContent = `${formatTime(effectiveTime)}`;

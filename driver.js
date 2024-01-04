@@ -777,6 +777,7 @@ function isBonusActive() {
 }
 
 function checkExtraSpeed() {
+    view.updateBonusText();
     if (typeof options.speedIncreaseBackground === "number" && !isNaN(options.speedIncreaseBackground) && options.speedIncreaseBackground >= 0 && !document.hasFocus() && (options.speedIncreaseBackground < 1 || isBonusActive())) {
         if (options.speedIncreaseBackground === 1) {
             bonusSpeed = 1.00001;

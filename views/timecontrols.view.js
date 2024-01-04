@@ -21,9 +21,8 @@ Views.registerView("timeControls", {
                 <div class='showthis' style='color:var(--default-color);width:230px;'>${_txt("time_controls>restart_text")}</div>
             </button>
             <button class='button showthatO control' onclick='toggleOffline()'>${_txt("time_controls>bonus_seconds>title")}
-                <div class='showthis' style='width:230px;color:var(--default-color);'>${_txt("time_controls>bonus_seconds>main_text")}
-                    <div class='bold' id='isBonusOn'>${_txt("time_controls>bonus_seconds>state>off")}</div><br>
-                    <div class='bold'>${_txt("time_controls>bonus_seconds>counter_text")}</div> <div id='bonusSeconds'></div>
+                <div class='showthis' id='bonusText' style='max-width:500px;color:var(--default-color);'>
+                    ${view.getBonusText()}
                 </div>
             </button>
             <button id='talentTreeBtn' style='display: none;' onclick='view.showTalents()'' class='button control'>${_txt("time_controls>talents_button")}</button>

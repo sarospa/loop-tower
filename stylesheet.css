@@ -6,6 +6,16 @@ div.block {
     display: block;
 }
 
+p {
+    margin: 0.75ex 0;
+}
+p:first-child {
+    margin-top: 0;
+}
+p:last-child {
+    margin-bottom: 0;
+}
+
 menu {
     margin: 0;
     padding: 0;
