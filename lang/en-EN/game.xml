@@ -1307,6 +1307,7 @@
             <buff_from0_multi><![CDATA[<b>{header}:</b> You gain the {buff} buff and it increases to level {toLevel}! {buff_cost}]]></buff_from0_multi>
             <buff><![CDATA[<b>{header}:</b> Your {buff} buff increases to level {toLevel}. {buff_cost}]]></buff>
             <buff_multi><![CDATA[<b>{header}:</b> Your {buff} buff increases from level {fromLevel} to level {toLevel}. {buff_cost}]]></buff_multi>
+            <buff_cost_soulstone_single>You sacrificed {count} soulstones of {stat_long}.</buff_cost_soulstone_single>
             <buff_cost_soulstone>You sacrificed {count} soulstones: {stats}</buff_cost_soulstone>
             <buff_cost_talent>You sacrificed {count} levels of talent: {stats}</buff_cost_talent>
             <buff_cost_imbuement3>You sacrificed... everything.</buff_cost_imbuement3>
@@ -1695,7 +1696,7 @@
             Learning to fight is probably important; you have a long journey ahead of you.<br>Requires a reputation of 2 or above.<br>Unlocked at 20% Investigated.
             ]]></tooltip>
             <story_1><![CDATA[<b>1 Combat:</b>⮀ You manage to track down the warrior that was staying in town, and are greeted by a small woman holding a sword almost as tall as her. She introduces herself as "Iron" and smiles politely.  Her pleasant demeanour doesn't stop her from thoroughly trouncing you.]]></story_1>
-            <story_2><![CDATA[<b>100 Combat:</b>⮀ You manage to give Iron a run for her money, but she still manages to eek out a victory. She is, however, noticeably worn out afterwards.]]></story_2>
+            <story_2><![CDATA[<b>100 Combat:</b>⮀ You manage to give Iron a run for her money, but she still manages to eke out a victory. She is, however, noticeably worn out afterwards.]]></story_2>
             <story_3><![CDATA[<b>200 Combat:</b>⮀ You push Iron to the brink of defeat, and then she starts fighting dirty.]]></story_3>
             <story_4><![CDATA[<b>250 Combat:</b>⮀ All your experience fighting Iron finally pays off when you manage to defeat her! You feel really proud of yourself, right up until she smacks your head with the flat of her sword and demands a rematch.]]></story_4>
 		    <story_5><![CDATA[<b>1,000 Combat:</b>⮀ You decide to honor the rematch and fight with Iron once more. The duel lasts for 2 weeks and by the end of it, both of you are panting on the ground as you agree to call it a draw. She is surprised how far you have come with your training, then tells you that when she was a kid, she had to pick up a weapon to help protect her home town. She claims that monsters would sneak in under cover of night, so she trained until she was the best there was.]]></story_5>

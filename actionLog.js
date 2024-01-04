@@ -554,7 +554,7 @@ class BuffEntry extends LeveledLogEntry {
     /** @param {string} key */
     getReplacement(key) {
         if (key === "buff") return _txt(`buffs>${getXMLName(Buff.fullNames[this.name])}>label`);
-        if (key === "buff_cost") return this.statSpendType ? _txt(`actions>log>buff_cost_${this.statSpendType}`) : "";
+        if (key === "buff_cost") return this.statSpendType ? _txt(`actions>log>buff_cost_${this.statSpendType === "soulstone" && Object.keys(this.soulstoneEntry.stones).length === 1 ? "soulstone_single" : this.statSpendType}`) : "";
         if (key === "count" || key.startsWith("stat")) return this.soulstoneEntry.getReplacement(key);
         return super.getReplacement(key);
     }
