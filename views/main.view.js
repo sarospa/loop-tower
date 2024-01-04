@@ -428,14 +428,16 @@ function View() {
         }
     }
     this.updateBonusText = function() {
-        document.getElementById("bonusText").innerHTML = this.getBonusText();
+        const element = document.getElementById("bonusText");
+        if (!element) return;
+        element.innerHTML = this.getBonusText() ?? "";
     }
     this.getBonusText = function() {
         let text = _txt("time_controls>bonus_seconds>main_text");
         let lastText = null;
         while (lastText !== text) {
             lastText = text;
-            text = text.replace(/{([^+{}-]*)([+-]?)(.*?)}/g, (_str, lhs, op, rhs) => this.getBonusReplacement(lhs, op, rhs));
+            text = text?.replace(/{([^+{}-]*)([+-]?)(.*?)}/g, (_str, lhs, op, rhs) => this.getBonusReplacement(lhs, op, rhs));
         }
         return text;
     }
@@ -1089,6 +1091,15 @@ function View() {
                     }
                 }
             }
+        }
+        if (isBuffName(action.grantsBuff)) {
+            const xmlName = getXMLName(Buff.fullNames[action.grantsBuff]);
+            const grantsBuff = `<div class='bold'>${_txt("actions>tooltip>grants_buff")}:</div>`;
+            lockedSkills += `${grantsBuff} <span>${_txt(`buffs>${xmlName}>label`)}</span><br>`;
+            skillDetails +=
+                `<hr>
+                ${grantsBuff} <div class='bold underline'>${_txt(`buffs>${xmlName}>label`)}</div><br>
+                <i>${_txt(`buffs>${xmlName}>desc`)}</i><br>`;
         }
         let extraImage = "";
         const extraImagePositions = ["margin-top:17px;margin-left:5px;", "margin-top:17px;margin-left:-55px;", "margin-top:0px;margin-left:-55px;", "margin-top:0px;margin-left:5px;"];

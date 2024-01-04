@@ -1303,6 +1303,13 @@
             <soulstone_stat_short>{count} {stat}</soulstone_stat_short>
             <skill><![CDATA[<b>{header}:</b> You attain level {toLevel} in {skill}!]]></skill>
             <skill_multi><![CDATA[<b>{header}:</b> Your skill in {skill} increases from {fromLevel} to {toLevel}.]]></skill_multi>
+            <buff_from0><![CDATA[<b>{header}:</b> You gain the {buff} buff! {buff_cost}]]></buff_from0>
+            <buff_from0_multi><![CDATA[<b>{header}:</b> You gain the {buff} buff and it increases to level {toLevel}! {buff_cost}]]></buff_from0_multi>
+            <buff><![CDATA[<b>{header}:</b> Your {buff} buff increases to level {toLevel}. {buff_cost}]]></buff>
+            <buff_multi><![CDATA[<b>{header}:</b> Your {buff} buff increases from level {fromLevel} to level {toLevel}. {buff_cost}]]></buff_multi>
+            <buff_cost_soulstone>You sacrificed {count} soulstones: {stats}</buff_cost_soulstone>
+            <buff_cost_talent>You sacrificed {count} levels of talent: {stats}</buff_cost_talent>
+            <buff_cost_imbuement3>You sacrificed... everything.</buff_cost_imbuement3>
         </log>
         <tooltip>
             <desc><![CDATA[
@@ -1349,6 +1356,7 @@
       Restarts automatically upon no actions left.]]></list_explanation>
             <locked_tooltip><![CDATA[<i>You sense opportunity ahead...</i>]]></locked_tooltip>
             <learn_skill><![CDATA[Learn skill]]></learn_skill>
+            <grants_buff>Grants buff</grants_buff>
         </tooltip>
         <current_action>
             <mana_original>Mana Original:</mana_original>

@@ -508,10 +508,21 @@ function handleSkillExp(list) {
     }
 }
 
-function addBuffAmt(name, amount) {
-    if (getBuffLevel(name) === buffHardCaps[name]) return;
+/**
+ * @param {BuffName} name 
+ * @param {number} amount 
+ * @param {Action} [action] 
+ * @param {BuffEntry["statSpendType"]} [spendType] 
+ * @param {SoulstoneEntry["stones"]} [statsSpent] 
+ */
+function addBuffAmt(name, amount, action, spendType, statsSpent) {
+    const oldBuffLevel = getBuffLevel(name);
+    if (oldBuffLevel === buffHardCaps[name]) return;
     buffs[name].amt += amount;
     if (amount === 0) buffs[name].amt = 0; // for presetige, reset to 0 when passed in.
+    if (action) {
+        actionLog.addBuff(action, name, buffs[name].amt, oldBuffLevel, spendType, statsSpent);
+    }
     view.requestUpdate("updateBuff",name);
 }
 

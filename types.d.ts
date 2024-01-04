@@ -18,6 +18,7 @@ declare interface Action<const E, N, VN> {
     unlocked(): boolean;
     finish(): void;
     skills?: E["skills"];
+    grantsBuff?: E["grantsBuff"];
     affectedBy?: readonly string[];
 }
 

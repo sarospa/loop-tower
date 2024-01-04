@@ -158,6 +158,7 @@ const townNames = ["Beginnersville", "Forest Path", "Merchanton", "Mt. Olympus",
  *     unlocked(): boolean,
  *     finish(): void,
  *     skills?: Partial<Record<SkillName, number | (() => number)>>,
+ *     grantsBuff?: BuffName,
  *     affectedBy?: readonly string[],
  * }} ActionExtras
  */
@@ -2564,9 +2565,10 @@ Action.DarkRitual = new MultipartAction("Dark Ritual", {
     tickProgress(offset) {
         return getSkillLevel("Dark") * (1 + getLevel(this.loopStats[(towns[1].DarkRitualLoopCounter + offset) % this.loopStats.length]) / 100) / (1 - towns[1].getLevel("Witch") * 0.005);
     },
+    grantsBuff: "Ritual",
     loopsFinished() {
-        sacrificeSoulstones(this.goldCost());
-        addBuffAmt("Ritual", 1);
+        const spent = sacrificeSoulstones(this.goldCost());
+        addBuffAmt("Ritual", 1, this, "soulstone", spent);
         view.requestUpdate("updateSoulstones", null);
         view.requestUpdate("adjustGoldCost", {varName: "DarkRitual", cost: this.goldCost()});
     },
@@ -2597,6 +2599,8 @@ function checkSoulstoneSac(amount) {
 }
 
 function sacrificeSoulstones(amount) {
+    /** @type {Partial<Record<StatName, number>>} */
+    const stonesSpent = {};
     while (amount > 0)
     {
         let highestSoulstoneStat = "";
@@ -2609,8 +2613,11 @@ function sacrificeSoulstones(amount) {
         }
         //console.log("Subtracting " + Math.ceil(amount/9) + " soulstones from " + highestSoulstoneStat + ". Old total: " + stats[highestSoulstoneStat].soulstone + ". New Total: " + (stats[highestSoulstoneStat].soulstone - Math.ceil(amount/9)));
         stats[highestSoulstoneStat].soulstone -= Math.ceil(amount/9);
+        stonesSpent[highestSoulstoneStat] ??= 0;
+        stonesSpent[highestSoulstoneStat] += Math.ceil(amount/9);
         amount -= Math.ceil(amount/9);
     }
+    return stonesSpent;
 }
 
 Action.ContinueOn = new Action("Continue On", {
@@ -3549,8 +3556,9 @@ Action.HeroesTrial = new TrialAction("Heroes Trial", 0, {
     baseProgress() {
         return getTeamCombat();
     },
+    grantsBuff: "Heroism",
     floorReward() {
-        if (this.currentFloor() >= getBuffLevel("Heroism")) addBuffAmt("Heroism", 1);
+        if (this.currentFloor() >= getBuffLevel("Heroism")) addBuffAmt("Heroism", 1, this);
         if (this.currentFloor() >= 1) unlockStory("heroTrial1Done");
         if (this.currentFloor() >= 10) unlockStory("heroTrial10Done");
         if (this.currentFloor() >= 25) unlockStory("heroTrial25Done");
@@ -4193,10 +4201,11 @@ Action.ImbueMind = new MultipartAction("Imbue Mind", {
     tickProgress(offset) {
         return getSkillLevel("Magic") * (1 + getLevel(this.loopStats[(towns[3].ImbueMindLoopCounter + offset) % this.loopStats.length]) / 100);
     },
+    grantsBuff: "Imbuement",
     loopsFinished() {
-        sacrificeSoulstones(this.goldCost());
+        const spent = sacrificeSoulstones(this.goldCost());
         trainingLimits++;
-        addBuffAmt("Imbuement", 1);
+        addBuffAmt("Imbuement", 1, this, "soulstone", spent);
         view.requestUpdate("updateSoulstones", null);
         view.requestUpdate("adjustGoldCost", {varName: "ImbueMind", cost: this.goldCost()});
     },
@@ -4265,13 +4274,18 @@ Action.ImbueBody = new MultipartAction("Imbue Body", {
     tickProgress(offset) {
         return getSkillLevel("Magic") * (1 + getLevel(this.loopStats[(towns[3].ImbueBodyLoopCounter + offset) % this.loopStats.length]) / 100);
     },
+    grantsBuff: "Imbuement2",
     loopsFinished() {
+        /** @type {SoulstoneEntry["stones"]} */
+        const spent = {};
         for (const stat of statList) {
-            let targetTalentLevel = getTalent(stat) - getBuffLevel("Imbuement2") - 1;
+            const currentTalentLevel = getTalent(stat);
+            const targetTalentLevel = Math.max(currentTalentLevel - getBuffLevel("Imbuement2") - 1, 0);
             stats[stat].talentLevelExp.setLevel(targetTalentLevel);
+            spent[stat] = currentTalentLevel - targetTalentLevel;
         }
         view.updateStats();
-        addBuffAmt("Imbuement2", 1);
+        addBuffAmt("Imbuement2", 1, this, "talent", spent);
         view.requestUpdate("adjustGoldCost", {varName: "ImbueBody", cost: this.goldCost()});
     },
     getPartName() {
@@ -5448,9 +5462,10 @@ Action.GreatFeast = new MultipartAction("Great Feast", {
     tickProgress(offset) {
         return getSkillLevel("Practical") * (1 + getLevel(this.loopStats[(towns[4].GreatFeastLoopCounter + offset) % this.loopStats.length]) / 100);
     },
+    grantsBuff: "Feast",
     loopsFinished() {
-        sacrificeSoulstones(this.goldCost());
-        addBuffAmt("Feast", 1);
+        const spent = sacrificeSoulstones(this.goldCost());
+        addBuffAmt("Feast", 1, this, "soulstone", spent);
         view.requestUpdate("updateSoulstones", null);
         view.requestUpdate("adjustGoldCost", {varName: "GreatFeast", cost: this.goldCost()});
     },
@@ -5765,10 +5780,11 @@ Action.TheSpire = new DungeonAction("The Spire", 2, {
         (1 + getLevel(this.loopStats[(towns[this.townNum].TheSpireLoopCounter + offset) % this.loopStats.length]) / 100) *
         Math.sqrt(1 + dungeons[this.dungeonNum][floor].completed / 200);
     },
+    grantsBuff: "Aspirant",
     loopsFinished() {
         const curFloor = Math.floor((towns[this.townNum].TheSpireLoopCounter) / this.segments + 0.0000001 - 1);
         this.finishDungeon(curFloor);
-        if (curFloor >= getBuffLevel("Aspirant")) addBuffAmt("Aspirant", 1);
+        if (curFloor >= getBuffLevel("Aspirant")) addBuffAmt("Aspirant", 1, this);
         if (curFloor == dungeonFloors[this.dungeonNum]-1) unlockStory("clearedSpire");
     },
     visible() {
@@ -7089,6 +7105,7 @@ Action.ImbueSoul = new MultipartAction("Imbue Soul", {
     tickProgress(offset) {
         return getSkillLevel("Magic") * (1 + getLevel(this.loopStats[(towns[8].ImbueSoulLoopCounter + offset) % this.loopStats.length]) / 100);
     },
+    grantsBuff: "Imbuement3",
     loopsFinished() {
         for (const stat of statList) {
             stats[stat].talentLevelExp.setLevel(0);
@@ -7098,7 +7115,7 @@ Action.ImbueSoul = new MultipartAction("Imbue Soul", {
         buffs["Imbuement"].amt = 0;
         buffs["Imbuement2"].amt = 0;
         trainingLimits = 10;
-        addBuffAmt("Imbuement3", 1);
+        addBuffAmt("Imbuement3", 1, this, "imbuement3");
         view.updateBuffs();
         view.updateStats();
         view.requestUpdate("updateSoulstones", null);

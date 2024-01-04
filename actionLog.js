@@ -130,6 +130,12 @@ class ActionLog {
         const entry = new SkillEntry(action, skill, toLevel, fromLevel);
         this.addOrUpdateEntry(entry, init);
     }
+
+    /** @type {(action: Action, buff: BuffName, toAmt: number, fromAmt: number, spendType?:BuffEntry["statSpendType"], statsSpent?: SoulstoneEntry["stones"]) => void} */
+    addBuff(action, buff, toAmt, fromAmt, spendType, statsSpent) {
+        const entry = new BuffEntry(action, buff, toAmt, fromAmt, undefined, statsSpent, spendType);
+        this.addOrUpdateEntry(entry, false);
+    }
 }
 
 class ActionLogEntry {
@@ -141,7 +147,7 @@ class ActionLogEntry {
     set entryIndex(index) { this.#entryIndex = index; }
     /** @type {number} */
     loop;
-    /** @type {string} */
+    /** @type {ActionName|ActionId|null} */
     actionName;
 
     get action() {
@@ -185,7 +191,7 @@ class ActionLogEntry {
     }
     load(data) {
         const [_type, actionName, loop, ...rest] = data;
-        this.actionName = typeof actionName === "string" ? actionName : null;
+        this.actionName = typeof actionName === "string" ? /** @type {ActionName|ActionId} */(actionName) : null;
         this.loop = typeof loop === "number" && loop >= 0 ? loop : currentLoop;
         return rest;
     }
@@ -424,15 +430,61 @@ class SoulstoneEntry extends RepeatableLogEntry {
     }
 }
 
-class SkillEntry extends RepeatableLogEntry {
+class LeveledLogEntry extends RepeatableLogEntry {
     /** @type {string} */
-    skill;
+    name;
 
     /** @type {number} */
     fromLevel;
     /** @type {number} */
     toLevel;
 
+    /**
+     * @param {ActionLogEntryTypeName} type
+     * @param {Action} action
+     * @param {string} name
+     * @param {number} toLevel
+     * @param {number=} fromLevel
+     * @param {(number | [loopStart: number, loopEnd: number])=} loop
+     */
+    constructor(type, action, name, toLevel, fromLevel, loop) {
+        super(type, action, loop);
+        this.name = name;
+        this.fromLevel = fromLevel ?? toLevel - 1;
+        this.toLevel = toLevel;
+    }
+    toJSON() {
+        return [...super.toJSON(), this.name, this.fromLevel, this.toLevel];
+    }
+    load(data) {
+        const [name, fromLevel, toLevel, ...rest] = super.load(data);
+        this.name = typeof name === "string" ? name : null;
+        this.fromLevel = typeof fromLevel === "number" ? fromLevel : null;
+        this.toLevel = typeof toLevel === "number" ? toLevel : null;
+        return rest;
+    }
+
+    getReplacement(key) {
+        if (key === "levels") return formatNumber(this.toLevel - this.fromLevel);
+        if (key === "fromLevel") return formatNumber(this.fromLevel);
+        if (key === "toLevel") return formatNumber(this.toLevel);
+        return super.getReplacement(key);
+    }
+
+    /** @param {LeveledLogEntry} other */
+    canMergeParameters(other) {
+        return this.name === other.name;
+    }
+
+    /** @param {LeveledLogEntry} other */
+    merge(other) {
+        this.fromLevel = Math.min(this.fromLevel, other.fromLevel);
+        this.toLevel = Math.max(this.toLevel, other.toLevel);
+        return super.merge(other);
+    }
+}
+
+class SkillEntry extends LeveledLogEntry {
     /**
      * @param {Action=} action
      * @param {SkillName=} skill
@@ -441,19 +493,7 @@ class SkillEntry extends RepeatableLogEntry {
      * @param {(number | [loopStart: number, loopEnd: number])=} loop
      */
     constructor(action, skill, toLevel, fromLevel, loop) {
-        super("skill", action, loop);
-        this.skill = skill;
-        this.fromLevel = fromLevel ?? toLevel - 1;
-        this.toLevel = toLevel;
-    }
-    toJSON() {
-        return [...super.toJSON(), this.skill, this.fromLevel, this.toLevel];
-    }
-    load(data) {
-        const [skill, fromLevel, toLevel] = super.load(data);
-        this.skill = typeof skill === "string" ? skill : null;
-        this.fromLevel = typeof fromLevel === "number" ? fromLevel : null;
-        this.toLevel = typeof toLevel === "number" ? toLevel : null;
+        super("skill", action, skill, toLevel, fromLevel, loop);
     }
 
     getText() {
@@ -461,22 +501,72 @@ class SkillEntry extends RepeatableLogEntry {
     }
 
     getReplacement(key) {
-        if (key === "skill") return _txt(`skills>${getXMLName(this.skill)}>label`);
-        if (key === "levels") return formatNumber(this.toLevel - this.fromLevel);
-        if (key === "fromLevel") return formatNumber(this.fromLevel);
-        if (key === "toLevel") return formatNumber(this.toLevel);
+        if (key === "skill") return _txt(`skills>${getXMLName(this.name)}>label`);
+        return super.getReplacement(key);
+    }
+}
+
+class BuffEntry extends LeveledLogEntry {
+    // the list of soulstones/talent levels spent is stored in-memory as a fake soulstone log entry so we can use its replacements
+    /** @type {SoulstoneEntry} */
+    soulstoneEntry;
+    /** @type {"soulstone" | "talent" | "imbuement3"} */
+    statSpendType;
+
+    /**
+     * @param {Action=} action
+     * @param {BuffName=} buff
+     * @param {number=} toLevel
+     * @param {number=} fromLevel
+     * @param {(number | [loopStart: number, loopEnd: number])=} loop
+     * @param {SoulstoneEntry["stones"]=} statsSpent
+     * @param {BuffEntry["statSpendType"]=} statSpendType
+     */
+    constructor(action, buff, toLevel, fromLevel, loop, statsSpent, statSpendType) {
+        super("buff", action, buff, toLevel, fromLevel, loop);
+        
+        this.statSpendType = statSpendType;
+        this.soulstoneEntry = new SoulstoneEntry();
+        if (statsSpent) {
+            this.soulstoneEntry.addAllSoulstones(statsSpent);
+        }
+    }
+    toJSON() {
+        return [...super.toJSON(), this.statSpendType, this.soulstoneEntry.stones];
+    }
+    load(data) {
+        const [spendType, stones] = super.load(data);
+        // @ts-ignore
+        this.statSpendType = typeof spendType === "string" ? spendType : "";
+        if (stones && typeof stones === "object") {
+            this.soulstoneEntry.addAllSoulstones(stones);
+        }
+    }
+
+
+    getText() {
+        let tag = "buff";
+        if (this.fromLevel === 0) tag += "_from0";
+        if (this.toLevel !== this.fromLevel + 1) tag += "_multi";
+        return _txt(`actions>log>${tag}`);
+    }
+
+    /** @param {string} key */
+    getReplacement(key) {
+        if (key === "buff") return _txt(`buffs>${getXMLName(Buff.fullNames[this.name])}>label`);
+        if (key === "buff_cost") return this.statSpendType ? _txt(`actions>log>buff_cost_${this.statSpendType}`) : "";
+        if (key === "count" || key.startsWith("stat")) return this.soulstoneEntry.getReplacement(key);
         return super.getReplacement(key);
     }
 
-    /** @type {(other: SkillEntry) => boolean} */
+    /** @param {BuffEntry} other  */
     canMergeParameters(other) {
-        return this.skill === other.skill;
+        return this.statSpendType === other.statSpendType && super.canMergeParameters(other) && this.soulstoneEntry.canMerge(other.soulstoneEntry);
     }
 
-    /** @param {SkillEntry} other */
+    /** @param {BuffEntry} other  */
     merge(other) {
-        this.fromLevel = Math.min(this.fromLevel, other.fromLevel);
-        this.toLevel = Math.max(this.toLevel, other.toLevel);
+        this.soulstoneEntry.merge(other.soulstoneEntry);
         return super.merge(other);
     }
 }
@@ -491,5 +581,6 @@ const actionLogEntryTypeMap = {
     "global": GlobalStoryEntry,
     "soulstone": SoulstoneEntry,
     "skill": SkillEntry,
+    "buff": BuffEntry,
 }
 
