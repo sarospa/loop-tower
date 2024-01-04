@@ -2878,11 +2878,14 @@
             <info_text3>Spots to check for wells</info_text3>
             <tooltip><![CDATA[
             Search the town for wells that still have any mana left. They seem to be rapidly draining.<br>
-            Full wells have 5000 mana, but lose 10 mana for every second that has passed in the loop.<br>
-            Every 100 wells still has mana.<br>
-            Unlocked with 2% town meandered.
+            Full wells have 5000 mana, but lose 10 mana for every second that has passed in the loop, currently 
             ]]></tooltip>
-            <story_1><![CDATA[<b>Mana Well drained:</b>⮀ While the town is absolutely lousy with wells, so far all of them have already ran dry. This one still has a little, but you can tell it woulnd't last much longer as you drain it.]]></story_1>
+            <tooltip2><![CDATA[
+            mana.<br>
+            Every 100 wells still has mana.<br>
+            Unlocked with 2% town meandered.<br>
+            ]]></tooltip2>
+            <story_1><![CDATA[<b>Mana Well drained:</b>⮀ While the town is absolutely lousy with wells, so far all of them have already ran dry. This one still has a little, but you can tell it wouldn't last much longer as you drain it.]]></story_1>
             <story_2><![CDATA[<b>10 Mana Wells with mana found:</b>⮀ Having scoured the entire town and marked all the wells, you've come to two conclusions: whatever source they drew from must have been running out for a while, and if you were as much as 10 minutes later, all of them would be bone dry. Good thing the loops start in the instant they do.]]></story_2>
             <story_3><![CDATA[<b>15 Mana Wells with mana found:</b>⮀ A few of the more dilapitated buildings around town turn out to be hiding even more wells, and on top of that you've figured out ways to pull some dregs from one or two "empty" wells! That said, if these are the only sources of mana around, this place is not going to last.]]></story_3>
             <story_4><![CDATA[<b>Drawn from an empty well:</b>⮀ You're too late. As you try and pull any little droplet you can get, the well just stays every bit as empty as all the other ones around town. You resolve to pick up the pace and get here earlier, next time.]]></story_4>

@@ -419,6 +419,7 @@ function View() {
     this.updateTime = function() {
         document.getElementById("timeBar").style.width = `${100 - timer / timeNeeded * 100}%`;
         document.getElementById("timer").textContent = `${intToString((timeNeeded - timer), options.fractionalMana ? 2 : 1)} | ${formatTime((timeNeeded - timer) / 50 / getActualGameSpeed())}`;
+        this.adjustGoldCost({varName:"Wells", cost: Action.ManaWell.goldCost()});
     };
     this.updateOffline = function() {
         document.getElementById("bonusSeconds").textContent = formatTime(totalOfflineMs / 1000);
@@ -1210,8 +1211,9 @@ function View() {
     this.adjustGoldCost = function(updateInfo) {
         const varName = updateInfo.varName;
         const amount = updateInfo.cost;
-        if (this.goldCosts[varName] !== amount) {
-            document.getElementById(`goldCost${varName}`).textContent = formatNumber(amount);
+        const element = document.getElementById(`goldCost${varName}`);
+        if (this.goldCosts[varName] !== amount && element) {
+            element.textContent = formatNumber(amount);
             this.goldCosts[varName] = amount;
         }
     };

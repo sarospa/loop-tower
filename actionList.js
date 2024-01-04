@@ -5600,9 +5600,12 @@ Action.ManaWell = new Action("Mana Well", {
     unlocked() {
         return towns[5].getLevel("Meander") >= 2;
     },
+    goldCost() { // in this case, "amount of mana in well"
+        return Math.max(5000 - Math.floor(10 * effectiveTime), 0);
+    },
     finish() {
         towns[5].finishRegular(this.varName, 100, () => {
-        let wellMana = Math.max(5000 - Math.floor(10 * effectiveTime), 0);
+        let wellMana = this.goldCost();
         addMana(wellMana);
         if (wellMana === 0) 
             unlockStory("drewDryWell");

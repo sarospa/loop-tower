@@ -543,7 +543,6 @@ class BuffEntry extends LeveledLogEntry {
         }
     }
 
-
     getText() {
         let tag = "buff";
         if (this.fromLevel === 0) tag += "_from0";
