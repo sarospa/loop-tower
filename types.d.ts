@@ -1,11 +1,8 @@
-declare interface Action<const E, N, VN> {
-    name: N;
-    varName: VN;
-
+declare interface Action<const N, const E> {
     // provided as extras in constructor:
     type: E["type"];
     expMult: E["expMult"];
-    townNum: number;
+    townNum: E["townNum"];
     story?: (completed: number) => void,
     storyReqs?: (storyNum: number) => boolean;
     stats: E["stats"];
@@ -22,7 +19,7 @@ declare interface Action<const E, N, VN> {
     affectedBy?: readonly string[];
 }
 
-declare interface MultipartAction<const E, N> {
+declare interface MultipartAction<const N, const E> {
     segments: number;
 
     loopStats: E["loopStats"];
@@ -34,17 +31,19 @@ declare interface MultipartAction<const E, N> {
     completedTooltip?: () => string;
 }
 
-declare interface DungeonAction<const E, N> {
+declare interface DungeonAction<const N, const E> {
 
 }
 
-declare interface TrialAction<const E, N> {
+declare interface TrialAction<const N, const E> {
     floorReward(): ReturnType<E["floorReward"]>;
     baseProgress(): number;
     baseScaling: E["baseScaling"];
     exponentScaling?: E["exponentScaling"];
 }
 
-declare interface AssassinAction<const E, N> {
+declare interface AssassinAction<const N, const E> {
 
 }
+
+declare const LZString = await import("lz-string");

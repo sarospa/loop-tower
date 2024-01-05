@@ -16,9 +16,9 @@ function cheatBonus()
 
 function cheatSurvey()
 {
-    for(i= 0; i<9; i++)
+    for(let i= 0; i<9; i++)
     {
-        varName = "SurveyZ" + i
+        const varName = "SurveyZ" + i
         towns[i][`exp${varName}`] = 505000;
         view.updateProgressAction({name: varName, town: towns[i]});
     }
@@ -79,19 +79,35 @@ let timer = timeNeededInitial;
 // eslint-disable-next-line prefer-const
 let timeNeeded = timeNeededInitial;
 // eslint-disable-next-line prefer-const
-let stop = false;
+let gameIsStopped = false;
 const view = new View();
 const actions = new Actions();
 const actionLog = new ActionLog();
-const towns = [];
-// eslint-disable-next-line prefer-const
+/**
+ * @template {number} Count Number of towns
+ * @template {any[]} [Towns=[]] Tuple of towns
+ * @typedef {Towns["length"] extends Count ? Towns : TownList<Count, [...Towns, Town<Towns["length"]> & Record<string, number>]>} TownList
+ */
+
+const towns = /** @type {TownList<9>} */(/** @type {Town[]} */([]));
+// accessor for typed towns with vars. CANNOT be used in actionList.js, will cause circular references
+/** @type {<const TN extends TownNum>(townNum: TN) => Town<TN> & TownVars<TN>} */
+function _town(townNum) {
+    // @ts-ignore
+    return towns[townNum];
+}
+
+// Both of the following express the same thing, but the first introduces a dependency on the action list.
+/* * @typedef {TownNumOf<AnyAction>} TownNum */
+/** @typedef {NumOfTown<towns[number]>} TownNum */
+
+/** @type {TownNum} */
 let curTown = 0;
 
 
 const statList = /** @type {const} */(["Dex", "Str", "Con", "Spd", "Per", "Cha", "Int", "Luck", "Soul"]);
 /** @typedef {typeof statList[number]} StatName */
-/** @type {{[K in StatName]: Stat}} */
-const stats = {};
+const stats = /** @type {{[K in StatName]: Stat}} */({});
 let totalTalent = 0;
 // eslint-disable-next-line prefer-const
 let shouldRestart = true;
@@ -142,13 +158,14 @@ let portalUsed = false;
 let stoneLoc = 0;
 
 let curLoadout = 0;
+/** @type {{name: string}[][]} */
 let loadouts;
+/** @type {string[] & {"-1"?: string}} */
 let loadoutnames;
 //let loadoutnames = ["1", "2", "3", "4", "5"];
 const skillList = /** @type {const} */(["Combat", "Magic", "Practical", "Alchemy", "Crafting", "Dark", "Chronomancy", "Pyromancy", "Restoration", "Spatiomancy", "Mercantilism", "Divine", "Commune", "Wunderkind", "Gluttony", "Thievery", "Leadership", "Assassin"]);
 /** @typedef {typeof skillList[number]} SkillName */
-/** @type {{[K in SkillName]: Skill}} */
-const skills = {};
+const skills = /** @type {{[K in SkillName]: Skill}} */({});
 const buffList = /** @type {const} */(["Ritual", 
     "Imbuement", 
     "Imbuement2", 
@@ -207,8 +224,7 @@ const buffCaps = {
     PrestigeBartering: 100,
     PrestigeExpOverflow: 100
 };
-/** @type {{[K in BuffName]: Buff}} */
-const buffs = {};
+const buffs = /** @type {{[K in BuffName]: Buff}} */({});
 const prestigeValues = {};
 let goldInvested = 0;
 let stonesUsed;
@@ -376,7 +392,6 @@ const storyReqs = {
     monsterGuildRankCReached: false,
     monsterGuildRankBReached: false,
     monsterGuildRankAReached: false,
-    monsterGuildRankAReached: false,
     monsterGuildRankSReached: false,
     monsterGuildRankSSReached: false,
     monsterGuildRankSSSReached: false,
@@ -492,6 +507,7 @@ let curThievesGuildSegment = 0;
 // eslint-disable-next-line prefer-const
 let curGodsSegment = 0;
 
+/** @type {AnyAction[]} */
 let totalActionList = [];
 let dungeons = [[], [], []];
 /** @type {(any[] & {highestFloor?:number})[]} */
@@ -754,7 +770,7 @@ function load(inChallenge) {
     loadUISettings();
 
     loadouts = [[], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []];
-    loadoutnames = [[], [], [], [], [], [], [], [], [], [], [], [], [], [], []];
+    loadoutnames = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", ""];
     // loadoutnames[-1] is what displays in the loadout renaming box when no loadout is selected
     // It isn't technically part of the array, just a property on it, so it doesn't count towards loadoutnames.length
     loadoutnames[-1] = "";
@@ -1064,7 +1080,7 @@ function load(inChallenge) {
     view.updatePrestigeValues();
 
     // capped at 1 month of gain
-    addOffline(Math.min(Math.floor((new Date() - new Date(toLoad.date)) * offlineRatio), 2678400000));
+    addOffline(Math.min(Math.floor((Date.now() - Date.parse(toLoad.date)) * offlineRatio), 2678400000));
 
     if (toLoad.version75 === undefined) {
         const total = towns[0].totalSDungeon;
@@ -1365,7 +1381,7 @@ function prestigeUpgrade(prestigeSelected) {
         PrestigeExpOverflow: getBuffLevel("PrestigeExpOverflow"),
 
         // Imbue Soul carry overs between prestiges, but only up to the number of prestiges you have.
-        Imbuement3: Math.floor(prestigeValues["prestigeTotalCompletions"], getBuffLevel("Imbuement3")), 
+        Imbuement3: Math.min(prestigeValues["prestigeTotalCompletions"], getBuffLevel("Imbuement3")), 
     }
 
     const nextPrestigeValues = {
@@ -1391,7 +1407,7 @@ function resetAllPrestiges() {
         PrestigeExpOverflow: 0,
 
         // Imbue Soul carry overs between prestiges, but only up to the number of prestiges you have.
-        Imbuement3: Math.floor(prestigeValues["prestigeTotalCompletions"], getBuffLevel("Imbuement3")), 
+        Imbuement3: Math.min(prestigeValues["prestigeTotalCompletions"], getBuffLevel("Imbuement3")), 
     }
 
     const nextPrestigeValues = {

@@ -17,16 +17,35 @@ function withoutSpaces(name) {
     return name.replace(/ /gu, "");
 }
 
-/** @template {Action<any, any, any>} A @typedef {A extends Action<infer E, any, any> ? E : never} ExtrasOf */
-/** @template {Action<any, any, any>} A @typedef {A extends Action<any, infer N, any> ? N : never} NameOf */
-/** @template {Action<any, any, any>} A @typedef {A extends Action<any, any, infer VN> ? VN : never} VarNameOf */
+/** @template {Action<any>} A @typedef {A extends Action<any, infer E> ? E : never} ExtrasOf */
+/** @template {Action<any>} A @typedef {A extends Action<infer N, any> ? N : never} NameOf */
+/** @template {Action<any>} A @typedef {A["varName"]} VarNameOf */
+/** @template {Action<any>} A @typedef {A extends Action<any, infer E> ? number extends E["townNum"] ? never : E["townNum"] : never} TownNumOf */
+/** @template {Action<any>} A @typedef {A extends Action<any, infer E> ? number extends E["type"] ? never : E["type"] : never} ActionTypeOf */
+// reverse lookup
 /** @template {AnyAction} A @typedef {A extends ActionConstructor[infer I extends ActionId] ? I : never} ActionIdOf */
 
+// selection
 /**
- * @typedef {Action<any, any>|MultipartAction<any,any>} AnyActionType
+ * @template {number} TN townNum
+ * @template {ActionType} T type
+ * @typedef {ActionOfTownAndType<TN, T>["varName"]} ActionVarOfTownAndType
+ */
+/**
+ * @template {number} TN townNum
+ * @template {ActionType} T type
+ * @typedef {Extract<AnyAction, {townNum: TN, type: T}>} ActionOfTownAndType
+ */
+/** @template {number} TN @typedef {ActionOfTownAndType<TN,any>} ActionOfTown */
+/** @template {ActionType} T @typedef {ActionOfTownAndType<any,T>} ActionOfType */
+
+/**
+ * @typedef {TownNumOf<ActionOfTown<1>>} T0
+ * @typedef {NameOf<ActionOfType<"multipart">>} TS
+ * @typedef {Action<any>|MultipartAction<any>} AnyActionType
  * @typedef {typeof Action} ActionConstructor
  * @typedef {{
- *  [K in Exclude<keyof ActionConstructor, "prototype">]: ActionConstructor[K] extends Action<any, any, any> ? K : never
+ *  [K in Exclude<keyof ActionConstructor, "prototype">]: ActionConstructor[K] extends Action<any, any> ? K : never
  * }[Exclude<keyof ActionConstructor, "prototype">]} ActionId
  * 
  * @typedef {ActionConstructor[ActionId]} AnyAction
@@ -34,6 +53,18 @@ function withoutSpaces(name) {
  * @typedef {{
  *  [K in ActionId]: string extends VarNameOf<ActionConstructor[K]> ? never : VarNameOf<ActionConstructor[K]>
  * }[ActionId]} ActionVarName
+ * 
+ * @typedef {{
+ *  [K in ActionId]: string extends ActionTypeOf<ActionConstructor[K]> ? never : ActionTypeOf<ActionConstructor[K]> extends 'limited'|'normal' ? VarNameOf<ActionConstructor[K]> : never
+ * }[ActionId]} StandardActionVarName
+ * 
+ * @typedef {{
+ *  [K in ActionId]: string extends ActionTypeOf<ActionConstructor[K]> ? never : ActionTypeOf<ActionConstructor[K]> extends 'progress' ? VarNameOf<ActionConstructor[K]> : never
+ * }[ActionId]} ProgressActionVarName
+ * 
+ * @typedef {{
+ *  [K in ActionId]: ActionConstructor[K] extends MultipartAction<any> ? VarNameOf<ActionConstructor[K]> : never
+ * }[ActionId]} MultipartActionVarName
  * 
  * @typedef {{
  *  [K in ActionId]: string extends NameOf<ActionConstructor[K]> ? never : NameOf<ActionConstructor[K]>
@@ -169,18 +200,17 @@ const townNames = ["Beginnersville", "Forest Path", "Merchanton", "Mt. Olympus",
 // actions are all sorted below by town in order
 
 /**
- * @template {ActionExtras} E The extras parameter passed to the constructor
- * @template {string} [N=any] The name passed to the constructor
- * @template {string} [VN=E extends {varName: infer _VN} ? _VN : WithoutSpaces<N>] The varName as an explicit string type
+ * @template {string} N The name passed to the constructor
+ * @template {ActionExtras} [E=ActionExtras] The extras parameter passed to the constructor
  */
 class Action extends Localizable {
     /** @type {N} */
     name;
-    /** @type {VN} */
+    /** @type {E extends {varName: infer VN extends string} ? VN : WithoutSpaces<N>} */
     varName;
 
     /** 
-     * @overload @param {N} name @param {E & ThisType<E & Action<E, N, VN>>} extras
+     * @overload @param {N} name @param {E & ThisType<Action<N>>} extras
      * @constructor
      * @param {N} name @param {E} extras
      */
@@ -255,16 +285,16 @@ class Action extends Localizable {
 // same as Action, but contains shared code to load segment names for multipart actions.
 // (constructor takes number of segments as a second argument)
 /**
- * @template {MultipartActionExtras} E The extras parameter passed to the constructor
  * @template {string} N The name passed to the constructor
- * @extends {Action<E,N>}
+ * @template {MultipartActionExtras} [E=MultipartActionExtras] The extras parameter passed to the constructor
+ * @extends {Action<N,E>}
  */
 class MultipartAction extends Action {
     /** @type {number} */
     segments;
 
     /** 
-     * @param {N} name @param {E & ThisType<E & MultipartAction<E, N>>} extras
+     * @param {N} name @param {E & ThisType<MultipartAction<N>>} extras
      */
     constructor(name, extras) {
         super(name, extras);
@@ -324,16 +354,16 @@ class MultipartAction extends Action {
 // as well as specifying 7 segments (constructor takes dungeon ID number as a second
 // argument)
 /**
- * @template {DungeonActionExtras} E The extras parameter passed to the constructor
  * @template {string} N The name passed to the constructor
- * @extends {MultipartAction<E&DungeonActionImpl, N>}
+ * @template {DungeonActionExtras} [E=DungeonActionExtras] The extras parameter passed to the constructor
+ * @extends {MultipartAction<N,E&DungeonActionImpl>}
  */
 class DungeonAction extends MultipartAction {
     /** @type {number} */
     dungeonNum;
 
     /** 
-     * @param {N} name @param {number} dungeonNum, @param {E & ThisType<E & DungeonAction<E,N>>} extras
+     * @param {N} name @param {number} dungeonNum, @param {E & ThisType<DungeonAction<N>>} extras
      */
     constructor(name, dungeonNum, extras) {
         // @ts-ignore
@@ -377,16 +407,16 @@ class DungeonAction extends MultipartAction {
  * } & Omit<MultipartActionExtras, keyof TrialActionImpl>} TrialActionExtras
  */
 /**
- * @template {TrialActionExtras} E The extras parameter passed to the constructor
  * @template {string} N The name passed to the constructor
- * @extends {MultipartAction<E&TrialActionImpl, N>}
+ * @template {TrialActionExtras} [E=TrialActionExtras] The extras parameter passed to the constructor
+ * @extends {MultipartAction<N,E&TrialActionImpl>}
  * @implements {TrialActionImpl}
  */
 class TrialAction extends MultipartAction {
     /** @type {number} */
     trialNum;
     /** 
-     * @param {N} name @param {number} trialNum, @param {E & ThisType<E & TrialAction<E,N>>} extras
+     * @param {N} name @param {number} trialNum, @param {E & ThisType<E & TrialAction<N>>} extras
      */
     constructor(name, trialNum, extras) {
         // @ts-ignore
@@ -445,13 +475,13 @@ class TrialAction extends MultipartAction {
  * } & Omit<MultipartActionExtras, keyof (AssassinActionDefaults & AssassinActionImpl)>} AssassinActionExtras
  */
 /**
- * @template {AssassinActionExtras} E The extras parameter passed to the constructor
  * @template {string} N The name passed to the constructor
- * @extends {MultipartAction<E&AssassinActionDefaults&AssassinActionImpl,N>}
+ * @template {AssassinActionExtras} [E=AssassinActionExtras] The extras parameter passed to the constructor
+ * @extends {MultipartAction<N,E&AssassinActionDefaults&AssassinActionImpl>}
  */
 class AssassinAction extends MultipartAction {
     /** 
-     * @param {N} name @param {E & ThisType<E & AssassinAction<E,N>>} extras
+     * @param {N} name @param {E & ThisType<E & AssassinAction<N>>} extras
      */
     constructor (name, extras) {
         // @ts-ignore
@@ -475,6 +505,7 @@ class AssassinAction extends MultipartAction {
     loopCost(segment) {return 50000000;}
     tickProgress(offset) {
         let baseSkill = Math.sqrt(getSkillLevel("Practical")) + getSkillLevel("Thievery") + getSkillLevel("Assassin");
+        // @ts-ignore
         let loopStat = (1 + getLevel(this.loopStats[(towns[this.townNum][`${this.varName}LoopCounter`] + offset) % this.loopStats.length]) / 1000);
         let completions = Math.sqrt(1 + towns[this.townNum]["total"+this.varName] / 100);
         let reputationPenalty = resources.reputation != 0 ? Math.abs(resources.reputation) : 1;

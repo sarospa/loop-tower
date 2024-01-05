@@ -62,6 +62,7 @@ function copyArray(arr) {
     return JSON.parse(JSON.stringify(arr));
 }
 
+/** @type {<T>(obj: T) => T} */
 function copyObject(obj) {
     return JSON.parse(JSON.stringify(obj));
 }

@@ -11,21 +11,27 @@ const PRESTIGE_CHRONOMANCY_BASE  = 1.05;
 const PRESTIGE_EXP_OVERFLOW_BASE = 1.00222;
 
 /**
- * @typedef {{
- *      loops: number;
- *      loopsLeft: number;
- *      extraLoops: number;
- *      ticks: number;
- *      adjustedTicks?: number;
- *      rawTicks?: number;
- *      manaUsed: number;
- *      lastMana: number;
- *      manaRemaining: number;
- *      goldRemaining: number;
- *      timeSpent: number;
- *      errorMessage?: string;
- * }} CurrentActionEntry
+ * @typedef CurrentActionEntry
+ * @prop {number} loops
+ * @prop {number} loopsLeft
+ * @prop {number} extraLoops
+ * @prop {number} ticks
+ * @prop {number} [adjustedTicks]
+ * @prop {number} [rawTicks]
+ * @prop {number} manaUsed
+ * @prop {number} lastMana
+ * @prop {number} manaRemaining
+ * @prop {number} goldRemaining
+ * @prop {number} timeSpent
+ * @prop {string} [errorMessage]
+ * }} 
  * @typedef {CurrentActionEntry & AnyActionType} AnyActionEntry
+ * 
+ * @typedef NextActionEntry
+ * @prop {ActionName} name
+ * @prop {number}     loops
+ * @prop {boolean}    disabled
+ * @prop {boolean}    [collapsed]
  */
 
 /** @param {AnyActionEntry} action @returns {action is MultipartAction} */
@@ -36,7 +42,10 @@ function isMultipartAction(action) {
 class Actions {
     /** @type {AnyActionEntry[]} */
     current = [];
+    /** @type {NextActionEntry[]} */
     next = [];
+    /** @type {NextActionEntry[]} */
+    nextLast;
     addAmount = 1;
 
     totalNeeded = 0;

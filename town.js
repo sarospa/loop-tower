@@ -1,24 +1,61 @@
 "use strict";
-function Town(index) {
-    this.index = index;
-    this.varNames = [];
-    this.progressVars = [];
-    this.totalActionList = [];
+/**
+ * @template {string} [VN=never]
+ * @template {string} [PVN=never]
+ * @template {string} [MVN=never]
+ * @typedef {{
+ *  [K in 
+ *  `checked${VN}`
+ * |`goodTemp${VN}`
+ * |`good${VN}`
+ * |`lootFrom${VN}`
+ * |`total${VN}`
+ * |`exp${PVN}`
+ * |`total${MVN}`
+ * |`${MVN}`
+ * |`${MVN}LoopCounter`
+ *      ]?: number
+ * }} TownVarDefs
+ */
+/**
+ * @template {number} TN
+ * @typedef {TownVarDefs<
+ *          ActionVarOfTownAndType<TN,"limited">,
+ *          ActionVarOfTownAndType<TN,"progress">,
+ *          ActionVarOfTownAndType<TN,"multipart">
+ *          >} TownVars
+ */
+/**
+ * @template {number} TN
+ * @typedef {keyof TownVars<TN>} TownVarNames
+ */
+/** @template {Town<number>} T @typedef {T extends Town<infer TN> ? TN : never} NumOfTown */
+/**
+ * @template {number} TN Town number
+ */
+class Town {
+    /** @type {TN} */
+    index;
+    varNames = [];
+    progressVars = [];
+    /** @type {ActionOfTown<TN>[]} */
+    totalActionList = [];
 
-    this.unlocked = function() {
+    unlocked() {
         return townsUnlocked.includes(this.index);
     };
 
-    this.expFromLevel = function(level) {
+    expFromLevel(level) {
         return level * (level + 1) * 50;
     };
 
-    this.getLevel = function(varName) {
+    getLevel(varName) {
         if (varName === "Survey") varName = varName + "Z" + this.index;
         return Math.floor((Math.sqrt(8 * this[`exp${varName}`] / 100 + 1) - 1) / 2);
     };
 
-    this.restart = function() {
+    /** @this {Town<TN> & TownVars<TN>} */
+    restart() {
         for (let i = 0; i < this.varNames.length; i++) {
             const varName = this.varNames[i];
             this[`goodTemp${varName}`] = this[`good${varName}`];
@@ -27,7 +64,7 @@ function Town(index) {
         }
     };
 
-    this.finishProgress = function(varName, expGain) {
+    finishProgress(varName, expGain) {
         // return if capped, for performance
         if (this[`exp${varName}`] === 505000) {
             if (options.pauseOnComplete) pauseGame(true, "Progress complete! (Game paused)");
@@ -53,7 +90,7 @@ function Town(index) {
         view.requestUpdate("updateProgressAction", {name: varName, town: towns[curTown]});
     };
 
-    this.getPrcToNext = function(varName) {
+    getPrcToNext(varName) {
         const level = this.getLevel(varName);
         if (level >= 100) return 100;
         const expOfCurLevel = this.expFromLevel(level);
@@ -63,7 +100,7 @@ function Town(index) {
     };
 
     // finishes actions that have checkable aspects
-    this.finishRegular = function(varName, rewardRatio, rewardFunc) {
+    finishRegular(varName, rewardRatio, rewardFunc) {
         // error state, negative numbers.
         if (this[`total${varName}`] - this[`checked${varName}`] < 0) {
             this[`checked${varName}`] = this[`total${varName}`];
@@ -89,7 +126,7 @@ function Town(index) {
         view.requestUpdate("updateRegular", {name: varName, index: this.index});
     };
 
-    this.createVars = function(varName) {
+    createVars(varName) {
         if (this[`checked${varName}`] === undefined) {
             this[`checked${varName}`] = 0;
         }
@@ -110,7 +147,7 @@ function Town(index) {
         }
     };
 
-    this.createProgressVars = function(varName) {
+    createProgressVars(varName) {
         if (this[`exp${varName}`] === undefined) {
             this[`exp${varName}`] = 0;
         }
@@ -118,14 +155,21 @@ function Town(index) {
             this.progressVars.push(varName);
         }
     };
-    for (const action of totalActionList) {
-        if (this.index === action.townNum) {
-            this.totalActionList.push(action);
-            if (action.type === "limited") this.createVars(action.varName);
-            if (action.type === "progress") this.createProgressVars(action.varName);
-            if (action.type === "multipart") {
-                this[action.varName] = 0;
-                this[`${action.varName}LoopCounter`] = 0;
+
+    createMultipartVars(varName) {
+        this[varName] = 0;
+        this[`${varName}LoopCounter`] = 0;
+    }
+
+    constructor(index) {
+        this.index = index;
+        for (const action of totalActionList) {
+            if (this.index === action.townNum) {
+                // @ts-ignore
+                this.totalActionList.push(action);
+                if (action.type === "limited") this.createVars(action.varName);
+                if (action.type === "progress") this.createProgressVars(action.varName);
+                if (action.type === "multipart") this.createMultipartVars(action.varName);
             }
         }
     }

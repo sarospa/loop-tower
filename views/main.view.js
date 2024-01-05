@@ -2,8 +2,8 @@
 
 let screenSize;
 
-function View() {
-    this.initalize = function() {
+class View {
+    initalize() {
         this.createTravelMenu();
         this.createStats();
         this.updateStats();
@@ -42,29 +42,35 @@ function View() {
             }, 2000);
         adjustAll();
         this.updateActionTooltips();
-        document.body.removeEventListener("mouseover", this.mouseoverHandler, {passive: true});
+        document.body.removeEventListener("mouseover", this.mouseoverHandler);
         document.body.addEventListener("mouseover", this.mouseoverHandler, {passive: true});
-        document.body.removeEventListener("focusin", this.mouseoverHandler, {passive: true});
+        document.body.removeEventListener("focusin", this.mouseoverHandler);
         document.body.addEventListener("focusin", this.mouseoverHandler, {passive: true});
+        /** @type {WeakMap<HTMLElement, Element | false>} */
         this.tooltipTriggerMap = new WeakMap();
         this.mouseoverCount = 0;
     };
 
-    /** @this {View} @param {UIEvent} event */
-    this.mouseoverHandler = function(event) {
+    constructor() {
+        this.mouseoverHandler = this.mouseoverHandler.bind(this);
+    }
+
+    /** @param {UIEvent} event */
+    mouseoverHandler(event) {
+        if (!(event.target instanceof HTMLElement)) return;
         const trigger = this.getClosestTrigger(event.target);
         this.mouseoverCount++;
         if (trigger) {
             for (const tooltip of trigger.querySelectorAll(".showthis,.showthisO,.showthis2,.showthisH,.showthisloadout")) {
-                this.fixTooltipPosition(tooltip, trigger, event);
+                if (tooltip instanceof HTMLElement)
+                    this.fixTooltipPosition(tooltip, trigger, event.target);
             }
         }
     };
-    this.mouseoverHandler = this.mouseoverHandler.bind(this);
 
-    /** @this {View} @param {HTMLElement} element */
-    this.getClosestTrigger = function(element) {
-        let trigger = /** @type {WeakMap<HTMLElement, HTMLElement>} */(this.tooltipTriggerMap).get(element);
+    /** @param {HTMLElement} element */
+    getClosestTrigger(element) {
+        let trigger = this.tooltipTriggerMap.get(element);
         if (trigger == null) {
             trigger = element.closest(".showthat,.showthatO,.showthat2,.showthatH,.showthatloadout") || false;
             this.tooltipTriggerMap.set(element, trigger);
@@ -72,7 +78,7 @@ function View() {
         return trigger;
     };
 
-    this.createStats = function() {
+    createStats() {
         statGraph.init(document.getElementById("statsContainer"), stat =>
             `<div class='statContainer showthat' onmouseover='view.showStat("${stat}")' onmouseout='view.showStat(undefined)'>
                 <div class='statLabelContainer'>
@@ -118,7 +124,8 @@ function View() {
 
     // requests are properties, where the key is the function name,
     // and the array items in the value are the target of the function
-    this.requests = {
+    /** @satisfies {Partial<Record<keyof View, any[]>>} */
+    requests = {
         updateStat: [],
         updateSkill: [],
         updateSkills: [],
@@ -159,11 +166,11 @@ function View() {
     };
 
     // requesting an update will call that update on the next view.update tick (based off player set UPS)
-    this.requestUpdate = function(category, target) {
+    requestUpdate(category, target) {
         if (!this.requests[category].includes(target)) this.requests[category].push(target);
     };
 
-    this.handleUpdateRequests = function() {
+    handleUpdateRequests() {
         for (const category in this.requests) {
             for (const target of this.requests[category]) {
                 this[category](target);
@@ -172,7 +179,7 @@ function View() {
         }
     };
 
-    this.update = function() {
+    update() {
 
         this.handleUpdateRequests();
 
@@ -182,7 +189,7 @@ function View() {
     };
 
 
-    this.adjustTooltipPosition = function(tooltipDiv) {
+    adjustTooltipPosition(tooltipDiv) {
         // this is a no-op now, all repositioning happens dynamically on mouseover.
         // if the delegation in mouseoverHandler ends up being too costly, though, this is where
         // we'll bind discrete mouseenter handlers, like so:
@@ -193,11 +200,11 @@ function View() {
 
     /**
      * @param {HTMLElement} tooltip 
-     * @param {HTMLElement} trigger 
-     * @param {UIEvent} event 
+     * @param {Element} trigger 
+     * @param {Node} eventTarget 
      */
-    this.fixTooltipPosition = function(tooltip, trigger, event) {
-        if (tooltip.contains(event.target)) {
+    fixTooltipPosition(tooltip, trigger, eventTarget) {
+        if (tooltip.contains(eventTarget)) {
             // console.log("Not fixing tooltip while cursor is inside",{tooltip,trigger,event});
             return;
         }
@@ -256,15 +263,15 @@ function View() {
         tooltip.style.margin = "0";
     }
 
-    this.showStat = function(stat) {
+    showStat(stat) {
         statShowing = stat;
         if (stat !== undefined) this.updateStat(stat);
     };
 
-    this.updateStatGraphNeeded = false;
+    updateStatGraphNeeded = false;
 
     /** @param {typeof statList[number]} stat */
-    this.updateStat = function(stat) {
+    updateStat(stat) {
         const level = getLevel(stat);
         const talent = getTalent(stat);
         const levelPrc = `${getPrcToNextLevel(stat)}%`;
@@ -289,19 +296,19 @@ function View() {
         }
     };
 
-    this.updateStats = function() {
+    updateStats() {
         for (const stat of statList) {
             this.updateStat(stat);
         }
     };
 
-    this.showSkill = function(skill) {
+    showSkill(skill) {
         skillShowing = skill;
         if (skill !== undefined) this.updateSkill(skill);
     };
 
     /** @param {SkillName} skill */
-    this.updateSkill = function(skill) {
+    updateSkill(skill) {
         if (skills[skill].levelExp.level === 0) {
             document.getElementById(`skill${skill}Container`).style.display = "none";
             return;
@@ -350,18 +357,18 @@ function View() {
         this.adjustTooltipPosition(container.querySelector("div.showthis"));
     };
 
-    this.updateSkills = function() {
+    updateSkills() {
         for (const skill of skillList) {
             this.updateSkill(skill);
         }
     };
 
-    this.showBuff = function(buff) {
+    showBuff(buff) {
         buffShowing = buff;
         if (buff !== undefined) this.updateBuff(buff);
     };
 
-    this.updateBuff = function(buff) {
+    updateBuff(buff) {
         if (buffs[buff].amt === 0) {
             document.getElementById(`buff${buff}Container`).style.display = "none";
             return;
@@ -375,14 +382,14 @@ function View() {
         this.adjustTooltipPosition(container.querySelector("div.showthis"));
     };
 
-    this.updateBuffs = function() {
+    updateBuffs() {
         for (const buff of buffList) {
             this.updateBuff(buff);
         }
     };
 
     /** @param {string|gapi.client.drive.File} fileOrText */
-    this.updateCloudSave = function(fileOrText) {
+    updateCloudSave(fileOrText) {
         const list = document.getElementById("cloud_save_result");
         if (typeof fileOrText === "string") {
             list.innerHTML = fileOrText;
@@ -410,30 +417,30 @@ function View() {
                 <button class='button cloud_import' style='margin-top: 1px;' onclick='googleCloud.importFile("${fileId}")'>${_txt("menu>save>import_button")}</button>
                 <button class='button cloud_delete' style='margin-top: 1px;' onclick='askDeleteCloudSave("${fileId}")'>${_txt("menu>save>delete_button")}</button>
             `;
-            const name = li.querySelector(".cloud_save_name");
+            const name = /** @type {HTMLElement} */(li.querySelector(".cloud_save_name"));
             name.textContent = fileName;
             name.title = fileName;
         }
     }
 
-    this.updateTime = function() {
+    updateTime() {
         document.getElementById("timeBar").style.width = `${100 - timer / timeNeeded * 100}%`;
         document.getElementById("timer").textContent = `${intToString((timeNeeded - timer), options.fractionalMana ? 2 : 1)} | ${formatTime((timeNeeded - timer) / 50 / getActualGameSpeed())}`;
         this.adjustGoldCost({varName:"Wells", cost: Action.ManaWell.goldCost()});
     };
-    this.updateOffline = function() {
+    updateOffline() {
         document.getElementById("bonusSeconds").textContent = formatTime(totalOfflineMs / 1000);
         const returnTimeButton = document.getElementById("returnTimeButton");
         if (returnTimeButton instanceof HTMLButtonElement) {
             returnTimeButton.disabled = totalOfflineMs < 86400_000;
         }
     }
-    this.updateBonusText = function() {
+    updateBonusText() {
         const element = document.getElementById("bonusText");
         if (!element) return;
         element.innerHTML = this.getBonusText() ?? "";
     }
-    this.getBonusText = function() {
+    getBonusText() {
         let text = _txt("time_controls>bonus_seconds>main_text");
         let lastText = null;
         while (lastText !== text) {
@@ -443,7 +450,7 @@ function View() {
         return text;
     }
     /** @type {(lhs: string, op?: string, rhs?: string) => string} */
-    this.getBonusReplacement = function(lhs, op, rhs) {
+    getBonusReplacement(lhs, op, rhs) {
         // this is the second time I've manually implemented this text-replacement pattern (first was for Action Log entries). Next time I need to make it a
         // generic operation on Localization; I think I'm beginning to figure out what will be needed for it
         const fgSpeed = Math.max(5, options.speedIncrease10x ? 10 : 0, options.speedIncrease20x ? 20 : 0, options.speedIncreaseCustom);
@@ -478,33 +485,33 @@ function View() {
             : op === "-" ? lval - rval
             : lval);
     }
-    this.updateTotalTicks = function() {
+    updateTotalTicks() {
         document.getElementById("totalTicks").textContent = `${formatNumber(actions.completedTicks)} | ${formatTime(timeCounter)}`;
         document.getElementById("effectiveTime").textContent = `${formatTime(effectiveTime)}`;
     };
-    this.updateResource = function(resource) {
+    updateResource(resource) {
         if (resource !== "gold") document.getElementById(`${resource}Div`).style.display = resources[resource] ? "inline-block" : "none";
 
         if (resource === "supplies") document.getElementById("suppliesCost").textContent = towns[0].suppliesCost;
-        if (resource === "teamMembers") document.getElementById("teamCost").textContent = (resources.teamMembers + 1) * 100;
+        if (resource === "teamMembers") document.getElementById("teamCost").textContent = `${(resources.teamMembers + 1) * 100}`;
 
         if (Number.isFinite(resources[resource])) document.getElementById(resource).textContent = resources[resource];
     };
-    this.updateResources = function() {
+    updateResources() {
         for (const resource in resources) this.updateResource(resource);
     };
-    this.updateActionTooltips = function() {
+    updateActionTooltips() {
         document.getElementById("goldInvested").textContent = intToStringRound(goldInvested);
         document.getElementById("bankInterest").textContent = intToStringRound(goldInvested * .001);
         document.getElementById("actionAllowedPockets").textContent = intToStringRound(towns[7].totalPockets);
         document.getElementById("actionAllowedWarehouses").textContent = intToStringRound(towns[7].totalWarehouses);
         document.getElementById("actionAllowedInsurance").textContent = intToStringRound(towns[7].totalInsurance);
-        document.getElementById("totalSurveyProgress").textContent = getExploreProgress();
+        document.getElementById("totalSurveyProgress").textContent = `${getExploreProgress()}`;
         Array.from(document.getElementsByClassName("surveySkill")).forEach(div => {
-            div.textContent = getExploreSkill();
+            div.textContent = `${getExploreSkill()}`;
         });
     }
-    this.updateTeamCombat = function() {
+    updateTeamCombat() {
         if (towns[2].unlocked) {
             document.getElementById("skillSCombatContainer").style.display = "inline-block";
             document.getElementById("skillTCombatContainer").style.display = "inline-block";
@@ -515,7 +522,7 @@ function View() {
             document.getElementById("skillTCombatContainer").style.display = "none";
         }
     };
-    this.zoneTints = [
+    zoneTints = [
         "var(--zone-tint-1)", //Beginnersville
         "var(--zone-tint-2)", //Forest Path
         "var(--zone-tint-3)", //Merchanton
@@ -526,7 +533,7 @@ function View() {
         "var(--zone-tint-8)", //Commerceville
         "var(--zone-tint-9)", //Valley of Olympus
     ];
-    this.highlightAction = function(index) {
+    highlightAction(index) {
         const element = document.getElementById(`nextActionContainer${index}`);
         if (!(element instanceof HTMLElement)) return;
         element.scrollIntoView({
@@ -535,7 +542,7 @@ function View() {
             inline: "nearest",
         })
     };
-    this.updateNextActions = function() {
+    updateNextActions() {
         let count = 0;
         while (nextActionsDiv.firstChild) {
             if (document.getElementById(`capButton${count}`)) {
@@ -646,7 +653,7 @@ function View() {
         nextActionsDiv.innerHTML = totalDivText;
     };
 
-    this.updateCurrentActionsDivs = function() {
+    updateCurrentActionsDivs() {
         let totalDivText = "";
 
         // definite leak - need to remove listeners and image
@@ -692,7 +699,7 @@ function View() {
         this.mouseoverAction(0, false);
     };
 
-    this.updateCurrentActionBar = function(index) {
+    updateCurrentActionBar(index) {
         const div = document.getElementById(`action${index}Bar`);
         if (!div) {
             return;
@@ -702,7 +709,7 @@ function View() {
             return;
         }
         if (action.errorMessage) {
-            document.getElementById(`action${index}Failed`).textContent = action.loopsLeft;
+            document.getElementById(`action${index}Failed`).textContent = `${action.loopsLeft}`;
             document.getElementById(`action${index}Error`).textContent = action.errorMessage;
             document.getElementById(`action${index}HasFailed`).style.display = "";
             div.style.width = "100%";
@@ -749,7 +756,9 @@ function View() {
         }
     };
 
-    this.updateActionLogEntry = function(index) {
+    /** @type {string} */
+    actionLogClearHTML;
+    updateActionLogEntry(index) {
         const log = document.getElementById("actionLog");
         this.actionLogClearHTML ??= log.innerHTML;
         if (index === "clear") {
@@ -780,7 +789,7 @@ function View() {
         }
     }
 
-    this.mouseoverAction = function(index, isShowing) {
+    mouseoverAction(index, isShowing) {
         if (isShowing) curActionShowing = index;
         else curActionShowing = undefined;
         const div = document.getElementById(`action${index}Selected`);
@@ -793,7 +802,7 @@ function View() {
         view.updateCurrentActionBar(index);
     };
 
-    this.updateCurrentActionLoops = function(index) {
+    updateCurrentActionLoops(index) {
         const action = actions.current[index];
         if (action !== undefined) {
             document.getElementById(`action${index}LoopsDone`).textContent = (action.loops - action.loopsLeft) > 99999
@@ -802,7 +811,7 @@ function View() {
         }
     };
 
-    this.updateProgressAction = function(updateInfo) {
+    updateProgressAction(updateInfo) {
         const varName = updateInfo.name;
         const town = updateInfo.town;
         const level = town.getLevel(varName);
@@ -813,7 +822,7 @@ function View() {
         document.getElementById(`bar${varName}`).style.width = `${level}%`;
     };
 
-    this.updateProgressActions = function() {
+    updateProgressActions() {
         for (const town of towns) {
             for (let i = 0; i < town.progressVars.length; i++) {
                 const varName = town.progressVars[i];
@@ -822,7 +831,7 @@ function View() {
         }
     };
 
-    this.updateLockedHidden = function() {
+    updateLockedHidden() {
         for (const action of totalActionList) {
             const actionDiv = document.getElementById(`container${action.varName}`);
             const infoDiv = document.getElementById(`infoContainer${action.varName}`);
@@ -872,11 +881,11 @@ function View() {
         }
     };
 
-    this.updateGlobalStory = function(num) {
+    updateGlobalStory(num) {
         actionLog.addGlobalStory(num);
     }
 
-    this.updateStories = function(init) {
+    updateStories(init) {
         // ~1.56ms cost per run. run once every 2000ms on an interval
         for (const action of totalActionList) {
             if (action.storyReqs !== undefined) {
@@ -923,7 +932,7 @@ function View() {
         }
     };
 
-    this.showTown = function(townNum) {
+    showTown(townNum) {
         if (!towns[townNum].unlocked()) return;
 
         if (townNum === 0) {
@@ -951,7 +960,7 @@ function View() {
         townShowing = townNum;
     };
 
-    this.showActions = function(stories) {
+    showActions(stories) {
         for (let i = 0; i < actionOptionsTown.length; i++) {
             actionOptionsTown[i].style.display = "none";
             actionStoriesTown[i].style.display = "none";
@@ -971,7 +980,7 @@ function View() {
         actionStoriesShowing = stories;
     };
 
-    this.updateRegular = function(updateInfo) {
+    updateRegular(updateInfo) {
         const varName = updateInfo.name;
         const index = updateInfo.index;
         const town = towns[index];
@@ -982,7 +991,7 @@ function View() {
         document.getElementById(`good${varName}`).textContent = town[`good${varName}`];
     };
 
-    this.updateAddAmount = function(num) {
+    updateAddAmount(num) {
         for (let i = 0; i < 6; i++) {
             const elem = document.getElementById(`amount${num}`);
             if (elem) {
@@ -992,7 +1001,7 @@ function View() {
         if (num > 0) removeClassFromDiv(document.getElementById(`amount${num}`), "unused");
     };
 
-    this.updateLoadout = function(num) {
+    updateLoadout(num) {
         for (let i = 0; i < 16; i++) {
             const elem = document.getElementById(`load${i}`);
             if (elem) {
@@ -1005,14 +1014,14 @@ function View() {
         }
     };
 
-    this.updateLoadoutNames = function() {
+    updateLoadoutNames() {
         for (let i = 0; i < loadoutnames.length; i++) {
             document.getElementById(`load${i + 1}`).textContent = loadoutnames[i];
         }
         document.getElementById("renameLoadout").value = loadoutnames[curLoadout - 1];
     };
 
-    this.createTownActions = function() {
+    createTownActions() {
         if (actionOptionsTown[0].firstChild) return;
         for (const prop in Action) {
             const action = Action[prop];
@@ -1024,7 +1033,7 @@ function View() {
         }
     };
 
-    this.createActionProgress = function(action) {
+    createActionProgress(action) {
         const totalDivText =
         `<div class='townStatContainer showthat'>
             <div class='bold townLabel'>${action.labelDone}</div>
@@ -1045,7 +1054,7 @@ function View() {
         townInfos[action.townNum].appendChild(progressDiv);
     };
 
-    this.createTownAction = function(action) {
+    createTownAction(action) {
         let actionStats = "";
         let actionSkills = "";
         let skillDetails = "";
@@ -1190,25 +1199,25 @@ function View() {
         }
     };
 
-    this.updateAction = function(action) {
+    updateAction(action) {
         if (action === undefined) return
         let container = document.getElementById(`container${action}`);
         this.adjustTooltipPosition(container.querySelector("div.showthis"));
     }
 
-    this.adjustManaCost = function(actionName) {
+    adjustManaCost(actionName) {
         const action = translateClassNames(actionName);
         document.getElementById(`manaCost${action.varName}`).textContent = formatNumber(action.manaCost());
     };
 
-    this.adjustExpMult = function(actionName) {
+    adjustExpMult(actionName) {
         const action = translateClassNames(actionName);
         document.getElementById(`expMult${action.varName}`).textContent = formatNumber(action.expMult * 100);
     };
 
-    this.goldCosts = {};
+    goldCosts = {};
 
-    this.adjustGoldCost = function(updateInfo) {
+    adjustGoldCost(updateInfo) {
         const varName = updateInfo.varName;
         const amount = updateInfo.cost;
         const element = document.getElementById(`goldCost${varName}`);
@@ -1217,24 +1226,24 @@ function View() {
             this.goldCosts[varName] = amount;
         }
     };
-    this.adjustGoldCosts = function() {
+    adjustGoldCosts() {
         for (const action of actionsWithGoldCost) {
             this.adjustGoldCost({varName: action.varName, cost: action.goldCost()});
         }
     };
-    this.adjustExpGain = function(action) {
+    adjustExpGain(action) {
         for (const skill in action.skills) {
             if (Number.isInteger(action.skills[skill])) document.getElementById(`expGain${action.varName}${skill}`).textContent = ` ${action.skills[skill].toFixed(0)}`;
             else document.getElementById(`expGain${action.varName}${skill}`).textContent = ` ${action.skills[skill]().toFixed(0)}`;
         }
     };
-    this.adjustExpGains = function() {
+    adjustExpGains() {
         for (const action of totalActionList) {
             if (action.skills) this.adjustExpGain(action);
         }
     };
 
-    this.createTownInfo = function(action) {
+    createTownInfo(action) {
         const totalInfoText =
             // important that there be 8 element children of townInfoContainer (excluding the showthis popup)
             `<div class='townInfoContainer showthat'>
@@ -1255,7 +1264,7 @@ function View() {
         townInfos[action.townNum].appendChild(infoDiv);
     };
 
-    this.createMultiPartPBar = function(action) {
+    createMultiPartPBar(action) {
         let pbars = "";
         const width = `style='width:calc(${91 / action.segments}% - 4px)'`;
         const varName = action.varName;
@@ -1300,7 +1309,7 @@ function View() {
         townInfos[action.townNum].appendChild(progressDiv);
     };
 
-    this.updateMultiPartActions = function() {
+    updateMultiPartActions() {
         for (const action of totalActionList) {
             if (action.type === "multipart") {
                 this.updateMultiPart(action);
@@ -1309,7 +1318,7 @@ function View() {
         }
     };
     
-    this.updateMultiPartSegments = function(action) {
+    updateMultiPartSegments(action) {
         let segment = 0;
         let curProgress = towns[action.townNum][action.varName];
         // update previous segments
@@ -1344,12 +1353,12 @@ function View() {
         }
     };
 
-    this.showDungeon = function(index) {
+    showDungeon(index) {
         dungeonShowing = index;
         if (index !== undefined) this.updateSoulstoneChance(index);
     };
 
-    this.updateSoulstoneChance = function(index) {
+    updateSoulstoneChance(index) {
         const dungeon = dungeons[index];
         for (let i = 0; i < dungeon.length; i++) {
             const level = dungeon[i];
@@ -1359,14 +1368,14 @@ function View() {
         }
     };
 
-    this.updateTrials = function() {
+    updateTrials() {
         for(let i = 0; i < trials.length; i++)
         {
             this.updateTrialInfo({trialNum: i, curFloor: 0});
         }
     };
 
-    this.updateTrialInfo = function(updateInfo) {
+    updateTrialInfo(updateInfo) {
         const curFloor = updateInfo.curFloor;
         const trialNum = updateInfo.trialNum;
         const trial = trials[trialNum];
@@ -1385,7 +1394,7 @@ function View() {
             }
     };
 
-    this.updateSoulstones = function() {
+    updateSoulstones() {
         for (const stat of statList) {
             if (stats[stat].soulstone) {
                 document.getElementById(`ss${stat}Container`).style.display = "inline-block";
@@ -1399,7 +1408,7 @@ function View() {
         }
     };
 
-    this.updateMultiPart = function(action) {
+    updateMultiPart(action) {
         const town = towns[action.townNum];
         document.getElementById(`multiPartName${action.varName}`).textContent = action.getPartName();
         document.getElementById(`completed${action.varName}`).textContent = ` ${formatNumber(town[`total${action.varName}`])}`;
@@ -1415,7 +1424,7 @@ function View() {
         }
     };
 
-    this.updateTrainingLimits = function() {
+    updateTrainingLimits() {
         for (let i = 0; i < statList.length; i++) {
             const trainingDiv = document.getElementById(`trainingLimit${statList[i]}`);
             if (trainingDiv) {
@@ -1426,7 +1435,7 @@ function View() {
     };
 
     // when you mouseover Story
-    this.updateStory = function(num) {
+    updateStory(num) {
         document.getElementById("newStory").style.display = "none";
         if (num <= 0) {
             num = 0;
@@ -1453,7 +1462,7 @@ function View() {
         document.getElementById(`story${num}`).style.display = "inline-block";
     };
 
-    this.changeStatView = function() {
+    changeStatView() {
         const statsWindow = document.getElementById("statsWindow");
         if (document.getElementById("regularStats").checked) {
             statsWindow.dataset.view = "regular";
@@ -1465,7 +1474,7 @@ function View() {
         }
     };
 
-    this.changeTheme = function(init) {
+    changeTheme(init) {
         const themeInput = document.getElementById("themeInput");
         const themeVariantInput = document.getElementById("themeVariantInput");
         if (init) themeInput.value = options.theme;
@@ -1484,7 +1493,7 @@ function View() {
         localStorage["latestTheme"] = `${options.theme} ${options.themeVariant}`;
     };
 
-    this.createTravelMenu = function() {
+    createTravelMenu() {
         let travelMenu = $("#TownSelect");
         travelMenu.empty()
         townNames.forEach((town, index) => {
@@ -1496,14 +1505,14 @@ function View() {
         this.updateTravelMenu()
     }
 
-    this.updateTravelMenu = function() {
+    updateTravelMenu() {
         let travelOptions = $("#TownSelect").children();
         for (let i=0;i<travelOptions.length;i++) {
             travelOptions[i].hidden=(!townsUnlocked.includes(i));
         }
     }
 
-    this.adjustDarkRitualText = function() {
+    adjustDarkRitualText() {
         let DRdesc = document.getElementById("DRText");
         DRdesc.innerHTML = `Actions are:<br>`;
         townsUnlocked.forEach(townNum => {
@@ -1512,7 +1521,7 @@ function View() {
         if(getBuffLevel("Ritual") > 200) DRdesc.innerHTML += DarkRitualDescription[9];
     }
 
-    this.highlightIncompleteActions = function() {
+    highlightIncompleteActions() {
         let actionDivs = Array.from(document.getElementsByClassName("actionContainer"));
         actionDivs.forEach(div => {
             let actionName = div.id.replace("container","");
@@ -1521,14 +1530,14 @@ function View() {
         });
     }
 
-    this.removeAllHighlights = function() {
+    removeAllHighlights() {
         let actionDivs = Array.from(document.getElementsByClassName("actionHighlight"));
         actionDivs.forEach(div => {
             div.classList.remove("actionHighlight");
         });
     }
 
-    this.updateTotals = function() {
+    updateTotals() {
         document.getElementById('totalPlaytime').textContent = `${formatTime(totals.time)}`;
         document.getElementById('totalEffectiveTime').textContent = `${formatTime(totals.effectiveTime)}`;
         document.getElementById('borrowedTimeBalance').textContent = formatTime(totals.borrowedTime);
@@ -1539,7 +1548,7 @@ function View() {
         else document.documentElement.classList.remove("time-borrowed");
     }
 
-    this.updatePrestigeValues = function() {
+    updatePrestigeValues() {
         document.getElementById('currentPrestigePoints').textContent = `${formatNumber(prestigeValues["prestigeCurrentPoints"])}`;
         document.getElementById('currentPrestigesCompleted').textContent = `${formatNumber(prestigeValues["prestigeTotalCompletions"])}`;
         // document.getElementById('maxTotalImbueSoulLevels').textContent = `${formatNumber(prestigeValues["prestigeTotalCompletions"])}`;
@@ -1584,7 +1593,7 @@ function startRenameCloudSave(fileId) {
         input.className = nameInput.className;
         input.style.width = `${nameInput.clientWidth}px`;
         input.value = li.dataset.fileName;
-        input.onkeydown = (e) => e.key === "Enter" && startRenameCloudSave(fileId) || true;
+        input.onkeydown = (e) => e.key === "Enter" ? (startRenameCloudSave(fileId), false) : true;
         li.replaceChild(input, nameInput);
         input.focus();
     }

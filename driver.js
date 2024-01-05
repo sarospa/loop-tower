@@ -4,7 +4,7 @@
 let gameSpeed = 1;
 const baseManaPerSecond = 50;
 
-let curTime = new Date();
+let curTime = Date.now();
 let gameTicksLeft = 0; // actually milliseconds, not ticks
 let refund = false;
 let radarUpdateTime = 0;
@@ -118,7 +118,7 @@ function tick() {
     //     return;
     // }
 
-    if (stop) {
+    if (gameIsStopped) {
         addOffline(gameTicksLeft * offlineRatio);
         view.update();
         gameTicksLeft = 0;
@@ -138,7 +138,7 @@ function executeGameTicks(deadline) {
     let baseManaToBurn = Mana.floor(gameTicksLeft * baseManaPerSecond * gameSpeed / 1000);
 
     while (baseManaToBurn * bonusSpeed >= (options.fractionalMana ? 0.01 : 1) && performance.now() < deadline) {
-        if (stop) {
+        if (gameIsStopped) {
             break;
         }
         // first, figure out how much *actual* mana is available to get spent. bonusSpeed gets rolled in first,
@@ -223,7 +223,7 @@ function recalcInterval(fps) {
 }
 
 function stopGame() {
-    stop = true;
+    gameIsStopped = true;
     view.requestUpdate("updateTime", null);
     view.requestUpdate("updateCurrentActionBar", actions.currentPos);
     view.update();
@@ -232,16 +232,16 @@ function stopGame() {
 }
 
 function pauseGame(ping, message) {
-    stop = !stop;
+    gameIsStopped = !gameIsStopped;
     view.requestUpdate("updateTime", null);
     view.requestUpdate("updateCurrentActionBar", actions.currentPos);
     view.update();
-    if (!stop && options.notifyOnPause) {
+    if (!gameIsStopped && options.notifyOnPause) {
         clearPauseNotification();
     }
-    document.title = stop ? "*PAUSED* Idle Loops" : "Idle Loops";
-    document.getElementById("pausePlay").textContent = _txt(`time_controls>${stop ? "play_button" : "pause_button"}`);
-    if (!stop && (shouldRestart || timer >= timeNeeded)) {
+    document.title = gameIsStopped ? "*PAUSED* Idle Loops" : "Idle Loops";
+    document.getElementById("pausePlay").textContent = _txt(`time_controls>${gameIsStopped ? "play_button" : "pause_button"}`);
+    if (!gameIsStopped && (shouldRestart || timer >= timeNeeded)) {
         restart();
     } else if (ping) {
         if (options.pingOnPause) {

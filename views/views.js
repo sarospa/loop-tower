@@ -1,4 +1,4 @@
-window.Views = {
+const Views = window['Views'] = {
     // activates verbose mode
     debug: true,
     // a vue can be registered if it implements an html function, that returns the html
@@ -8,7 +8,7 @@ window.Views = {
         // error handling
         if (typeof (viewName) === "string") {
             if (typeof (Views[viewName]) !== "undefined") {
-                if (debug)
+                if (Views.debug)
                     console.warn(`Overriding the vue ${viewName} because another view has been registered with the same viewName.`);
                 // the view overriten won't be drawn because :
                 // it's either the same view registered, and is already planed to be drawn
