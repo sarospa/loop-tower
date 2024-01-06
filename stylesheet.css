@@ -449,7 +449,7 @@ input[type="number"] {
     z-index: -1;
 }
 
-.button.warning {
+.button.warning, .button.warning:hover {
     background-color: var(--button-warning-background);
 }
 
