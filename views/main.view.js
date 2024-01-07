@@ -203,7 +203,7 @@ class View {
      * @param {Element} trigger 
      * @param {Node} eventTarget 
      */
-    fixTooltipPosition(tooltip, trigger, eventTarget) {
+    fixTooltipPosition(tooltip, trigger, eventTarget, delayedCall=false) {
         if (tooltip.contains(eventTarget)) {
             // console.log("Not fixing tooltip while cursor is inside",{tooltip,trigger,event});
             return;
@@ -230,18 +230,23 @@ class View {
         if (tooltipRect.height > Math.max(viewportMargins.top, viewportMargins.bottom)) displayOverUnder = false;
         if (wantsSidePosition && tooltipRect.width <= Math.max(viewportMargins.left, viewportMargins.right)) displayOverUnder = false;
 
+        const targetPos = {
+            x: 0,
+            y: 0,
+        };
+
         if (displayOverUnder) {
-            tooltipRect.y = viewportMargins.top > viewportMargins.bottom
+            targetPos.y = viewportMargins.top > viewportMargins.bottom
                           ? triggerRect.top - tooltipRect.height
                           : triggerRect.bottom;
-            tooltipRect.x = viewportMargins.left > viewportMargins.right && tooltipRect.width > triggerRect.width
+            targetPos.x = viewportMargins.left > viewportMargins.right && tooltipRect.width > triggerRect.width
                           ? triggerRect.right - tooltipRect.width
                           : triggerRect.left;
         } else {
-            tooltipRect.x = viewportMargins.left > viewportMargins.right
+            targetPos.x = viewportMargins.left > viewportMargins.right
                           ? triggerRect.left - tooltipRect.width
                           : triggerRect.right;
-            tooltipRect.y = viewportMargins.top > viewportMargins.bottom
+            targetPos.y = viewportMargins.top > viewportMargins.bottom
                           ? triggerRect.bottom - tooltipRect.height
                           : triggerRect.top;
         }
@@ -255,12 +260,26 @@ class View {
 
         // console.log("Fixing tooltip:",{tooltip,tooltipRect,trigger,triggerRect,event});
 
+        // Now, check and see if we can do a nudge (valid rect, currently fixed) or if we have to do initial position
+        const curLeft = parseFloat(tooltip.style.left);
+        const curTop = parseFloat(tooltip.style.top);
+        if (tooltip.style.position === "fixed" && isFinite(curLeft) && isFinite(curTop) && tooltipRect.width > 0 && tooltipRect.height > 0) {
+            // simple nudge
+            tooltip.style.left = `${curLeft + targetPos.x - tooltipRect.x}px`;
+            tooltip.style.top = `${curTop + targetPos.y - tooltipRect.y}px`;
+        } else {
+            // initial positioning
         tooltip.style.position = "fixed";
-        tooltip.style.left = `${tooltipRect.x - viewportRect.left}px`;
-        tooltip.style.top = `${tooltipRect.y - viewportRect.top}px`;
+            tooltip.style.left = `${targetPos.x - viewportRect.left}px`;
+            tooltip.style.top = `${targetPos.y - viewportRect.top}px`;
         tooltip.style.right = "auto";
         tooltip.style.bottom = "auto";
         tooltip.style.margin = "0";
+            if (!delayedCall) {
+                // queue up a nudge ASAP, but avoid infinite recursion
+                requestAnimationFrame(() => this.fixTooltipPosition(tooltip, trigger, eventTarget, true));
+            }
+        }
     }
 
     showStat(stat) {
