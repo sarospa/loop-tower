@@ -599,6 +599,7 @@ const options = {
     speedIncreaseBackground: -1,
     highlightNew: true,
     statColors: false,
+    statHints: false,
     pingOnPause: false,
     notifyOnPause: false,
     autoMaxTraining: false,
@@ -635,6 +636,7 @@ const isStandardOption = {
     speedIncreaseBackground: false,
     highlightNew: true,
     statColors: true,
+    statHints: false,
     pingOnPause: true,
     notifyOnPause: false,
     autoMaxTraining: true,
@@ -649,6 +651,8 @@ const isStandardOption = {
 /** @type {Partial<Record<OptionName, string>>} */
 const optionIndicatorClasses = {
     responsiveUI: "responsive",
+    statColors: "use-stat-colors",
+    statHints: "show-stat-hints",
 };
 
 /** @type {{[K in OptionName]?: (value: OptionType<K>, init: boolean, getInput: () => HTMLInputElement) => void}} */

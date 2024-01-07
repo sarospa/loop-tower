@@ -35,3 +35,12 @@ g.dataset[data-dataset=mana_cost_reduction] {
         stroke: var(--graph-point-hover-border-color);
     }
 }
+
+svg.stat-pie g:hover .pie-slice {
+    opacity: 0.25;
+    &:hover {
+        opacity: 1;
+    }
+}
+
+svg.stat-pie .pie-slice {fill: var(--stat-color);}

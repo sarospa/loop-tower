@@ -80,7 +80,7 @@ class View {
 
     createStats() {
         statGraph.init(document.getElementById("statsContainer"), stat =>
-            `<div class='statContainer showthat' onmouseover='view.showStat("${stat}")' onmouseout='view.showStat(undefined)'>
+            `<div class='statContainer showthat stat-${stat.toLowerCase()}' onmouseover='view.showStat("${stat}")' onmouseout='view.showStat(undefined)'>
                 <div class='statLabelContainer'>
                     <div class='medium bold stat-name' style='margin-left:18px;margin-top:5px;'>${_txt(`stats>${stat}>long_form`)}</div>
                     <div class='medium statNum stat-soulstone' style='color:var(--stat-soulstone-color);' id='stat${stat}ss'></div>
@@ -269,12 +269,12 @@ class View {
             tooltip.style.top = `${curTop + targetPos.y - tooltipRect.y}px`;
         } else {
             // initial positioning
-        tooltip.style.position = "fixed";
+            tooltip.style.position = "fixed";
             tooltip.style.left = `${targetPos.x - viewportRect.left}px`;
             tooltip.style.top = `${targetPos.y - viewportRect.top}px`;
-        tooltip.style.right = "auto";
-        tooltip.style.bottom = "auto";
-        tooltip.style.margin = "0";
+            tooltip.style.right = "auto";
+            tooltip.style.bottom = "auto";
+            tooltip.style.margin = "0";
             if (!delayedCall) {
                 // queue up a nudge ASAP, but avoid infinite recursion
                 requestAnimationFrame(() => this.fixTooltipPosition(tooltip, trigger, eventTarget, true));
@@ -1080,24 +1080,47 @@ class View {
         let skillDetails = "";
         let lockedStats = "";
         let lockedSkills = "";
-        const statKeyNames = Object.keys(action.stats);
-        for (let i = 0; i < 9; i++) {
-            for (const stat of statKeyNames) {
-                if (statList[i] === stat) {
-                    const statLabel = _txt(`stats>${stat}>short_form`);
-                    actionStats += `<div class='bold'>${statLabel}:</div> ${action.stats[stat] * 100}%<br>`;
-                }
+        const pieSlices = [];
+        const gradientStops=[];
+        const statEntries = /** @type {[stat: StatName, ratio: number][]} */(Object.entries(action.stats));
+        // sort high to low, then by statname index
+        statEntries.sort(([aStat, aRatio], [bStat, bRatio]) => ((bRatio - aRatio) || (statList.indexOf(aStat) - statList.indexOf(bStat))));
+        let totalRatio = 0;
+        let gradientOffset = 0;
+        let lastArcPoint = [0, -1]; // start at 12 o'clock
+        for (const [stat, ratio] of statEntries) {
+            const statLabel = _txt(`stats>${stat}>short_form`);
+            actionStats += `<dt class='stat-${stat.toLowerCase()}'>${statLabel}</dt> <dd class='stat-${stat.toLowerCase()}'>${ratio * 100}%</dd>`;
+            const startRatio = totalRatio;
+            totalRatio += ratio;
+            if (totalRatio >= 0.999 && totalRatio <= 1.001) totalRatio = 1;
+            const midRatio = (startRatio + totalRatio) / 2;
+            const angle = Math.PI * 2 * totalRatio;
+            const arcPoint = [Math.sin(angle), -Math.cos(angle)];
+            pieSlices.push(`<path class='pie-slice stat-${stat.toLowerCase()}' d='M0,0 L${lastArcPoint.join()} A1,1 0,${ratio >= 0.5 ? 1 : 0},1 ${arcPoint.join()} Z' />`);
+            if (gradientStops.length === 0) {
+                gradientOffset = midRatio;
+                gradientStops.push(`from ${gradientOffset}turn`, `var(--stat-${stat.toLowerCase()}-color) calc(${gradientOffset}turn * var(--pie-ratio))`);
+            } else {
+                gradientStops.push(`var(--stat-${stat.toLowerCase()}-color) calc(${midRatio - gradientOffset}turn - (${ratio/2}turn * var(--pie-ratio))) calc(${midRatio - gradientOffset}turn + (${ratio/2}turn * var(--pie-ratio)))`);
             }
+            lastArcPoint = arcPoint;
         }
-        // pretty sure this is guaranteed but we'll check anyway
-        if (statKeyNames.length > 0) {
-            // sort stats by percentage descending
-            statKeyNames.sort((a, b) => (action.stats[b] - action.stats[a]));
-            const highestStatValue = action.stats[statKeyNames[0]];
-            lockedStats = `(${statKeyNames.map(stat => /** @type {[boolean, string]} */([action.stats[stat] === highestStatValue, _txt(`stats>${stat}>short_form`)]))
-                                      .map(([isHighestStat, label]) => isHighestStat ? `<div class='bold'>${label}</div>` : label)
+        // this is *almost* always true (but not always)
+        if (statEntries.length > 0) {
+            gradientStops.push(`var(--stat-${statEntries[0][0].toLowerCase()}-color) calc(1turn - (${gradientOffset}turn * var(--pie-ratio)))`)
+            const highestRatio = statEntries[0][1];
+            lockedStats = `(${statEntries.map(([stat, ratio]) => /** @type {const} */([ratio === highestRatio, stat.toLowerCase(), _txt(`stats>${stat}>short_form`)]))
+                                      .map(([isHighestStat, stat, label]) => `<span class='${isHighestStat?"bold":""} stat-${stat} stat-color'>${label}</span>`)
                                       .join(", ")})<br>`;
         }
+        const statPie = statEntries.length === 0 ? "" : `
+                <svg viewBox='-1 -1 2 2' class='stat-pie' id='stat-pie-${action.varName}'>
+                    <g id='stat-pie-${action.varName}-g'>
+                        ${pieSlices.join("")}
+                    </g>
+                </svg>
+                <div class='stat-pie mask' style='background:conic-gradient(${gradientStops.join()})'></div>`;
         if (action.skills !== undefined) {
             const skillKeyNames = Object.keys(action.skills);
             const l = skillList.length;
@@ -1139,14 +1162,14 @@ class View {
             }
         }
         const isTravel = getTravelNum(action.name) > 0;
-        const divClass = isTravel ? "travelContainer showthat" : "actionContainer showthat";
+        const divClass = isTravel ? "travelContainer" : "actionContainer";
         const imageName = action.name.startsWith("Assassin") ? "assassin" : camelize(action.name);
         const unlockConditions = /<br>\s*Unlocked (.*?)(?:<br>|$)/is.exec(`${action.tooltip}${action.goldCost === undefined ? "" : action.tooltip2}`)?.[1]; // I hate this but wygd
         const lockedText = unlockConditions ? `${_txt("actions>tooltip>locked_tooltip")}<br>Will unlock ${unlockConditions}` : `${action.tooltip}${action.goldCost === undefined ? "" : action.tooltip2}`;
         const totalDivText =
             `<button
                 id='container${action.varName}'
-                class='${divClass}'
+                class='${divClass} actionOrTravelContainer showthat'
                 draggable='true'
                 ondragover='handleDragOver(event)'
                 ondragstart='handleDirectActionDragStart(event, "${action.name}", ${action.townNum}, "${action.varName}", false)'
@@ -1159,13 +1182,14 @@ class View {
                 <div style='position:relative'>
                     <img src='img/${imageName}.svg' class='superLargeIcon' draggable='false'>${extraImage}
                 </div>
+                ${statPie}
                 <div class='showthis when-unlocked' draggable='false'>
                     ${action.tooltip}<span id='goldCost${action.varName}'></span>
                     ${(action.goldCost === undefined) ? "" : action.tooltip2}
                     <br>
                     ${actionSkills}
-                    ${actionStats}
                     <div class='bold'>${_txt("actions>tooltip>mana_cost")}:</div> <div id='manaCost${action.varName}'>${formatNumber(action.manaCost())}</div><br>
+                    <dl class='action-stats'>${actionStats}</dl>
                     <div class='bold'>${_txt("actions>tooltip>exp_multiplier")}:</div><div id='expMult${action.varName}'>${action.expMult * 100}</div>%<br>
                     ${skillDetails}
                 </div>
@@ -1439,7 +1463,7 @@ class View {
             }
             const mainStat = action.loopStats[(town[`${action.varName}LoopCounter`] + i) % action.loopStats.length];
             document.getElementById(`mainStat${i}${action.varName}`).textContent = _txt(`stats>${mainStat}>short_form`);
-            addStatColors(expBar, mainStat);
+            addStatColors(expBar, mainStat, true);
             document.getElementById(`segmentName${i}${action.varName}`).textContent = action.getSegmentName(town[`${action.varName}LoopCounter`] + i);
         }
     };
@@ -1675,25 +1699,11 @@ for (let i = 0; i <= 8; i++) {
     townInfos[i] = document.getElementById(`townInfo${i}`);
 }
 
-function addStatColors(theDiv, stat) {
-    if (stat === "Str") {
-        theDiv.style.backgroundColor = "var(--stat-str-color)";
-    } else if (stat === "Dex") {
-        theDiv.style.backgroundColor = "var(--stat-dex-color)";
-    } else if (stat === "Con") {
-        theDiv.style.backgroundColor = "var(--stat-con-color)";
-    } else if (stat === "Per") {
-        theDiv.style.backgroundColor = "var(--stat-per-color)";
-    } else if (stat === "Int") {
-        theDiv.style.backgroundColor = "var(--stat-int-color)";
-    } else if (stat === "Cha") {
-        theDiv.style.backgroundColor = "var(--stat-cha-color)";
-    } else if (stat === "Spd") {
-        theDiv.style.backgroundColor = "var(--stat-spd-color)";
-    } else if (stat === "Luck") {
-        theDiv.style.backgroundColor = "var(--stat-luck-color)";
-    } else if (stat === "Soul") {
-        theDiv.style.backgroundColor = "var(--stat-soul-color)";
+/** @param {Element} theDiv @param {StatName} stat  */
+function addStatColors(theDiv, stat, forceColors=false) {
+    theDiv.classList.add(`stat-${stat.toLowerCase()}`, "stat-background");
+    if (forceColors) {
+        theDiv.classList.add("use-stat-colors");
     }
 }
 

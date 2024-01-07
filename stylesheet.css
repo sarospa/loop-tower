@@ -310,6 +310,25 @@ body:not(.loading) > .hideWhenLoaded {
     text-decoration: underline;
 }
 
+/* These utility classes set a "stat context" for this element and its descendants */
+.stat-str {--stat-color: var(--stat-str-color);}
+.stat-dex {--stat-color: var(--stat-dex-color);}
+.stat-con {--stat-color: var(--stat-con-color);}
+.stat-per {--stat-color: var(--stat-per-color);}
+.stat-int {--stat-color: var(--stat-int-color);}
+.stat-cha {--stat-color: var(--stat-cha-color);}
+.stat-spd {--stat-color: var(--stat-spd-color);}
+.stat-luck {--stat-color: var(--stat-luck-color);}
+.stat-soul {--stat-color: var(--stat-soul-color);}
+
+/* These expect to have one of the above classes on this or an enclosing element, and they're only enabled in full-color mode */
+.use-stat-colors .stat-color, .use-stat-colors.stat-color {
+    color: var(--stat-color);
+}
+.use-stat-colors .stat-background, .use-stat-colors.stat-background {
+    background-color: var(--stat-color);
+}
+
 .superLargeIcon {
     width: 34px;
     height: 34px;
@@ -507,6 +526,11 @@ input[type="number"] {
 }
 #buffList {
     grid-area: buffs;
+}
+
+.use-stat-colors .statLabelContainer .stat-name,
+.use-stat-colors .statLabelContainer .stat-level {
+    color: var(--stat-color);
 }
 
 .skillContainer {
@@ -785,7 +809,7 @@ div.townInfoContainer > .numeric {
     min-height:470px;
 }
 
-.actionContainer, .travelContainer {
+.actionOrTravelContainer {
     cursor:pointer;
     position: relative;
     height:50px;
@@ -793,7 +817,6 @@ div.townInfoContainer > .numeric {
     font-size: 0.928571rem;
     border: 3px solid transparent;
     border-radius: 10px;
-    background: var(--action-background);
 }
 .actionContainer {
     width:96px;
@@ -805,7 +828,7 @@ div.townInfoContainer > .numeric {
     margin:2px auto;
 }
 
-.actionContainer:hover, .travelContainer:hover {
+.actionOrTravelContainer:hover {
     background-color: var(--action-hover-background);
 }
 .actionHighlight {
@@ -813,6 +836,98 @@ div.townInfoContainer > .numeric {
     border: 3px solid var(--action-highlight-border);
     border-radius: 10px;
 }
+
+.actionOrTravelContainer .stat-pie {
+    display: none;
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    left: 2px;
+    bottom: 2px;
+    opacity: 0;
+    transition-duration: 50ms;
+    transition-property: opacity, width, height;
+
+    &:is(div) {
+        clip-path: circle(50%);
+        opacity: 0.75;
+        pointer-events: none;
+        --pie-ratio: 0.25;
+    }
+}
+
+.show-stat-hints .actionOrTravelContainer .stat-pie {
+    display: initial;
+}
+
+.actionOrTravelContainer:hover .stat-pie {
+    opacity: 1;
+    transition-duration: 200ms;
+    width: 32px;
+    height: 32px;
+
+    &:is(div) {
+        opacity:0;
+    }
+}
+
+.actionOrTravelContainer.locked .stat-pie {
+    display: none;
+}
+
+dl.action-stats {
+    display: block;
+    margin: 0;
+
+    &::before {
+        content: "(";
+    }
+
+    & > dt {
+        display: inline;
+        margin: 0;
+        font-weight: bold;
+
+        &::after {
+            color: var(--text-color);
+            content: ": ";
+        }
+    }
+
+    & > dd {
+        display: inline;
+        margin: 0;
+
+        &::after {
+            content: "; ";
+            font-weight: normal;
+        }
+        &:last-child::after {
+            content: none;
+        }
+    }
+
+    &::after {
+        content: ")";
+    }
+}
+
+.use-stat-colors dl.action-stats dt {
+    color: var(--stat-color);
+}
+
+.actionOrTravelContainer:has(.stat-pie g:hover) dl.action-stats :is(dt,dd) {
+    font-weight: normal;
+}
+.actionOrTravelContainer:has(.stat-pie .pie-slice.stat-str:hover) dl.action-stats .stat-str,
+.actionOrTravelContainer:has(.stat-pie .pie-slice.stat-dex:hover) dl.action-stats .stat-dex,
+.actionOrTravelContainer:has(.stat-pie .pie-slice.stat-con:hover) dl.action-stats .stat-con,
+.actionOrTravelContainer:has(.stat-pie .pie-slice.stat-per:hover) dl.action-stats .stat-per,
+.actionOrTravelContainer:has(.stat-pie .pie-slice.stat-int:hover) dl.action-stats .stat-int,
+.actionOrTravelContainer:has(.stat-pie .pie-slice.stat-cha:hover) dl.action-stats .stat-cha,
+.actionOrTravelContainer:has(.stat-pie .pie-slice.stat-spd:hover) dl.action-stats .stat-spd,
+.actionOrTravelContainer:has(.stat-pie .pie-slice.stat-luck:hover) dl.action-stats .stat-luck,
+.actionOrTravelContainer:has(.stat-pie .pie-slice.stat-soul:hover) dl.action-stats .stat-soul {font-weight: bold;}
 
 .storyContainer {
     width: 102px;

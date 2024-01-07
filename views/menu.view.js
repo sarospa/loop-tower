@@ -114,6 +114,9 @@ Views.registerView("menu", {
                 <input id='statColorsInput' type='checkbox' onchange='setOption("statColors", this.checked)'/>
                     <label for='statColorsInput'>${_txt("menu>options>stat_colors")}</label>
                 <br>
+                <input id='statHintsInput' type='checkbox' onchange='setOption("statHints", this.checked)'/>
+                    <label for='statHintsInput'>${_txt("menu>options>stat_hints")}</label>
+                <br>
                 <input id='pingOnPauseInput' type='checkbox' onchange='setOption("pingOnPause", this.checked)'/>
                     <label for='pingOnPauseInput'>${_txt("menu>options>pause_audio_cue")}</label>
                 <br>
