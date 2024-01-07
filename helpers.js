@@ -249,6 +249,55 @@ function removeClassFromDiv(div, className) {
     div.classList.remove(className);
 }
 
+/**
+ * @template {Element} [T=Element]
+ * 
+ * @param {string} id 
+ * @param {(new() => T)|((new() => T)[])} [expectedClass]
+ * @param {boolean} [throwIfMissing] 
+ * @param {boolean} [warnIfMissing] 
+ * @returns {T}
+ */
+function getElement(id, expectedClass=/** @type {new()=>T} */(Element), throwIfMissing=true, warnIfMissing=true) {
+    const expectedClasses = Array.isArray(expectedClass) ? expectedClass : [expectedClass];
+    const element = document.getElementById(id);
+    for (const expected of expectedClasses) {
+        if (element instanceof expected) return element;
+    }
+    if (warnIfMissing) {
+        console.warn("Expected element missing or wrong type!", id, expectedClass, element);
+    }
+    if (throwIfMissing) {
+        throw new Error(`Expected to find element of type ${expectedClasses.join("|")} with ${id}, instead found ${element}!`);
+    }
+    return undefined;
+}
+
+function htmlElement(id, throwIfMissing=true, warnIfMissing=true) {
+    return getElement(id, HTMLElement, throwIfMissing, warnIfMissing);
+}
+
+function inputElement(id, throwIfMissing=true, warnIfMissing=true) {
+    return getElement(id, HTMLInputElement, throwIfMissing, warnIfMissing);
+}
+
+function textAreaElement(id, throwIfMissing=true, warnIfMissing=true) {
+    return getElement(id, HTMLTextAreaElement, throwIfMissing, warnIfMissing);
+}
+
+function selectElement(id, throwIfMissing=true, warnIfMissing=true) {
+    return getElement(id, HTMLSelectElement, throwIfMissing, warnIfMissing);
+}
+
+/** @typedef {HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement} HTMLValueElement */
+function valueElement(id, throwIfMissing=true, warnIfMissing=true) {
+    return getElement(id, [/** @type {new() => HTMLValueElement} */(HTMLInputElement), HTMLTextAreaElement, HTMLSelectElement], throwIfMissing, warnIfMissing);
+}
+
+function svgElement(id, throwIfMissing=true, warnIfMissing=true) {
+    return getElement(id, SVGElement, throwIfMissing, warnIfMissing);
+}
+
 const numbers = "zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen".split(" ");
 const tens = "twenty thirty forty fifty sixty seventy eighty ninety".split(" ");
 

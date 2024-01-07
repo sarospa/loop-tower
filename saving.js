@@ -609,9 +609,12 @@ const options = {
     autosaveRate: 30,
 };
 
+/** @typedef {keyof typeof options} OptionName */
+/** @template {OptionName} N @typedef {typeof options[N]} OptionType */
+
 // The original forks will throw exceptions if there are unexpected properties in the options element. This list lets us
 // check to see if a given option should go into "options" in the save, otherwise it belongs in "extraOptions".
-/** @satisfies {{[K in keyof typeof options]: boolean}} */
+/** @satisfies {Record<OptionName, boolean>} */
 const isStandardOption = {
     theme: true,
     themeVariant: false,
@@ -642,7 +645,13 @@ const isStandardOption = {
     autosaveRate: true,
 };
 
-/** @type {{[K in keyof typeof options]?: (value: any, init: boolean, getInput: () => HTMLInputElement) => void}} */
+// Some options set or clear an indicator class on the root element so CSS can respond. Record these here.
+/** @type {Partial<Record<OptionName, string>>} */
+const optionIndicatorClasses = {
+    responsiveUI: "responsive",
+};
+
+/** @type {{[K in OptionName]?: (value: OptionType<K>, init: boolean, getInput: () => HTMLInputElement) => void}} */
 const optionValueHandlers = {
     notifyOnPause(value, init, getInput) {
         const input = getInput();
@@ -671,13 +680,6 @@ const optionValueHandlers = {
     },
     updateRate(value, init) {
         if (!init) recalcInterval(value);
-    },
-    responsiveUI(value, init) {
-        if (value) {
-            document.documentElement.classList.add("responsive");
-        } else {
-            document.documentElement.classList.remove("responsive");
-        }
     },
     actionLog(value, init) {
         document.getElementById("actionLogContainer").style.display = value ? "" : "none";
@@ -708,18 +710,29 @@ const optionValueHandlers = {
     }
 };
 
-function setOption(option, value) {
-    options[option] = value;
-    optionValueHandlers[option]?.(value, false, () => document.getElementById(`${option}Input`));
+/** @type {<K extends OptionName>(option: K, value: OptionType<K>, init: boolean, getInput: () => HTMLInputElement) => void} */
+function handleOption(option, value, init, getInput) {
+    optionValueHandlers[option]?.(value, init, getInput);
+    // The handler can change the value of the option. Recheck when setting or clearing the indicator class.
+    if (option in optionIndicatorClasses) {
+        document.documentElement.classList.toggle(optionIndicatorClasses[option], !!options[option]);
+    }
 }
 
+/** @type {<K extends OptionName>(option: K, value: OptionType<K>) => void} */
+function setOption(option, value) {
+    options[option] = value;
+    handleOption(option, value, false, () => inputElement(`${option}Input`));
+}
+
+/** @type {<K extends OptionName>(option: K, value: OptionType<K>) => void} */
 function loadOption(option, value) {
-    const input = document.getElementById(`${option}Input`);
-    if (!input || !(input instanceof HTMLInputElement)) return;
-    if (input.type === "checkbox") input.checked = value;
+    const input = inputElement(`${option}Input`, false); // this is allowed to have errors
+    if (!input) return;
+    if (input.type === "checkbox") input.checked = !!value;
     else if (option === "speedIncreaseBackground" && (typeof value !== "number" || isNaN(value) || value < 0)) input.value = "";
-    else input.value = value;
-    optionValueHandlers[option]?.(value, true, () => input);
+    else input.value = String(value);
+    handleOption(option, value, true, () => input);
 }
 
 function showPauseNotification(message) {
@@ -826,7 +839,7 @@ function load(inChallenge) {
         for (const property in buffCaps) {
             if (toLoad.buffCaps.hasOwnProperty(property)) {
                 buffCaps[property] = toLoad.buffCaps[property];
-                document.getElementById(`buff${property}Cap`).value = buffCaps[property];
+                inputElement(`buff${property}Cap`).value = buffCaps[property];
             }
         }
     }
@@ -1041,7 +1054,7 @@ function load(inChallenge) {
             if (action.type === "limited") {
                 const varName = action.varName;
                 if (toLoad[`searchToggler${varName}`] !== undefined) {
-                    document.getElementById(`searchToggler${varName}`).checked = toLoad[`searchToggler${varName}`];
+                    inputElement(`searchToggler${varName}`).checked = toLoad[`searchToggler${varName}`];
                 }
                 view.updateRegular({name: action.varName, index: town.index});
             }
@@ -1152,7 +1165,7 @@ function save() {
                 toSave[`good${varName}`] = town[`good${varName}`];
                 toSave[`goodTemp${varName}`] = town[`good${varName}`];
                 if (document.getElementById(`searchToggler${varName}`)) {
-                    toSave[`searchToggler${varName}`] = document.getElementById(`searchToggler${varName}`).checked;
+                    toSave[`searchToggler${varName}`] = inputElement(`searchToggler${varName}`).checked;
                 }
             }
         }
@@ -1195,13 +1208,13 @@ function currentSaveData() {
 function exportSave() {
     save();
     // idle loops save version 01. patch v0.94, moved from old save system to lzstring base 64
-    document.getElementById("exportImport").value = `ILSV01${LZString.compressToBase64(window.localStorage[saveName])}`;
-    document.getElementById("exportImport").select();
+    inputElement("exportImport").value = `ILSV01${LZString.compressToBase64(window.localStorage[saveName])}`;
+    inputElement("exportImport").select();
     document.execCommand("copy");
 }
 
 function importSave() {
-    const saveData = document.getElementById("exportImport").value;
+    const saveData = inputElement("exportImport").value;
     processSave(saveData);
 }
 
@@ -1267,13 +1280,13 @@ function exportCurrentList() {
         toReturn += `${action.loops}x ${action.name}`;
         toReturn += "\n";
     }
-    document.getElementById("exportImportList").value = toReturn.slice(0, -1);
-    document.getElementById("exportImportList").select();
+    textAreaElement("exportImportList").value = toReturn.slice(0, -1);
+    textAreaElement("exportImportList").select();
     document.execCommand("copy");
 }
 
 function importCurrentList() {
-    const toImport = document.getElementById("exportImportList").value.split("\n");
+    const toImport = textAreaElement("exportImportList").value.split("\n");
     actions.next = [];
     for (let i = 0; i < toImport.length; i++) {
         if (!toImport[i]) {
@@ -1421,6 +1434,10 @@ function resetAllPrestiges() {
     prestigeWithNewValues(nextPrestigeValues, nextPrestigeBuffs)
 }
 
+/**
+ * @param {typeof prestigeValues} nextPrestigeValues
+ * @param {{[K in Extract<BuffName, `Prestige${string}`|'Imbuement3'>]: number}} nextPrestigeBuffs
+ */
 function prestigeWithNewValues(nextPrestigeValues, nextPrestigeBuffs) {
     let nextTotals = totals;
     let nextOfflineMs = totalOfflineMs;

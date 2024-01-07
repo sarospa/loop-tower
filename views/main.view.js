@@ -511,7 +511,7 @@ class View {
     updateResource(resource) {
         if (resource !== "gold") document.getElementById(`${resource}Div`).style.display = resources[resource] ? "inline-block" : "none";
 
-        if (resource === "supplies") document.getElementById("suppliesCost").textContent = towns[0].suppliesCost;
+        if (resource === "supplies") document.getElementById("suppliesCost").textContent = String(towns[0].suppliesCost);
         if (resource === "teamMembers") document.getElementById("teamCost").textContent = `${(resources.teamMembers + 1) * 100}`;
 
         if (Number.isFinite(resources[resource])) document.getElementById(resource).textContent = resources[resource];
@@ -1003,11 +1003,11 @@ class View {
         const varName = updateInfo.name;
         const index = updateInfo.index;
         const town = towns[index];
-        document.getElementById(`total${varName}`).textContent = town[`total${varName}`];
-        document.getElementById(`checked${varName}`).textContent = town[`checked${varName}`];
-        document.getElementById(`unchecked${varName}`).textContent = town[`total${varName}`] - town[`checked${varName}`];
-        document.getElementById(`goodTemp${varName}`).textContent = town[`goodTemp${varName}`];
-        document.getElementById(`good${varName}`).textContent = town[`good${varName}`];
+        htmlElement(`total${varName}`).textContent = String(town[`total${varName}`]);
+        htmlElement(`checked${varName}`).textContent = String(town[`checked${varName}`]);
+        htmlElement(`unchecked${varName}`).textContent = String(town[`total${varName}`] - town[`checked${varName}`]);
+        htmlElement(`goodTemp${varName}`).textContent = String(town[`goodTemp${varName}`]);
+        htmlElement(`good${varName}`).textContent = String(town[`good${varName}`]);
     };
 
     updateAddAmount(num) {
@@ -1037,7 +1037,7 @@ class View {
         for (let i = 0; i < loadoutnames.length; i++) {
             document.getElementById(`load${i + 1}`).textContent = loadoutnames[i];
         }
-        document.getElementById("renameLoadout").value = loadoutnames[curLoadout - 1];
+        inputElement("renameLoadout").value = loadoutnames[curLoadout - 1];
     };
 
     createTownActions() {
@@ -1073,6 +1073,7 @@ class View {
         townInfos[action.townNum].appendChild(progressDiv);
     };
 
+    /** @param {Action} action  */
     createTownAction(action) {
         let actionStats = "";
         let actionSkills = "";
@@ -1398,7 +1399,7 @@ class View {
         const curFloor = updateInfo.curFloor;
         const trialNum = updateInfo.trialNum;
         const trial = trials[trialNum];
-            document.getElementById(`trial${trialNum}HighestFloor`).textContent = trial.highestFloor + 1;
+            document.getElementById(`trial${trialNum}HighestFloor`).textContent = String(trial.highestFloor + 1);
             if (curFloor >= trial.length) {
                 document.getElementById(`trial${trialNum}CurFloor`).textContent = "";
                 document.getElementById(`trial${trialNum}CurFloorCompleted`).textContent = "";
@@ -1447,7 +1448,7 @@ class View {
         for (let i = 0; i < statList.length; i++) {
             const trainingDiv = document.getElementById(`trainingLimit${statList[i]}`);
             if (trainingDiv) {
-                trainingDiv.textContent = trainingLimits;
+                trainingDiv.textContent = String(trainingLimits);
             }
         }
         if (getBuffLevel("Imbuement") > 0 || getBuffLevel("Imbuement3") > 0) document.getElementById("maxTraining").style.display = "";
@@ -1477,25 +1478,25 @@ class View {
             }
         }
         storyShowing = num;
-        document.getElementById("storyPage").textContent = storyShowing + 1;
+        document.getElementById("storyPage").textContent = String(storyShowing + 1);
         document.getElementById(`story${num}`).style.display = "inline-block";
     };
 
     changeStatView() {
         const statsWindow = document.getElementById("statsWindow");
-        if (document.getElementById("regularStats").checked) {
+        if (inputElement("regularStats").checked) {
             statsWindow.dataset.view = "regular";
-            document.getElementById("statsColumn").style.width = "316px";
+            htmlElement("statsColumn").style.width = "316px";
         } else {
             statsWindow.dataset.view = "radar";
-            document.getElementById("statsColumn").style.width = "410px";
+            htmlElement("statsColumn").style.width = "410px";
             statGraph.update();
         }
     };
 
     changeTheme(init) {
-        const themeInput = document.getElementById("themeInput");
-        const themeVariantInput = document.getElementById("themeVariantInput");
+        const themeInput = selectElement("themeInput");
+        const themeVariantInput = selectElement("themeVariantInput");
         if (init) themeInput.value = options.theme;
         if (init) themeVariantInput.value = options.themeVariant;
         options.theme = themeInput.value;
@@ -1571,7 +1572,7 @@ class View {
         document.getElementById('currentPrestigePoints').textContent = `${formatNumber(prestigeValues["prestigeCurrentPoints"])}`;
         document.getElementById('currentPrestigesCompleted').textContent = `${formatNumber(prestigeValues["prestigeTotalCompletions"])}`;
         // document.getElementById('maxTotalImbueSoulLevels').textContent = `${formatNumber(prestigeValues["prestigeTotalCompletions"])}`;
-        document.getElementById('maxTotalImbueSoulLevels').textContent = `${formatNumber(Math.floor(prestigeValues["prestigeTotalCompletions"], 7))}`;
+        document.getElementById('maxTotalImbueSoulLevels').textContent = `${formatNumber(Math.min(prestigeValues["prestigeTotalCompletions"], 7))}`;
 
         document.getElementById('totalPrestigePoints').textContent = `${formatNumber(prestigeValues["prestigeTotalPoints"])}`;
 
@@ -1733,26 +1734,13 @@ function adjustActionListSize(amt) {
 
 function updateBuffCaps() {
     for (const buff of buffList) {
-        document.getElementById(`buff${buff}Cap`).value = Math.min(parseInt(document.getElementById(`buff${buff}Cap`).value), buffHardCaps[buff]);
-        buffCaps[buff] = parseInt(document.getElementById(`buff${buff}Cap`).value);
+        inputElement(`buff${buff}Cap`).value = String(Math.min(parseInt(inputElement(`buff${buff}Cap`).value), buffHardCaps[buff]));
+        buffCaps[buff] = parseInt(inputElement(`buff${buff}Cap`).value);
     }
 }
 
 function setScreenSize() {
     screenSize = document.body.scrollHeight;
-}
-
-//Attempts at getting divs to stay on screen, but can't figure it out still
-function clampDivs() {
-    let tooltips = Array.from(document.getElementsByClassName("showthis"));
-    let test = document.getElementById("radarStats");
-    console.log(screenSize);
-    tooltips.forEach(tooltip => {
-        var offsets = cumulativeOffset(tooltip);
-        if (offsets.top != 0) console.log("Top: " + offsets.top + ". Height: " + tooltip.clientHeight + ". Total: " + (offsets.top + tooltip.clientHeight) + ". Screensize: " + screenSize);
-        if (offsets.top < 0) console.log("Offscreen - top");
-        if (offsets.top + tooltip.clientHeight > screenSize) tooltip.style.top = -100 + 'px';
-    });
 }
 
 function cumulativeOffset(element) {
