@@ -9,6 +9,19 @@
                 <title>Changelog</title>
                 <version_prefix>Version</version_prefix>
             </meta>
+            <version verNum="3.P16.16"><![CDATA[
+            <b> Jan 7th, 2024</b>
+            • More colors in more places! The "Use stat colors in menu" option now colors the stat name and your current level in the Stats display, as well as stat names in action tooltips.<br>
+            • On that note, some of the stat colors were hard to distinguish against the background, so all stat colors have been tweaked to be easier on the eyes, in both light and dark themes.<br>
+            • You can now turn on an option that shows an indicator of what stats each action requires, without having to mouse-over.<br>
+            • The Action Log will now record whenever you gain a new buff or increase the level of an existing buff, along with how much you paid for it.<br>
+            • The "Bonus Seconds" tooltip now properly reflects any changes to bonus speed from the Extras menu.<br>
+            • Still trying to get the tooltips to position properly, but they should be behaving at least somewhat better now, the little gremlins.<br>
+            • The tooltip for Mana Wells now updates to reflect the amount of mana in them at that moment in time.<br>
+            • The tooltips in zone 6 now properly hide their contents before you unlock them.<br>
+            • Some rendering fixes for various browsers that weren't playing nice with the CSS I've been writing.<br>
+            • Lots—and I mean LOTS—of typechecking comments have been added to the code. This doesn't change anything about how the game runs, but it makes me happier.<br>
+            ]]></version>
             <version verNum="3.P16.15"><![CDATA[
             <b> Dec 18th, 2023</b>
             • Fixed a bug where skill experience would not get awarded if the amount of exp wasn't an integer.<br>
