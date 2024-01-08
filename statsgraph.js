@@ -26,8 +26,13 @@ class StatGraph {
     /** @type {d3.Selection<HTMLElement, Record<StatName, Stat>>} */
     statsContainer;
 
-    /** @param {HTMLElement} statsContainer @param {(stat: StatName) => string} getHtml  */
-    init(statsContainer, getHtml) {
+    /** @param {StatName} stat */
+    getAxisTip(stat) {
+        return d3.pointRadial(this.statScale(stat), this.radius + 10);
+    }
+
+    /** @param {HTMLElement} statsContainer */
+    init(statsContainer) {
         if (this.initalized) return;
         const orderedStats = statList.map(s => stats[s]);
         const datasets = this.getGraphDatasets();
@@ -59,17 +64,7 @@ class StatGraph {
                 .attr("transform", stat => `translate(${d3.pointRadial(tScale(stat.name), this.radius + 10).join()})`)
                 .selectChild("text")
                 .text(stat => stat.short_form)));
-        const statOverlays = /** @type {d3.Selection<HTMLDivElement, Stat>} */ (this.statsContainer.selectAll("div.statContainer")
-            .data(orderedStats, s => s.name)
-            .join(enter => enter
-                .append("span")
-                .html(stat => getHtml(stat.name))
-                .selectChild("div")
-                .each(/** @this {HTMLDivElement} */function() {this.parentElement.parentElement.replaceChild(this, this.parentElement)}))
-            .classed("statContainer", true)
-            .style("left", stat => `${d3.pointRadial(tScale(stat.name), this.radius + 10)[0]}%`)
-            .style("top", stat => `${d3.pointRadial(tScale(stat.name), this.radius + 10)[1]+3}%`));
-
+        
         const legend = this.svg.selectChild("g.legend")
             .attr("transform", `translate(0, ${-this.radius - 20})`)
             .selectChildren("g.dataset")

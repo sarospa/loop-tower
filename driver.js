@@ -200,9 +200,9 @@ function executeGameTicks(deadline) {
         }
     }
 
-    if (radarUpdateTime > 1000) {
+    if (radarUpdateTime > 100) {
         view.updateStatGraphNeeded = true;
-        radarUpdateTime %= 1000;
+        radarUpdateTime %= 100;
     }
 
     view.update();

@@ -79,16 +79,28 @@ class View {
     };
 
     createStats() {
-        statGraph.init(document.getElementById("statsContainer"), stat =>
-            `<div class='statContainer showthat stat-${stat.toLowerCase()}' onmouseover='view.showStat("${stat}")' onmouseout='view.showStat(undefined)'>
+        statGraph.init(document.getElementById("statsContainer"));
+        const totalContainer = htmlElement("totalStatContainer");
+        for (const stat of statList) {
+            const axisTip = statGraph.getAxisTip(stat);
+            totalContainer.insertAdjacentHTML("beforebegin",
+            `<div class='statContainer showthat stat-${stat.toLowerCase()}' style='left:${axisTip[0]}%;top:${axisTip[1]+3}%;' onmouseover='view.showStat("${stat}")' onmouseout='view.showStat(undefined)'>
                 <div class='statLabelContainer'>
                     <div class='medium bold stat-name' style='margin-left:18px;margin-top:5px;'>${_txt(`stats>${stat}>long_form`)}</div>
                     <div class='medium statNum stat-soulstone' style='color:var(--stat-soulstone-color);' id='stat${stat}ss'></div>
-                    <div class='medium statNum stat-talent' id='stat${stat}Talent'>0</div>
-                    <div class='medium statNum stat-level bold' id='stat${stat}Level'>0</div>
+                    <div class=' statNum stat-talent'></div>
+                    <div class='medium statNum stat-talent statBarWrapper'>
+                        <div class='thinProgressBarLower tiny talentBar'><div class='statBar statTalentBar' id='stat${stat}TalentBar'></div></div>
+                        <div class='label' id='stat${stat}Talent'>0</div>
+                    </div>
+                    <div class='medium statNum stat-level statBarWrapper'>
+                        <div class='thinProgressBarLower tiny expBar'><div class='statBar statLevelBar' id='stat${stat}LevelBar'></div></div>
+                        <div class='label bold' id='stat${stat}Level'>0</div>
+                    </div>
                 </div>
-                <div class='thinProgressBarUpper'><div class='statBar statLevelBar' id='stat${stat}LevelBar'></div></div>
-                <div class='thinProgressBarLower'><div class='statBar statTalentBar' id='stat${stat}TalentBar'></div></div>
+                <div class='thinProgressBarUpper expBar'><div class='statBar statLevelLogBar logBar' id='stat${stat}LevelLogBar'></div></div>
+                <div class='thinProgressBarLower talentBar'><div class='statBar statTalentLogBar logBar' id='stat${stat}TalentLogBar'></div></div>
+                <div class='thinProgressBarLower soulstoneBar'><div class='statBar statSoulstoneLogBar logBar' id='stat${stat}SoulstoneLogBar'></div></div>
                 <div class='showthis' id='stat${stat}Tooltip' style='width:225px;'>
                     <div class='medium bold'>${_txt(`stats>${stat}>long_form`)}</div><br>${_txt(`stats>${stat}>blurb`)}
                     <br>
@@ -115,17 +127,14 @@ class View {
                     <div class='medium bold'>${_txt("stats>tooltip>total_multiplier")}:</div> x<div id='stat${stat}TotalMult'></div>
                 </div>
             </div>`);
-
-        if (options.statColors)
-            Array.from(document.getElementsByClassName("statLevelBar")).forEach((div, index) => {
-                addStatColors(div, statList[index]);
-            });
+        }
     };
 
     // requests are properties, where the key is the function name,
     // and the array items in the value are the target of the function
     /** @satisfies {Partial<Record<keyof View, any[]>>} */
     requests = {
+        updateStats: [],
         updateStat: [],
         updateSkill: [],
         updateSkills: [],
@@ -293,12 +302,18 @@ class View {
     updateStat(stat) {
         const level = getLevel(stat);
         const talent = getTalent(stat);
+        const totalLevel = Object.values(stats).map(s=>s.statLevelExp.level).reduce((a,b) => a + b);
+        const totalTalent = Object.values(stats).map(s=>s.talentLevelExp.level).reduce((a,b) => a + b);
         const levelPrc = `${getPrcToNextLevel(stat)}%`;
         const talentPrc = `${getPrcToNextTalent(stat)}%`;
-        document.getElementById(`stat${stat}LevelBar`).style.width = levelPrc;
-        document.getElementById(`stat${stat}TalentBar`).style.width = talentPrc;
+
+        this.updateLevelLogBar("statsContainer", `stat${stat}LevelLogBar`, level, `stat${stat}LevelBar`, levelPrc);
+        this.updateLevelLogBar("statsContainer", `stat${stat}TalentLogBar`, talent, `stat${stat}TalentBar`, talentPrc);
+
         document.getElementById(`stat${stat}Level`).textContent = intToString(level, 1);
         document.getElementById(`stat${stat}Talent`).textContent = intToString(talent, 1);
+        document.getElementById(`stattotalLevel`).textContent = intToString(totalLevel, 1);
+        document.getElementById(`stattotalTalent`).textContent = intToString(totalTalent, 1);
 
         if (statShowing === stat || document.getElementById(`stat${stat}LevelExp`).innerHTML === "") {
             document.getElementById(`stat${stat}Level2`).textContent = intToString(level, 1);
@@ -315,7 +330,44 @@ class View {
         }
     };
 
-    updateStats() {
+    /**
+     * @param {string} maxContainerId 
+     * @param {string} logBarId
+     * @param {number} level
+     * @param {string} [levelBarId]
+     * @param {string} [levelPrc]
+     */
+    updateLevelLogBar(maxContainerId, logBarId, level, levelBarId, levelPrc) {
+        const maxContainer = htmlElement(maxContainerId);
+        const logLevel = level; //Math.log10(level);
+        let maxValue = parseFloat(getComputedStyle(maxContainer).getPropertyValue("--max-bar-value")) || 0;
+
+        const logBar = htmlElement(logBarId);
+        if (level > maxValue) {
+            maxValue = Math.pow(2, Math.ceil(Math.log2(level + 1)));
+            maxContainer.style.setProperty("--max-bar-value", String(maxValue));
+        }
+        logBar.style.setProperty("--bar-value", String(logLevel));
+        if (levelBarId) document.getElementById(levelBarId).style.width = levelPrc;
+    }
+
+    updateStats(skipAnimation) {
+        let maxValue = 100; // I really need to stop writing this default explicitly everywhere
+        for (const stat of statList) {
+            for (const value of [getLevel(stat), getTalent(stat), stats[stat].soulstone]) {
+                maxValue = Math.max(value, maxValue);
+            }
+        }
+        maxValue = Math.pow(2, Math.ceil(Math.log2(maxValue)));
+        const statsContainer = htmlElement("statsContainer");
+        if (skipAnimation) {
+            statsContainer.classList.remove("animate-logBars");
+        }
+        statsContainer.style.setProperty("--max-bar-value", String(maxValue));
+        if (!statsContainer.classList.contains("animate-logBars")) {
+            requestAnimationFrame(() => statsContainer.classList.add("animate-logBars"));
+        }
+
         for (const stat of statList) {
             this.updateStat(stat);
         }
@@ -1439,16 +1491,28 @@ class View {
     };
 
     updateSoulstones() {
+        let total = 0;
         for (const stat of statList) {
             if (stats[stat].soulstone) {
+                total += stats[stat].soulstone;
+                htmlElement(`stat${stat}SoulstoneLogBar`).parentElement.style.display = "";
+                this.updateLevelLogBar("statsContainer", `stat${stat}SoulstoneLogBar`, stats[stat].soulstone);
                 document.getElementById(`ss${stat}Container`).style.display = "inline-block";
                 document.getElementById(`ss${stat}`).textContent = intToString(stats[stat].soulstone, 1);
                 document.getElementById(`stat${stat}SSBonus`).textContent = intToString(stats[stat].soulstone ? stats[stat].soulstoneMult : 0);
                 document.getElementById(`stat${stat}ss`).textContent = intToString(stats[stat].soulstone, 1);
             } else {
+                htmlElement(`stat${stat}SoulstoneLogBar`).parentElement.style.display = "none";
                 document.getElementById(`ss${stat}Container`).style.display = "none";
                 document.getElementById(`stat${stat}ss`).textContent = "";
             }
+        }
+        if (total > 0) {
+            document.getElementById(`stattotalss`).style.display = "";
+            document.getElementById(`stattotalss`).textContent = intToString(total, 1);
+        } else {
+            document.getElementById(`stattotalss`).style.display = "none";
+            document.getElementById(`stattotalss`).textContent = "";
         }
     };
 

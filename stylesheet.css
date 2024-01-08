@@ -520,6 +520,7 @@ input[type="number"] {
 }
 #statsContainer {
     grid-area: stats;
+    --max-bar-value: 100; /* default, 1-10 in first 75% of bar */
 }
 #skillList {
     grid-area: skills;
@@ -605,8 +606,7 @@ input[type="number"] {
         grid-column: fullrow;
         grid-template:
             "name level talent soulstone"
-            "upper-bar upper-bar upper-bar upper-bar"
-            "lower-bar lower-bar lower-bar lower-bar";
+            "bars bars bars bars";
         /* Chrome etc don't support subgrid in the grid-template value? */
         grid-template-columns: [fullrow-start] 1fr max-content max-content max-content [fullrow-end];
         grid-template-columns: subgrid;
@@ -630,13 +630,19 @@ input[type="number"] {
             grid-area: soulstone;
         }
         & .thinProgressBarUpper {
-            grid-area: upper-bar;
+            margin-top: 2px;
+            grid-column: fullrow;
         }
         & .thinProgressBarLower {
-            grid-area: lower-bar;
+            grid-column: fullrow;
         }
     }
 
+}
+
+.statContainer.stat-total {
+    font-style: italic;
+    opacity: 0.75;
 }
 
 .statLabelContainer {
@@ -658,7 +664,7 @@ input[type="number"] {
 .thinProgressBarUpper, .thinProgressBarLower {
     width:90%;
     background-color: var(--progress-bar-background);
-    display:block;
+    display:flex;
     margin:0 auto 2px auto;
 }
 .thinProgressBarUpper { height:4px; }
@@ -671,19 +677,62 @@ input[type="number"] {
     height:8px;
 }
 
+.statBarWrapper {
+    /* anchored by a stat-* grid placement class */
+    position: relative;
+    z-index: 0;
+    & .thinProgressBarLower {
+        position: absolute;
+        inset: -2px -2px -3px -2px;
+        height: auto;
+        width: auto;
+        z-index: 0;
+    }
+    & .label {
+        position: relative;
+        z-index: 1;
+        display: block;
+        background-color: color-mix(in srgb, var(--body-background), transparent 20%);
+    }
+}
 .statBar {
     height:100%;
     width:0;
     display:block;
 }
-.statLevelBar, .townExpBar, .skillExpBar {
+.logBar {
+    width: calc(var(--bar-value,0) / var(--max-bar-value,1) * 75%);
+}
+.animate-logBars .logBar {
+    transition: width 100ms ease;
+}
+.statLevelLogBar, .townExpBar, .skillExpBar {
     background-color: var(--progress-bar-primary-color);
+}
+.statLevelBar {
+    background-color: color-mix(in srgb, var(--progress-bar-primary-color), transparent 25%);
+}
+.statTalentLogBar {
+    background-color: var(--progress-bar-talent-color);
 }
 .statTalentBar {
     background-color: var(--progress-bar-talent-color);
+    background-color: color-mix(in srgb, var(--progress-bar-talent-color), transparent 25%);
 }
+.statSoulstoneLogBar,
 .townBar {
     background-color: var(--progress-bar-town-color);
+}
+.use-stat-colors {
+    & .statLevelLogBar {
+        background-color: var(--stat-color);
+    }
+    & .statTalentLogBar {
+        background-color: color-mix(in srgb, var(--stat-color), var(--progress-bar-talent-color) 75%);
+    }
+    & .statSoulstoneLogBar {
+        background-color: color-mix(in srgb, var(--stat-color), var(--progress-bar-town-color) 75%);
+    }
 }
 .segmentBar {
     height:100%;

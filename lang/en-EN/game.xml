@@ -982,6 +982,7 @@
             <long_form>Soul</long_form>
             <short_form>Soul</short_form>
         </soul>
+        <total>Total</total>
         <tooltip>
             <level>Level</level>
             <level_exp>Level Exp</level_exp>

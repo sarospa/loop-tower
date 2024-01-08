@@ -79,7 +79,16 @@
                     <svg id="statChart" class="radar-chart" viewBox="-200 -200 400 400" preserveAspectRatio="xMidYMin meet"></svg>
                     <div class="showthis localized" style="margin-top:20px;width:375px" data-lockey="stats>tooltip>graph_legend"></div>
                 </div>
-                <div id="statsContainer"></div>
+                <div id="statsContainer">
+                    <div class='statContainer stat-total' id="totalStatContainer">
+                        <div class='statLabelContainer'>
+                            <div class='medium bold stat-name localized' style='margin-left:18px;margin-top:5px;' data-lockey="stats>total"></div>
+                            <div class='medium statNum stat-soulstone' style='color:var(--stat-soulstone-color);' id='stattotalss'></div>
+                            <div class='medium statNum stat-talent' id='stattotalTalent'>0</div>
+                            <div class='medium statNum stat-level' id='stattotalLevel'>0</div>
+                        </div>
+                    </div>
+                </div>
                 <div id="skillList" style="width:100%;display:none">
                     <div class="showthat">
                         <div class="large bold localized" data-lockey="skills>title"></div>

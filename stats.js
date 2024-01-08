@@ -563,8 +563,8 @@ function restartStats() {
     for (let i = 0; i < statList.length; i++) {
         if(getSkillLevel("Wunderkind") > 0) stats[statList[i]].statLevelExp.setLevel(getBuffLevel("Imbuement2") * 2);
         else stats[statList[i]].statLevelExp.setLevel(getBuffLevel("Imbuement2"));
-        view.requestUpdate("updateStat", statList[i]);
     }
+    view.requestUpdate("updateStats", true);
 }
 
 /** @param {typeof statList[number]} statName */
