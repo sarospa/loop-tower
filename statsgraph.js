@@ -170,7 +170,7 @@ class StatGraph {
         return datasets;
     }
 
-    update() {
+    update(skipAnimation) {
         if (!this.initalized) return;
 
         const tScale = this.statScale;
@@ -189,7 +189,7 @@ class StatGraph {
         const closedStatNames = [...statList, statList[0]];
         const closedStats = closedStatNames.map(name => stats[name]);
         const transition = d3.transition()
-            .duration(250)
+            .duration(skipAnimation ? 0 : 250)
             .ease(d3.easeSinIn);
         
         this.svg.selectChild("g.layer.scaleLines")

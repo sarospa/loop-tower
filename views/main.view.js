@@ -262,10 +262,10 @@ class View {
 
         // check all bounds and nudge the tooltip back onto the screen if necessary, favoring the
         // top and left edges. don't trust the trbl on tooltipRect, since adjusting those isn't in spec.
-        tooltipRect.x = Math.min(tooltipRect.x, viewportRect.right - tooltipRect.width);
-        tooltipRect.y = Math.min(tooltipRect.y, viewportRect.bottom - tooltipRect.height);
-        tooltipRect.x = Math.max(tooltipRect.x, viewportRect.left);
-        tooltipRect.y = Math.max(tooltipRect.y, viewportRect.top);
+        targetPos.x = Math.min(targetPos.x, viewportRect.right - tooltipRect.width);
+        targetPos.y = Math.min(targetPos.y, viewportRect.bottom - tooltipRect.height);
+        targetPos.x = Math.max(targetPos.x, viewportRect.left);
+        targetPos.y = Math.max(targetPos.y, viewportRect.top);
 
         // console.log("Fixing tooltip:",{tooltip,tooltipRect,trigger,triggerRect,event});
 
@@ -362,6 +362,7 @@ class View {
         const statsContainer = htmlElement("statsContainer");
         if (skipAnimation) {
             statsContainer.classList.remove("animate-logBars");
+            statGraph.update(true);
         }
         statsContainer.style.setProperty("--max-bar-value", String(maxValue));
         if (!statsContainer.classList.contains("animate-logBars")) {

@@ -683,16 +683,22 @@ input[type="number"] {
     z-index: 0;
     & .thinProgressBarLower {
         position: absolute;
-        inset: -2px -2px -3px -2px;
+        inset: -3px 0 0 0;
         height: auto;
         width: auto;
         z-index: 0;
+        margin: 0;
+        &::after {
+            content: "";
+            position: absolute;
+            inset:2px;
+            background-color: color-mix(in srgb, var(--body-background), transparent 20%);
+        }
     }
     & .label {
         position: relative;
-        z-index: 1;
+        margin: 0 3px 2px 2px;
         display: block;
-        background-color: color-mix(in srgb, var(--body-background), transparent 20%);
     }
 }
 .statBar {
