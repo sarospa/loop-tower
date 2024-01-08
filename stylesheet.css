@@ -172,6 +172,7 @@ body:not(.loading) > .hideWhenLoaded {
     opacity: 0;
     width: max-content;
     max-width: 400px;
+    max-width: min(400px,95svw);
     position:absolute;
     color: var(--popup-color);
     background-color: var(--popup-background);
@@ -181,6 +182,12 @@ body:not(.loading) > .hideWhenLoaded {
     margin-top:5px;
     z-index: 999999;
     text-align:left;
+}
+
+.showthisH {
+    max-height:95svh;
+    overflow: auto;
+    overscroll-behavior: contain;
 }
 
 .showthat2 {
@@ -200,6 +207,7 @@ body:not(.loading) > .hideWhenLoaded {
 
 #changelog .showthis2 {
     top: 19px;
+    pointer-events: none;
 }
 
 .showthisname {
