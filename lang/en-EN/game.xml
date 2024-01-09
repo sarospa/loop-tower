@@ -921,6 +921,7 @@
           <p>Accrue 1 bonus second per second when paused or offline. (capped at 1 month per offline period)</p>
           <p>Bonus is {state}</p>
           <p>{counter_text} {bonusSeconds}</p>
+          {lag_warning}
         ]]></main_text>
             <background_disabled>You can adjust this speed or set a different speed for while this tab is in the background in the Extras menu.</background_disabled>
             <background_0x>While this tab is in the background (regardless of if this bonus is on or off), the game will not run, and you will gain bonus time as though paused.</background_0x>
@@ -933,6 +934,7 @@
                 <off>OFF</off>
             </state>
             <counter_text>Total Bonus Seconds</counter_text>
+            <lag_warning><![CDATA[<p><b>Lag detected!</b> Current effective game speed is {lagSpeed}x.</p>]]></lag_warning>
         </bonus_seconds>
     </time_controls>
     <stats>

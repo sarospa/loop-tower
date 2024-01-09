@@ -150,6 +150,7 @@ class View {
         updateCloudSave: [],
         updateTime: [],
         updateOffline: [],
+        updateBonusText: [],
         updateTotals: [],
         updateStories: [],
         updateGlobalStory: [],
@@ -547,8 +548,10 @@ class View {
             get state() {return `<span class='bold' id='isBonusOn'>${_txt(`time_controls>bonus_seconds>state>${isBonusActive() ? "on" : "off"}`)}</span>`},
             get counter_text() {return `<span class='bold'>${_txt("time_controls>bonus_seconds>counter_text")}</span>`},
             get bonusSeconds() {return `<span id='bonusSeconds'>${formatTime(totalOfflineMs / 1000)}</span>`},
+            get lag_warning() {return lagSpeed > 0 ? _txt("time_controls>bonus_seconds>lag_warning") : ""},
             speed: fgSpeed,
             background_speed: bgSpeed,
+            lagSpeed,
         }
         const lval = variables[lhs] ?? (parseFloat(lhs) || 0);
         const rval = variables[rhs] ?? (parseFloat(rhs) || 0);

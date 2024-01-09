@@ -11,6 +11,7 @@ let radarUpdateTime = 0;
 let timeCounter = 0;
 let effectiveTime = 0;
 let lastSave = Date.now();
+let lagSpeed = 0;
 
 function getSpeedMult(zone = curTown) {
     let speedMult = 1;
@@ -120,6 +121,7 @@ function tick() {
 
     if (gameIsStopped) {
         addOffline(gameTicksLeft * offlineRatio);
+        updateLag(0);
         view.update();
         gameTicksLeft = 0;
         return;
@@ -136,9 +138,12 @@ function executeGameTicks(deadline) {
     // including the gameSpeed multiplier here because it is effectively constant over the course of a single
     // update, and it affects how many actual game ticks pass in a given span of realtime.
     let baseManaToBurn = Mana.floor(gameTicksLeft * baseManaPerSecond * gameSpeed / 1000);
+    const originalManaToBurn = baseManaToBurn;
+    let cleanExit = false;
 
     while (baseManaToBurn * bonusSpeed >= (options.fractionalMana ? 0.01 : 1) && performance.now() < deadline) {
         if (gameIsStopped) {
+            cleanExit = true;
             break;
         }
         // first, figure out how much *actual* mana is available to get spent. bonusSpeed gets rolled in first,
@@ -194,6 +199,7 @@ function executeGameTicks(deadline) {
         refreshDungeons(manaSpent);
 
         if (shouldRestart || timer >= timeNeeded) {
+            cleanExit = true;
             loopEnd();
             prepareRestart();
             break; // don't span loops within tick()
@@ -203,6 +209,18 @@ function executeGameTicks(deadline) {
     if (radarUpdateTime > 100) {
         view.updateStatGraphNeeded = true;
         radarUpdateTime %= 100;
+    }
+
+    if (!gameIsStopped && baseManaToBurn * bonusSpeed >= 10) {
+        if (!cleanExit || lagSpeed > 0) {
+            // lagging. refund all backlog as bonus time to clear the queue
+            addOffline(gameTicksLeft * offlineRatio);
+            gameTicksLeft = 0;
+        }
+        updateLag((originalManaToBurn - baseManaToBurn) * bonusSpeed);
+    } else if (baseManaToBurn * bonusSpeed < 1) {
+        // lag cleared
+        updateLag(0);
     }
 
     view.update();
@@ -744,6 +762,31 @@ function returnTime() {
     }
 }
 
+let lagStart = 0;
+let lagSpent = 0;
+function updateLag(manaSpent) {
+    if (manaSpent === 0) { // cancel lag display
+        if (lagSpeed !== 0) {
+            lagSpeed = 0;
+            view.requestUpdate("updateBonusText", null);
+        }
+        return;
+    }
+    if (lagSpeed === 0) {
+        // initial lag. 
+        lagStart = performance.now();
+        lagSpent = 0;
+        lagSpeed = 1;
+        return;
+    }
+    // update lag
+    lagSpent += manaSpent;
+    const now = performance.now();
+    const measuredSpeed = lagSpent / (now - lagStart) * 1000 / baseManaPerSecond;
+    lagSpeed = measuredSpeed;
+    view.requestUpdate("updateBonusText", null);
+}
+
 function addOffline(num) {
     if (num) {
         if (totalOfflineMs + num < 0 && bonusSpeed > 1) {
@@ -777,7 +820,7 @@ function isBonusActive() {
 }
 
 function checkExtraSpeed() {
-    view.updateBonusText();
+    view.requestUpdate("updateBonusText", null);
     if (typeof options.speedIncreaseBackground === "number" && !isNaN(options.speedIncreaseBackground) && options.speedIncreaseBackground >= 0 && !document.hasFocus() && (options.speedIncreaseBackground < 1 || isBonusActive())) {
         if (options.speedIncreaseBackground === 1) {
             bonusSpeed = 1.00001;
