@@ -540,6 +540,12 @@
             <theme>
                 <cubic_t-dark>Cubic Dark</cubic_t-dark>
             </theme>
+            <theme>
+                <zen>Zen</zen>
+            </theme>
+            <theme>
+                <zen_t-dark>Zen Dark</zen_t-dark>
+            </theme>
             <!--changed discord link for analytical reasons-->
             <discord>
                 <link>https://discord.gg/dnKA6Xd</link>

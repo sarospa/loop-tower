@@ -151,7 +151,7 @@ Views.registerView("menu", {
         return html;
     },
     htmlThemeMenu() {
-        const themeList = ["normal", "dark", "cubic", "cubic t-dark"];
+        const themeList = ["normal", "dark", "cubic", "cubic t-dark", "zen", "zen t-dark"];
         const themes = _txtsObj("menu>options>theme");
         let html = `${_txt("menu>options>theme_title")}: <select id='themeInput' onchange='view.changeTheme();'>`;
         $(themes).each((index, theme) => {

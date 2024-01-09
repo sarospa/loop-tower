@@ -354,3 +354,205 @@
         --stat-soul-color: #D67EE6;
     }
 }
+
+/* Zen theme, full palette hue-rotated 180° except for stat colors */
+.t-zen {
+    --link-color: hsl(30, 100%, 40%);
+    --link-visited-color: hsl(90, 50%, 40%);
+    --link-active-color: hsl(180, 100%, 45.1%);
+    --alert-color: hsl(180, 100%, 50%);
+    --body-background: hsl(307.5, 17.4%, 91%);
+    --body-background-transparent: hsla(307.5, 17.4%, 91%, 0);
+
+    --popup-background: hsl(311.7, 40%, 82.4%);
+    --popup-highlight-background: hsl(302.4, 39.4%, 49.2%);
+
+    --button-background: hsl(302.4, 39.4%, 49.2%);
+    --button-active-background: hsl(302.3, 39.2%, 40%);
+    --button-inactive-background: hsl(292.2, 27.1%, 66.7%);
+    --button-warning-background: hsl(177.6, 39.4%, 49.2%);
+
+    --action-hover-background: hsl(6.5, 100%, 87.3%);
+    --action-highlight-border: hsl(291.9, 26.9%, 57.1%);
+    --action-locked-background: hsl(180, 29.7%, 74.9%);
+    --action-locked-hover-background: hsl(180, 29.9%, 65.9%);
+
+    --story-border: hsl(220.2, 42%, 52%);
+    --story-button-color: hsl(220, 24.5%, 61.6%);
+    --story-button-completed-color: hsl(220.2, 42%, 52%);
+
+    --stat-container-hover-background: hsl(316.7, 21.4%, 83.5%);
+
+    --progress-bar-mana-color: hsl(51.8, 100%, 75.5%);
+    --progress-bar-primary-color: hsl(91.8, 50.5%, 60.4%);
+    --progress-bar-talent-color: hsl(212.6, 100%, 67.8%);
+    --progress-bar-town-color: hsl(45.3, 100%, 79.2%);
+
+    --cur-actions-background: hsl(316.7, 41.9%, 83.1%);
+    --next-actions-background: hsl(317.6, 20.5%, 83.7%);
+
+    --cur-action-inprogress-background: hsl(188.8, 100%, 74.5%);
+    --cur-action-completed-background: hsl(180, 0%, 42.7%);
+    --cur-action-error-indicator: hsl(180, 100%, 50%);
+    --cur-action-selected-indicator: hsl(302.4, 39.4%, 49.2%);
+
+    --action-icon-hover-color: hsl(180, 100%, 50%);
+
+    --zone-tint-1: hsla(215.8, 100%, 50%, 0.2);
+    --zone-tint-2: hsla(302.4, 39.4%, 49.2%, 0.2);
+    --zone-tint-3: hsla(233.9, 100%, 61.6%, 0.2);
+    --zone-tint-4: hsla(19.5, 18.3%, 46.1%, 0.2);
+    --zone-tint-4-opaque: hsl(339, 16.1%, 75.7%);
+    --zone-tint-5: hsla(180, 0%, 100%, 0.2);
+    --zone-tint-6: hsla(81.6, 51.9%, 47.3%, 0.2);
+    --zone-tint-7: hsla(302.4, 39.4%, 49.2%, 0.4);
+    --zone-tint-8: hsla(233.9, 100%, 61.6%, 0.4);
+    --zone-tint-9: hsla(81.6, 51.9%, 47.3%, 0.4);
+
+    --scrollbar-track-background: hsl(292.7, 36.3%, 77.8%);
+    --scrollbar-button-background: hsl(302, 34.1%, 64.9%);
+    --scrollbar-button-hover-background: hsl(302, 34.6%, 50.2%);
+
+    --actions-scrollbar-track-background: hsl(292.2, 27.1%, 66.7%);
+    --actions-scrollbar-button-background: hsl(302.4, 39.4%, 49.2%);
+    --actions-scrollbar-button-hover-background: hsl(302.3, 39.2%, 40%);
+
+    --action-log-highlight-background: hsl(316.7, 41.9%, 83.1%);
+    --action-log-highlight-background-transparent: hsla(316.7, 41.9%, 83.1%, 0);
+
+    --graph-axis-color: hsl(127.5, 10%, 84.3%);
+    --graph-background-color: hsla(91.8, 50.5%, 60.4%, 0.2);
+    --graph-border-color: hsl(91.8, 50.5%, 60.4%);
+    --graph-point-background-color: hsl(91.8, 50.5%, 60.4%);
+    --graph-point-hover-border-color: hsl(91.8, 50.5%, 60.4%);
+
+    --predictor-color: hsl(51.7, 39.5%, 53.3%);
+    --predictor-better-color: hsl(51.7, 39.5%, 53.3%);
+    --predictor-worse-color: hsl(180, 100%, 50%);
+    --predictor-warning-color: hsl(120, 100%, 50%);
+    --predictor-invalid-color: hsl(180, 100%, 40%);
+    --predictor-expired-color: hsl(180, 0%, 46.7%);
+    --predictor-mana-color: hsl(52.1, 100%, 83.5%);
+    --predictor-manaBought-color: hsl(51.8, 49.3%, 59%);
+    --predictor-gold-color: hsl(212.4, 59%, 55.1%);
+    --predictor-rep-color: hsl(207.8, 52.4%, 45.3%);
+    --predictor-soul-color: hsl(91.8, 50.5%, 60.4%);
+    --predictor-herbs-color: hsl(302.4, 39.4%, 49.2%);
+    --predictor-hide-color: hsl(210, 100%, 20%);
+    --predictor-potions-color: hsl(15.1, 100%, 46.7%);
+    --predictor-lpotions-color: hsl(45.7, 91.8%, 61.6%);
+    --predictor-blood-color: hsl(180, 100%, 27.3%);
+    --predictor-crafts-color: hsl(180, 0%, 46.7%);
+    --predictor-adventures-color: hsl(180, 0%, 9.8%);
+    --predictor-ritual-color: hsl(147.6, 100%, 53.9%);
+    --predictor-artifacts-color: hsl(230.6, 100%, 50%);
+    --predictor-mind-color: hsl(300, 100%, 19.6%);
+    --predictor-stone-color: hsl(180, 100%, 50%);
+    --predictor-heroism-color: hsl(180, 100%, 50%);
+    --predictor-power-color: hsl(60, 100%, 50%);
+    --predictor-map-color: hsl(8.4, 60.9%, 46.1%);
+    --predictor-completedMap-color: hsl(8.4, 100%, 63.5%);
+    --predictor-finLoops-color: hsl(180, 0%, 46.7%);
+    --predictor-heart-color: hsl(180, 89.7%, 41.8%);
+    --predictor-giants-color: hsl(18.2, 43%, 59.4%);
+}
+
+/* Zen Dark theme, rotated 180° from Dark */
+.t-zen.t-dark {
+    --link-color: hsl(29.8, 100%, 67.6%);
+    --link-visited-color: hsl(90, 100%, 71.8%);
+    --link-active-color: hsl(180, 100%, 45.1%);
+    --alert-color: hsl(180, 100%, 50%);
+    --body-background: hsl(300, 17.1%, 8%);
+    --body-background-transparent: hsla(300, 17.1%, 8%, 0);
+
+    --popup-background: hsl(311.7, 39%, 23.1%);
+    --popup-highlight-background: hsl(302.4, 39.4%, 49.2%);
+
+    --button-background: hsl(302.3, 88%, 77.1%);
+    --button-active-background: hsl(301.9, 100%, 87.6%);
+    --button-inactive-background: hsl(284.7, 23.3%, 42.9%);
+    --button-warning-background: hsl(177.6, 31.9%, 53.9%);
+
+    --action-hover-background: hsl(9.8, 100%, 10.8%);
+    --action-highlight-border: hsl(291.9, 26.9%, 57.1%);
+    --action-locked-background: hsl(181.5, 27.5%, 29.2%);
+    --action-locked-hover-background: hsl(180, 31.8%, 41.4%);
+
+    --story-border: hsl(220.2, 42%, 52%);
+    --story-button-color: hsl(220, 24.5%, 61.6%);
+    --story-button-completed-color: hsl(220.2, 42%, 52%);
+
+    --stat-container-hover-background: hsl(318.3, 24.2%, 18.6%);
+
+    --progress-bar-mana-color: hsl(52, 36.6%, 43.9%);
+    --progress-bar-primary-color: hsl(91.7, 50.9%, 34.3%);
+    --progress-bar-talent-color: hsl(212.6, 62.9%, 40.2%);
+    --progress-bar-town-color: hsl(46.1, 28%, 39.2%);
+
+    --cur-actions-background: hsl(316.6, 43.1%, 21.4%);
+    --next-actions-background: hsl(316.4, 23.4%, 18.4%);
+
+    --cur-action-inprogress-background: hsl(189.2, 100%, 35.9%);
+    --cur-action-error-indicator: hsl(180, 100%, 50%);
+    --cur-action-selected-indicator: hsl(302.4, 39.4%, 49.2%);
+
+    --action-icon-hover-color: hsl(180, 100%, 50%);
+
+    --zone-tint-1: hsla(215.8, 100%, 37.8%, 0.2);
+    --zone-tint-2: hsla(302.3, 61.9%, 24.7%, 0.2);
+    --zone-tint-3: hsla(234, 100%, 33.3%, 0.2);
+    --zone-tint-4: hsla(19.8, 53.6%, 35.5%, 0.2);
+    --zone-tint-4-opaque: hsl(350, 28.8%, 20.4%);
+    --zone-tint-5: hsla(180, 0.5%, 61%, 0.2);
+    --zone-tint-6: hsla(81.7, 77%, 23.9%, 0.2);
+    --zone-tint-7: hsla(302.3, 61.9%, 24.7%, 0.4);
+    --zone-tint-8: hsla(234, 100%, 33.3%, 0.4);
+    --zone-tint-9: hsla(81.7, 77%, 23.9%, 0.4);
+
+    --scrollbar-track-background: hsl(284.6, 34%, 20.2%);
+    --scrollbar-button-background: hsl(302.8, 46.8%, 27.3%);
+    --scrollbar-button-hover-background: hsl(290.8, 34.1%, 33.9%);
+
+    --actions-scrollbar-track-background: hsl(285.3, 26.6%, 39%);
+    --actions-scrollbar-button-background: hsl(302.4, 39.4%, 49.2%);
+    --actions-scrollbar-button-hover-background: hsl(290.8, 55.6%, 70%);
+
+    --action-log-highlight-background: hsl(316.7, 41.9%, 83.1%);
+    --action-log-highlight-background-transparent: hsla(316.7, 41.9%, 83.1%, 0);
+
+    --graph-background-color: hsla(91.8, 50.5%, 60.4%, 0.2);
+    --graph-border-color: hsl(91.8, 50.5%, 60.4%);
+    --graph-point-background-color: hsl(91.8, 50.5%, 60.4%);
+    --graph-point-hover-border-color: hsl(91.8, 50.5%, 60.4%);
+  
+    --predictor-color: hsl(51.8, 100%, 75.5%);
+    --predictor-better-color: hsl(51.8, 100%, 75.5%);
+    --predictor-worse-color: hsl(180, 100%, 72.2%);
+    --predictor-warning-color: hsl(120, 100%, 50%);
+    --predictor-invalid-color: hsl(180, 100%, 64.1%);
+    --predictor-expired-color: hsl(180, 0%, 46.7%);
+    --predictor-mana-color: hsl(25.5, 93.2%, 65.3%);
+    --predictor-manaBought-color: hsl(51.8, 54.3%, 68.2%);
+    --predictor-gold-color: hsl(212.4, 49.2%, 65.3%);
+    --predictor-rep-color: hsl(207.6, 96.4%, 67.3%);
+    --predictor-soul-color: hsl(91.4, 63.1%, 79.8%);
+    --predictor-herbs-color: hsl(302.3, 45.6%, 66.9%);
+    --predictor-hide-color: hsl(199.7, 54%, 51.4%);
+    --predictor-potions-color: hsl(15.2, 95.9%, 62%);
+    --predictor-lpotions-color: hsl(45.6, 100%, 69.8%);
+    --predictor-blood-color: hsl(180, 63.8%, 61%);
+    --predictor-crafts-color: hsl(180, 0%, 62.7%);
+    --predictor-adventures-color: hsl(180, 0%, 47.8%);
+    --predictor-ritual-color: hsl(147.6, 100%, 75.3%);
+    --predictor-artifacts-color: hsl(230.6, 100%, 50%);
+    --predictor-mind-color: hsl(300, 60.7%, 55.1%);
+    --predictor-stone-color: hsl(180, 97.1%, 73.3%);
+    --predictor-heroism-color: hsl(180, 97.1%, 73.3%);
+    --predictor-power-color: hsl(60, 100%, 77.6%);
+    --predictor-map-color: hsl(8.4, 44.6%, 56.1%);
+    --predictor-completedMap-color: hsl(8.5, 96.4%, 67.1%);
+    --predictor-finLoops-color: hsl(180, 0%, 46.7%);
+    --predictor-heart-color: hsl(180, 74.5%, 52.4%);
+    --predictor-giants-color: hsl(18.4, 64.9%, 74.3%);
+}
