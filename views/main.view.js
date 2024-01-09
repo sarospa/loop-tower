@@ -79,6 +79,7 @@ class View {
     };
 
     createStats() {
+        if (statGraph.initalized) return;
         statGraph.init(document.getElementById("statsContainer"));
         const totalContainer = htmlElement("totalStatContainer");
         for (const stat of statList) {
