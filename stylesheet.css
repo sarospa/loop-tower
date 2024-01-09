@@ -672,8 +672,12 @@ input[type="number"] {
 .thinProgressBarUpper, .thinProgressBarLower {
     width:90%;
     background-color: var(--progress-bar-background);
-    display:flex;
+    display:block;
     margin:0 auto 2px auto;
+}
+#statsColumn :is(.thinProgressBarUpper, .thinProgressBarLower):not(.tiny) {
+    width:auto;
+    margin:0 10px 2px 18px;
 }
 .thinProgressBarUpper { height:4px; }
 .thinProgressBarLower { height:3px; }
