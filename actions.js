@@ -11,7 +11,20 @@ const PRESTIGE_CHRONOMANCY_BASE  = 1.05;
 const PRESTIGE_EXP_OVERFLOW_BASE = 1.00222;
 
 /**
+ * ActionLoopType is an enum that describes what the "loops" property means. Actions without
+ * a loopsType property default to the classic behavior of "actions" for non-multipart actions
+ * or "maxMana" for multipart actions.
+ * 
+ * The comments here assume X as the number specified in "loops" and M as the manaCost() of the
+ * action in question.
+ * @typedef {"actions"      // perform X actions and then stop
+ *         | "maxMana"      // Multipart actions: Spend no more than X * M mana, stop before starting an action that would overflow
+ *         | "knownGood"    // Limited actions: perform at most X actions, only targeting known-good items
+ *         | "unchecked"    // Limited actions: perform at most X actions, only targeting unknown items
+ * } ActionLoopType
+ * 
  * @typedef CurrentActionEntry
+ * @prop {ActionLoopType} loopsType
  * @prop {number} loops
  * @prop {number} loopsLeft
  * @prop {number} extraLoops
@@ -32,6 +45,7 @@ const PRESTIGE_EXP_OVERFLOW_BASE = 1.00222;
  * @prop {number}     loops
  * @prop {boolean}    disabled
  * @prop {boolean}    [collapsed]
+ * @prop {ActionLoopType} [loopsType]
  */
 
 /** @param {AnyActionEntry} action @returns {action is MultipartAction} */
@@ -292,6 +306,7 @@ class Actions {
                 }
                 const toAdd = /** @type {AnyActionEntry} */(translateClassNames(action.name));
 
+                toAdd.loopsType = action.loopsType ?? (isMultipartAction(toAdd) ? "maxMana" : "actions");
                 toAdd.loops = action.loops;
                 toAdd.loopsLeft = action.loops;
                 toAdd.extraLoops = 0;
@@ -327,13 +342,23 @@ class Actions {
     }
 
 
-    addAction(action, loops, initialOrder, disabled) {
+    /**
+     * @param {ActionName}     action
+     * @param {number}         [loops]
+     * @param {number}         [initialOrder]
+     * @param {boolean}        [disabled]
+     * @param {ActionLoopType} [loopsType]
+     * @returns {number}
+     */
+    addAction(action, loops, initialOrder, disabled, loopsType) {
+        /** @type {NextActionEntry} */
         const toAdd = {};
         toAdd.name = action;
         if (disabled) toAdd.disabled = true;
         else toAdd.disabled = false;
 
         toAdd.loops = loops === undefined ? this.addAmount : loops;
+        toAdd.loopsType = loopsType ?? "actions";
 
         if (initialOrder === undefined) {
             if (options.addActionsToTop) {
