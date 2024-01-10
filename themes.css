@@ -244,6 +244,7 @@
     --stat-container-hover-background: #243b2b;
 
     --progress-bar-background: #fff2;
+    --progress-bar-background: color-mix(in srgb, var(--body-background), #fff 13.3%);
     --progress-bar-mana-color: #475299;
     --progress-bar-primary-color: #5a2b84;
     --progress-bar-talent-color: #a76c26;
