@@ -42,6 +42,7 @@ class View {
             }, 2000);
         adjustAll();
         this.updateActionTooltips();
+        this.initActionLog();
         document.body.removeEventListener("mouseover", this.mouseoverHandler);
         document.body.addEventListener("mouseover", this.mouseoverHandler, {passive: true});
         document.body.removeEventListener("focusin", this.mouseoverHandler);
@@ -806,8 +807,36 @@ class View {
         }
     };
 
+    /** @typedef {{lastScroll:Pick<HTMLElement,'scrollTop'|'scrollHeight'|'clientHeight'>}} LastScrollRecord */
     /** @type {string} */
     actionLogClearHTML;
+    /** @type {ResizeObserver} */
+    actionLogObserver;
+    initActionLog() {
+        const log = /** @type {HTMLElement & LastScrollRecord} */(document.getElementById("actionLog"));
+        this.actionLogClearHTML ??= log.innerHTML;
+        this.actionLogObserver = new ResizeObserver(entries => {
+            for (const entry of entries) {
+                if (entry.target !== log) continue;
+                // console.log(entry,entry.target,log,log.scrollTop,log.scrollHeight,log.clientHeight,log.lastScroll);
+                // check the most recent position of the scroll bottom
+                const {scrollTop, scrollHeight, clientHeight, lastScroll} = log;
+                const lastScrollBottom = lastScroll ? lastScroll.scrollHeight - (lastScroll.scrollTop + lastScroll.clientHeight) : 0;
+                // check the current position
+                const scrollBottom = scrollHeight - (scrollTop + clientHeight);
+                // shift by that delta
+                log.scrollTop += scrollBottom - lastScrollBottom;
+            }
+        });
+        this.actionLogObserver.observe(log);
+        log.addEventListener("scroll", this.recordScrollPosition, {passive: true});
+        log.addEventListener("scrollend", this.recordScrollPosition, {passive: true});
+    }
+    /** @this {HTMLElement & LastScrollRecord} */
+    recordScrollPosition = function() {
+        const {scrollTop, scrollHeight, clientHeight} = this;
+        this.lastScroll = {scrollTop, scrollHeight, clientHeight};
+    }
     updateActionLogEntry(index) {
         const log = document.getElementById("actionLog");
         this.actionLogClearHTML ??= log.innerHTML;
