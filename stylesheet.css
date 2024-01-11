@@ -34,6 +34,35 @@ menu > li:focus-within, #story_control:focus-within, #story_control:focus-within
     pointer-events: none; /* repeating to override the initial */
 }
 
+#menus > ul {
+    list-style: none;
+    padding: 0;
+}
+#menusMenu.disabled-changelog #enableMenu_changelog ~ label,
+#menusMenu.disabled-save #enableMenu_save ~ label,
+#menusMenu.disabled-faq #enableMenu_faq ~ label,
+#menusMenu.disabled-options #enableMenu_options ~ label,
+#menusMenu.disabled-extras #enableMenu_extras ~ label,
+#menusMenu.disabled-challenges #enableMenu_challenges ~ label,
+#menusMenu.disabled-totals #enableMenu_totals ~ label,
+#menusMenu.disabled-prestige_bonus #enableMenu_prestige_bonus ~ label
+{
+    text-decoration: line-through;
+    opacity: 0.5;
+}
+
+#menusMenu.disabled-changelog ~ #changelogMenu,
+#menusMenu.disabled-save ~ #saveMenu,
+#menusMenu.disabled-faq ~ #faqMenu,
+#menusMenu.disabled-options ~ #optionsMenu,
+#menusMenu.disabled-extras ~ #extrasMenu,
+#menusMenu.disabled-challenges ~ #challengesMenu,
+#menusMenu.disabled-totals ~ #totalsMenu,
+#menusMenu.disabled-prestige_bonus ~ #prestige_bonusesMenu
+{
+    display: none !important;
+}
+
 button {
     font: inherit;
     padding: unset;

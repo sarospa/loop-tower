@@ -2,6 +2,7 @@ Views.registerView("menu", {
     selector: "#menu",
     html() {
         let html = "";
+        html += Views.menu.htmlMenusMenu();
         html += Views.menu.htmlChangelog();
         html += Views.menu.htmlSaveMenu();
         html += Views.menu.htmlFAQMenu();
@@ -11,6 +12,54 @@ Views.registerView("menu", {
         html += Views.menu.htmlTotalsMenu();
         html += Views.menu.htmlPrestigeMenu();
         return html;
+    },
+    htmlMenusMenu() {
+        const menus = [
+            "changelog",
+            "save",
+            "faq",
+            "options",
+            "extras",
+            "challenges",
+            "totals",
+            "prestige_bonus",
+        ];
+        const disabledMenus = this.getDisabledMenus();
+        const html =
+        `<li id='menusMenu' tabindex='0' style='display:inline-block;height:30px;margin-right:10px;' class='showthatH${menus.map(menu => disabledMenus.includes(menu) ? ` disabled-${menu}` : "").join("")}'>
+            <i class='fas fa-bars'></i>
+            <div class='showthisH' id='menus'>
+                <ul>
+                    ${menus.map(menu => `
+                    <li>
+                        <input type='checkbox' id='enableMenu_${menu}' data-menu='${menu}' onchange='Views.menu.onEnableMenu(this)' ${disabledMenus.includes(menu) ? "" : "checked"}>
+                        <label for='enableMenu_${menu}'>${_txt(`menu>${menu}>meta>title`)}</label>
+                    </li>`).join("\n")}
+                </ul>
+            </div>
+        </li>`;
+        return html;
+
+    },
+    getDisabledMenus() {
+        let disabledMenus = [];
+        try {
+            disabledMenus = JSON.parse(localStorage.getItem("disabledMenus")) ?? disabledMenus;
+        } catch { }
+        return disabledMenus;
+    },
+    /** @param {HTMLInputElement} input  */
+    onEnableMenu(input) {
+        const menu = input.dataset.menu;
+        htmlElement("menusMenu").classList.toggle(`disabled-${menu}`, !input.checked);
+        const disabledMenus = this.getDisabledMenus();
+        const index = disabledMenus.indexOf(menu);
+        if (index === -1 && !input.checked) {
+            disabledMenus.push(menu);
+        } else if (index >= 0 && input.checked) {
+            disabledMenus.splice(index, 1);
+        }
+        localStorage.setItem("disabledMenus", JSON.stringify(disabledMenus));
     },
     versions() {
         let html = "";
@@ -28,7 +77,7 @@ Views.registerView("menu", {
     },
     htmlChangelog() {
         const html =
-        `<li tabindex='0' style='display:inline-block;height:30px;margin-left:10px;' class='showthatH'>
+        `<li id='changelogMenu' tabindex='0' style='display:inline-block;height:30px;margin-left:10px;' class='showthatH'>
             ${_txt("menu>changelog>meta>title")}
             <div style='max-width:110px;' class='showthisH' id='changelog'>
                 ${this.versions()}
@@ -38,7 +87,7 @@ Views.registerView("menu", {
     },
     htmlSaveMenu() {
         const html =
-        `<li tabindex='0' style='display:inline-block;height:30px;margin-left:10px;' class='showthatH'>
+        `<li id='saveMenu' tabindex='0' style='display:inline-block;height:30px;margin-left:10px;' class='showthatH'>
             ${_txt("menu>save>meta>title")}
             <div class='showthisH'>
                 <button class='button' onclick='save()'>${_txt("menu>save>manual_save")}</button>
@@ -82,7 +131,7 @@ Views.registerView("menu", {
     },
     htmlFAQMenu() {
         const html = 
-        `<li tabindex='0' style='display:inline-block;height:30px;margin-left:10px;' class='showthatH'>
+        `<li id='faqMenu' tabindex='0' style='display:inline-block;height:30px;margin-left:10px;' class='showthatH'>
             ${_txt("menu>faq>meta>title")}
             <div class='showthisH'>
                 ${this.FAQs()}
@@ -92,7 +141,7 @@ Views.registerView("menu", {
     },
     htmlOptionsMenu() {
         const html =
-            `<li tabindex='0' style='display:inline-block;height:30px;margin-left:10px;' class='showthatH'>
+            `<li id='optionsMenu' tabindex='0' style='display:inline-block;height:30px;margin-left:10px;' class='showthatH'>
             ${_txt("menu>options>meta>title")}
             <div class='showthisH'>
                 <a target='_blank' href='${_txt("menu>options>discord>link")}'>${_txt("menu>options>discord>title")}</a><br>
@@ -169,8 +218,8 @@ Views.registerView("menu", {
     },
     htmlExtrasMenu() {
         const html =
-            `<li tabindex='0' style='display:inline-block;height:30px;margin-left:10px;' class='showthatH'>
-            ${_txt("menu>options>meta>extras")}
+            `<li id='extrasMenu' tabindex='0' style='display:inline-block;height:30px;margin-left:10px;' class='showthatH'>
+            ${_txt("menu>extras>meta>title")}
             <div class='showthisH' style='padding-top:1ex'>
                 ${_txt("menu>options>extras_warning")}<br>
                 <br>
@@ -234,7 +283,7 @@ Views.registerView("menu", {
     },
     htmlChallengeMenu() {
         const html = 
-        `<li tabindex='0' style='display:inline-block;height:30px;margin-left:10px;' class='showthatH'>
+        `<li id='challengesMenu' tabindex='0' style='display:inline-block;height:30px;margin-left:10px;' class='showthatH'>
             ${_txt("menu>challenges>meta>title")}
             <div class='showthisH'>
                 ${this.challenges()}
@@ -244,7 +293,7 @@ Views.registerView("menu", {
     },
     htmlTotalsMenu() {
         const html = 
-        `<li tabindex='0' style='display:inline-block;height:30px;margin-left:10px;' class='showthatH'>
+        `<li id='totalsMenu' tabindex='0' style='display:inline-block;height:30px;margin-left:10px;' class='showthatH'>
             ${_txt("menu>totals>meta>title")}
             <div class='showthisH'>
                 ${this.totals()}
@@ -254,7 +303,7 @@ Views.registerView("menu", {
     },
     htmlPrestigeMenu() {
         const html = 
-        `<li tabindex='0' style='display:inline-block;height:30px;margin-left:10px;' class='showthatH'>
+        `<li id='prestige_bonusesMenu' tabindex='0' style='display:inline-block;height:30px;margin-left:10px;' class='showthatH'>
             ${_txt("menu>prestige_bonus>meta>title")}
             <div class='showthisH'>
                 ${this.prestige_bonuses()}
