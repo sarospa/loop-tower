@@ -830,11 +830,13 @@ class View {
             element.id = `actionLogEntry${index}`;
             element.style.order = index;
 
-            log.appendChild(element);
+            const nextEntry = htmlElement(`actionLogEntry${index+1}`, false, false);
+            log.insertBefore(element, nextEntry ?? htmlElement("actionLogLatest"));
         }
         if ((actionLog.firstNewOrUpdatedEntry ?? Infinity) <= index) {
             element.classList.add("highlight");
-            element.scrollIntoView({block: "nearest", inline: "nearest", behavior: "auto"});
+            // this is just causing problems right now. disable, it's not all that important if scroll anchors work properly
+            // element.scrollIntoView({block: "nearest", inline: "nearest", behavior: "auto"});
             setTimeout(() => element.classList.remove("highlight"), 1);
         }
     }

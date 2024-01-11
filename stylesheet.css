@@ -1059,6 +1059,7 @@ dl.action-stats {
 .actionLogEntry {
     margin-left: 40px;
     position: relative;
+    overflow-anchor: none;
 }
 .actionLogEntry::before {
     content: "";
@@ -1080,6 +1081,14 @@ li#actionLogLoadPrevious {
     align-self: center;
     margin: 0 0 1ex;
     opacity: 0.8;
+    overflow-anchor: none;
+}
+
+li#actionLogLatest {
+    order: calc(infinity);
+    text-align: center;
+    opacity: 0.5;
+    margin: 1ex 0 0;
 }
 
 #actionLog.hasPrevious > #actionLogLoadPrevious {

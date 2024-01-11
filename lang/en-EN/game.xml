@@ -1319,6 +1319,7 @@
         <title_loadout>Loadouts</title_loadout>
         <log>
             <load_previous>Load previous entries...</load_previous>
+            <latest>End of log</latest>
             <header>Loop {loop}, {action} in {town}</header>
             <multiloop>{loopStart}–{loopEnd}</multiloop>
             <action_story><![CDATA[<b>{header} ({condition}):</b> {story}]]></action_story>
