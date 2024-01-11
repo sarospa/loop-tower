@@ -317,10 +317,12 @@
             </div>
         </div>
 
-        <div id="actionsColumn" style="width:350px;vertical-align:top;">
+        <div id="actionsColumn">
             <div id="actionList" style="width:100%;text-align:center;">
                 <div class="showthat">
                     <div class="large bold localized" style="margin-right: -49px;" data-lockey="actions>title_list"></div>
+                    <span id="predictorTotalDisplay" class="koviko"></span>
+                    <span id="predictorStatisticDisplay" class="koviko"></span>
                     <div class="showthis">
                         <i class='actionIcon far fa-circle'></i> <span class='localized' data-lockey="actions>tooltip>icons>circle"></span><br>
                         <i class='actionIcon fas fa-plus'></i> <span class='localized' data-lockey="actions>tooltip>icons>plus"></span><br>
@@ -410,6 +412,7 @@
                                 <button class="loadoutbutton" style="margin-bottom:5px;margin-top:3px;margin-right:-4px;" onclick="nameList(true)">Rename</button>
                             </div>
                         </div>
+                        <select id='trackedStat' class='button'></select>
                     </div>
                 </div>
             </div>

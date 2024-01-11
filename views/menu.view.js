@@ -204,6 +204,30 @@ Views.registerView("menu", {
                     <button id='returnTimeButton' class='button control' onclick='returnTime()'>${_txt("menu>options>return_time")}</button>
                     ${_txt("menu>options>time_borrowed")} <span id='borrowedTimeDays'></span>
                 </div><br>
+                <div id='predictorSettings'>
+                    <br>
+                    <b>${_txt("predictor>settings")}</b>
+                    <br>
+                    <label for='updateTimePrecision'>${_txt("predictor>time_precision")}</label>
+                    <input id='updateTimePrecision' type='number' value='1' min='0' max='10' style='width: 50px;'>
+                    <br>
+                    <label for='updateNextPrecision'>${_txt("predictor>next_precision")}</label>
+                    <input id='updateNextPrecision' type='number' value='2' min='0' max='10' style='width: 50px;'>
+                    <br>
+                    <label for='actionWidth'>${_txt("predictor>action_list_width")}</label>
+                    <input id='actionWidth' type='number' value='500' min='100' max='4000' style='width: 50px; margin-left:40px'>
+                    <br>
+                    <input id='repeatPrediction' type='checkbox'>
+                    <label for='repeatPrediction'>${_txt("predictor>repeat_last_action")}</label>
+                    <br>
+                    <input id='slowMode' type='checkbox'>
+                    <label for='slowMode'>${
+                        _txt("predictor>slow_mode")
+                        .replace("{slowMode}",
+                            "<input id='slowTimer' type='number' value='1' min='0'style='width: 20px;'>"
+                        )
+                    }</label>
+                </div>
             </div>
         </li>`;
         return html;

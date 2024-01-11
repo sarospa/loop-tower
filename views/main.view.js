@@ -619,44 +619,14 @@ class View {
         })
     };
     updateNextActions() {
-        let count = 0;
-        while (nextActionsDiv.firstChild) {
-            if (document.getElementById(`capButton${count}`)) {
-                document.getElementById(`capButton${count}`).removeAttribute("onclick");
-            }
-            // not for journey
-            if (document.getElementById(`plusButton${count}`)) {
-                document.getElementById(`plusButton${count}`).removeAttribute("onclick");
-                document.getElementById(`minusButton${count}`).removeAttribute("onclick");
-                document.getElementById(`splitButton${count}`).removeAttribute("onclick");
-            }
-            document.getElementById(`upButton${count}`).removeAttribute("onclick");
-            document.getElementById(`downButton${count}`).removeAttribute("onclick");
-            document.getElementById(`removeButton${count}`).removeAttribute("onclick");
-
-            const dragAndDropDiv = document.getElementById(`nextActionContainer${count}`);
-            dragAndDropDiv.removeAttribute("ondragover");
-            dragAndDropDiv.removeAttribute("ondrop");
-            dragAndDropDiv.removeAttribute("ondragstart");
-            dragAndDropDiv.removeAttribute("ondragend");
-            dragAndDropDiv.removeAttribute("ondragenter");
-            dragAndDropDiv.removeAttribute("ondragleave");
-
-            while (nextActionsDiv.firstChild.firstChild) {
-                if (nextActionsDiv.firstChild.firstChild instanceof HTMLImageElement) {
-                    nextActionsDiv.firstChild.firstChild.src = "";
-                }
-                nextActionsDiv.firstChild.removeChild(nextActionsDiv.firstChild.firstChild);
-            }
-            count++;
-            nextActionsDiv.removeChild(nextActionsDiv.firstChild);
+        if (options.predictor) {
+            Koviko.preUpdateHandler(nextActionsDiv);
         }
 
         let totalDivText = "";
 
-        for (let i = 0; i < actions.next.length; i++) {
-            const action = actions.next[i];
-            const translatedAction = translateClassNames(action.name);
+        for (const [i, action] of actions.next.entries()) {
+            const translatedAction = getActionPrototype(action.name);
             let capButton = "";
             const townNum = translatedAction.townNum;
             const travelNum = getTravelNum(action.name);
@@ -665,7 +635,7 @@ class View {
             actions.next.forEach((a, index) => {
                 if (a.collapsed) {
                     const collapse = {};
-                    collapse.zone = translateClassNames(a.name).townNum;
+                    collapse.zone = getActionPrototype(a.name).townNum;
                     collapse.index = index;
                     collapses.push(collapse);
                 }
@@ -701,7 +671,7 @@ class View {
             totalDivText +=
                 `<div
                     id='nextActionContainer${i}'
-                    class='nextActionContainer small'
+                    class='nextActionContainer small showthat'
                     ondragover='handleDragOver(event)'
                     ondrop='handleDragDrop(event)'
                     ondragstart='handleDragStart(event)'
@@ -724,9 +694,13 @@ class View {
                         <button id='skipButton${i}' onclick='disableAction(${i})' class='actionIcon far fa-${action.disabled ? "check" : "times"}-circle'></button>
                         <button id='removeButton${i}' onclick='removeAction(${i})' class='actionIcon fas fa-times'></button>
                     </div>
+                    <ul class='koviko'></ul>
                 </div>`;
         }
         nextActionsDiv.innerHTML = totalDivText;
+        if (options.predictor) {
+            Koviko.postUpdateHandler(actions.next, nextActionsDiv);
+        }
     };
 
     updateCurrentActionsDivs() {

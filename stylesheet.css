@@ -1057,6 +1057,11 @@ li#actionLogLoadPrevious {
     display: inline-block;
 }
 
+#actionsColumn {
+    width:350px;
+    vertical-align:top;
+}
+
 #curActionsListContainer {
     width: 35%;
     height: 100%;

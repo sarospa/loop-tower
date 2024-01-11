@@ -1,3 +1,16 @@
+#predictorSettings, #trackedStat, #predictorTotalDisplay, #predictorStatisticDisplay {display: none;}
+.usePredictor :is(#predictorSettings, #trackedStat, #predictorTotalDisplay, #predictorStatisticDisplay) {display: initial;}
+#predictorTotalDisplay {padding-left: 50px;}
+
+.usePredictor {
+    --predictor-actions-width: 500px;
+}
+
+.usePredictor #actionsColumn {width: var(--predictor-actions-width);}
+.usePredictor #nextActionsListContainer {width: calc(var(--predictor-actions-width) - 120px);}
+
+ul.koviko {display: none}
+
 .usePredictor .nextActionContainer { width: auto!important; padding-left:4px; padding-right: 4px; grid-template: "a b . c" / auto auto 1fr auto; justify-content: stretch; }
 :root:not(.responsive) .usePredictor .nextActionContainer[style~='flex;'] {display: grid!important;}
 .usePredictor .nextActionContainer > div:first-child { width: 70px; }

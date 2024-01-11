@@ -653,6 +653,7 @@ const optionIndicatorClasses = {
     responsiveUI: "responsive",
     statColors: "use-stat-colors",
     statHints: "show-stat-hints",
+    predictor: "usePredictor",
 };
 
 /** @type {{[K in OptionName]?: (value: OptionType<K>, init: boolean, getInput: () => HTMLInputElement) => void}} */
@@ -711,7 +712,12 @@ const optionValueHandlers = {
         } else {
             document.getElementById("speedIncreaseBackgroundWarning").style.display = "none";
         }
-    }
+    },
+    repeatLastAction() {
+        if (options.predictor) {
+            view.requestUpdate("updateNextActions");
+        }
+    },
 };
 
 /** @type {<K extends OptionName>(option: K, value: OptionType<K>, init: boolean, getInput: () => HTMLInputElement) => void} */

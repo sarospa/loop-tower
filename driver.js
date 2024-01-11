@@ -247,6 +247,9 @@ function stopGame() {
     view.update();
     document.title = "*PAUSED* Idle Loops";
     document.getElementById("pausePlay").textContent = _txt("time_controls>play_button");
+    if (options.predictor) {
+        view.requestUpdate("updateNextActions");
+    }
 }
 
 function pauseGame(ping, message) {

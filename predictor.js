@@ -47,41 +47,6 @@ const Koviko = {
    * @prop {number} exp Experience
    */
 
-  /**
-   * Globals
-   * @prop {Koviko~View} view IdleLoops view object
-   * @prop {Object} actions IdleLoops actions object
-   * @prop {Object} Action IdleLoops Action object
-   * @prop {Array.<Koviko~ListedAction>} actions.next Action List
-   * @prop {HTMLElement} nextActionsDiv Action list container
-   * @prop {Array.<string>} statList Names of all stats
-   * @prop {Object.<string, Koviko~Skill>} skills Skill objects
-   * @prop {Array.<Koviko~Town>} towns Town objects
-   * @prop {Array.<Array.<Koviko~DungeonFloor>>} dungeons Dungeon objects
-   * @prop {function} fibonacci Calculates the value of the given index of the Fibonacci sequence
-   * @prop {function} precision3 Rounds numbers to a precision of 3
-   * @prop {function} translateClassNames Converts an action name to a {@link Koviko~Action} object
-   * @prop {function} getLevelFromExp Converts an amount of stat experience into a level
-   * @prop {function} getSkillLevelFromExp Converts an amount of skill experience into a level
-   * @prop {function} getTotalBonusXP Determine the current amount of bonus XP from talents and soulstones
-   */
-  globals: {
-    view: null,
-    actions: null,
-    Action: null,
-    nextActionsDiv: null,
-    statList: null,
-    skills: null,
-    towns: null,
-    dungeons: null,
-    fibonacci: null,
-    precision3: null,
-    translateClassNames: null,
-    getLevelFromExp: null,
-    getSkillLevelFromExp: null,
-    getTotalBonusXP: null,
-  },
-
   /** A prediction, capable of calculating and estimating ticks and rewards of an action. */
   Prediction: class {
     /**
@@ -118,7 +83,7 @@ const Koviko = {
        * Action being estimated
        * @member {Koviko~Action}
        */
-      this.action = Koviko.globals.translateClassNames(name);
+      this.action = translateClassNames(name);
 
       /**
        * The pre-calculated amount of ticks needed for the action to complete.
@@ -157,7 +122,7 @@ const Koviko = {
      */
     updateTicks(a, s, state) {
       let baseMana=this.baseManaCost(a,state);
-      let cost = Koviko.globals.statList.reduce((cost, i) => cost + (i in a.stats && i in s ? a.stats[i] / (1 + Koviko.globals.getLevelFromExp(s[i]) / 100) : 0), 0);
+      let cost = statList.reduce((cost, i) => cost + (i in a.stats && i in s ? a.stats[i] / (1 + getLevelFromExp(s[i]) / 100) : 0), 0);
       this._baseManaCost=baseMana;
       return (this._ticks = Math.ceil(baseMana * cost - .000001));
     }
@@ -190,7 +155,7 @@ const Koviko = {
      * @memberof Koviko.Prediction
      */
     exp(a, s, t, ss) {
-      Koviko.globals.statList.forEach(i => {
+      statList.forEach(i => {
         if (i in s) {
 	   var expToAdd=0;
            const overFlow=prestigeBonus(PRESTIGE_EXP_OVERFLOW_BASE, "PrestigeExpOverflow") - 1
@@ -393,14 +358,9 @@ const Koviko = {
 
     /**
      * Create the predictor
-     * @param {Koviko~View} view IdleLoops view object
-     * @param {Object} actions IdleLoops actions object
-     * @param {Array.<Koviko~ListedAction>} actions.next Action List
-     * @param {HTMLElement} container Action list container
      */
-    constructor(view, actions, container) {
+    constructor() {
       // Initialization steps broken into pieces, for my sake
-      this.initStyle();
       this.initElements()
       this.initPredictions();
       this.state;
@@ -416,8 +376,7 @@ const Koviko = {
         }
         Koviko.options.actionWidth=localStorage.getItem("actionWidth");
         if (Koviko.options.actionWidth!==null) {
-          document.getElementById("actionsColumn").style.width=Koviko.options.actionWidth+"px";
-          document.getElementById("nextActionsListContainer").style.width=(Koviko.options.actionWidth-120)+"px";
+          document.documentElement.style.setProperty("--predictor-actions-width", `${Koviko.options.actionWidth}px`);
           $('#actionWidth').val(Koviko.options.actionWidth);
         }
         Koviko.options.repeatPrediction=localStorage.getItem("repeatPrediction")=='true';
@@ -445,35 +404,6 @@ const Koviko = {
         }
 
       }
-      // Prepare `updateNextActions` to be hooked
-      if (!view._updateNextActions) {
-        view._updateNextActions = view.updateNextActions;
-      }
-
-      // Hook `updateNextActions` with the predictor's update function
-      view.updateNextActions = () => {
-        this.preUpdate(container)
-        view._updateNextActions();
-        this.update(actions.next, container);
-      };
-
-      // Prepare stopGame to be hooked
-      if (typeof _stopGame == "undefined") {
-        var _stopGame = stopGame;
-      }
-
-      // Hook stopGame with the predictor's update function
-      stopGame = () => {
-        _stopGame()
-        view.updateNextActions();
-      };
-
-      //Hook checkbox repeatLastActionInput with the predictor's update function
-      repeatLastActionInput.addEventListener('change',e =>{
-        view.updateNextActions();
-      });
-      view.updateNextActions();
-
     }
 
     /**
@@ -491,47 +421,20 @@ const Koviko = {
     }
 
     /**
-     * Build the style element responsible for the formatting of the predictor's values.
-     * @memberof Koviko.Predictor
-     */
-    initStyle() {
-      // The CSS is in predictor.css now, we just need to add an enabling class
-      document.documentElement.classList.add("usePredictor");
-
-      // and also do this I guess
-      document.getElementById("actionsColumn").style.width="500px";
-      document.getElementById("nextActionsListContainer").style.width="380px";
-    }
-
-    /**
      * Build the element that shows the total mana required by the action list.
      * @memberof Koviko.Predictor
      */
     initElements() {
-      // Find the display element for the total if it already exists
-      let parent = document.getElementById('actionList').firstElementChild;
+      // the HTML is in index.html and main.view.js now, we just need to bind event listeners
 
       /**
        * Element that displays the total amount of mana used in the action list
        * @member {HTMLElement}
        */
-      this.totalDisplay = [...parent.children].reduce((total, el, i, arr) => total || el.className === 'koviko' && el, false);
-
-      // If the element doesn't already exist, create it
-      if (!this.totalDisplay) {
-        this.totalDisplay = document.createElement('span');
-        this.totalDisplay.className = 'koviko';
-        this.totalDisplay.style='padding-left: 50px';
-        parent.appendChild(this.totalDisplay);
-
-        this.statisticDisplay =document.createElement('span');
-        this.statisticDisplay.className = 'koviko';
-        parent.appendChild(this.statisticDisplay);
-      }
+      this.totalDisplay = htmlElement("predictorTotalDisplay");
+      this.statisticDisplay = htmlElement("predictorStatisticDisplay");
 
       //Adds more to the Options panel
-      $('#menu li:nth-child(5) .showthisH').append("<div id='preditorSettings'><br /><b>Predictor Settings</b></div>")
-      $('#preditorSettings').append("<br /><label>Degrees of precision on Time</label><input id='updateTimePrecision' type='number' value='1' min='0' max='10' style='width: 50px;'>");
       $('#updateTimePrecision').focusout(function() {
       $(this).val(Math.floor($(this).val()))
           if($(this).val() > 10) {
@@ -543,7 +446,6 @@ const Koviko = {
           Koviko.options.timePrecision=$(this).val();
           localStorage.setItem('timePrecision', Koviko.options.timePrecision);
       });
-      $('#preditorSettings').append("<br /><label>Degrees of precision on Next</label><input id='updateNextPrecision' type='number' value='2' min='0' max='10' style='width: 50px;'>");
       $('#updateNextPrecision').focusout(function() {
       $(this).val(Math.floor($(this).val()))
           if($(this).val() > 10) {
@@ -555,15 +457,12 @@ const Koviko = {
           Koviko.options.NextPrecision=$(this).val();
           localStorage.setItem('NextPrecision', Koviko.options.NextPrecision);
       });
-      $('#preditorSettings').append("<br /><label>Width of the Action List</label><input id='actionWidth' type='number' value='500' min='100' max='4000' style='width: 50px; margin-left:40px'>");
       $('#actionWidth').focusout(function() {
           Koviko.options.actionWidth=$(this).val();
           localStorage.setItem('actionWidth',Koviko.options.actionWidth );
-          document.getElementById("actionsColumn").style.width=Koviko.options.actionWidth+"px";
-          document.getElementById("nextActionsListContainer").style.width=(Koviko.options.actionWidth-120)+"px";
+          document.documentElement.style.setProperty("--predictor-actions-width", `${Koviko.options.actionWidth}px`);
       });
 
-      $('#preditorSettings').append(`<br /><input id='repeatPrediction' type='checkbox'><label for='repeatPrediction'> "Repeat last action on list" applies to the Predictor</label>`);
       $('#repeatPrediction').change(function() {
           Koviko.options.repeatPrediction=$(this).is(':checked');
           localStorage.setItem('repeatPrediction',Koviko.options.repeatPrediction );
@@ -585,7 +484,6 @@ const Koviko = {
       for (const stat of statList) {
         Koviko.trackedStats['T'+stat] = {type:'T', name:stat, display_name:_txt('stats>'+stat+'>long_form')}
       }
-      $('#actionChanges').children('div:nth-child(2)').append("<select id='trackedStat' class='button'></select>");
       for (const [key, stat] of Object.entries(Koviko.trackedStats)) {
         $('#trackedStat').append("<option value="+key+" hidden=''>("+stat.type+") "+stat.display_name+"</option>");
       }
@@ -593,11 +491,10 @@ const Koviko = {
         let tmpVal=$(this).val();
         localStorage.setItem('trackedStat',tmpVal);
         Koviko.options.trackedStat=Koviko.trackedStats[tmpVal];
-        view.updateNextActions();
+        view.requestUpdate("updateNextActions");
       });
       this.updateTrackedList();
 
-      $('#preditorSettings').append(`<br /><input id='slowMode' type='checkbox'><label for='slowMode'> Only update the predictor every <input id='slowTimer' type='number' value='1' min='0'style='width: 20px;'> Minutes</label>`);
       $('#slowMode').change(function() {
           Koviko.options.slowMode=$(this).is(':checked');
           localStorage.setItem('slowMode',Koviko.options.slowMode );
@@ -1609,12 +1506,10 @@ const Koviko = {
     async update(actions, container, isDebug) {
 
       performance.mark("start-predictor-update");
-      if(this.update.pre?.length){
-        Array.from(container.children).map((element, i) => {
-          if(i < this.update.pre.length){
-            element.appendChild(this.update.pre[i]);
-          }
-        });
+      if(this.update.pre?.length) {
+        for (const [i, element] of Array.from(container.children).slice(0, this.update.pre.length).entries()) {
+          element.querySelector("ul.koviko").replaceWith(this.update.pre[i]);
+        }
       }
 
       /**
@@ -1637,13 +1532,13 @@ const Koviko = {
       if (!state) {
         state = {
           resources: { mana: 250, town: 0, guild: "", totalTicks: 0 },
-          stats: Koviko.globals.statList.reduce((stats, name) => (stats[name] = getExpOfLevel(buffs.Imbuement2.amt*(Koviko.globals.skills.Wunderkind.exp>=100?2:1)), stats), {}),
-          talents:  Koviko.globals.statList.reduce((talents, name) => (talents[name] = stats[name].talent, talents), {}),
-          skills: Object.entries(Koviko.globals.skills).reduce((skills, x) => (skills[x[0].toLowerCase()] = x[1].exp, skills), {}),
+          stats: statList.reduce((stats, name) => (stats[name] = getExpOfLevel(buffs.Imbuement2.amt*(skills.Wunderkind.exp>=100?2:1)), stats), {}),
+          talents:  statList.reduce((talents, name) => (talents[name] = stats[name].talent, talents), {}),
+          skills: Object.entries(skills).reduce((skills, x) => (skills[x[0].toLowerCase()] = x[1].exp, skills), {}),
           progress: {},
           currProgress: {},
           toNextLoop: {},
-          soulstones: Koviko.globals.statList.reduce((soulstones, name) => (soulstones[name] = stats[name].soulstone, soulstones), {}),
+          soulstones: statList.reduce((soulstones, name) => (soulstones[name] = stats[name].soulstone, soulstones), {}),
         };
         if (Koviko.options.slowMode) {
           this.initState=structuredClone(state);
@@ -1810,7 +1705,7 @@ const Koviko = {
               state.progress[prediction.name] = {
                 progress: 0,
                 completed: 0,
-                total: Koviko.globals.towns[prediction.action.townNum]['total' + prediction.action.varName],
+                total: towns[prediction.action.townNum]['total' + prediction.action.varName],
               };
             }
 
@@ -1925,13 +1820,11 @@ const Koviko = {
 
           // Update the view
           if (div) {
-            div.querySelector('.expired')?.remove();
             if (typeof(repeatLoop) !== 'undefined' && repeatLoop) {
               affected.unshift('finLoops');
               state.resources.finLoops=loop;
             }
-            div.className += ' showthat';
-            div.innerHTML += this.template(listedAction.name, affected, state.resources, snapshots, isValid);
+            div.querySelector('ul.koviko').outerHTML = this.template(listedAction.name, affected, state.resources, snapshots, isValid);
           }
         }
       }
@@ -2100,8 +1993,8 @@ const Koviko = {
       for (let i in stats) {
         if (stats[i].delta) {
           let level = {
-            start: Koviko.globals.getLevelFromExp(stats[i].value - stats[i].delta),
-            end: Koviko.globals.getLevelFromExp(stats[i].value),
+            start: getLevelFromExp(stats[i].value - stats[i].delta),
+            end: getLevelFromExp(stats[i].value),
           };
 
           tooltip += '<tr><td><b>' + _txt(`stats>${i}>short_form`).toUpperCase() + '</b></td><td>' + intToString(level.end, 1) + '</td><td>(+' + intToString(level.end - level.start, 1) + ')</td></tr>';
@@ -2111,8 +2004,8 @@ const Koviko = {
       for (let i in skills) {
         if (skills[i].delta) {
           let level = {
-            start: Koviko.globals.getSkillLevelFromExp(skills[i].value - skills[i].delta),
-            end: Koviko.globals.getSkillLevelFromExp(skills[i].value),
+            start: getSkillLevelFromExp(skills[i].value - skills[i].delta),
+            end: getSkillLevelFromExp(skills[i].value),
           };
 
           tooltip += '<tr><td><b>'
@@ -2322,27 +2215,20 @@ const Koviko = {
     }
   },
 
-  hasRan: false,
-  run: () => {
-    if (!Koviko.hasRan) {
-      Koviko.hasRan = true;
-      for (let varName in Koviko.globals) {
-        try {
-          Koviko.globals[varName] = eval(varName);
-        } catch (e) {
-          console.error(`Unable to retrieve global '${varName}'.`);
-          Koviko.hasRan = false;
-          return;
-        }
-      }
+  predictor: null,
 
-      window.Koviko = new Koviko.Predictor(Koviko.globals.view, Koviko.globals.actions, Koviko.globals.nextActionsDiv);
+  /** @return {InstanceType<(typeof Koviko)["Predictor"]>} */
+  get instance() {
+    if (!this.predictor) {
+      this.predictor = new Koviko.Predictor();
     }
-  }
-};
+    return this.predictor;
+  },
 
-// Run the code!
-//window.addEventListener('load', Koviko.run);
-if (localStorage["loadPredictor"]) {
-    setTimeout(() => document.readyState == 'complete' && Koviko.run(), 2000); // If it hasn't already ran in a couple of seconds, see if it can run
-}
+  preUpdateHandler(container) {
+    this.instance.preUpdate(container);
+  },
+  postUpdateHandler(nextActions, container) {
+    this.instance.update(nextActions, container);
+  },
+};

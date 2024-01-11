@@ -590,7 +590,7 @@ function nextAnimationFrame() {
     return new Promise(r => requestAnimationFrame(r));
 }
 
-/** @param {IdleRequestOptions} idleRequestOptions @returns {Promise<IdleDeadline>} */
+/** @param {IdleRequestOptions} [idleRequestOptions] @returns {Promise<IdleDeadline>} */
 function nextIdle(idleRequestOptions) {
     return new Promise(r => requestIdleCallback(r, idleRequestOptions));
 }
