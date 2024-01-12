@@ -9,6 +9,20 @@
                 <title>Changelog</title>
                 <version_prefix>Version</version_prefix>
             </meta>
+            <version verNum="3.P16.17"><![CDATA[
+            <b> Jan 10th, 2024</b>
+            • The Statistics panel now shows your current level, talent, and soulstones as bars under each stat. The display of progress to next stat level or talent level is now shown in a colored box behind that number.<br>
+            • The Changelog seems to have gotten taller than some people's screens, somehow. Now it will keep itself contained in the viewport and scroll entries.<br>
+            • Finally fixed the tooltip issues for real, I think, I hope.<br>
+            • If the game detects that it's lagging (usually because the Bonus Time multiplier is set too high) it will report it in the Bonus Seconds tooltip.<br>
+            • The game no longer does a rapid (but potentially very long) catchup if the computer wakes up from sleep with the tab already open. It'll come back as a proper feature soon, don't worry.<br>
+            • Added "Zen" and "Zen Dark" color schemes, which are a 180° palette rotation from the default colors, for those who miss the old inverse-color magenta look.<br>
+            • Progress bar tracks in dark mode are now a slightly more visible dark gray, rather than flat black. Also, they line up properly against the right edge. Thanks to deadling from the discord for the sharp eye!<br>
+            • The predictor can now be enabled and disabled without reloading the page, and it should stop repeating numbers at high bonus speeds. This also resolves the issue of phantom scrollbars appearing on the actions list with the predictor enabled. Thanks very much to Kagato87 from the discord for the invaluable testing help!<br>
+            • Individual menus can now be shown or hidden by hovering the menu icon in the upper-left. The list of disabled menus is only saved in your browser and is not part of the saved game.<br>
+            • The Action Log will no longer be quite so attention-grabbing and no longer scrolls the screen when new log entries are added. Say hello to the little "End of log" text; if you keep that in view, then all new entries will push old ones up above the scroll.<br>
+            • The Action Log will try and keep itself scrolled to the same point when switching zones or when resizing the window in Responsive UI mode.<br>
+            ]]></version>
             <version verNum="3.P16.16"><![CDATA[
             <b> Jan 7th, 2024</b>
             • More colors in more places! The "Use stat colors in menu" option now colors the stat name and your current level in the Stats display, as well as stat names in action tooltips.<br>
