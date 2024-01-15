@@ -2943,9 +2943,9 @@
             Every 100 abandon buildings have 1 breakable plyon.<br>Reduces the mana cost of The Spire by 10% for each pylon destroyed.<br>
             Unlocked at 5% town meandered.<br>
             ]]></tooltip>
-            <story_1><![CDATA[<b>Pylon Destroyed:</b>⮀ As you pick up one of the Pylon's fragments, you wonder why you broke it. It didn't even feel particularly good, just like it had to be done. Shrugging, you put the fragment in your pocket. As a tropy.]]></story_1>
+            <story_1><![CDATA[<b>Pylon Destroyed:</b>⮀ As you pick up one of the Pylon's fragments, you wonder why you broke it. It didn't even feel particularly good, just like it had to be done. Shrugging, you put the fragment in your pocket. As a trophy.]]></story_1>
             <story_2><![CDATA[<b>10 Pylons Destroyed:</b>⮀ The strange drive to smash those Pylons still lingers, even now that you've found and destroyed all that you can find in town. ...Maybe there are more after all, and it would be a good idea to go looking again when you have some new way of finding the blasted things.]]></story_2>
-            <story_3><![CDATA[<b>25 Pylons Destroyed:</b>⮀ You let out a sigh of relief while you pocket your final tropy-fragment. With that last, frustratingly well-hidden Pylon down, the drive to seek and destroy finally quiets down. Now, the Spire beckons you, inviting you to reach its apex.]]></story_3>
+            <story_3><![CDATA[<b>25 Pylons Destroyed:</b>⮀ You let out a sigh of relief while you pocket your final trophy-fragment. With that last, frustratingly well-hidden Pylon down, the drive to seek and destroy finally quiets down. Now, the Spire beckons you, inviting you to reach its apex.]]></story_3>
         </destroy_pylons>
         <raise_zombie>
             <label>Raise Zombie</label>
