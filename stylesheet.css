@@ -1167,6 +1167,9 @@ li#actionLogLatest {
     bottom:0;
     left:0;
     width:100%;
+    display: flex;
+    gap: calc(1lh - 1em);
+    flex-direction: column;
 }
 
 #nextActionsList {
@@ -1564,6 +1567,7 @@ li#actionLogLatest {
     & #curActionsListContainer {
         flex: 1 1 content;
         width: auto !important;
+        min-width: 6em;
     }
     & #nextActionsListContainer {
         flex: 3 1 content;
