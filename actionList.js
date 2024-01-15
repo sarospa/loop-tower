@@ -2632,21 +2632,15 @@ function checkSoulstoneSac(amount) {
 function sacrificeSoulstones(amount) {
     /** @type {Partial<Record<StatName, number>>} */
     const stonesSpent = {};
-    while (amount > 0)
-    {
-        let highestSoulstoneStat = "";
-        let highestSoulstone = -1;
-        for (const stat in stats) {
-            if (stats[stat].soulstone > highestSoulstone) {
-                highestSoulstoneStat = stat;
-                highestSoulstone = stats[stat].soulstone;
-            }
-        }
-        //console.log("Subtracting " + Math.ceil(amount/9) + " soulstones from " + highestSoulstoneStat + ". Old total: " + stats[highestSoulstoneStat].soulstone + ". New Total: " + (stats[highestSoulstoneStat].soulstone - Math.ceil(amount/9)));
-        stats[highestSoulstoneStat].soulstone -= Math.ceil(amount/9);
-        stonesSpent[highestSoulstoneStat] ??= 0;
-        stonesSpent[highestSoulstoneStat] += Math.ceil(amount/9);
-        amount -= Math.ceil(amount/9);
+    let total = statList.map(s => stats[s].soulstone).reduce((a,b) => a + b);
+    for (const [i, stat] of [...statList].sort((a,b) => stats[a].soulstone - stats[b].soulstone).entries()) {
+        const ratio = amount / total;
+        const origStatSS = stats[stat].soulstone;
+        const count = i === statList.length - 1 ? amount : Math.min(Math.round(origStatSS * ratio), stats[stat].soulstone);
+        stats[stat].soulstone -= count;
+        stonesSpent[stat] = count;
+        total -= origStatSS;
+        amount -= count;
     }
     return stonesSpent;
 }

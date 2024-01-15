@@ -9,6 +9,12 @@
                 <title>Changelog</title>
                 <version_prefix>Version</version_prefix>
             </meta>
+            <version verNum="3.P16.18"><![CDATA[
+            <b> Jan 15th, 2024</b>
+            • When sacrificing soulstones, each stat will lose an amount proportional to how many soulstones you have in each stat rather than attempting to equalize the number of soulstones you have across stats.<br>
+            • The "Mana Used" display at the bottom of the current actions list is now always in two lines, to avoid some of the jumpiness of the page in Responsive UI mode.<br>
+            • Typo fixes.<br>
+            ]]></version>
             <version verNum="3.P16.17"><![CDATA[
             <b> Jan 10th, 2024</b>
             • The Statistics panel now shows your current level, talent, and soulstones as bars under each stat. The display of progress to next stat level or talent level is now shown in a colored box behind that number.<br>
