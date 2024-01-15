@@ -656,10 +656,10 @@ const optionIndicatorClasses = {
     predictor: "usePredictor",
 };
 
-/** @type {{[K in OptionName]?: (value: OptionType<K>, init: boolean, getInput: () => HTMLInputElement) => void}} */
+/** @type {{[K in OptionName]?: (value: OptionType<K>, init: boolean, getInput: () => HTMLValueElement) => void}} */
 const optionValueHandlers = {
     notifyOnPause(value, init, getInput) {
-        const input = getInput();
+        const input = /** @type {HTMLInputElement} */(getInput());
         if (value && !init) {
             if (Notification && Notification.permission === "default") {
                 input.checked = false;
@@ -720,7 +720,7 @@ const optionValueHandlers = {
     },
 };
 
-/** @type {<K extends OptionName>(option: K, value: OptionType<K>, init: boolean, getInput: () => HTMLInputElement) => void} */
+/** @type {<K extends OptionName>(option: K, value: OptionType<K>, init: boolean, getInput: () => HTMLValueElement) => void} */
 function handleOption(option, value, init, getInput) {
     optionValueHandlers[option]?.(value, init, getInput);
     // The handler can change the value of the option. Recheck when setting or clearing the indicator class.
@@ -732,14 +732,14 @@ function handleOption(option, value, init, getInput) {
 /** @type {<K extends OptionName>(option: K, value: OptionType<K>) => void} */
 function setOption(option, value) {
     options[option] = value;
-    handleOption(option, value, false, () => inputElement(`${option}Input`));
+    handleOption(option, value, false, () => valueElement(`${option}Input`));
 }
 
 /** @type {<K extends OptionName>(option: K, value: OptionType<K>) => void} */
 function loadOption(option, value) {
-    const input = inputElement(`${option}Input`, false); // this is allowed to have errors
+    const input = valueElement(`${option}Input`, false); // this is allowed to have errors
     if (!input) return;
-    if (input.type === "checkbox") input.checked = !!value;
+    if (input instanceof HTMLInputElement && input.type === "checkbox") input.checked = !!value;
     else if (option === "speedIncreaseBackground" && (typeof value !== "number" || isNaN(value) || value < 0)) input.value = "";
     else input.value = String(value);
     handleOption(option, value, true, () => input);

@@ -65,13 +65,13 @@ Views.registerView("menu", {
         let html = "";
         const versions = _txtsObj("menu>changelog>version");
         $(versions).each((_index, version) => {
-            html += `<div class='showthat2'>
+            html += `
+                    <li class='showthat2' tabindex='0'>
                         ${`${_txt("menu>changelog>meta>version_prefix")} ${$(version).attr("verNum")}`}
                         <div class='showthis2'>
                             ${$(version).text()}
                         </div>
-                    </div>
-                    `;
+                    </li>`;
         });
         return html;
     },
@@ -79,9 +79,9 @@ Views.registerView("menu", {
         const html =
         `<li id='changelogMenu' tabindex='0' style='display:inline-block;height:30px;margin-left:10px;' class='showthatH'>
             ${_txt("menu>changelog>meta>title")}
-            <div style='max-width:110px;' class='showthisH' id='changelog'>
+            <ul class='showthisH' id='changelog'>
                 ${this.versions()}
-            </div>
+            </ul>
         </li>`;
         return html;
     },
@@ -122,10 +122,13 @@ Views.registerView("menu", {
         let html = "";
         const QAs = _txtsObj("menu>faq>q_a");
         $(QAs).each((_index, QA) => {
-            html += 
-            `${_txt("menu>faq>meta>q_prefix")} <i>"${$(QA).find("q").html()}"</i><br>
-            ${_txt("menu>faq>meta>a_prefix")} ${$(QA).find("a").html()}<br>
-            <br>`;
+            html += `
+                <li class='showthat2' tabindex='0'>
+                    ${$(QA).find("q").html()}
+                    <div class='showthis2'>
+                        ${$(QA).find("a").html()}
+                    </div>
+                </li>`;
         });
         return html;
     },
@@ -133,9 +136,9 @@ Views.registerView("menu", {
         const html = 
         `<li id='faqMenu' tabindex='0' style='display:inline-block;height:30px;margin-left:10px;' class='showthatH'>
             ${_txt("menu>faq>meta>title")}
-            <div class='showthisH'>
+            <ul class='showthisH' id="faq">
                 ${this.FAQs()}
-            </div>
+            </ul>
         </li>`;
         return html;
     },

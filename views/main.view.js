@@ -62,7 +62,18 @@ class View {
         const trigger = this.getClosestTrigger(event.target);
         this.mouseoverCount++;
         if (trigger) {
-            for (const tooltip of trigger.querySelectorAll(".showthis,.showthisO,.showthis2,.showthisH,.showthisloadout")) {
+            let tooltipSelector = "";
+            for (const cls of trigger.classList) {
+                if (cls.startsWith("showthat")) {
+                    tooltipSelector = `.showthis${cls.slice(8)}`;
+                    break;
+                }
+            }
+            if (tooltipSelector === "") {
+                console.warn("Could not find tooltip class for trigger! Using generic selector", trigger);
+                tooltipSelector = ".showthis,.showthisO,.showthis2,.showthisH,.showthisloadout";
+            }
+            for (const tooltip of trigger.querySelectorAll(tooltipSelector)) {
                 if (tooltip instanceof HTMLElement)
                     this.fixTooltipPosition(tooltip, trigger, event.target);
             }
@@ -235,7 +246,8 @@ class View {
             bottom: viewportRect.bottom - triggerRect.bottom,
             left: triggerRect.left - viewportRect.left,
         };
-        const wantsSidePosition = document.getElementById("nextActionsList").contains(trigger) || document.getElementById("changelog").contains(trigger);
+        const triggerParentStyle = getComputedStyle(trigger.parentElement);
+        const wantsSidePosition = triggerParentStyle.display === "flex" && triggerParentStyle.flexDirection === "column";
 
         // We prefer to display tooltips above or below the trigger, except in the action list and the changelog
         let displayOverUnder = true;
@@ -301,7 +313,7 @@ class View {
 
     updateStatGraphNeeded = false;
 
-    /** @param {typeof statList[number]} stat */
+    /** @param {StatName} stat */
     updateStat(stat) {
         const level = getLevel(stat);
         const talent = getTalent(stat);

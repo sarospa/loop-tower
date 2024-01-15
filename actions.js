@@ -13,12 +13,13 @@ const PRESTIGE_EXP_OVERFLOW_BASE = 1.00222;
 /**
  * ActionLoopType is an enum that describes what the "loops" property means. Actions without
  * a loopsType property default to the classic behavior of "actions" for non-multipart actions
- * or "maxMana" for multipart actions.
+ * or "maxEffort" for multipart actions.
  * 
  * The comments here assume X as the number specified in "loops" and M as the manaCost() of the
  * action in question.
  * @typedef {"actions"      // perform X actions and then stop
- *         | "maxMana"      // Multipart actions: Spend no more than X * M mana, stop before starting an action that would overflow
+ *         | "maxMana"      // Multipart actions: Spend no more than X * M adjusted mana, stop before starting an action that would overflow
+ *         | "maxEffort"    // Multipart actions: Spend no more than X * M original mana, stop before starting an action that would overflow
  *         | "knownGood"    // Limited actions: perform at most X actions, only targeting known-good items
  *         | "unchecked"    // Limited actions: perform at most X actions, only targeting unknown items
  * } ActionLoopType
@@ -306,7 +307,7 @@ class Actions {
                 }
                 const toAdd = /** @type {AnyActionEntry} */(translateClassNames(action.name));
 
-                toAdd.loopsType = action.loopsType ?? (isMultipartAction(toAdd) ? "maxMana" : "actions");
+                toAdd.loopsType = action.loopsType ?? (isMultipartAction(toAdd) ? "maxEffort" : "actions");
                 toAdd.loops = action.loops;
                 toAdd.loopsLeft = action.loops;
                 toAdd.extraLoops = 0;

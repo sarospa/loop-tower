@@ -182,18 +182,13 @@ body:not(.loading) > .hideWhenLoaded {
     opacity: 1;
 }
 
-.showthat2:hover .showthis2 {
-    display: flex;
-    visibility: visible;
-    opacity: 1;
+.showthat2 {
+    white-space: nowrap;
 }
 
-#changelog .showthat2:hover {
+.showthat2:is(:hover, :focus-within) {
     background: var(--popup-background);
-    border: 1px solid var(--popup-border);
-    margin: -1px 0;
-    margin-left: -6px;
-    padding-left: 5px;
+    outline: 1px solid var(--popup-border);
 }
 
 .showthis, .showthis2, .showthisH {
@@ -219,8 +214,29 @@ body:not(.loading) > .hideWhenLoaded {
     overscroll-behavior: contain;
 }
 
-.showthat2 {
-    width: 110px;
+:is(.showthatH,.showthatH:hover) ul.showthisH {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    padding: 3px 0;
+    & > li {
+        padding: 0 5px;
+    }
+}
+
+ul#faq > li {
+    position: relative;
+    padding-right: 2.5em;
+    &::before {
+        content: "Q: ";
+        font-weight: bold;
+    }
+    &:is(:hover,:focus-within)::after {
+        content: "A →";
+        font-weight: bold;
+        position: absolute;
+        right: 2px;
+    }
 }
 
 .showthis2 {
@@ -232,11 +248,19 @@ body:not(.loading) > .hideWhenLoaded {
     overflow: auto;
     flex-direction: column;
     align-items: center;
+    pointer-events: none;
+    white-space: initial;
 }
 
-#changelog .showthis2 {
-    top: 19px;
-    pointer-events: none;
+.showthat2:focus-within .showthis2 {
+    pointer-events: initial;
+    user-select: text;
+}
+
+.showthat2:is(:hover,:focus-within) .showthis2 {
+    display: flex;
+    visibility: visible;
+    opacity: 1;
 }
 
 .showthisname {
@@ -345,6 +369,12 @@ body:not(.loading) > .hideWhenLoaded {
 }
 .underline {
     text-decoration: underline;
+}
+.text-nowrap {
+    white-space: nowrap;
+}
+.text-wrap {
+    white-space: initial;
 }
 
 /* These utility classes set a "stat context" for this element and its descendants */

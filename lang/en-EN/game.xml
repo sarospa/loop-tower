@@ -13,7 +13,9 @@
             <b> Jan 15th, 2024</b>
             • When sacrificing soulstones, each stat will lose an amount proportional to how many soulstones you have in each stat rather than attempting to equalize the number of soulstones you have across stats.<br>
             • The "Mana Used" display at the bottom of the current actions list is now always in two lines, to avoid some of the jumpiness of the page in Responsive UI mode.<br>
-            • Typo fixes.<br>
+            • FAQ menu now displays entries like the Changelog menu does. Also, you can now copy text from the Changelog and the FAQ (just click the header to pin the entry in place first).<br>
+            • Typo fixes and typing fixes.<br>
+            • Sparkles.<br>
             ]]></version>
             <version verNum="3.P16.17"><![CDATA[
             <b> Jan 10th, 2024</b>
@@ -680,7 +682,7 @@
             <desc>Powers of the gods.</desc>
         </resource>
         <resource no_reset_on_restart="true">
-            <title>Mana:</title>
+            <title><![CDATA[<i class='il-icon il-mana'></i> Mana:]]></title>
             <id>timer</id>
             <desc>Your main resource. The higher your mana, the more you can do before reset.</desc>
         </resource>
