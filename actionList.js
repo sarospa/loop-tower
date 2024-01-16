@@ -4344,7 +4344,7 @@ Action.ImbueBody = new MultipartAction("Imbue Body", {
         return getBuffLevel("Imbuement") >= 1
     },
     unlocked() {
-        return getBuffLevel("Imbuement") > getBuffLevel("Imbuement2");
+        return getBuffLevel("Imbuement") >= 1;
     },
     goldCost() {
         return getBuffLevel("Imbuement2") + 1;
