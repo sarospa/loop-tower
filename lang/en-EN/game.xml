@@ -1486,7 +1486,7 @@
             ]]></tooltip>
             <story_1><![CDATA[<b>10% delved:</b>⮀ You decide to explore the ruins in the Forest and notice some weird looking rocks, wondering idly what they do.]]></story_1>
             <story_2><![CDATA[<b>50% delved:</b>⮀ After investigating these weird looking rocks you notice they are cubical and are heavy, looks like they are dusty from the time they have been sitting here.]]></story_2>
-            <story_3><![CDATA[<b>100% delved:</b>⮀ You have discovered everything in these ruins, and notice that there are so many cubical stones lying everywhere, as if a massive battle happend.]]></story_3>
+            <story_3><![CDATA[<b>100% delved:</b>⮀ You have discovered everything in these ruins, and notice that there are so many cubical stones lying everywhere, as if a massive battle happened.]]></story_3>
         </ruinsZ1>
         <ruinsZ3>
             <label>Ruins</label>
@@ -2396,7 +2396,7 @@
             <label_complete>Completed</label_complete>
             <label_part>Heroes Trial</label_part>
             <tooltip><![CDATA[
-            Gather your party to take on the trial of heroes! More Team Combat can help clear floors of the large dungeon faster. 
+            Gather your party to take on the trial of heroes! Progress is based on Team Combat.
             ]]></tooltip>
             <segment_names>
                 <name>Locate Entrance</name>
@@ -2825,7 +2825,7 @@
 		<collect_taxes>
 			<label>Collect Taxes</label>
             <tooltip><![CDATA[
-            Collect taxes from the properties you have built.<br>Gives (houses * Mercantilism / 20) gold.<br>Requires housing.<br>Unlocked at 100% Citizenship Exam Studied.<br>Unlocked at 1 Mercantilism.
+            Collect taxes from the properties you have built.<br>Gives (houses * Mercantilism / 10) gold.<br>Requires housing.<br>Unlocked at 100% Citizenship Exam Studied (and 1 Mercantilism).
             ]]></tooltip>
             <story_1><![CDATA[<b>Taxes collected:</b>⮀ You reflect on how much collecting the taxes feels more like picking up rent. The only reason you don't just call it so is because the Gods vehemently objected to it. No matter what though, when you're done with the visit, your pockets are a good deal heavier with coin.]]></story_1>
             <story_2><![CDATA[<b>Collected taxes from 50 houses:</b>⮀ You wipe the sweat of your brow. While you made sure that "your" neighborhood would be easy to walk up and down to visit all the houses in series, your feet are still hurting a little. Must be the sheer mass of gold you collected.]]></story_2>
@@ -2843,7 +2843,7 @@
 		<pegasus>
 			<label>Pegasus</label>
 			<tooltip><![CDATA[
-			Valhalla has more than its fair share of wonders. Amongst them are the Pegasi; mythical winged steeds, only available to the finest of citizens. If you wish to get your hands on one, you'll need to convince a local to guide you to one of their meeting grounds, and then prove yourself to it. Swift on land and sky, it takes more than just gold to own a creature like this.<br>Allows access to special fights.<br>Costs 200 gold and 20 favors.<br>Unlocked at 90% of city toured.
+			Valhalla has more than its fair share of wonders. Amongst them are the Pegasi; mythical winged steeds, only available to the finest of citizens. If you wish to get your hands on one, you'll need to convince a local to guide you to one of their meeting grounds, and then prove yourself to it. Swift on land and sky, it takes more than just gold to own a creature like this.<br>Allows access to certain actions.<br>Costs 200 gold and 20 favors.<br>Unlocked at 90% of city toured.
 		    ]]></tooltip>
             <story_1><![CDATA[<b>Pegasus acquired:</b>⮀ While you vaguely recall a story of there being just one Pegasus, there is an entire herd flying overhead as you make your way to the meeting grounds. Neptune, the God looking after the flying steeds, is a good sort and reassures you he'll take care of the paperwork after you've given him the modest fee for the administrative costs. As you walk to the middle of the meeting grounds, several of the flying equines swoop down low to get a better look at you. A tiny one with a mane in all colours of the rainbow hovers in front of you for a moment before shaking its head and zooming off, allowing a rich brown Pegasus touches down a few steps in front of you. The steed patiently waits for you to approach, and soon you're riding off into the sunset atop your new steed, Coco!]]></story_1> <!--TODO: think of a better name.-->
             <story_2><![CDATA[<b>Pegasus acquired with 5 team members:</b>⮀ Your hired companions were already more than a little intimidated when the Gods welcomed you as almost one of their own, but seeing you ride a Steed of Legends is nearly too much for them. You have to talk Raven down from just walking away from "all this gods-damned nonsense" (especially after several Gods informed her it's been ages since they damned anything,) and Emily has to get Marcus back on his feet after fainting. Honestly, this could have gone worse.]]></story_2>
@@ -2948,7 +2948,7 @@
             <info_text3>Buildings to check for pylons</info_text3>
             <tooltip><![CDATA[
             There are strange pylons humming with energy in the abandoned buildings of this town. You're not sure why, but you feel compelled to break them.<br>
-            Every 100 abandon buildings have 1 breakable plyon.<br>Reduces the mana cost of The Spire by 10% for each pylon destroyed.<br>
+            Every 100 abandon buildings have 1 breakable plyon.<br>Each pylon destroyed increases progress on The Spire by 10%.<br>
             Unlocked at 5% town meandered.<br>
             ]]></tooltip>
             <story_1><![CDATA[<b>Pylon Destroyed:</b>⮀ As you pick up one of the Pylon's fragments, you wonder why you broke it. It didn't even feel particularly good, just like it had to be done. Shrugging, you put the fragment in your pocket. As a trophy.]]></story_1>
@@ -2958,7 +2958,7 @@
         <raise_zombie>
             <label>Raise Zombie</label>
             <tooltip><![CDATA[
-            Upon stumbling by the local cemetery, you realize that those numerous tombstones could perhaps benefit you in ways besides acting as building materials. With your knowledge of dark magic and a hint of troll's blood, you might just be able to raise a zombie of your very own!<br>Costs 1 blood.<br>Each zombie adds (dark magic / 2) to your team combat.<br>Unlocked at 1000 dark magic.
+            Upon stumbling by the local cemetery, you realize that those numerous tombstones could perhaps benefit you in ways besides acting as building materials. With your knowledge of dark magic and a hint of troll's blood, you might just be able to raise a zombie of your very own!<br>Costs 1 blood.<br>Each zombie adds (dark magic / 2) * max(1,dark ritual / 100) to your team combat.<br>Unlocked at 1000 dark magic.
             ]]></tooltip>
             <story_1><![CDATA[<b>Zombie raised:</b>⮀ You swear the soul you plucked from the afterlife was crying as you forced it into the rotting corpse, but now it is entirely silent as the zombie sways a little in front of you.]]></story_1>
             <story_2><![CDATA[<b>Zombie raising attempt failed:</b>⮀ No matter how hard you try, the soul you plucked leaks out of the dead body well before your magic can force it into moving. Without some Trolls' blood, you're not going to be able to raise anything.]]></story_2>
@@ -2978,7 +2978,7 @@
             <label_complete>Completed</label_complete>
             <label_part>The Spire</label_part>
             <tooltip><![CDATA[
-            Standing tall in the dead center of the town is the towering Spire. Surrounded by an eternal storm, it seems to drain the life from the shadowy world around it. This is surely your greatest task yet.<br>Gives (team combat) * (1 + main stat / 100) * sqrt(1 + times floor completed / 200) * (original mana cost / actual mana cost) progress points per mana.<br>Progress scaling per floor is reduced by 0.1x per pylon disabled.<br>Unlocked with 5% town meandered.<br>Gives 100 soulstones per completion - hover over Looted for info.
+            Standing tall in the dead center of the town is the towering Spire. Surrounded by an eternal storm, it seems to drain the life from the shadowy world around it. This is surely your greatest task yet.<br>Gives (team combat) * (1 + main stat / 100) * sqrt(1 + times floor completed / 200) * (1 + pylons destroyed / 10) * (original mana cost / actual mana cost) progress points per mana.<br>Unlocked with 5% town meandered.<br>Gives 100 soulstones per completion - hover over Looted for info.
             ]]></tooltip>
             <completed_tooltip><![CDATA[
             Each soulstone improves a random stat's exp gain by (1+(soulstones)^.8/30).<br>Each floor has 100 soulstones that, when received, reduce the chance you'll get the next one by 2%.<br>Chance to receive soulstones recovers per floor at 0.00001% per mana.<br>
@@ -3016,7 +3016,7 @@
             <label_part>Necropolis</label_part>
             <label_complete>Grave Defiled</label_complete>
             <tooltip><![CDATA[
-            You've found an old necropolis. It's <i>way</i> too haunted for you and your party, but you could probably send some zombies in to look for more bodies.<br>Progress is based on (Dark Magic Skill * Zombies / 2)<br>Rewards 1 Zombie per floor completion.<br>Unlocks when this zone is fully surveyed.
+            You've found an old necropolis. It's <i>way</i> too haunted for you and your party, but you could probably send some zombies in to look for more bodies.<br>Only the combat gained from zombies counts toward this trial.<br>Rewards 1 Zombie per floor completion.<br>Unlocks when this zone is fully surveyed.
             ]]></tooltip>
             <segment_names>
                 <name>Persuade the Dead</name>
@@ -3041,7 +3041,7 @@
             <label_done>Creatures Defeated</label_done>
             <tooltip><![CDATA[
             Even the basic creatures here are terrifying.<br>
-            Gives (self combat) * (1 + main stat / 100) * sqrt(1 + times completed / 1000) * (original mana cost / actual mana cost) progress points per mana.<br>Unlocked at 20% Jungle explored.<br>Gives 1 blood per segment completed.
+            Gives (self combat) * (1 + main stat / 100) * sqrt(1 + times completed / 1000) * (original mana cost / actual mana cost) progress points per mana.<br>Gives 1 blood per segment completed.
             ]]></tooltip>
             <story_1><![CDATA[<b>Jungle creature fought:</b>⮀ Finding something to fight is the easy part, as you quickly find yourself face to face with a <i>very</i> hungry giant frog! You ready your weapon while preparing for a tough fight; far too little space between the dense trees to fight alongside anyone else.]]></story_1>
             <story_2><![CDATA[<b>Sloth slain:</b>⮀ You wince as you quickly patch up your wounds and take careful note for next time: while the giant sloth you just killed didn't look like much of a problem at first, those claws can do a lot of damage if you ignore them.]]></story_2>
@@ -3058,7 +3058,7 @@
             <label>Explore Jungle</label>
             <label_done>Explored</label_done>
             <tooltip><![CDATA[
-            It would be easier to explore here if there wasn't something waiting to jump out at you behind every tree.<br>Gives progress based on Jungle Creatures Defeated.<br>Gives 1 herb.
+            It would be easier to explore here if there wasn't something waiting to jump out at you behind every tree.<br>Gives progress based on Fight Jungle multiplier.<br>Gives 1 herb.
             ]]></tooltip>
             <story_1><![CDATA[<b>1% Explored:</b>⮀ Even after taking out the worst of the beasts making this Jungle their home, you constantly have to watch out for even the smallest movement in the corner of your eye as you explore.]]></story_1>
             <story_2><![CDATA[<b>10% Explored:</b>⮀ If the vibe of the jungle was "hungry" as you approached it, being among the densely growing trees feels like you've been swallowed by some impossibly massive monster that is taking its sweet time digesting you.]]></story_2>
@@ -3140,7 +3140,7 @@
         <explorers_guild>
             <label>Explorers' Guild</label>
             <tooltip><![CDATA[
-            Ever feel like there's more stuff out there that you're missing? The Explorer's guild knows it! Learn to find more of everything, and with enough standing you'll even be taught new ways to move about the world.<br>You can only join 1 guild at a time (including from the light realm), and only try once.<br>Unlocks the Survey action in other zones, based on world survey progress.<br>If you bring completed maps, they'll trade 2x knowledge with you on areas you haven't surveyed.<br>If you have no maps, they'll give you a few to help you get started.<br>Unlocks new shortcuts for every 25% world survey progress<br>Current world survey progress: <div id='totalSurveyProgress'></div>%.<br>Unlocked at 10% City seen.
+            Ever feel like there's more stuff out there that you're missing? The Explorer's guild knows it! Learn to find more of everything, and with enough standing you'll even be taught new ways to move about the world.<br>You can only join 1 guild at a time (including those in Merchanton).<br>On first completion, unlocks the Buy Map action in Beginnersville and the Survey action in all zones.<br>If you bring completed maps, you'll gain exp as if you surveyed two random incomplete zones (per map).<br>Also gives you 30 maps if you have 0 maps.<br>Unlocks new shortcuts for every 25% world survey progress<br>Current world survey progress: <div id='totalSurveyProgress'></div>%.<br>Unlocked at 10% City seen.
             ]]></tooltip>
             <story_1><![CDATA[<b>Joined the Explorers' Guild:</b>⮀ While the building looks like it missed a few rounds of maintenence, the people inside are almost too eager to take you on once you tell them you passed through the Jungle. Apparently, adventurers capable of surviving harsh environments like that are always in short supply! Once your introduction is done and you've had your crash-course intro to cartography, the guildmaster all but kicks you out of the building while telling you to "go explore already!"]]></story_1>
             <story_2><![CDATA[<b>Turned in a complete map:</b>⮀ The guildmaster, in his typical brusque manner, nearly tears the map as he snatches it from your hand and starts inspecting it. After a while though, he gives you a nod before rummaging through the mountain of paper on his desk, giving you a partial map of another place you've been. You commit as much of the details to memory before heading out again.]]></story_2>
@@ -3152,7 +3152,7 @@
             <label>Thieves Guild</label>
             <label_done>Pursestrings Cut</label_done>
             <tooltip><![CDATA[
-            Learn to transfer wealth to those most in need. You, mostly.<br>Take their tests and earn a rank!<br>Requires negative reputation.<br>You can only join 1 guild at a time (including from the light realm), and only try once.<br>Gives 10 gold per segment completed.<br>Gives (practical magic skill + thievery skill) * (1 + main stat / 100) * sqrt(1 + times completed / 1000) * (original mana cost / actual mana cost) progress points per mana.<br>Unlocked at 25% City seen.<br>Gives Thievery exp upon segment completion, rather than upon action completion.
+            Learn to transfer wealth to those most in need. You, mostly.<br>Take their tests and earn a rank!<br>Requires negative reputation.<br>You can only join 1 guild at a time (including those in Merchanton), and only try once.<br>Gives 10 gold per segment completed.<br>Gives (practical magic skill + thievery skill) * (1 + main stat / 100) * sqrt(1 + times completed / 1000) * (original mana cost / actual mana cost) progress points per mana.<br>Unlocked at 25% City seen.<br>Gives Thievery exp upon segment completion, rather than upon action completion.
             ]]></tooltip>
             <story_1><![CDATA[<b>Thieves' guild test taken:</b>⮀ You make your way into the hidden guild your young "guide" brought you to last time and introduce yourself as a new recruit. The old yet intimidatingly muscular man in charge just grunts and demands you show your skills.]]></story_1>
             <story_2><![CDATA[<b>Thief rank E reached:</b>⮀ While your experiences with the other guilds prepared you for this, it's clear you once again are starting from the bottom. "Stealing candy from a baby" isn't nearly as easy as you were led to believe previously.]]></story_2>
@@ -3228,7 +3228,7 @@
         <invest>
             <label>Invest</label>
             <tooltip><![CDATA[
-            Invest into the perpetual bank. The interest it makes should be available to you in the future.<br>
+            Invest into the perpetual bank. Invested gold remains between loops.<br>
             Total gold invested: <div id='goldInvested'></div>
             ]]></tooltip>
             <story_1><![CDATA[<b>Made an investment:</b>⮀ The investment bank is, in a word, gaudy. White and marble everywhere, seats that somehow make you feel like you're sitting on an emperor's throne, the whole nine yards. The ]]></story_1>
@@ -3242,6 +3242,7 @@
             <tooltip><![CDATA[
             Collect your interest from the perpetual bank.<br>
             Gives 0.1% of your total gold invested.<br>
+            Can only be collected once per loop.<br>
             Current interest: <div id='bankInterest'></div>
             ]]></tooltip>
             <story_1><![CDATA[<b>Interest collected:</b>⮀ Being on the other side of the transaction doesn't make the bank look any less gaudy, but the money is nice to get.]]></story_1>
@@ -3274,7 +3275,8 @@
             <label_part>Floor</label_part>
             <label_complete>Did you cheat?</label_complete>
             <tooltip><![CDATA[
-            There is a crowd watching as you and your team step up to the trial, and you're pretty sure some bets are made against you.<br> 
+            There is a crowd watching as you and your team step up to the trial, and you're pretty sure some bets are made against you.<br>
+            Progress is based on Team Combat.<br>
             Rewards +1 Bragging Rights.
             ]]></tooltip>
             <story_1><![CDATA[<b>Faced the Trial of Vanity:</b>⮀ For a long time, you've heard of a "special trial" for the most "stubborn and determined souls," and now you've finally found it: the Trial of Vanity. You can't see the faces of the crowd as you and your team head out to face the gruelling challenge head on!]]></story_1>
@@ -3343,7 +3345,9 @@
             <label_complete>100 Floors Completed</label_complete>
             <label_part>Gods Trial</label_part>
             <tooltip><![CDATA[
-            The gods have filled the 100 floors of the tower you built with monsters to stop you from returning to Valhalla. Rude. More Team Combat can help clear floors faster.<br>Requires 100% Tower built.
+            The gods have filled the 100 floors of the tower you built with monsters to stop you from returning to Valhalla. Rude.<br>
+            Progress is based on Team Combat.<br>
+            Requires 100% Tower built.
             ]]></tooltip>
             <segment_names>
 		    <name>Fight Fire Dragon</name>
@@ -3375,6 +3379,7 @@
             <label_complete>All Gods Defeated</label_complete>
             <tooltip><![CDATA[
             This is it. The final showdown. If you can defeat the seven gods, you can finally end all this looping nonsense for good.<br>
+            Progress is based on Self Combat.<br>
             Requires all 100 floors of Trial of the gods completed this loop.
             ]]></tooltip>
 		    <segment_names>

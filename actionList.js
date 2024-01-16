@@ -610,6 +610,17 @@ function RuinsAction(townNum) {
         finish() {
             towns[this.townNum].finishProgress(this.varName, 1);
             adjustRocks(this.townNum);
+        },
+        storyReqs(storyNum) {
+          switch (storyNum) {
+              case 1:
+                  return towns[this.townNum].getLevel(this.varName) >= 10;
+              case 2:
+                  return towns[this.townNum].getLevel(this.varName) >= 50;
+              case 3:
+                  return towns[this.townNum].getLevel(this.varName) >= 100;
+          }
+          return false;
         }
     });
 }
@@ -664,6 +675,17 @@ function HaulAction(townNum) {
             towns[this.townNum].finishRegular(this.varName, 1000, () => {
                 addResource("stone", true);
             });
+        },
+        storyReqs(storyNum) {
+          switch (storyNum) {
+              case 1:
+                  return towns[this.townNum][`good${this.varName}`] >= 1;
+              case 2:
+                  return towns[this.townNum][`good${this.varName}`] >= 100;
+              case 3:
+                  return towns[this.townNum][`good${this.varName}`] >= 250;
+          }
+          return false;
         }
     });
 }
@@ -1951,6 +1973,8 @@ Action.Hunt = new Action("Hunt", {
             case 2:
                 return towns[1][`good${this.varName}`] >= 10;
             case 3:
+                return towns[1][`good${this.varName}`] >= 20;
+            case 4:
                 return towns[1][`good${this.varName}`] >= 20;
         }
         return false;
@@ -5204,7 +5228,7 @@ Action.BuildHousing = new Action("Build Housing", {
         addResource("houses", 1);
         handleSkillExp(this.skills);
         unlockStory("houseBuilt");
-        if (resources.houses >= 10 && getCraftGuildRank().name == "godlike")
+        if (resources.houses >= 10 && getCraftGuildRank().name == "Godlike")
             unlockStory("housesBuiltGodlike");
         if (resources.houses >= 50)
             unlockStory("built50Houses");
@@ -5568,7 +5592,7 @@ Action.Meander = new Action("Meander", {
             case 6: return towns[5].getLevel("Meander") >= 50;
             case 7: return towns[5].getLevel("Meander") >= 75;
             case 8: return towns[5].getLevel("Meander") >= 100;
-            case 9: return towns[5].getLevel("Meander") >= 1 && getBuffLevel("Imbuement") >= 100;
+            case 9: return storyReqs.meanderIM100;
         }
     },
     stats: {
@@ -5589,6 +5613,7 @@ Action.Meander = new Action("Meander", {
         return true;
     },
     finish() {
+        if (getBuffLevel("Imbuement") >= 100) unlockStory("meanderIM100");
         towns[5].finishProgress(this.varName, getBuffLevel("Imbuement"));
     }
 });
@@ -5680,7 +5705,7 @@ Action.DestroyPylons = new Action("Destroy Pylons", {
     finish() {
         towns[5].finishRegular(this.varName, 100, () => {
             addResource("pylons", 1);
-            view.requestUpdate("adjustManaCost", "The Spire");
+            //view.requestUpdate("adjustManaCost", "The Spire");
             return 1;
         });
     },
@@ -5732,9 +5757,9 @@ Action.DarkSacrifice = new Action("Dark Sacrifice", {
     townNum: 5,
     storyReqs(storyNum) {
         switch(storyNum) {
-            case 1: return getBuffLevel("Ritual") >= 1;
-            case 2: return getBuffLevel("Ritual") >= 100;
-            case 3: return getBuffLevel("Ritual") >= 1000;
+            case 1: return getBuffLevel("Commune") >= 1;
+            case 2: return getBuffLevel("Commune") >= 100;
+            case 3: return getBuffLevel("Commune") >= 1000;
         }
     },
     stats: {
@@ -5866,6 +5891,7 @@ Action.PurchaseSupplies = new Action("Purchase Supplies", {
         return towns[5].getLevel("Meander") >= 75;
     },
     finish() {
+        unlockStory("suppliesPurchased")
         addResource("supplies", true);
     },
 });
@@ -6331,6 +6357,7 @@ Action.OpenPortal = new Action("Open Portal", {
     },
     finish() {
         portalUsed = true;
+        unlockStory("portalOpened");
         handleSkillExp(this.skills);
         unlockTown(1);
     },
@@ -6794,7 +6821,7 @@ Action.GuildAssassin = new Action("Guild Assassin", {
         return towns[this.townNum].getLevel("InsuranceFraud") >= 75;
     },
     unlocked() {
-        return towns[this.townNum].getLevel("Excursion") >= 100;
+        return towns[this.townNum].getLevel("InsuranceFraud") >= 100;
     },
     finish() {
         if (resources.heart >= 1) unlockStory("assassinHeartDelivered");
@@ -7284,7 +7311,7 @@ Action.GodsTrial = new TrialAction("Gods Trial", 1, {
         if (this.currentFloor() >= 80) unlockStory("trailGods80Done");
         if (this.currentFloor() >= 90) unlockStory("trailGods90Done");
         
-        if (this.currentFloor() === trialFloors[this.trialNum] - 1) 
+        if (this.currentFloor() === trialFloors[this.trialNum]) //warning: the predictor assumes the old behavior, but this is clearly the intended
         {
             unlockStory("trailGodsAllDone");
             addResource("power", 1);
@@ -7307,6 +7334,28 @@ Action.ChallengeGods = new TrialAction("Challenge Gods", 2, {
     expMult: 0.5,
     townNum: 8,
     varName: "GFight",
+    storyReqs(storyNum) {
+        switch(storyNum) {
+            case 1: return storyReqs.fightGods01;
+            case 2: return storyReqs.fightGods02;
+            case 3: return storyReqs.fightGods03;
+            case 4: return storyReqs.fightGods04;
+            case 5: return storyReqs.fightGods05;
+            case 6: return storyReqs.fightGods06;
+            case 7: return storyReqs.fightGods07;
+            case 8: return storyReqs.fightGods08;
+            case 9: return storyReqs.fightGods09;
+            case 10: return storyReqs.fightGods10;
+            case 11: return storyReqs.fightGods11;
+            case 12: return storyReqs.fightGods12;
+            case 13: return storyReqs.fightGods13;
+            case 14: return storyReqs.fightGods14;
+            case 15: return storyReqs.fightGods15;
+            case 16: return storyReqs.fightGods16;
+            case 17: return storyReqs.fightGods17;
+            case 18: return storyReqs.fightGods18;
+        }
+    },
     stats: {
         Dex: 0.11,
         Str: 0.11,
