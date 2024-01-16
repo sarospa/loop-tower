@@ -1975,7 +1975,7 @@ Action.Hunt = new Action("Hunt", {
             case 3:
                 return towns[1][`good${this.varName}`] >= 20;
             case 4:
-                return towns[1][`good${this.varName}`] >= 20;
+                return towns[1][`good${this.varName}`] >= 50;
         }
         return false;
     },
