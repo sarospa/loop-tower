@@ -71,7 +71,7 @@ class View {
             }
             if (tooltipSelector === "") {
                 console.warn("Could not find tooltip class for trigger! Using generic selector", trigger);
-                tooltipSelector = ".showthis,.showthisO,.showthis2,.showthisH,.showthisloadout";
+                tooltipSelector = ".showthis,.showthisO,.showthis2,.showthisH,.showthisloadout,.showthisstory";
             }
             for (const tooltip of trigger.querySelectorAll(tooltipSelector)) {
                 if (tooltip instanceof HTMLElement)
@@ -84,7 +84,7 @@ class View {
     getClosestTrigger(element) {
         let trigger = this.tooltipTriggerMap.get(element);
         if (trigger == null) {
-            trigger = element.closest(".showthat,.showthatO,.showthat2,.showthatH,.showthatloadout") || false;
+            trigger = element.closest(".showthat,.showthatO,.showthat2,.showthatH,.showthatloadout,.showthatstory") || false;
             this.tooltipTriggerMap.set(element, trigger);
         }
         return trigger;
@@ -992,6 +992,7 @@ class View {
                     const storyAmt = _txt(`actions>${name}`, "fallback").split("⮀").length - 1;
                     let storiesUnlocked = 0;
                     for (let i = 1; i <= storyAmt; i++) {
+                        storyTooltipText += "<p>"
                         const storyText = _txt(`actions>${name}>story_${i}`, "fallback").split("⮀");
                         if (action.storyReqs(i)) {
                             storyTooltipText += storyText[0] + storyText[1];
@@ -1006,7 +1007,7 @@ class View {
                             storyTooltipText += `${storyText[0]} ???`;
                             lastInBranch = true;
                         }
-                        storyTooltipText += "<br>";
+                        storyTooltipText += "</p>\n";
                     }
                     if (document.getElementById(divName).children[2].innerHTML !== storyTooltipText) {
                         document.getElementById(divName).children[2].innerHTML = storyTooltipText;
@@ -1287,6 +1288,7 @@ class View {
             for (let i = 1; i <= storyAmt; i++) {
                 if (_txt(`actions>${action.name.toLowerCase().replace(/ /gu, "_")}>story_${i}`) === undefined) console.log(`actions>${action.name.toLowerCase().replace(/ /gu, "_")}>story_${i}`);
                 const storyText = _txt(`actions>${action.name.toLowerCase().replace(/ /gu, "_")}>story_${i}`, "fallback").split("⮀");
+                storyTooltipText += "<p>";
                 if (action.storyReqs(i)) {
                     storyTooltipText += storyText[0] + storyText[1];
                     lastInBranch = false;
@@ -1296,11 +1298,11 @@ class View {
                     storyTooltipText += `${storyText[0]} ???`;
                     lastInBranch = true;
                 }
-                storyTooltipText += "<br>";
+                storyTooltipText += "</p>";
             }
     
             const storyDivText =
-                `<div id='storyContainer${action.varName}' class='storyContainer showthat' draggable='false' onmouseover='hideNotification("storyContainer${action.varName}")'>${action.label}
+                `<div id='storyContainer${action.varName}' tabindex='0' class='storyContainer showthatstory' draggable='false' onmouseover='hideNotification("storyContainer${action.varName}")'>${action.label}
                     <br>
                     <div style='position:relative'>
                         <img src='img/${camelize(action.name)}.svg' class='superLargeIcon' draggable='false'>

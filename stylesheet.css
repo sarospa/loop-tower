@@ -156,15 +156,14 @@ body:not(.loading) > .hideWhenLoaded {
     position:relative;
 }
 
-/* Top menus and loadouts can have focusable children in the popup, so they're sticky (they use focus-within) */
+/* Top menus, loadouts, and action stories can have focusable children in the popup, so they're sticky (they use focus-within) */
 .showthatH:hover .showthisH, .showthatH:focus-within .showthisH,
 .showthatloadout:hover .showthisloadout, .showthisloadout:hover, .showthatloadout:focus-within .showthisloadout,
+.showthatstory:hover .showthisstory, .showthatstory:focus-within .showthisstory,
 
 /* Other popups only focus on the trigger, so they use focus-visible to only sticky when using keyboard nav */
 .showthat:hover .showthis, .showthat:focus-visible .showthis, 
-.showthatO:hover .showthis, .showthatO:focus-visible .showthis, 
-.showthat:hover .showthisname, .showthat:focus-visible .showthisname, 
-.showthat:hover .showthisstory, .showthat:focus-visible .showthisstory
+.showthatO:hover .showthis, .showthatO:focus-visible .showthis
 {
     display: block;
     visibility: visible;
@@ -263,21 +262,6 @@ ul#faq > li {
     opacity: 1;
 }
 
-.showthisname {
-    visibility: hidden;
-    opacity: 0;
-    position: fixed;
-    color: var(--popup-color);
-    background-color: var(--popup-background);
-    border:1px solid;
-    padding:3px 5px;
-    border-radius:4px;
-    margin-top: -43px;
-    z-index: 999999;
-    text-align: left;
-    margin-left: -5px;
-    white-space: nowrap;
-}
 .showthatloadout {
     padding: 1px 5px;
     text-align: center;
@@ -316,6 +300,11 @@ ul#faq > li {
     visibility: hidden;
     opacity: 0;
     position: fixed;
+    max-width: 650px;
+    max-width: min(650px,95svw);
+    max-height: 95vh;
+    overflow: auto;
+    overscroll-behavior: contain;
     color: var(--story-color);
     background: var(--story-background);
     border:1px solid var(--story-border);
@@ -324,6 +313,15 @@ ul#faq > li {
     margin-left:-1px;
     z-index: 999999;
     text-align:left;
+    pointer-events: none;
+    & > p {
+        margin-left:1em;
+        text-indent:-1em;
+    }
+}
+.showthatstory:focus-within .showthisstory {
+    pointer-events: all;
+    user-select: text;
 }
 
 .storyContainerCompleted .showthisstory {
@@ -1068,7 +1066,7 @@ dl.action-stats {
     margin: 3px;
     fill: var(--story-button-fill);
 }
-.storyContainer:hover {
+.storyContainer:is(:hover,:focus-within) {
     border-radius: 0px;
     box-shadow: none;
 }
