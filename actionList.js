@@ -5111,13 +5111,16 @@ Action.Spatiomancy = new Action("Spatiomancy", {
         return towns[4].getLevel("Tour") >= 60;
     },
     finish() {
+        const oldSpatioSkill = getSkillLevel("Spatiomancy");
         handleSkillExp(this.skills);
-        view.requestUpdate("adjustManaCost", "Mana Geyser");
-        view.requestUpdate("adjustManaCost", "Mana Well");
-        adjustAll();
-        for (const action of totalActionList) {
-            if (towns[action.townNum].varNames.indexOf(action.varName) !== -1) {
-                view.requestUpdate("updateRegular", {name: action.varName, index: action.townNum});
+        if (getSkillLevel("Spatiomancy") !== oldSpatioSkill) {
+            view.requestUpdate("adjustManaCost", "Mana Geyser");
+            view.requestUpdate("adjustManaCost", "Mana Well");
+            adjustAll();
+            for (const action of totalActionList) {
+                if (towns[action.townNum].varNames.indexOf(action.varName) !== -1) {
+                    view.requestUpdate("updateRegular", {name: action.varName, index: action.townNum});
+                }
             }
         }
     },

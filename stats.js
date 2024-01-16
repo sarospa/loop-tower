@@ -100,6 +100,7 @@ class Stat extends Localizable {
     name;
     statLevelExp = new LevelExp();
     talentLevelExp = new LevelExp();
+    soullessLevelExp = new LevelExp();
     soulstone = 0;
 
     /** @param {StatName} name */
@@ -553,6 +554,7 @@ function getExpToLevel(name, talentOnly=false) {
 /** @param {StatName} name */
 function addExp(name, amount) {
     stats[name].statLevelExp.addExp(amount);
+    stats[name].soullessLevelExp.addExp(amount / stats[name].soulstoneMult);
     let talentGain = amount * getTalentMultiplier();
     stats[name].talentLevelExp.addExp(talentGain);
     totalTalent += talentGain;
