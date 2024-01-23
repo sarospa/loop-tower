@@ -413,7 +413,7 @@
                                 <button class="loadoutbutton" style="margin-bottom:5px;margin-top:3px;margin-right:-4px;" onclick="nameList(true)">Rename</button>
                             </div>
                         </div>
-                        <select id='trackedStat' class='button'></select>
+                        <select id='predictorTrackedStatInput' class='button' onchange="setOption('predictorTrackedStat', this.value)"></select>
                     </div>
                 </div>
             </div>
@@ -538,16 +538,12 @@
     <script src="views/buffs.view.js"></script>
     <script src="views/talenttree.view.js"></script>
     <script>
-        Data.recordDefaults();
+        loadDefaults();
         let initInterval = setInterval(() => {
             if (locCheck) {
                 clearInterval(initInterval);
                 initInterval = undefined;
                 locCheck = undefined;
-                for (const prop in Action) {
-                    const action = Action[prop];
-                    totalActionList.push(action);
-                }
                 Views.draw();
                 Localization.localizePage("game");
                 localStorage["loadingText"] = document.getElementById("loadingText").textContent;

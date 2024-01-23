@@ -3427,6 +3427,7 @@
     </spells>
     <predictor>
         <settings>Predictor Settings</settings>
+        <background_thread>Run predictor in background thread</background_thread>
         <time_precision>Degrees of precision on Time</time_precision>
         <next_precision>Degrees of precision on Next</next_precision>
         <action_list_width>Width of the Action List (non-responsive UI only)</action_list_width>

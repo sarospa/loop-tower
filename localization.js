@@ -1,6 +1,6 @@
 // @ts-check
 
-const Localization = window["Localization"] = {
+const Localization = self["Localization"] = {
     // config
     // set to true for more console.log
     debug: false,
@@ -90,15 +90,18 @@ const Localization = window["Localization"] = {
     },
 };
 
-Localization.init();
 // binding the _txt function for simplier use
-const _txt = window["_txt"] = Localization.txt;
-const _txtsObj = window["_txtsObj"] = Localization.txtsObj;
-
+const _txt = self["_txt"] = Localization.txt;
+const _txtsObj = self["_txtsObj"] = Localization.txtsObj;
 let locCheck = false;
-Localization.loadLib("fallback", () => {
-    Localization.loadLib("game", () => locCheck = true);
-});
+
+if (typeof window !== "undefined") {
+    Localization.init();
+    
+    Localization.loadLib("fallback", () => {
+        Localization.loadLib("game", () => locCheck = true);
+    });
+}
 
 /**
  * Represents a localization subtree; intended as a base class for a piece of game data

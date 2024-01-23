@@ -11,7 +11,6 @@ class View {
         this.adjustDarkRitualText();
         this.updateBuffs();
         this.updateTime();
-        this.updateNextActions();
         this.updateCurrentActionsDivs();
         this.updateTotalTicks();
         this.updateAddAmount(1);
@@ -229,6 +228,10 @@ class View {
     fixTooltipPosition(tooltip, trigger, eventTarget, delayedCall=false) {
         if (tooltip.contains(eventTarget)) {
             // console.log("Not fixing tooltip while cursor is inside",{tooltip,trigger,event});
+            return;
+        }
+        if (!trigger.parentElement) {
+            // trigger has been removed from document, abort
             return;
         }
         const triggerRect = trigger.getBoundingClientRect();

@@ -70,8 +70,7 @@ const defaultSaveName = "idleLoops1";
 const challengeSaveName = "idleLoopsChallenge";
 let saveName = defaultSaveName;
 
-// this is to hide the cheat button if you aren't supposed to cheat
-if (window.location.href.includes("http://127.0.0.2:8080")) document.getElementById("cheat").style.display = "inline-block";
+const selfIsWorker = typeof window === "undefined";
 
 const timeNeededInitial = 5 * 50;
 // eslint-disable-next-line prefer-const
@@ -80,9 +79,9 @@ let timer = timeNeededInitial;
 let timeNeeded = timeNeededInitial;
 // eslint-disable-next-line prefer-const
 let gameIsStopped = false;
-const view = new View();
+const view = selfIsWorker ? null : new View();
 const actions = new Actions();
-const actionLog = new ActionLog();
+const actionLog = selfIsWorker ? null : new ActionLog();
 /**
  * @template {number} Count Number of towns
  * @template {any[]} [Towns=[]] Tuple of towns
@@ -104,6 +103,14 @@ function _town(townNum) {
 /** @type {TownNum} */
 let curTown = 0;
 
+function initializeTowns() {
+    for (let i = 0; i <= 8; i++) {
+        // @ts-ignore
+        towns[i] = new Town(i);
+        // These shouldn't ever get rewritten
+        Object.defineProperty(towns, i, {writable: false});
+    }
+}
 
 const statList = /** @type {const} */(["Dex", "Str", "Con", "Spd", "Per", "Cha", "Int", "Luck", "Soul"]);
 /** @typedef {typeof statList[number]} StatName */
@@ -509,6 +516,14 @@ let curGodsSegment = 0;
 
 /** @type {AnyAction[]} */
 let totalActionList = [];
+
+function initializeActions() {
+    for (const prop in Action) {
+        const action = Action[prop];
+        totalActionList.push(action);
+    }
+}
+
 let dungeons = [[], [], []];
 /** @type {(any[] & {highestFloor?:number})[]} */
 let trials = [[], [], [], [], []];
@@ -577,7 +592,7 @@ function virtualizeGlobalVariables(variables) {
 
 /** @type {Notification} */
 let pauseNotification = null;
-const googleCloud = new GoogleCloud();
+const googleCloud = selfIsWorker ? null : new GoogleCloud();
 
 const options = {
     theme: "normal",
@@ -608,10 +623,93 @@ const options = {
     googleCloud: false,
     updateRate: 50,
     autosaveRate: 30,
+    predictorTimePrecision: 1,
+    predictorNextPrecision: 2,
+    predictorActionWidth: 500,
+    predictorRepeatPrediction: true,
+    predictorSlowMode: false,
+    predictorSlowTimer: 1,
+    predictorTrackedStat: "Rsoul",
+    predictorBackgroundThread: true,
 };
 
+/** @satisfies {readonly {[K in OptionName]: OptionType<K> extends number ? K : never}[OptionName][]} */
 /** @typedef {keyof typeof options} OptionName */
 /** @template {OptionName} N @typedef {typeof options[N]} OptionType */
+/** @typedef {{[K in OptionName]: OptionType<K> extends number ? K : never}[OptionName]} NumericOptionName */
+/** @typedef {{[K in OptionName]: OptionType<K> extends string ? K : never}[OptionName]} StringOptionName */
+/** @typedef {{[K in OptionName]: OptionType<K> extends boolean ? K : never}[OptionName]} BooleanOptionName */
+
+/** @satisfies {NumericOptionName[]} */
+const numericOptions = [
+    "speedIncreaseCustom",
+    "speedIncreaseBackground",
+    "updateRate",
+    "autosaveRate",
+    "predictorTimePrecision",
+    "predictorNextPrecision",
+    "predictorActionWidth",
+    "predictorSlowTimer",
+];
+/** @satisfies {readonly StringOptionName[]} */
+const stringOptions = [
+    "theme",
+    "themeVariant",
+    "predictorTrackedStat",
+];
+
+/** @param {string} option @returns {option is NumericOptionName} */
+function isNumericOption(option) {
+    return numericOptions.includes(/** @type {NumericOptionName} */(option));
+}
+
+/** @param {string} option @returns {option is StringOptionName} */
+function isStringOption(option) {
+    return stringOptions.includes(/** @type {StringOptionName} */(option));
+}
+
+/** @param {string} option @returns {option is BooleanOptionNameOptionName} */
+function isBooleanOption(option) {
+    // I'm explicitly deciding to leave this open-ended, so unknown options are treated as booleans
+    return !numericOptions.includes(/** @type {NumericOptionName} */(option)) 
+        && !stringOptions.includes(/** @type {StringOptionName} */(option));
+}
+
+// legacy predictor settings are in localStorage, use them as defaults if they exist
+function importPredictorSettings() {
+    /** @type {Record<string, OptionName>} */
+    const settingsMap = {
+        __proto__: null,
+        timePrecision: "predictorTimePrecision",
+        nextPrecision: "predictorNextPrecision",
+        actionWidth: "predictorActionWidth",
+        repeatPrediction: "predictorRepeatPrediction",
+        slowMode: "predictorSlowMode",
+        slowTimer: "predictorSlowTimer",
+    };
+    /** @type {Partial<typeof options>} */
+    const newOptions = {};
+    for (const [originalSetting, newOption] of Object.entries(settingsMap)) {
+        const value = localStorage.getItem(originalSetting);
+        if (value != null) {
+            // has a setting
+            if (isNumericOption(newOption)) {
+                const numericValue = parseInt(value);
+                if (isFinite(numericValue)) {
+                    newOptions[newOption] = numericValue;
+                }
+            } else if (isStringOption(newOption)) {
+                newOptions[newOption] = value;
+            } else {
+                newOptions[newOption] = value === "true";
+            }
+        }
+    }
+    return newOptions;
+}
+if (!selfIsWorker) {
+    Object.assign(options, importPredictorSettings()); // override hardcoded defaults if not in worker
+}
 
 // The original forks will throw exceptions if there are unexpected properties in the options element. This list lets us
 // check to see if a given option should go into "options" in the save, otherwise it belongs in "extraOptions".
@@ -645,6 +743,14 @@ const isStandardOption = {
     googleCloud: false,
     updateRate: true,
     autosaveRate: true,
+    predictorTimePrecision: false,
+    predictorNextPrecision: false,
+    predictorActionWidth: false,
+    predictorRepeatPrediction: false,
+    predictorSlowMode: false,
+    predictorSlowTimer: false,
+    predictorTrackedStat: false,
+    predictorBackgroundThread: false,
 };
 
 // Some options set or clear an indicator class on the root element so CSS can respond. Record these here.
@@ -656,7 +762,7 @@ const optionIndicatorClasses = {
     predictor: "usePredictor",
 };
 
-/** @type {{[K in OptionName]?: (value: OptionType<K>, init: boolean, getInput: () => HTMLValueElement) => void}} */
+ /** @type {{[K in OptionName]?: (value: OptionType<K>, init: boolean, getInput: () => HTMLValueElement) => void}} */
 const optionValueHandlers = {
     notifyOnPause(value, init, getInput) {
         const input = /** @type {HTMLInputElement} */(getInput());
@@ -718,6 +824,35 @@ const optionValueHandlers = {
             view.requestUpdate("updateNextActions");
         }
     },
+    predictorActionWidth(value) {
+        document.documentElement.style.setProperty("--predictor-actions-width", `${value}px`);
+    },
+    predictorTimePrecision(value) {
+        if (value > 10) {
+            setOption("predictorTimePrecision", 10);
+        }
+        if (value < 1) {
+            setOption("predictorTimePrecision", 1);
+        }
+    },
+    predictorNextPrecision(value) {
+        if (value > 10) {
+            setOption("predictorNextPrecision", 10);
+        }
+        if (value < 1) {
+            setOption("predictorNextPrecision", 1);
+        }
+    },
+    predictorTrackedStat(value, init) {
+        if (!init) {
+            view.requestUpdate("updateNextActions");
+        }
+    },
+    predictorBackgroundThread(value, init) {
+        if (!value && !init) {
+            Koviko.instance.terminateWorker();
+        }
+    }
 };
 
 /** @type {<K extends OptionName>(option: K, value: OptionType<K>, init: boolean, getInput: () => HTMLValueElement) => void} */
@@ -731,8 +866,12 @@ function handleOption(option, value, init, getInput) {
 
 /** @type {<K extends OptionName>(option: K, value: OptionType<K>) => void} */
 function setOption(option, value) {
+    const oldValue = options[option];
     options[option] = value;
     handleOption(option, value, false, () => valueElement(`${option}Input`));
+    if (options[option] !== oldValue) {
+        save();
+    }
 }
 
 /** @type {<K extends OptionName>(option: K, value: OptionType<K>) => void} */
@@ -766,15 +905,24 @@ function clearSave() {
     location.reload();
 }
 
+let defaultsRecorded = false;
 function loadDefaults() {
-    initializeStats();
-    initializeSkills();
-    initializeBuffs();
-    prestigeValues["prestigeCurrentPoints"] = 0;
-    prestigeValues["prestigeTotalPoints"] = 0;
-    prestigeValues["prestigeTotalCompletions"] = 0;
-    prestigeValues["completedCurrentPrestige"] = false;
-    prestigeValues["completedAnyPrestige"] = false;
+    if (defaultsRecorded) {
+        Data.resetToDefaults();
+    } else {
+        initializeStats();
+        initializeSkills();
+        initializeBuffs();
+        initializeActions();
+        initializeTowns();
+        prestigeValues["prestigeCurrentPoints"] = 0;
+        prestigeValues["prestigeTotalPoints"] = 0;
+        prestigeValues["prestigeTotalCompletions"] = 0;
+        prestigeValues["completedCurrentPrestige"] = false;
+        prestigeValues["completedAnyPrestige"] = false;
+        Data.recordDefaults();
+        defaultsRecorded = true;
+    }
 }
 
 function loadUISettings() {
@@ -825,6 +973,10 @@ function load(inChallenge) {
     if (challengeSave.challengeMode !== 0)
         saveName = challengeSaveName;
 
+    doLoad(toLoad);
+}
+
+function doLoad(toLoad) {
     for (const property of Object.getOwnPropertyNames(toLoad.stats ?? {})) {
         if (property in stats) {
             stats[property].load(toLoad.stats[property]);
@@ -902,9 +1054,6 @@ function load(inChallenge) {
             completedActions.push(action);
         });
     completedActions.push("FoundGlasses");
-    for (let i = 0; i <= 8; i++) {
-        towns[i] = new Town(i);
-    }
     actionTownNum = toLoad.actionTownNum === undefined ? 0 : toLoad.actionTownNum;
     trainingLimits = 10 + getBuffLevel("Imbuement");
     goldInvested = toLoad.goldInvested === undefined ? 0 : toLoad.goldInvested;
@@ -975,7 +1124,7 @@ function load(inChallenge) {
         }
     }
     curLoadout = toLoad.curLoadout;
-    const elem = document.getElementById(`load${curLoadout}`);
+    const elem = typeof document === "undefined" ? undefined : document.getElementById(`load${curLoadout}`);
     if (elem) {
         removeClassFromDiv(document.getElementById(`load${curLoadout}`), "unused");
     }
@@ -1072,9 +1221,7 @@ function load(inChallenge) {
     }
 
     for (const option in options) {
-        // Not sure how to remove old UI elements yet without breaking them from past saves. Using this as "temp" fix
-        if (!["speedIncrease50x", "speedIncrease100x"].includes(option)) 
-            loadOption(option, options[option]); 
+        loadOption(option, options[option]); 
     }
     storyShowing = toLoad.storyShowing === undefined ? 0 : toLoad.storyShowing;
     storyMax = toLoad.storyMax === undefined ? 0 : toLoad.storyMax;
@@ -1132,6 +1279,8 @@ function load(inChallenge) {
 
     adjustAll();
 
+    Data.recordBase();
+
     view.updateLoadoutNames();
     view.changeStatView();
     view.updateNextActions();
@@ -1140,11 +1289,9 @@ function load(inChallenge) {
     view.update();
     recalcInterval(options.updateRate);
     pauseGame();
-
-    Data.recordBase();
 }
 
-function save() {
+function doSave() {
     const toSave = {};
     toSave.curLoadout = curLoadout;
     toSave.dungeons = dungeons;
@@ -1207,6 +1354,11 @@ function save() {
     for (const challengeProgress in challengeSave)
         toSave.challengeSave[challengeProgress] = challengeSave[challengeProgress];
 
+    return toSave;
+}
+
+function save() {
+    const toSave = doSave();
     window.localStorage[saveName] = JSON.stringify(toSave);
     window.localStorage["updateRate"] = options.updateRate;
 }

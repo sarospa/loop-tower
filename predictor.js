@@ -283,23 +283,35 @@ const Koviko = {
 
   /** A cache so the predictor can skip expensivly calculating each action */
 
-  Cache: class{
+  Cache: 
+  /**
+   * @template {*} K type for keys
+   * @template {*} R type for reset data
+   * @template {*} T type for add data
+   */
+  class{
     constructor(){
       this.cache = [];
       this.index = 0;
     }
+    /**
+     * 
+     * @param {K} key 
+     * @returns {T|null}
+     */
     next(key) {
       if(this.cache.length > (this.index + 1) && this.equals(this.cache[this.index + 1].key, key)){
         return structuredClone(this.cache[++this.index].data);
       } else{
         this.miss();
-        return false;
+        return null;
       };
     }
     // Use current = true to invalidate the entry after reading it, current = false to invalidate the next entry
     miss(current = false) {
-      this.cache = this.cache.slice(0, this.index + !current);
+      this.cache = this.cache.slice(0, this.index + (current ? 0 : 1));
     }
+    /** @param {R} data @returns {boolean} */
     reset(data) {
       this.index = 0;
       if(!this.equals(data, this.cache[0]?.data)){
@@ -308,6 +320,7 @@ const Koviko = {
       }
       return true;
     }
+    /** @param {K} key @param {T} data */
     add(key, data) {
       this.cache.push({'key': key, 'data':structuredClone(data)})
     }
@@ -356,54 +369,103 @@ const Koviko = {
      * @prop {Koviko.Predictor~Progress} progress Accumulated progress
      */
 
+    #nextUpdateId = 1;
+
+    /** @type {Omit<Worker, 'postMessage'> & {postMessage(message: MessageToPredictor): void}} */
+    #worker;
+    /** @type {Record<number, {resolve: (data: MessageFromPredictor) => void, reject: (error: any) => void}>} */
+    #channelAwaiters = {};
+    /** @type {Record<number, MessageFromPredictor[]>} */
+    #channelQueues = {};
+    #workerDisabled = false;
+    get worker() {
+      if (this.isWorker) {
+        throw new Error("Can't get worker from inside worker!");
+      }
+      if (!this.#worker && options.predictorBackgroundThread && !this.#workerDisabled) {
+        this.#worker = new Worker("predictor-worker.js", {name: "predictor"});
+        this.#worker.onmessage = this.handleWorkerMessage.bind(this);
+        this.#worker.postMessage({type: "setOptions", options});
+        this.#worker.postMessage({type: "verifyDefaultIds", idRefs: Data.exportDefaultIds()});
+      }
+      return this.#worker;
+    }
+
+    terminateWorker() {
+      if (this.#worker) {
+        this.#worker.terminate();
+        this.#worker = null;
+      }
+    }
+
+    /** @param {number} channel @returns {Promise<MessageFromPredictor>} */
+    nextWorkerMessage(channel) {
+      return new Promise((resolve, reject) => {
+        const message = this.#channelQueues[channel]?.shift();
+        if (message) {
+          if (this.#channelQueues[channel].length === 0) {
+            delete this.#channelQueues[channel];
+          }
+          resolve(message);
+        } else {
+          this.#channelAwaiters[channel]?.reject("channel overridden");
+          this.#channelAwaiters[channel] = {resolve, reject};
+        }
+      });
+    }
+
+    /** @param {MessageEvent<MessageFromPredictor>} e  */
+    handleWorkerMessage(e) {
+      const {data} = e;
+      if (data.type === "error") {
+        // Errors are bad. Terminate and disable the worker.
+        console.error(`Unrecoverable error in background predictor worker; disabling background predictor`, data);
+        this.terminateWorker();
+        this.#workerDisabled = true;
+        inputElement("predictorBackgroundThreadInput").indeterminate = true;
+        inputElement("predictorBackgroundThreadInput").disabled = true;
+        return;
+      } else if (data.type === "getSnapshots") {
+        const {snapshotIds} = data;
+        const requestedSnapshots = this.backgroundSnapshot
+                                       .getHeritage()
+                                       .filter(s => snapshotIds.includes(s.id))
+                                       .sort((a, b) => snapshotIds.indexOf(a.id) - snapshotIds.indexOf(b.id));
+        if (requestedSnapshots.length === snapshotIds.length) {
+          const estimatedSize = requestedSnapshots.map(s => s.sizeEstimate).reduce((a, b) => a + b);
+          console.debug(`Exporting ${requestedSnapshots.length} snapshots of estimated size ${estimatedSize}.`, snapshotIds, requestedSnapshots);
+          this.worker.postMessage({type: "importSnapshots", snapshotExports: requestedSnapshots.map(s => s.export())});
+        } else {
+          console.log(`Only found ${requestedSnapshots.length} of ${snapshotIds.length} requested snapshots. Ignoring request, probably stale.`, snapshotIds, requestedSnapshots);
+        }
+        return;
+      }
+      const channel = data.id || 0;
+      const awaiter = this.#channelAwaiters[channel];
+      if (awaiter) {
+        awaiter.resolve(data);
+        delete this.#channelAwaiters[channel];
+      } else {
+        (this.#channelQueues[channel] ??= []).push(data);
+      }
+    }
+
     /**
      * Create the predictor
      */
-    constructor() {
+    constructor(isWorker = false) {
       // Initialization steps broken into pieces, for my sake
-      this.initElements()
+      this.isWorker = isWorker;
+      if (!isWorker) {
+        this.initElements()
+        this.setOptions(options);
+      }
       this.initPredictions();
       this.state;
-      Koviko.options={};
-      if(typeof localStorage !== "undefined") {
-        Koviko.options.timePrecision=localStorage.getItem('timePrecision');
-        if (Koviko.options.timePrecision !== null) {
-          $('#updateTimePrecision').val(Koviko.options.timePrecision);
-        }
-        Koviko.options.NextPrecision=localStorage.getItem('NextPrecision')
-        if (Koviko.options.NextPrecision !== null) {
-          $('#updateNextPrecision').val(Koviko.options.NextPrecision);
-        }
-        Koviko.options.actionWidth=localStorage.getItem("actionWidth");
-        if (Koviko.options.actionWidth!==null) {
-          document.documentElement.style.setProperty("--predictor-actions-width", `${Koviko.options.actionWidth}px`);
-          $('#actionWidth').val(Koviko.options.actionWidth);
-        }
-        Koviko.options.repeatPrediction=localStorage.getItem("repeatPrediction")=='true';
-        if (Koviko.options.repeatPrediction!==null) {
-          $('#repeatPrediction').prop( "checked", Koviko.options.repeatPrediction);
-        }
-        let tmpVal=localStorage.getItem("trackedStat");
-        if (tmpVal && Koviko.options.trackedStat !== null) {
-          $('#trackedStat').val(tmpVal);
-          Koviko.options.trackedStat=Koviko.trackedStats[tmpVal];
-        } else {
-          $('#trackedStat').val('Rsoul');
-          Koviko.options.trackedStat=Koviko.trackedStats['Rsoul'];
-          localStorage.setItem('trackedStat', 'Rsoul');
-        }
+    }
 
-        Koviko.options.slowMode=localStorage.getItem("slowMode")=='true';
-        if (Koviko.options.slowMode!==null) {
-          $('#slowMode').prop( "checked", Koviko.options.slowMode);
-        }
-
-        Koviko.options.slowTimer=(localStorage.getItem('slowTimer')||1);
-        if (Koviko.options.slowTimer !== null) {
-          $('#updateTimePrecision').val(Koviko.options.slowTimer);
-        }
-
-      }
+    setOptions(options) {
+      Koviko.options = options;
     }
 
     /**
@@ -434,39 +496,6 @@ const Koviko = {
       this.totalDisplay = htmlElement("predictorTotalDisplay");
       this.statisticDisplay = htmlElement("predictorStatisticDisplay");
 
-      //Adds more to the Options panel
-      $('#updateTimePrecision').focusout(function() {
-      $(this).val(Math.floor($(this).val()))
-          if($(this).val() > 10) {
-              $(this).val(10);
-          }
-          if($(this).val() < 1) {
-              $(this).val(1);
-          }
-          Koviko.options.timePrecision=$(this).val();
-          localStorage.setItem('timePrecision', Koviko.options.timePrecision);
-      });
-      $('#updateNextPrecision').focusout(function() {
-      $(this).val(Math.floor($(this).val()))
-          if($(this).val() > 10) {
-              $(this).val(10);
-          }
-          if($(this).val() < 1) {
-              $(this).val(1);
-          }
-          Koviko.options.NextPrecision=$(this).val();
-          localStorage.setItem('NextPrecision', Koviko.options.NextPrecision);
-      });
-      $('#actionWidth').focusout(function() {
-          Koviko.options.actionWidth=$(this).val();
-          localStorage.setItem('actionWidth',Koviko.options.actionWidth );
-          document.documentElement.style.setProperty("--predictor-actions-width", `${Koviko.options.actionWidth}px`);
-      });
-
-      $('#repeatPrediction').change(function() {
-          Koviko.options.repeatPrediction=$(this).is(':checked');
-          localStorage.setItem('repeatPrediction',Koviko.options.repeatPrediction );
-      });
       Koviko.trackedStats = [
         {type:'R', name:'soul', display_name:'SS Equi %'},
         {type:'R', name:'soulNow', display_name:'SS Curr %'},
@@ -485,34 +514,13 @@ const Koviko = {
         Koviko.trackedStats['T'+stat] = {type:'T', name:stat, display_name:_txt('stats>'+stat+'>long_form')}
       }
       for (const [key, stat] of Object.entries(Koviko.trackedStats)) {
-        $('#trackedStat').append("<option value="+key+" hidden=''>("+stat.type+") "+stat.display_name+"</option>");
+        $('#predictorTrackedStatInput').append("<option value="+key+" hidden=''>("+stat.type+") "+stat.display_name+"</option>");
       }
-      $('#trackedStat').change(function() {
-        let tmpVal=$(this).val();
-        localStorage.setItem('trackedStat',tmpVal);
-        Koviko.options.trackedStat=Koviko.trackedStats[tmpVal];
-        view.requestUpdate("updateNextActions");
-      });
       this.updateTrackedList();
-
-      $('#slowMode').change(function() {
-          Koviko.options.slowMode=$(this).is(':checked');
-          localStorage.setItem('slowMode',Koviko.options.slowMode );
-      });
-
-      $('#slowTimer').focusout(function() {
-          if($(this).val() < 1) {
-              $(this).val(1);
-          }
-          Koviko.options.slowTimer=$(this).val();
-          localStorage.setItem('slowTimer', Koviko.options.slowTimer);
-      });
-
-
     }
 
     updateTrackedList() {
-      let statisticList = $("#trackedStat").children();
+      let statisticList = $("#predictorTrackedStatInput").children();
         for (const statistic of statisticList) {
           let trackedStat = Koviko.trackedStats[statistic.value];
           if(trackedStat && trackedStat.hidden) {
@@ -597,6 +605,7 @@ const Koviko = {
 
       // Initialise cache
 
+      /** @type {PredictorCache<[ActionName, number, boolean], [PredictorRunState, string[]], [PredictorRunState, number, boolean]>} */
       this.cache = new Koviko.Cache();
       if(typeof(structuredClone) !== 'function'){
         console.log('Predictor: This browser does not support structuredClone, disabling the cache');
@@ -1488,6 +1497,10 @@ const Koviko = {
     /**
      * Fires before the main action list update, stores the current list to reduce flickering while updating.
      * @param {HTMLElement} [container] Parent element of the action list
+     * @this {this & {update: {
+     *  totalDisplay?: string,
+     *  pre?: NodeListOf<Element>,
+     * }}}
      */
     preUpdate(container) {
       this.update.totalDisplay = this.totalDisplay.innerHTML;
@@ -1498,10 +1511,15 @@ const Koviko = {
 
     /**
      * Update the action list view.
-     * @param {Array.<IdleLoops~ListedAction>} actions Actions in the action list
+     * @param {NextActionEntry[]} actions Actions in the action list
      * @param {HTMLElement} [container] Parent element of the action list
      * @param {boolean} [isDebug] Whether to log useful debug information
      * @memberof Koviko.Predictor
+     * @this {this & {update: {
+     *  totalDisplay?: string,
+     *  pre?: NodeListOf<Element>,
+     *  id?: number,
+     * }}}
      */
     async update(actions, container, isDebug) {
 
@@ -1519,19 +1537,19 @@ const Koviko = {
       let state;
 
       //"Slowmode means only update the initial state every X Minutes
-      if(Koviko.options.slowMode) {
+      if(options.predictorSlowMode) {
         if (this.initState && (new Date()<this.nextUpdate)) {
           state=structuredClone(this.initState);
           //console.log("Slowmode - Redraw");
         } else {
-          this.nextUpdate=new Date(Date.now()+ Koviko.options.slowTimer*1000*60);
+          this.nextUpdate=new Date(Date.now()+ options.predictorSlowTimer*1000*60);
           //console.log("Slowmode - Update Data");
         }
       }
 
       if (!state) {
         state = {
-          resources: { mana: 250, town: 0, guild: "", totalTicks: 0 },
+          resources: { mana: 250, town: /** @type {TownNum} */(0), guild: "", totalTicks: 0 },
           stats: statList.reduce((stats, name) => (stats[name] = getExpOfLevel(buffs.Imbuement2.amt*(skills.Wunderkind.exp>=100?2:1)), stats), {}),
           talents:  statList.reduce((talents, name) => (talents[name] = stats[name].talent, talents), {}),
           skills: Object.entries(skills).reduce((skills, x) => (skills[x[0].toLowerCase()] = x[1].exp, skills), {}),
@@ -1540,7 +1558,7 @@ const Koviko = {
           toNextLoop: {},
           soulstones: statList.reduce((soulstones, name) => (soulstones[name] = stats[name].soulstone, soulstones), {}),
         };
-        if (Koviko.options.slowMode) {
+        if (options.predictorSlowMode) {
           this.initState=structuredClone(state);
         }
       }
@@ -1586,20 +1604,21 @@ const Koviko = {
 
       // Reset the cache's index
       // returns false on cache miss
-      let cache = this.cache.reset([state, affected]);
+      let cacheIsValid = this.cache.reset([state, affected]);
 
 
       //Statistik parammeters
       let statisticStart=0;
       let newStatisticValue=0;
-      switch(Koviko.options.trackedStat.type) {
+      const trackedStat = Koviko.trackedStats[options.predictorTrackedStat];
+      switch(trackedStat.type) {
         case 'R':
           break;
         case 'S':
-          statisticStart=state.skills[Koviko.options.trackedStat.name];
+          statisticStart=state.skills[trackedStat.name];
           break;
         case 'T':
-          statisticStart=state.talents[Koviko.options.trackedStat.name];
+          statisticStart=state.talents[trackedStat.name];
           break;
       }
 
@@ -1617,24 +1636,166 @@ const Koviko = {
       }
 
       // Initialize cached variables outside of the loop so we don't have to worry about initializing them on hit/miss in two separate places
-      /** @var {boolean} */
-      let isValid;
-      let loop;
-
-      // If id != update.id, then another update was triggered and we need to stop processing this one
-      let id = {};
-      this.update.id = id;
-
+      let isValid = false;
+      let loop = 0;
       let finalIndex=actions.length-1;
-      while ((finalIndex>0) && (actions[finalIndex].disabled)) {
+      while ((finalIndex>0) && (actions[finalIndex].disabled || actions[finalIndex].loops === 0)) {
         finalIndex--;
       }
 
-      performance.mark("enter-predictor-idle");
-      performance.measure("predictor-preidle", "start-predictor-update", "enter-predictor-idle");
 
-      const runInfo = await new class RunInfo {
+      // If id != update.id, then another update was triggered and we need to stop processing this one
+      const id = this.#nextUpdateId++;
+      // console.debug(`Starting predictor update ${id} (last update ${this.update.id})`);
+      this.update.id = id;
+      const runData = {
+        id,
+        options,
+        actions,
+        isDebug,
+        snapshots,
+        affected,
+        state,
+        total,
+        cacheIsValid,
+        statisticStart,
+        newStatisticValue,
+        isValid,
+        loop,
+        finalIndex,
+      };
+      for await (const [i, state, isValid] of options.predictorBackgroundThread && this.worker ? this.doBackgroundUpdate(runData) : this.doUpdate(runData)) {
+        if (i === finalIndex && typeof state.resources.finLoops !== "undefined" && !affected.includes("finLoops")) {
+          affected.unshift('finLoops');
+        }
+
+        // Update the snapshots
+        for (const snapType in snapshots) {
+          // console.log(`snapping ${snapType}:`,snapshots[snapType],state[snapType]);
+          snapshots[snapType].snap(state[snapType]);
+        }
+
+        const listedAction = actions[i];
+        /**
+         * Element for the action in the list
+         * @var {HTMLElement}
+         */
+        let div = container ? container.children[i] : null;
+
+        // Update the view
+        if (div) {
+          div.querySelector('ul.koviko').outerHTML = this.template(listedAction.name, affected, state.resources, snapshots, isValid);
+        }
+
+      }
+      if (this.update.id === id) {
+        await this.finishUpdate(container, runData);
+        performance.mark("end-predictor-update");
+        const updateTime = performance.measure("predictor-totalupdate", "start-predictor-update", "end-predictor-update");
+        // console.debug(`Performed update ${id} in ${updateTime.duration}`, updateTime);
+      } else {
+        console.debug(`Predictor update ${id} interrupted by ${this.update.id}`);
+      }
+      return runData;
+    }
+
+    /** @param {PredictorRunData} runData @returns {AsyncGenerator<[number, PredictorRunState, boolean]>}  */
+    async *doBackgroundUpdate(runData) {
+      const {
+        id: updateId,
+        finalIndex,
+        affected,
+      } = runData;
+      Data.recordSnapshot("predictor-worker");
+      this.backgroundSnapshot = Data.getSnapshot(-1);
+      const snapshotHeritage = this.backgroundSnapshot.getHeritage().map(s => s.id);
+      this.worker.postMessage({type: "setOptions", options});
+      this.worker.postMessage({
+        type: "startUpdate",
+        runData,
+        snapshotHeritage,
+      });
+      while (true) {
+        const message = await this.nextWorkerMessage(updateId);
+        const {type} = message;
+        switch (type) {
+          case "endUpdate":
+            Object.assign(runData, message.runData);
+            return;
+          case "update":
+            const {i, state, isValid} = message;
+            yield [i, state, isValid];
+            break;
+        }
+      }
+    }
+
+    /** @param {PredictorRunData} runData */
+    async workerUpdate(runData) {
+      const {id, snapshots} = runData;
+      for await (const [i, state, isValid] of this.doUpdate(runData)) {
+        postMessage({type:"update", id, i, state, isValid});
+      }
+      postMessage({type:"endUpdate", id, runData});
+    }
+
+    /**
+     * doUpdate is the workhorse of the predictor. It can run either in the UI thread (when predictorBackgroundThread is off)
+     * or in the Worker thread, so it must not use any UI functions or elements, either directly or indirectly
+     * @param {PredictorRunData} runData
+     * @returns {AsyncGenerator<[number, PredictorRunState, boolean]>}
+     * @this {this & {update: {
+     *  totalDisplay?: string,
+     *  pre?: NodeListOf<Element>,
+     *  id?: number,
+     * }}}
+     */
+    async *doUpdate(runData) {
+      const {
+        id,
+        options,
+        actions,
+        isDebug,
+        snapshots,
+        affected,
+        finalIndex,
+      } = runData;
+      let {
+        state,
+        total,
+        cacheIsValid,
+        statisticStart,
+        newStatisticValue,
+        isValid,
+        loop,
+      } = runData;
+      this.update.id = id;
+
+      const runInfo = await new (this.isWorker
+        ? class WorkerRunInfo {
+          async start() {
+            performance.mark("enter-predictor-worker");
+            await delay(0);
+            this.nextPause = performance.now() + 50; // pause every 50 ms
+            performance.mark("start-predictor-worker");
+            const initdelay = performance.measure("predictor-worker-initdelay", "enter-predictor-worker", "start-predictor-worker");
+            // console.log(`Initial delay time = ${initdelay.duration}`);
+            return this;
+          }
+          async pauseIfNeeded() {
+            if (performance.now() >= this.nextPause) {
+              await delay(0); // a backgrounded predictor only needs to pump the event queue every so often
+              this.nextPause = performance.now() + 50;
+              return true;
+            }
+            return false;
+          }
+          finish() {}
+        }
+        : class IdleRunInfo {
         async start() {
+          performance.mark("enter-predictor-idle");
+          performance.measure("predictor-preidle", "start-predictor-update", "enter-predictor-idle");
           this.deadline = await nextIdle();
           const timeRemaining = this.deadline.timeRemaining();
           this.lastMark = this.#mark("start-predictoridle", timeRemaining);
@@ -1648,8 +1809,8 @@ const Koviko = {
             performance.measure("predictoridle-cycle", this.lastMark.name, pauseMark.name);
             this.deadline = await nextIdle();
   
-          timeRemaining = this.deadline.timeRemaining();
-          this.lastMark = this.#mark("continue-predictoridle", timeRemaining);
+            timeRemaining = this.deadline.timeRemaining();
+            this.lastMark = this.#mark("continue-predictoridle", timeRemaining);
             return true;
           }
           return false;
@@ -1664,33 +1825,27 @@ const Koviko = {
         #mark(name, timeRemaining) {
           return performance.mark(`${name}:${timeRemaining}`, { detail: { timeRemaining } });
         }
-      }().start();
+      })().start();
 
       // Run through the action list and update the view for each action
       for(const [i, listedAction] of actions.entries()) {
         if (await runInfo.pauseIfNeeded() && id != this.update.id) return;
 
         // If the cache hit the last time
-        if(cache && i !== finalIndex) {
+        let cache = cacheIsValid && i !== finalIndex ? this.cache.next([listedAction.name, listedAction.loops, listedAction.disabled]) : null;
+
           // Pull out all the variables we would usually expensivly calculate
-          cache = this.cache.next([listedAction.name, listedAction.loops, listedAction.disabled]);
           if(cache) {
             [state, total, isValid] = cache
-
-          }
+        } else {
+          cacheIsValid = false;
         }
 
         /** @var {Koviko.Prediction} */
         let prediction = this.predictions[listedAction.name];
 
         if (prediction) {
-          /**
-           * Element for the action in the list
-           * @var {HTMLElement}
-           */
-          let div = container ? container.children[i] : null;
-
-          let repeatLoop = Koviko.options.repeatPrediction && options.repeatLastAction && (i == finalIndex) && (prediction.action.allowed==undefined);
+          let repeatLoop = options.predictorRepeatPrediction && options.repeatLastAction && (i == finalIndex) && (prediction.action.allowed==undefined);
 
           if(!cache || i == finalIndex) {
             // Reinitialise variables on cache miss
@@ -1813,51 +1968,70 @@ const Koviko = {
             if(i!==finalIndex) this.cache.add([listedAction.name, listedAction.loops, listedAction.disabled], [state, total, isValid]);
 
           }
-          // Update the snapshots
-          for (let i in snapshots) {
-            snapshots[i].snap(state[i]);
-          }
 
-          // Update the view
-          if (div) {
             if (typeof(repeatLoop) !== 'undefined' && repeatLoop) {
-              affected.unshift('finLoops');
               state.resources.finLoops=loop;
             }
-            div.querySelector('ul.koviko').outerHTML = this.template(listedAction.name, affected, state.resources, snapshots, isValid);
-          }
+          yield [i, state, isValid];
         }
       }
 
       runInfo.finish();
+      Object.assign(runData, {
+        state,
+        total,
+        cacheIsValid,
+        statisticStart,
+        newStatisticValue,
+        isValid,
+        loop,
+      });
+    }
+    /** @param {HTMLElement} container  @param {PredictorRunData} runData  */
+    async finishUpdate(container, runData) {
+      const {
+        state,
+        total,
+        statisticStart,
+        isDebug,
+        loop,
+        finalIndex,
+        affected,
+        actions,
+      } = runData;
+      let {
+        newStatisticValue,
+      } = runData;
+
+      const trackedStat = Koviko.trackedStats[options.predictorTrackedStat];
 
       let totalMinutes = state.resources.totalTicks / 50 / 60
 
       let legend="";
 
-      switch(Koviko.options.trackedStat.type) {
+      switch(trackedStat.type) {
         case 'R':
-          if (Koviko.options.trackedStat.name=="soul") {
+          if (trackedStat.name=="soul") {
             let dungeonEquilibrium = Math.min(Math.sqrt(total / 200000),1);
             let dungeonSS = state.resources.soul - state.resources.nonDungeonSS;
             newStatisticValue = (state.resources.nonDungeonSS + dungeonEquilibrium * (dungeonSS || 0)) / totalMinutes;
             legend="SS";
-          } else if (Koviko.options.trackedStat.name=="soulNow") {
+          } else if (trackedStat.name=="soulNow") {
             newStatisticValue = (state.resources.expectedSS+state.resources.nonDungeonSS) / totalMinutes;
             legend="SS Expected";
-          } else if (Koviko.options.trackedStat.name=="act") {
+          } else if (trackedStat.name=="act") {
             newStatisticValue= loop / totalMinutes;
             legend=actions[finalIndex].name;
-          } else if (Koviko.options.trackedStat.name=="survey") {
+          } else if (trackedStat.name=="survey") {
             newStatisticValue= getExploreSkill()* (state.resources.completedMap+3*state.resources.submittedMap)  / totalMinutes;
             legend="Survey";
-          } else if (Koviko.options.trackedStat.name=="invest") {
+          } else if (trackedStat.name=="invest") {
             newStatisticValue= state.resources.invested / totalMinutes;
             legend="Investment";
           }
           break;
         case 'TIME':
-          if (Koviko.options.trackedStat.name=="tillKey") {
+          if (trackedStat.name=="tillKey") {
             let goldTillKey = 1000000;
             let i_rate = 0.001;
             // This is a re-arranged 'compound interest with contributions' formula solving for the number of iterations
@@ -1869,19 +2043,19 @@ const Koviko = {
           }
           break;
         case 'S':
-          newStatisticValue=(state.skills[Koviko.options.trackedStat.name]-statisticStart)/ totalMinutes;
-          legend=this.getShortSkill(Koviko.options.trackedStat.name);
+          newStatisticValue=(state.skills[trackedStat.name]-statisticStart)/ totalMinutes;
+          legend=this.getShortSkill(trackedStat.name);
           break;
         case 'T':
-          newStatisticValue=(state.talents[Koviko.options.trackedStat.name]-statisticStart)/ totalMinutes;
-          legend=_txt('stats>'+Koviko.options.trackedStat.name+'>short_form');
+          newStatisticValue=(state.talents[trackedStat.name]-statisticStart)/ totalMinutes;
+          legend=_txt('stats>'+trackedStat.name+'>short_form');
           break;
       }
 
 
       // Update the display for the total amount of mana used by the action list
       container && (this.totalDisplay.innerHTML = intToString(total) + " | " + this.timeString(state.resources.totalTicks) + " | " );
-      switch(Koviko.options.trackedStat.type) {
+      switch(trackedStat.type) {
         case 'TIME':
           container && (this.statisticDisplay.innerHTML = this.timeString(newStatisticValue||0) + " " + legend);
           break;
@@ -1925,8 +2099,8 @@ const Koviko = {
       let h = Math.floor(seconds / 3600);
       let m = Math.floor(seconds % 3600 / 60);
       let s = Math.floor(seconds % 3600 % 60);
-      let ms = Math.floor(seconds % 1 * Math.pow(10,Koviko.options.timePrecision));
-      while(ms.toString().length < Koviko.options.timePrecision) { ms = "0" + ms; }
+      let ms = Math.floor(seconds % 1 * Math.pow(10,options.predictorTimePrecision));
+      while(ms.toString().length < options.predictorTimePrecision) { ms = "0" + ms; }
 
       return ('0' + h).slice(-2) + ":" + ('0' + m).slice(-2) + ":" + ('0' + s).slice(-2) + "." + ms;
     }
@@ -2079,7 +2253,7 @@ const Koviko = {
         }
       }
       if (toNextLoop[currname] && toNextLoop[currname].value>0){
-          tooltip += '<tr><td><b>NEXT</b><td>' +Math.floor(toNextLoop[currname].value*100*Math.pow(10,Koviko.options.NextPrecision))/Math.pow(10,Koviko.options.NextPrecision) +'%</td><td></td></tr>';
+          tooltip += '<tr><td><b>NEXT</b><td>' +Math.floor(toNextLoop[currname].value*100*Math.pow(10,options.predictorNextPrecision))/Math.pow(10,options.predictorNextPrecision) +'%</td><td></td></tr>';
       }
       //Timer
       tooltip+= '<tr><td><b>TIME</b></td><td>' + precision3(resources.totalTicks/50, 1) + '</td><td>(+' + precision3(resources.actionTicks/50, 1) + ')</td></tr>';
@@ -2217,12 +2391,17 @@ const Koviko = {
 
   predictor: null,
 
-  /** @return {InstanceType<(typeof Koviko)["Predictor"]>} */
+  /** @return {Predictor} */
   get instance() {
     if (!this.predictor) {
       this.predictor = new Koviko.Predictor();
     }
     return this.predictor;
+  },
+
+  initWorkerPredictor() {
+    this.predictor = new Koviko.Predictor(true);
+    return this.instance;
   },
 
   preUpdateHandler(container) {
@@ -2232,3 +2411,14 @@ const Koviko = {
     this.instance.update(nextActions, container);
   },
 };
+
+/** @typedef {InstanceType<(typeof Koviko)["Predictor"]>} Predictor */
+/**
+ * @template {*} K
+ * @template {*} R
+ * @template {*} T
+ * @typedef {InstanceType<typeof Koviko.Cache<K,R,T>} PredictorCache
+ */
+
+/** @typedef {Awaited<ReturnType<Predictor["update"]>>} PredictorRunData */
+/** @typedef {Predictor["initState"]} PredictorRunState */

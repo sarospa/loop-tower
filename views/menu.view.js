@@ -260,23 +260,26 @@ Views.registerView("menu", {
                     <br>
                     <b>${_txt("predictor>settings")}</b>
                     <br>
-                    <label for='updateTimePrecision'>${_txt("predictor>time_precision")}</label>
-                    <input id='updateTimePrecision' type='number' value='1' min='0' max='10' style='width: 50px;'>
+                    <input id='predictorBackgroundThreadInput' type='checkbox' onchange='setOption("predictorBackgroundThread", this.checked)'>
+                    <label for='predictorBackgroundThreadInput'>${_txt("predictor>background_thread")}</label>
                     <br>
-                    <label for='updateNextPrecision'>${_txt("predictor>next_precision")}</label>
-                    <input id='updateNextPrecision' type='number' value='2' min='0' max='10' style='width: 50px;'>
+                    <label for='predictorTimePrecisionInput'>${_txt("predictor>time_precision")}</label>
+                    <input id='predictorTimePrecisionInput' type='number' value='1' min='1' max='10' style='width: 50px;' oninput='setOption("predictorTimePrecision", parseInt(this.value))'>
                     <br>
-                    <label for='actionWidth'>${_txt("predictor>action_list_width")}</label>
-                    <input id='actionWidth' type='number' value='500' min='100' max='4000' style='width: 50px; margin-left:40px'>
+                    <label for='predictorNextPrecisionInput'>${_txt("predictor>next_precision")}</label>
+                    <input id='predictorNextPrecisionInput' type='number' value='2' min='1' max='10' style='width: 50px;' oninput='setOption("predictorNextPrecision", parseInt(this.value))'>
                     <br>
-                    <input id='repeatPrediction' type='checkbox'>
-                    <label for='repeatPrediction'>${_txt("predictor>repeat_last_action")}</label>
+                    <label for='predictorActionWidthInput'>${_txt("predictor>action_list_width")}</label>
+                    <input id='predictorActionWidthInput' type='number' value='500' min='100' max='4000' style='width: 50px; margin-left:40px' oninput='setOption("predictorActionWidth", parseInt(this.value))'>
                     <br>
-                    <input id='slowMode' type='checkbox'>
-                    <label for='slowMode'>${
+                    <input id='predictorRepeatPredictionInput' type='checkbox' onchange='setOption("predictorRepeatPrediction", this.checked)'>
+                    <label for='predictorRepeatPredictionInput'>${_txt("predictor>repeat_last_action")}</label>
+                    <br>
+                    <input id='predictorSlowModeInput' type='checkbox' onchange='setOption("predictorSlowMode", this.checked)'>
+                    <label for='predictorSlowModeInput'>${
                         _txt("predictor>slow_mode")
                         .replace("{slowMode}",
-                            "<input id='slowTimer' type='number' value='1' min='0'style='width: 20px;'>"
+                            `<input id='predictorSlowTimerInput' type='number' value='1' min='1' style='width: 20px;' oninput='setOption("predictorSlowTimer", parseInt(this.value))'>`
                         )
                     }</label>
                 </div>

@@ -183,6 +183,19 @@ class Stat extends Localizable {
         this.soulstone = toLoad.soulstone > 0 ? toLoad.soulstone : 0;
         return true;
     }
+
+    /** @type {(a:Stat, b:Stat) => number} */
+    static compareLevelAscending(a, b)        { return a.exp - b.exp; }
+    /** @type {(a:Stat, b:Stat) => number} */
+    static compareLevelDescending(a, b)       { return b.exp - a.exp; }
+    /** @type {(a:Stat, b:Stat) => number} */
+    static compareTalentAscending(a, b)       { return a.talent - b.talent; }
+    /** @type {(a:Stat, b:Stat) => number} */
+    static compareTalentDescending(a, b)      { return b.talent - a.talent; }
+    /** @type {(a:Stat, b:Stat) => number} */
+    static compareSoulstoneAscending(a, b)    { return a.soulstone - b.soulstone; }
+    /** @type {(a:Stat, b:Stat) => number} */
+    static compareSoulstoneDescending(a, b)   { return b.soulstone - a.soulstone; }
 }
 
 const Skill_increase = 1;

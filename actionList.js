@@ -238,6 +238,11 @@ class Action extends Localizable {
     get tooltip2() { return this.memoize("tooltip2"); }
     get label() { return this.memoize("label"); }
     get labelDone() { return this.memoize("labelDone", ">label_done"); }
+
+    static {
+        // listing these means they won't get stored even if memoized
+        Data.omitProperties(this.prototype, ["tooltip", "tooltip2", "label", "labelDone"]);
+    }
     
     // all actions to date with info text have the same info text, so presently this is
     // centralized here (function will not be called by the game code if info text is not
@@ -323,6 +328,11 @@ class MultipartAction extends Action {
         return this.memoizeValue("segmentModifiers",  Array.from(
             this.txtsObj.find(">segment_modifiers>segment_modifier")
         ).map(elt => elt.textContent));
+    }
+
+    static {
+        // listing these means they won't get stored even if memoized
+        Data.omitProperties(this.prototype, ["segmentNames", "altSegmentNames", "segmentModifiers"]);
     }
 
     /** @param {number} segment  */
@@ -2653,18 +2663,92 @@ function checkSoulstoneSac(amount) {
     return sum >= amount ? true : false;
 }
 
-function sacrificeSoulstones(amount) {
-    /** @type {Partial<Record<StatName, number>>} */
-    const stonesSpent = {};
-    let total = statList.map(s => stats[s].soulstone).reduce((a,b) => a + b);
-    for (const [i, stat] of [...statList].sort((a,b) => stats[a].soulstone - stats[b].soulstone).entries()) {
-        const ratio = amount / total;
-        const origStatSS = stats[stat].soulstone;
-        const count = i === statList.length - 1 ? amount : Math.min(Math.round(origStatSS * ratio), stats[stat].soulstone);
-        stats[stat].soulstone -= count;
-        stonesSpent[stat] = count;
-        total -= origStatSS;
+/** @type {(amount: number, parameter?: number, stonesSpent?: Partial<Record<StatName, number>>, sortedStats?: Stat[]) => Partial<Record<StatName, number>>} */
+let sacrificeSoulstones = sacrificeSoulstonesBySegments;
+
+/** @param {Partial<Record<StatName, number>>} [stonesSpent] */
+function sacrificeSoulstonesBySegments(amount, segments = 9, stonesSpent = {}, sortedStats = Object.values(stats).sort(Stat.compareSoulstoneDescending)) {
+    // console.log(`Sacrificing ${amount} soulstones in ${segments} segments from stats: ${sortedStats.map(s=>`${s.name} ${s.soulstone}`).join(", ")}`, sortedStats);
+    while (amount > 0) {
+        // pull off the front of the list, since its sort order may change
+        const highestSoulstoneStat = sortedStats.shift();
+        const count = Math.min(Math.ceil(amount / segments), highestSoulstoneStat.soulstone); // don't spend more than ss we have in this stat (edge case for if you're spending all your ss)
+        highestSoulstoneStat.soulstone -= count;
+        stonesSpent[highestSoulstoneStat.name] ??= 0;
+        stonesSpent[highestSoulstoneStat.name] += count;
         amount -= count;
+        // console.log(`Sacrificed ${count} soulstones from ${highestSoulstoneStat.name}, now ${highestSoulstoneStat.soulstone}, ${amount} remaining to sacrifice`);
+        // put it back in the list in the proper place
+        if (highestSoulstoneStat.soulstone <= sortedStats.at(-1).soulstone) {
+            // ...which is the end if the stats were roughly in sync
+            sortedStats.push(highestSoulstoneStat);
+        } else {
+            // ... or somewhere in the list if they weren't
+            sortedStats.splice(sortedStats.findIndex(s => highestSoulstoneStat.soulstone > s.soulstone), 0, highestSoulstoneStat);
+        }
+        if (segments > 0) segments--; // 1 less segment remains, unless we hit the edge case above in the second-to-last stat
+    }
+    return stonesSpent;
+}
+
+/** @param {Partial<Record<StatName, number>>} [stonesSpent] @param {Stat[]} [sortedStats] */
+function sacrificeSoulstonesProportional(amount, power = 1, stonesSpent = {}, sortedStats = Object.values(stats)) { //initializer does not sort because we do every loop anyway
+    // extremely unlikely that we have to use more than one iteration for typical cases, but some powers can cause degenerate behavior
+    while (amount > 0) {
+        // (re-)sort stats by soulstone count of stats, high to low
+        sortedStats.sort(Stat.compareSoulstoneDescending);
+        // edge case: only handle stats with soulstones, remove those with 0
+        while (sortedStats.at(-1).soulstone === 0) sortedStats.pop();
+        // make parallel array of ss raised to specified power (negative powers would cause problems without the above filter)
+        const stonePowers = sortedStats.map(s => Math.pow(s.soulstone, power));
+        let totalPower = stonePowers.reduce((a,b) => a + b);
+        for (const [i, stat] of sortedStats.entries()) {
+            // power ratio determines how much of amount we will consume.
+            const ratio = i === sortedStats.length - 1 ? 1 // force a ratio of 1 for the last stat to avoid floating-point error
+                        : stonePowers[i] / totalPower;
+            // try to spend that much, limited by the amount of ss we have in this stat
+            const count = Math.min(Math.round(amount * ratio), stat.soulstone);
+            stat.soulstone -= count;
+            stonesSpent[stat.name] ??= 0;
+            stonesSpent[stat.name] += count;
+            totalPower -= stonePowers[i];
+            amount -= count;
+            if (amount === 0) break;
+        }
+    }
+    return stonesSpent;
+}
+
+/** @param {Partial<Record<StatName, number>>} [stonesSpent] @param {Stat[]} [sortedStats]  */
+function sacrificeSoulstonesToEquality(amount, allowedDifference = 0, stonesSpent = {}, sortedStats = Object.values(stats).sort(Stat.compareSoulstoneDescending)) {
+    let maxSoulstone = sortedStats[0].soulstone; // what's the highest number of soulstones among stats?
+    let minSoulstone = sortedStats.at(-1).soulstone; // and the lowest?
+    let statsAtMaximum = 1; // how many stats have the same number of soulstones as the highest?
+
+    while (amount > 0 && minSoulstone < maxSoulstone - allowedDifference) {
+        // extend statsAtMaximum appropriately. we know there will be at least one stat not at maximum bc of the above check
+        while (sortedStats[statsAtMaximum].soulstone === maxSoulstone) {
+            statsAtMaximum++;
+        }
+        // find the second-highest count of soulstones between the remaining stats and whatever would satisfy our allowedDifference
+        const submaxSoulstone = Math.max(sortedStats[statsAtMaximum].soulstone, minSoulstone + allowedDifference);
+
+        // we can spend up to the difference between the highest number of soulstones and the submax, times the number of stats at that level
+        const stonesAvailable = (maxSoulstone - submaxSoulstone) * statsAtMaximum;
+
+        if (stonesAvailable >= amount) {
+            // sacrifice all remaining soulstones equally from the highest stats
+            return sacrificeSoulstonesBySegments(amount, statsAtMaximum, stonesSpent, sortedStats);
+        } else {
+            // sacrifice soulstones from the highest stats to bring them down to the submax level
+            sacrificeSoulstonesBySegments(stonesAvailable, statsAtMaximum, stonesSpent, sortedStats);
+            amount -= stonesAvailable;
+            maxSoulstone = sortedStats[0].soulstone;
+        }
+    }
+    if (amount > 0) {
+        // all stats already close enough to equality, just sacrifice equal numbers from each stat
+        sacrificeSoulstonesProportional(amount, 0, stonesSpent, sortedStats);
     }
     return stonesSpent;
 }

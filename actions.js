@@ -68,6 +68,10 @@ class Actions {
     currentPos = 0;
     timeSinceLastUpdate = 0;
 
+    static {
+        Data.omitProperties(this.prototype, ["next", "nextLast"]);
+    }
+
     tick(availableMana) {
         availableMana ??= 1;
         availableMana = Mana.floor(availableMana);

@@ -247,6 +247,7 @@ function stopGame() {
     view.update();
     document.title = "*PAUSED* Idle Loops";
     document.getElementById("pausePlay").textContent = _txt("time_controls>play_button");
+    Data.updateSnapshot("stop", "base");
     if (options.predictor) {
         view.requestUpdate("updateNextActions");
     }
@@ -254,6 +255,8 @@ function stopGame() {
 
 function pauseGame(ping, message) {
     gameIsStopped = !gameIsStopped;
+    Data.discardToSnapshot("base", 1);
+    Data.recordSnapshot("pause");
     view.requestUpdate("updateTime", null);
     view.requestUpdate("updateCurrentActionBar", actions.currentPos);
     view.update();
@@ -335,6 +338,7 @@ function restart() {
     actions.restart();
     view.requestUpdate("updateCurrentActionsDivs");
     view.requestUpdate("updateTrials", null);
+    Data.updateSnapshot("restart", "base");
 }
 
 function manualRestart() {
