@@ -1,5 +1,5 @@
-#predictorSettings, #trackedStat, #predictorTotalDisplay, #predictorStatisticDisplay {display: none;}
-.usePredictor :is(#predictorSettings, #trackedStat, #predictorTotalDisplay, #predictorStatisticDisplay) {display: initial;}
+#predictorSettings, #predictorTrackedStatInput, #predictorTotalDisplay, #predictorStatisticDisplay {display: none;}
+.usePredictor :is(#predictorSettings, #predictorTrackedStatInput, #predictorTotalDisplay, #predictorStatisticDisplay) {display: initial;}
 #predictorTotalDisplay {padding-left: 50px;}
 
 .usePredictor {
