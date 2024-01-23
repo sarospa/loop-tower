@@ -9,6 +9,16 @@
                 <title>Changelog</title>
                 <version_prefix>Version</version_prefix>
             </meta>
+            <version verNum="3.P16.19"><![CDATA[
+            <b> Jan 22nd, 2024</b>
+            • Spatiomancy training should no longer cause the game to slow to a crawl.<br>
+            • Many fixes to toolips and action stories. Big thanks to slabdrill from the Discord for the PR!<br>
+            • Imbue Body is now displayed as a "capped" rather than a "locked" action when it reaches its limit.<br>
+            • The game now auto-saves whenever you change an option. Huge thank you to kopita from the Discord for the brilliant and obvious-in-retrospect suggestion.<br>
+            • The data layer now has the ability to pass gamestate between threads.<br>
+            • Relatedly, the predictor (when enabled) now runs in a background thread by default. This should significantly increase its performance, especially while the game is running, but if it causes problems the background thread can be disabled from the Extras menu.<br>
+            • Soulstones will now try and keep themselves somewhat closer to each other in count when sacrificing them. I have discovered a truly marvelous explanation for this algorithm, which this changelog is too narrow to conta<br>
+            ]]></version>
             <version verNum="3.P16.18"><![CDATA[
             <b> Jan 15th, 2024</b>
             • When sacrificing soulstones, each stat will lose an amount proportional to how many soulstones you have in each stat rather than attempting to equalize the number of soulstones you have across stats.<br>
