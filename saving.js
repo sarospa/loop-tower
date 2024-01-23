@@ -936,6 +936,10 @@ function saveUISettings() {
     else localStorage.setItem("actionListHeight", document.getElementById("expandableList").style.height);
 }
 
+function needsDataSnapshots() {
+    return options.predictor && options.predictorBackgroundThread;
+}
+
 function load(inChallenge) {
     loadDefaults();
     loadUISettings();

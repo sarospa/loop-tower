@@ -229,12 +229,12 @@ class Data {
      * @param {string} name 
      * @param {string} [explicitBase] 
      */
-    static updateSnapshot(name, explicitBase) {
+    static updateSnapshot(name, explicitBase, maxHeritage = 10) {
         const oldSnapshot = this.discardToSnapshot(name);
         if (!oldSnapshot) {
             this.discardToSnapshot(explicitBase, 1); // discard to the explicit base but leave it on the stack
         }
-        const newSnapshot = this.recordSnapshot(name, oldSnapshot);
+        const newSnapshot = this.recordSnapshot(name, oldSnapshot?.heritageLength >= maxHeritage ? undefined : oldSnapshot);
         if (!newSnapshot && oldSnapshot) {
             this.snapshotStack.push(oldSnapshot);
         }
@@ -474,6 +474,9 @@ class DataSnapshot {
 
     /** About how much storage space does this take up? */
     sizeEstimate = 0;
+
+    /** How many snapshots in total are required to compose this snapshot? */
+    heritageLength = 1;
 
     #root;
     get root() { return this.#root; }
@@ -992,6 +995,7 @@ class DeltaSnapshot extends DataSnapshot {
         const count = this.objects.size;
         if (!count) return null;
         this.optimizeDeltaBase();
+        this.heritageLength = this.deltaBase.heritageLength + 1;
         return super.finalize();
     }
 
@@ -1026,6 +1030,7 @@ class DeltaSnapshot extends DataSnapshot {
             }
             this.deltaBase = this.deltaBase.deltaBase;
         }
+        this.heritageLength = this.deltaBase.heritageLength + 1;
     }
 
     /** @override @type {(object: O, name: string) => DataRecorder} */
