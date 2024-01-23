@@ -436,7 +436,7 @@ const Koviko = {
           console.debug(`Exporting ${requestedSnapshots.length} snapshots of estimated size ${estimatedSize}.`, snapshotIds, requestedSnapshots);
           this.worker.postMessage({type: "importSnapshots", snapshotExports: requestedSnapshots.map(s => s.export())});
         } else {
-          console.log(`Only found ${requestedSnapshots.length} of ${snapshotIds.length} requested snapshots. Ignoring request, probably stale.`, snapshotIds, requestedSnapshots);
+          console.debug(`Only found ${requestedSnapshots.length} of ${snapshotIds.length} requested snapshots. Ignoring request, probably stale.`, snapshotIds, requestedSnapshots);
         }
         return;
       }

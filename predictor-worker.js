@@ -115,7 +115,7 @@ function handleMessage(data) {
                 }
                 return;
             }
-            console.log(`imported ${loadCount} snapshots of ${snapshotExports.length} provided`, snapshotExports);
+            console.debug(`imported ${loadCount} snapshots of ${snapshotExports.length} provided`, snapshotExports);
             if (queuedUpdate) {
                 // succeeded, go back into startUpdate
                 const qu = queuedUpdate;
@@ -127,13 +127,13 @@ function handleMessage(data) {
             const {runData, snapshotHeritage} = data;
             const id = snapshotHeritage.at(-1);
             if (Data.getSnapshotIndex({id}) >= 0) {
-                console.log(`Loading snapshot ${id}`);
+                console.debug(`Loading snapshot ${id}`);
                 Data.getSnapshot({id}).applyState();
                 predictor.workerUpdate(runData);
-                console.log("started update");
+                console.debug("started update");
             } else {
                 const requiredSnapshots = snapshotHeritage.filter(id => Data.getSnapshotIndex({id}) === -1);
-                console.log(`Requesting ${requiredSnapshots.length} snapshots for heritage of length ${snapshotHeritage.length}: ${requiredSnapshots.join(", ")}`, snapshotHeritage);
+                console.debug(`Requesting ${requiredSnapshots.length} snapshots for heritage of length ${snapshotHeritage.length}: ${requiredSnapshots.join(", ")}`, snapshotHeritage);
                 queuedUpdate = data;
                 postMessage({type: "getSnapshots", snapshotIds: requiredSnapshots});
             }
