@@ -1440,13 +1440,13 @@ li#actionLogLatest {
         grid:
             "header header header" max-content
             "actions town stats" minmax(0, 1fr)
-            / minmax(max-content, 1fr) minmax(535px, 2fr) minmax(316px, 1fr)
+            / minmax(min-content, 1fr) minmax(535px, 2fr) minmax(316px, 1fr)
             ;
         justify-items: stretch;
     }
 
     & #timeInfo {
-        width: 100vw !important;
+        /* width: 100vw !important; -- causes Chrome to have sad grid times? */
         grid-area: header;
         display: grid;
         grid:
