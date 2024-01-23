@@ -473,6 +473,11 @@ input[type="number"] {
     -moz-appearance: textfield;
 }
 
+input[type="checkbox"][disabled] + label {
+    text-decoration: line-through;
+    opacity: 0.5;
+}
+
 /*.button {*/
     /*border:2px white solid;*/
     /*background-color: #bde0b7;*/
