@@ -197,7 +197,7 @@ class ActionLogEntry {
     }
     createElement() {
         const div = document.createElement("div");
-        div.innerHTML = `<li class="actionLogEntry" data-type="${this.type}">${this.format(this.getText())}</li>`
+        div.innerHTML = `<li class="actionLogEntry" data-type="${this.type}" data-${this.repeatable?"repeatable":"unique"}="${this.repeatable?"repeatable":"unique"}">${this.format(this.getText())}</li>`
         return /** @type {HTMLElement} */(div.children[0]);
     }
     updateElement() {
