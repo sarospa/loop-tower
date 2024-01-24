@@ -1488,7 +1488,7 @@
             <story_1><![CDATA[<b>Target Assassinated:</b>⮀ You idly wonder why the Guild even bothered to send you out for a job on their home turf. With the headquarters here, there should be plenty of more trusted guild members chomping at the bit to take care of this one. In any case, you opt to blend into the crowd rather than jump across the roofs. Too many eyes looking up in the search for trouble around here. Getting the mark away from his entourage goes smoothly after you give a street urchin a bribe to cause a distraction, giving you plenty of time to drag the rich fool into an alleyway and cut him open for his heart.]]></story_1>
         </assassinz7>
         <!--ruins-->
-        <ruinsZ1>
+        <ruinsz1>
             <label>Ruins</label>
             <label_done>Delved</label_done>
             <tooltip><![CDATA[
@@ -1497,8 +1497,8 @@
             <story_1><![CDATA[<b>10% delved:</b>⮀ You decide to explore the ruins in the Forest and notice some weird looking rocks, wondering idly what they do.]]></story_1>
             <story_2><![CDATA[<b>50% delved:</b>⮀ After investigating these weird looking rocks you notice they are cubical and are heavy, looks like they are dusty from the time they have been sitting here.]]></story_2>
             <story_3><![CDATA[<b>100% delved:</b>⮀ You have discovered everything in these ruins, and notice that there are so many cubical stones lying everywhere, as if a massive battle happened.]]></story_3>
-        </ruinsZ1>
-        <ruinsZ3>
+        </ruinsz1>
+        <ruinsz3>
             <label>Ruins</label>
             <label_done>Delved</label_done>
             <tooltip><![CDATA[
@@ -1507,8 +1507,8 @@
             <story_1><![CDATA[<b>10% delved:</b>⮀ You decide to explore the ruins around Mt. Olympus and notice the same cubical rocks as you found in the forest. You wonder what they were made for.]]></story_1>
             <story_2><![CDATA[<b>50% delved:</b>⮀ There is a stone with some writing, with your high intelligence you might be able to read this strange language.]]></story_2>
             <story_3><![CDATA[<b>100% delved:</b>⮀ After looking around the ruins for some time, you find something curious: a rusted weapon, resembling that of Valhalla's Valkyries. You wonder what really happened here.]]></story_3>
-        </ruinsZ3>
-        <ruinsZ5>
+        </ruinsz3>
+        <ruinsz5>
             <label>Ruins</label>
             <label_done>Delved</label_done>
             <tooltip><![CDATA[
@@ -1517,8 +1517,8 @@
             <story_1><![CDATA[<b>10% delved:</b>⮀ You decide to explore the ruins of Startington and notice the same dusty cubical rocks as you found in the other ruins. You wonder what they do.]]></story_1>
             <story_2><![CDATA[<b>50% delved:</b>⮀ After deciphering the text on this stone block, You can see some writing on them. Sadly, much of the writing is too eroded to make out.]]></story_2>
             <story_3><![CDATA[<b>100% delved:</b>⮀ The text explains that the Valkyries started a war that lasted for a month, but after only a month of fighting they suddenly declared peace. Who did they fight against though?]]></story_3>
-        </ruinsZ5>
-        <ruinsZ6>
+        </ruinsz5>
+        <ruinsz6>
             <label>Ruins</label>
             <label_done>Delved</label_done>
             <tooltip><![CDATA[
@@ -1527,8 +1527,8 @@
             <story_1><![CDATA[<b>10% delved:</b>⮀ You decide to explore the ruins along the Jungle Path and notice yet again more of the same dusty and heavy cubical rocks. The mystery of the rocks endures...]]></story_1>
             <story_2><![CDATA[<b>50% delved:</b>⮀ During your ruin exploration, you find a weapon. Ancient, heavy and ornate. It takes some thinking, but you eventually recall a legend of a God weilding this particular weapon into battle.]]></story_2>
             <story_3><![CDATA[<b>100% delved:</b>⮀ After much delving, you find a different God's weapon. This one was buried under a small pile of rubble like a grave. The blade has an inscription declaring the end of a war. The same war the Valkyries' writing mentioned? Was there a war between the Gods and the Valkyries?]]></story_3>
-        </ruinsZ6>
-        <haulZ1>
+        </ruinsz6>
+        <haulz1>
             <label>Haul</label>
             <label_done>Stones Hauled</label_done>
             <info_text1>Temporal Stones left</info_text1>
@@ -1542,8 +1542,8 @@
             <story_1><![CDATA[<b>First Temporal Stone Found:</b>⮀ After digging through the cubical stones, you notice a swirl of light blue light glowing on the sides of the rock. While the light makes them easier to hold on to, they still weigh a ton...]]></story_1>
             <story_2><![CDATA[<b>Moved 100 Temporal Stones:</b>⮀ Carrying a chunk of rock nearly all the way from the very start of the loop to the Valley of Olympus is backbreaking work, but you're managing! Just keep putting one foot in front of the other.]]></story_2>
             <story_3><![CDATA[<b>Moved 250 Temporal Stones:</b>⮀ You wipe the sweat off your brow as the last Temporal stone from the Forest settles down in the Valley of Olympus. ...Imposing as the pile of rocks is, it won't be enough yet.]]></story_3>
-        </haulZ1>
-        <haulZ3>
+        </haulz1>
+        <haulz3>
             <label>Haul</label>
             <label_done>Stones Hauled</label_done>
             <info_text1>Temporal Stones left</info_text1>
@@ -1557,8 +1557,8 @@
             <story_1><![CDATA[<b>First Temporal Stone Found:</b>⮀ Digging through the large stone cubes, your hand brushes over a spiral glyph. As the previously invisible design begins to glow a cool blue, you find that you can hold on to the rock more easily! It still weighs a ton, though.]]></story_1>
             <story_2><![CDATA[<b>Moved 100 Temporal Stones:</b>⮀ You're not even halfway done and the pace is horrendously slow, but since you're certain you'd be crushed to jelly if you even tried to carry more than one, you just keep at it. One stone cube at a time.]]></story_2>
     		<story_3><![CDATA[<b>Moved 250 Temporal Stones:</b>⮀ You stretch with a satisfied groan as the final chunk of Temporal stone from Mount Olympus settles in the pile at the Valley of Olympus. Maybe you can rebuild the mountain, you have time...]]></story_3>
-        </haulZ3>
-        <haulZ5>
+        </haulz3>
+        <haulz5>
             <label>Haul</label>
             <label_done>Stones Hauled</label_done>
             <info_text1>Temporal Stones left</info_text1>
@@ -1572,8 +1572,8 @@
             <story_1><![CDATA[<b>First Temporal Stone Found:</b>⮀ Practically the moment you identify one grey cube of rock as different from the surrounding, identical-looking grey cubes of rock, a spiral pattern lights up on its sides, practically glueing itself to your hand! You can still set it down, but it clearly wants to be carried.]]></story_1>
             <story_2><![CDATA[<b>Moved 100 Temporal Stones:</b>⮀ Wiggling the temporal stones out from among the mundane ones is the easy part, dragging them to the Valley of Olympus is the real pain in your back.]]></story_2>
             <story_3><![CDATA[<b>Moved 250 Temporal Stones:</b>⮀ The final stone, conveniently enough, was near the top of a wall that housed several Temporal stones. The wall has collapsed from having so many bricks removed by the time you're looking for the final stone, so you can just pick it up and make the final delivery to the Valley of Olympus.]]></story_3>
-        </haulZ5>
-        <haulZ6>
+        </haulz5>
+        <haulz6>
             <label>Haul</label>
             <label_done>Stones Hauled</label_done>
             <info_text1>Temporal Stones left</info_text1>
@@ -1587,7 +1587,7 @@
             <story_1><![CDATA[<b>First Temporal Stone Found:</b>⮀ Many of the temporal stones are covered in vegetation, and you nearly throw out your back trying to dislodge one. Lift from your legs!]]></story_1>
             <story_2><![CDATA[<b>Moved 100 Temporal Stones:</b>⮀ Heavy and hidden as they are, the blue swirl that ignites on the rocks makes them a lot easier to track. That, and it helps that they "let" you pick them up.]]></story_2>
             <story_3><![CDATA[<b>On the final stone-hauling trip from the Jungle to the Valley, you smirk a little at the various ditches and holes from which you pulled stones previously. Thank the stars you're done here.]]></story_3>
-        </haulZ6>
+        </haulz6>
         <!--town 1-->
         <map>
             <label>Purchase Map</label>
