@@ -1550,6 +1550,9 @@ li#actionLogLatest {
         flex-shrink: 0;
     }
 
+    & #townViewLeft, #townViewRight, #actionsViewLeft, & #actionsViewRight {
+        margin: 0 !important;
+    }
     & #townWindow > div.showthat {
         margin: 0 20px;
     }
@@ -1674,15 +1677,259 @@ li#actionLogLatest {
     }
 }
 
-/* mobile support, only for responsive */
-@media (max-width: 1250px) {
+/* two-column view */
+@media (max-width: 1300px) {
     :root.responsive {
         height: auto;
         min-height: 100%;
         overflow: initial;
-        contain: content;
+        contain: none;
     }
+    .responsive {
+        & body {
+            overflow: initial;
+            grid:
+                "menu" 30px
+                "time" 10px
+                "resources" 18px
+                "controls-main" min-content
+                "controls-options" min-content
+                "main" minmax(max-content, 1fr)
+                / 100vw
+                ;
+        }
+        /* menu is at the top in mobile/two-column, but it doesn't stick */
+        & #menu {
+            grid-area: menu;
+            text-align: left;
+            min-height: 30px;
+            height: 30px !important;
+            width: 100%;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            display: flex;
+            flex-wrap: nowrap;
+            align-items: center;
+            justify-content: space-around;
+            & li {
+                height: auto !important;
+                font-size: 0.9rem;
+                margin: 0 !important;
+            }
+        }
+
+        /* sticky elements need to be at root grid level */
+        & #timeInfo, & #timeControls {
+            display: contents;
+        }
+        /* these will cause problems with grid/flex */
+        & body > br, & #timeInfo > br {
+            display: none;
+        }
     
+        & #timeBarContainer {
+            grid-area: time;
+            position: sticky !important;
+            z-index: 1;
+            top: 0px;
+        }
+
+        & #trackedResources {
+            grid-area: resources;
+            position: sticky;
+            z-index: 1;
+            background-color: var(--body-background);
+            padding-top:2px;
+            top: 10px;
+        }
+
+        & .t-dark #trackedResources {
+            background-color: var(--body-background);
+        }
+    
+        & #timeControlsMain {
+            grid-area: controls-main;
+            display: block;
+            position: sticky;
+            z-index: 1;
+            background: linear-gradient(var(--body-background) 50%, var(--body-background-transparent) 100%);
+            padding-top:2px;
+            top: 28px;
+        }
+
+        & .t-dark #timeControlsMain {
+            background: linear-gradient(var(--body-background) 50%, var(--body-background-transparent) 100%);
+        }
+    
+        & #timeControlsOptions {
+            grid-area: controls-options;
+            display: block;
+        }
+    
+        /* Main content area */
+    
+        & main {
+            grid-area: main;
+            display: grid;
+            grid:
+                "actions town"
+                "stats town"
+                / minmax(min-content,3fr) minmax(min-content,2fr);
+                
+        }
+
+        & #statsColumn, & #actionsColumn, & #townColumn {
+            overflow: initial;
+        }
+
+        & #statsWindow {
+            grid:
+                "title skills" 1lh
+                "selector skills" 1lh
+                "stats skills"
+                "stats buffs" 
+                / minmax(min-content, 1fr) minmax(min-content, 1fr);
+            width: 100% !important;
+            box-sizing: border-box;
+            margin: 0 !important;
+            padding: 0 1em;
+            align-items: start;
+            justify-items: stretch;
+            justify-content: stretch;
+        }
+        
+        & #statsWindow[data-view="regular"] #statsContainer {
+            grid-template-columns: [fullrow-start] 1fr max-content max-content max-content [fullrow-end];
+        }
+    
+        & #skillList,
+        & #buffList {
+            display: block;
+            width: auto !important;
+        }
+    
+        & #actionsColumn {
+            grid-area: actions;
+            margin: 0 1em;
+            overflow: hidden;
+        }
+    
+        & #actionList {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        & #actionList > *:not(.showthat, #actionChanges, #expandableList) {
+            display: none;
+        }
+        
+        & #townWindow {
+        }
+    
+        & #townWindow > div.showthat {
+            margin: 0 20px;
+        }
+    
+        & #townWindow > div.showthat {
+            display: flex;
+            justify-content: center;
+        }
+    
+        & #townInfos, & #townActions {
+            display: flex;
+            align-items: start;
+            overflow: clip visible;
+        }
+    
+        & #townInfos > *, & #townActions > * {
+            flex: 0 0 100%;
+        }
+    
+        & #actionsTitle {
+            margin: 0 40px;
+        }
+        & .actionOptions {
+            min-height:auto;
+        }
+        & .actionStories {
+            min-height:auto;
+        }
+    
+        & .townStatContainer, & .townInfoContainer {
+            margin-right: 1em;
+            padding: 0;
+            width: auto;
+            display: block;
+        }
+        & .townContainer .townLabel,
+        & .townContainer .thinProgressBarUpper,
+        & .townContainer .thinProgressBarLower,
+        & .townContainer .multipartBars {
+            margin: 0;
+        }
+        & .townContainer .flexMargin {
+            display: none;
+        }
+        & #curActionsListContainer, & #nextActionsListContainer {
+            display: flex;
+            flex-direction: column;
+        }
+    
+        & #curActionsList, & #nextActionsList {
+            padding-bottom: 2ex;
+            max-height: none !important;
+            width: auto;
+            display: flex !important;
+            flex-direction: column;
+            flex: 1;
+        }
+    
+        & #nextActionsList[style*="none"] {
+            visibility: collapse;
+        }
+    
+        & #curActionsManaUsed, & #nextActionsAmountButtons {
+            position: static;
+            width: auto;
+            margin-top: auto;
+        }
+    
+        & .curActionContainer, & .nextActionContainer {
+            width: auto;
+        }
+    
+        & .nextActionButtons {
+            margin-right: 10px;
+        }
+    
+    
+        & #expandableList {
+            flex: 1;
+            display: flex;
+            height:  20px !important;
+        }
+    
+        & .actionOptions {
+            min-height: none;
+        }
+    
+        & #trackedResources {
+            margin-bottom: 0;
+        }
+    
+        & #actionLog {
+            margin-right:1em;
+            max-height: none;
+            flex-grow: 1;
+        }
+        
+        & .actionLogEntry {
+            margin-left: 1em;
+        }
+    }
+}
+/* mobile support, only for responsive */
+@media (max-width: 780px) {
     .responsive {
         & body {
             width: 100vw;
