@@ -1695,7 +1695,7 @@ li#actionLogLatest {
                 "controls-main" min-content
                 "controls-options" min-content
                 "main" minmax(max-content, 1fr)
-                / 100vw
+                / 100%
                 ;
         }
         /* menu is at the top in mobile/two-column, but it doesn't stick */
