@@ -608,8 +608,6 @@ const options = {
     pauseOnComplete: false,
     speedIncrease10x: false,
     speedIncrease20x: false,
-    speedIncrease50x: false,
-    speedIncrease100x: false,
     speedIncreaseCustom: 5,
     speedIncreaseBackground: -1,
     highlightNew: true,
@@ -728,8 +726,6 @@ const isStandardOption = {
     pauseOnComplete: true,
     speedIncrease10x: true,
     speedIncrease20x: true,
-    speedIncrease50x: true,
-    speedIncrease100x: true,
     speedIncreaseCustom: true,
     speedIncreaseBackground: false,
     highlightNew: true,
@@ -907,9 +903,6 @@ function clearSave() {
 
 let defaultsRecorded = false;
 function loadDefaults() {
-    if (defaultsRecorded) {
-        Data.resetToDefaults();
-    } else {
         initializeStats();
         initializeSkills();
         initializeBuffs();
@@ -920,6 +913,7 @@ function loadDefaults() {
         prestigeValues["prestigeTotalCompletions"] = 0;
         prestigeValues["completedCurrentPrestige"] = false;
         prestigeValues["completedAnyPrestige"] = false;
+    if (!defaultsRecorded) {
         Data.recordDefaults();
         defaultsRecorded = true;
     }
@@ -1182,7 +1176,9 @@ function doLoad(toLoad) {
     } else {
         const optionsToLoad = {...toLoad.options, ...toLoad.extraOptions};
         for (const option in optionsToLoad) {
+            if (option in options) {
             options[option] = optionsToLoad[option];
+            }
         }
         if ("updateRate" in optionsToLoad && window.localStorage["updateRate"]) {
             options.updateRate = window.localStorage["updateRate"];
