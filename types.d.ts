@@ -6,7 +6,7 @@ declare interface Action<const N, const E> {
     story?: (completed: number) => void,
     storyReqs?: (storyNum: number) => boolean;
     stats: E["stats"];
-    canStart(): boolean;
+    canStart(loopCounter?: number): boolean;
     cost?: () => void,
     manaCost(): number;
     goldCost?: () => number;
@@ -23,10 +23,10 @@ declare interface MultipartAction<const N, const E> {
     segments: number;
 
     loopStats: E["loopStats"];
-    loopCost(segment: number): number;
-    tickProgress(offset: number): number;
-    segmentFinished?: () => void;
-    loopsFinished(): void;
+    loopCost(segment: number, loopCounter?: number): number;
+    tickProgress(offset: number, loopCounter?: number, totalCompletions?: number): number;
+    segmentFinished?: (loopCounter?: number) => void;
+    loopsFinished(loopCounter?: number): void;
     getPartName(): string;
     completedTooltip?: () => string;
 }

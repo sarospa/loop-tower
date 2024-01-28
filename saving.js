@@ -107,8 +107,6 @@ function initializeTowns() {
     for (let i = 0; i <= 8; i++) {
         // @ts-ignore
         towns[i] = new Town(i);
-        // These shouldn't ever get rewritten
-        Object.defineProperty(towns, i, {writable: false});
     }
 }
 
@@ -481,8 +479,6 @@ let totalOfflineMs = 0;
 let bonusSpeed = 1;
 let bonusActive = false;
 let currentLoop = 0;
-/** @type {AnyActionEntry} */
-let currentAction = null;
 const offlineRatio = 1;
 let totals = {
     time: 0,
@@ -903,20 +899,21 @@ function clearSave() {
 
 let defaultsRecorded = false;
 function loadDefaults() {
-        initializeStats();
-        initializeSkills();
-        initializeBuffs();
-        initializeActions();
-        initializeTowns();
-        prestigeValues["prestigeCurrentPoints"] = 0;
-        prestigeValues["prestigeTotalPoints"] = 0;
-        prestigeValues["prestigeTotalCompletions"] = 0;
-        prestigeValues["completedCurrentPrestige"] = false;
-        prestigeValues["completedAnyPrestige"] = false;
-    if (!defaultsRecorded) {
-        Data.recordDefaults();
-        defaultsRecorded = true;
+    if (defaultsRecorded) {
+        Data.resetToDefaults();
     }
+    initializeStats();
+    initializeSkills();
+    initializeBuffs();
+    initializeActions();
+    initializeTowns();
+    prestigeValues["prestigeCurrentPoints"] = 0;
+    prestigeValues["prestigeTotalPoints"] = 0;
+    prestigeValues["prestigeTotalCompletions"] = 0;
+    prestigeValues["completedCurrentPrestige"] = false;
+    prestigeValues["completedAnyPrestige"] = false;
+    Data.recordDefaults();
+    defaultsRecorded = true;
 }
 
 function loadUISettings() {

@@ -23,6 +23,11 @@ const PRESTIGE_EXP_OVERFLOW_BASE = 1.00222;
  *         | "knownGood"    // Limited actions: perform at most X actions, only targeting known-good items
  *         | "unchecked"    // Limited actions: perform at most X actions, only targeting unknown items
  * } ActionLoopType
+ */
+
+/** 
+ * {@link CurrentActionEntry} is the extra data added to an {@link Action} when it is part of the current loop.
+ * {@link AnyActionEntry} is the resulting typedef.
  * 
  * @typedef CurrentActionEntry
  * @prop {ActionLoopType} loopsType
@@ -40,6 +45,10 @@ const PRESTIGE_EXP_OVERFLOW_BASE = 1.00222;
  * @prop {string} [errorMessage]
  * }} 
  * @typedef {CurrentActionEntry & AnyActionType} AnyActionEntry
+ */
+
+/**
+ * NextActionEntry is the shorthand object stored in {@link Actions.next} array. It does not have an Action prototype.
  * 
  * @typedef NextActionEntry
  * @prop {ActionName} name
@@ -67,6 +76,8 @@ class Actions {
     completedTicks = 0;
     currentPos = 0;
     timeSinceLastUpdate = 0;
+    /** @type {AnyActionEntry} */
+    currentAction;
 
     static {
         Data.omitProperties(this.prototype, ["next", "nextLast"]);
@@ -82,7 +93,7 @@ class Actions {
             shouldRestart = true;
             return 0;
         }
-        currentAction = curAction;
+        this.currentAction = curAction;
 
         // this is how much mana is actually getting spent during this call to tick().
         let manaToSpend = availableMana;
@@ -103,10 +114,12 @@ class Actions {
         // only for multi-part progress bars
         if (isMultipartAction(curAction)) {
             let loopCosts = {};
+            let loopCounter = towns[curAction.townNum][`${curAction.varName}LoopCounter`];
+            const loopStats = curAction.loopStats;
 
             function loopCost(segment) {
                 // @ts-ignore
-                return loopCosts[segment] ??= curAction.loopCost(segment);
+                return loopCosts[segment] ??= curAction.loopCost(segment, loopCounter);
             }
 
             let segment = 0;
@@ -128,7 +141,8 @@ class Actions {
             manaLoop:
             while (manaLeftForCurrentSegment > 0 && curAction.canMakeProgress(segment)) {
                 //const toAdd = curAction.tickProgress(segment) * (curAction.manaCost() / curAction.adjustedTicks);
-                const progressMultiplier = curAction.tickProgress(segment) * tickMultiplier;
+                const loopStat = stats[loopStats[(loopCounter + segment) % loopStats.length]];
+                const progressMultiplier = curAction.tickProgress(segment) * tickMultiplier * loopStat.effortMultiplier;
                 const toAdd = Math.min(
                     manaLeftForCurrentSegment * progressMultiplier, // how much progress would we make if we spend all available mana?
                     loopCost(segment) - curProgress // how much progress would it take to complete this segment?
@@ -148,7 +162,7 @@ class Actions {
                         if (curAction.name === "Dark Ritual" && towns[curAction.townNum][curAction.varName] >= 4000000) unlockStory("darkRitualThirdSegmentReached");
                         if (curAction.name === "Imbue Mind" && towns[curAction.townNum][curAction.varName] >= 700000000) unlockStory("imbueMindThirdSegmentReached");
                         towns[curAction.townNum][curAction.varName] = 0;
-                        towns[curAction.townNum][`${curAction.varName}LoopCounter`] += curAction.segments;
+                        loopCounter = towns[curAction.townNum][`${curAction.varName}LoopCounter`] += curAction.segments;
                         towns[curAction.townNum][`total${curAction.varName}`]++;
                         segment -= curAction.segments;
                         loopCosts = {};
@@ -219,8 +233,6 @@ class Actions {
             }
         }
 
-        currentAction = null;
-
         return manaToSpend;
     }
 
@@ -236,19 +248,26 @@ class Actions {
             view.requestUpdate("updateCurrentActionBar", this.currentPos);
             return undefined;
         }
-        while ((curAction.canStart && !curAction.canStart() && curAction.townNum === curTown) || curAction.townNum !== curTown) {
+        while (curAction.townNum !== curTown
+            || (curAction.canStart && !curAction.canStart())
+            || (isMultipartAction(curAction) && !curAction.canMakeProgress(0))) {
             curAction.errorMessage = this.getErrorMessage(curAction);
             view.requestUpdate("updateCurrentActionBar", this.currentPos);
             this.currentPos++;
+            this.currentAction = null;
             if (this.currentPos >= this.current.length) {
                 curAction = undefined;
                 break;
             }
             curAction = this.current[this.currentPos];
         }
+        if (curAction && this.currentAction !== curAction) {
+            this.currentAction = curAction;
+        }
         return curAction;
     }
 
+    /** @param {AnyActionEntry} action  */
     getErrorMessage(action) {
         if (action.townNum !== curTown) {
             return `You were in zone ${curTown + 1} when you tried this action, and needed to be in zone ${action.townNum + 1}`;
@@ -256,12 +275,17 @@ class Actions {
         if (action.canStart && !action.canStart()) {
             return "You could not make the cost for this action.";
         }
+        if (isMultipartAction(action) && !action.canMakeProgress(0)) {
+            // return "You have already completed this action.";
+            return null; // already-complete does not currently count as an error
+        }
         return "??";
     }
 
     restart() {
         this.currentPos = 0;
         this.completedTicks = 0;
+        this.currentAction = null;
         curTown = 0;
         towns[0].suppliesCost = 300;
         view.requestUpdate("updateResource","supplies");
@@ -312,6 +336,7 @@ class Actions {
                 const toAdd = /** @type {AnyActionEntry} */(translateClassNames(action.name));
 
                 toAdd.loopsType = action.loopsType ?? (isMultipartAction(toAdd) ? "maxEffort" : "actions");
+                if (isMultipartAction(toAdd) && action.loopsType === "actions") action.loopsType = "maxEffort";
                 toAdd.loops = action.loops;
                 toAdd.loopsLeft = action.loops;
                 toAdd.extraLoops = 0;

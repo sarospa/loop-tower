@@ -180,7 +180,7 @@ const townNames = ["Beginnersville", "Forest Path", "Merchanton", "Mt. Olympus",
  *     story?: (completed: number) => void,
  *     storyReqs?: (storyNum: number) => boolean,
  *     stats: Partial<Record<StatName, number>>,
- *     canStart?: () => boolean,
+ *     canStart?: (loopCounter?: number) => boolean,
  *     cost?: () => void,
  *     manaCost(): number,
  *     goldCost?: () => number,
@@ -276,12 +276,12 @@ class Action extends Localizable {
 /**
  * @typedef {{
  *     loopStats: readonly StatName[],
- *     loopCost(segment: number): number,
- *     tickProgress(offset: number): number,
- *     segmentFinished?: () => void,
- *     loopsFinished(): void,
+ *     loopCost(segment: number, loopCounter?: number): number,
+ *     tickProgress(offset: number, loopCounter?: number, totalCompletions?: number): number,
+ *     segmentFinished?: (loopCounter?: number) => void,
+ *     loopsFinished(loopCounter?: number): void,
  *     getSegmentName?: (segment: number) => string,
- *     getPartName(): string,
+ *     getPartName(loopCounter?: number): string,
  *     completedTooltip?: () => string,
  * } & ActionExtras} MultipartActionExtras
  * 
@@ -340,12 +340,12 @@ class MultipartAction extends Action {
         return this.segmentNames[segment % this.segmentNames.length];
     }
 
-    /** @param {number} offset  */
-    canMakeProgress(offset) {
+    /** @param {number} offset /** @param {number} [loopCounter] @param {number} [totalCompletions] */
+    canMakeProgress(offset, loopCounter, totalCompletions) {
         // some actions with a tickProgress (like Small Dungeon) will throw an exception if tickProgress
         // is called after they're already complete. Turn that into a boolean.
         try {
-            return this.tickProgress(offset) > 0;
+            return this.tickProgress(offset, loopCounter, totalCompletions) > 0;
         } catch {
             return false;
         }
@@ -355,7 +355,7 @@ class MultipartAction extends Action {
 /**
  * @typedef {{
  *      completedTooltip(): string;
- *      getPartName(): string;
+ *      getPartName(loopCounter?: number): string;
  * }} DungeonActionImpl
  * @typedef {{
  * } & Omit<MultipartActionExtras, keyof DungeonActionImpl>} DungeonActionExtras
@@ -394,8 +394,8 @@ class DungeonAction extends MultipartAction {
         }
         return _txt(`actions>${getXMLName(this.name)}>completed_tooltip`) + ssDivContainer;
     };
-    getPartName() {
-        const floor = Math.floor((towns[this.townNum][`${this.varName}LoopCounter`] + 0.0001) / this.segments + 1);
+    getPartName(loopCounter = towns[this.townNum][`${this.varName}LoopCounter`] + 0.0001) {
+        const floor = Math.floor((loopCounter) / this.segments + 1);
         return `${_txt(`actions>${getXMLName(this.name)}>label_part`)} ${floor <= dungeons[this.dungeonNum].length ? numberToWords(floor) : _txt(`actions>${getXMLName(this.name)}>label_complete`)}`;
     };
 }
@@ -403,11 +403,11 @@ class DungeonAction extends MultipartAction {
 /**
  * @typedef {{
  *      completedTooltip(): string;
- *      getPartName(): string;
- *      currentFloor(): number;
- *      loopCost(segment: number): number;
- *      tickProgress(offset: number): number;
- *      loopsFinished(): void;
+ *      getPartName(loopCounter?: number): string;
+ *      currentFloor(loopCounter?: number): number;
+ *      loopCost(segment: number, loopCounter?: number): number;
+ *      tickProgress(offset: number, loopCounter?: number, totalCompletions?: number): number;
+ *      loopsFinished(loopCounter?: number): void;
  * }} TrialActionImpl
  * @typedef {{
  *    floorReward(): void,
@@ -439,29 +439,28 @@ class TrialAction extends MultipartAction {
         Current Floor: <div id='trial${this.trialNum}CurFloor'>0</div> - Completed <div id='trial${this.trialNum}CurFloorCompleted'>x</div> times<br>
         Last Floor: <div id='trial${this.trialNum}LastFloor'>N/A</div> - Completed <div id='trial${this.trialNum}LastFloorCompleted'>N/A</div> times<br>`;
     }
-    getPartName() {
-        const floor = Math.floor((towns[this.townNum][`${this.varName}LoopCounter`] + 0.0001) / this.segments + 1);
+    getPartName(loopCounter = towns[this.townNum][`${this.varName}LoopCounter`]) {
+        const floor = Math.floor((loopCounter + 0.0001) / this.segments + 1);
         return `${_txt(`actions>${getXMLName(this.name)}>label_part`)} ${floor <= trials[this.trialNum].length ? numberToWords(floor) : _txt(`actions>${getXMLName(this.name)}>label_complete`)}`;
     };
-    currentFloor() {
-        return Math.floor(towns[this.townNum][`${this.varName}LoopCounter`] / this.segments + 0.0000001);
+    currentFloor(loopCounter = towns[this.townNum][`${this.varName}LoopCounter`]) {
+        return Math.floor(loopCounter / this.segments + 0.0000001);
     }
     /** @param {number} segment  */
-    loopCost(segment) {
-        return precision3(Math.pow(this.baseScaling, Math.floor((towns[this.townNum][`${this.varName}LoopCounter`] + segment) / this.segments + 0.0000001)) * this.exponentScaling * getSkillBonus("Assassin"));
+    loopCost(segment, loopCounter = towns[this.townNum][`${this.varName}LoopCounter`]) {
+        return precision3(Math.pow(this.baseScaling, Math.floor((loopCounter + segment) / this.segments + 0.0000001)) * this.exponentScaling * getSkillBonus("Assassin"));
     }
     /** @param {number} offset  */
-    tickProgress(offset) {
+    tickProgress(offset, loopCounter) {
         return this.baseProgress() *
-            (1 + getLevel(this.loopStats[(towns[this.townNum][`${this.varName}LoopCounter`] + offset) % this.loopStats.length]) / 100) *
-            Math.sqrt(1 + trials[this.trialNum][this.currentFloor()].completed / 200);
+            Math.sqrt(1 + trials[this.trialNum][this.currentFloor(loopCounter)].completed / 200);
     }
-    loopsFinished() {
-        const finishedFloor = this.currentFloor() - 1;
+    loopsFinished(loopCounter) {
+        const finishedFloor = this.currentFloor(loopCounter) - 1;
         //console.log("Finished floor: " + finishedFloor + " Current Floor: " + this.currentFloor());
         trials[this.trialNum][finishedFloor].completed++;
         if (finishedFloor > trials[this.trialNum].highestFloor || trials[this.trialNum].highestFloor === undefined) trials[this.trialNum].highestFloor = finishedFloor;
-        view.requestUpdate("updateTrialInfo", {trialNum: this.trialNum, curFloor: this.currentFloor()});
+        view.requestUpdate("updateTrialInfo", {trialNum: this.trialNum, curFloor: this.currentFloor(loopCounter)});
         this.floorReward();
     }
 }
@@ -471,11 +470,11 @@ class TrialAction extends MultipartAction {
  * @typedef {{
  *      manaCost(): number,
  *      allowed(): number,
- *      canStart(): boolean,
- *      loopCost(segment: number): number,
- *      tickProgress(offset: number): number,
- *      getPartName(): string,
- *      loopsFinished(): void,
+ *      canStart(loopCounter?: number): boolean,
+ *      loopCost(segment: number, loopCounter?: number): number,
+ *      tickProgress(offset: number, loopCounter?: number, totalCompletions?: number): number,
+ *      getPartName(loopCounter?: number): string,
+ *      loopsFinished(loopCounter?: number): void,
  *      finish(): void,
  *      visible(): boolean,
  *      unlocked(): boolean,
@@ -511,13 +510,12 @@ class AssassinAction extends MultipartAction {
     manaCost() {return 50000;}
     // @ts-ignore
     allowed() {return 1;}
-    canStart() {return towns[this.townNum][`${this.varName}LoopCounter`] === 0;}
-    loopCost(segment) {return 50000000;}
-    tickProgress(offset) {
+    canStart(loopCounter = towns[this.townNum][`${this.varName}LoopCounter`]) {return loopCounter === 0;}
+    loopCost(_segment) {return 50000000;}
+    tickProgress(_offset, _loopCounter, totalCompletions = towns[this.townNum]["total"+this.varName]) {
         let baseSkill = Math.sqrt(getSkillLevel("Practical")) + getSkillLevel("Thievery") + getSkillLevel("Assassin");
-        // @ts-ignore
-        let loopStat = (1 + getLevel(this.loopStats[(towns[this.townNum][`${this.varName}LoopCounter`] + offset) % this.loopStats.length]) / 1000);
-        let completions = Math.sqrt(1 + towns[this.townNum]["total"+this.varName] / 100);
+        let loopStat = 1 / 10;
+        let completions = Math.sqrt(1 + totalCompletions / 100);
         let reputationPenalty = resources.reputation != 0 ? Math.abs(resources.reputation) : 1;
         let killStreak = resources.heart > 0 ? resources.heart : 1;
         return baseSkill * loopStat * completions / reputationPenalty / killStreak;
@@ -1430,17 +1428,17 @@ Action.HealTheSick = new MultipartAction("Heal The Sick", {
     canStart() {
         return resources.reputation >= 1;
     },
-    loopCost(segment) {
-        return fibonacci(2 + Math.floor((towns[0].HealLoopCounter + segment) / this.segments + 0.0000001)) * 5000;
+    loopCost(segment, loopCounter = towns[0].HealLoopCounter) {
+        return fibonacci(2 + Math.floor((loopCounter + segment) / this.segments + 0.0000001)) * 5000;
     },
-    tickProgress(offset) {
-        return getSkillLevel("Magic") * Math.max(getSkillLevel("Restoration") / 50, 1) * (1 + getLevel(this.loopStats[(towns[0].HealLoopCounter + offset) % this.loopStats.length]) / 100) * Math.sqrt(1 + towns[0].totalHeal / 100);
+    tickProgress(_offset, _loopCounter, totalCompletions = towns[0].totalHeal) {
+        return getSkillLevel("Magic") * Math.max(getSkillLevel("Restoration") / 50, 1) * Math.sqrt(1 + totalCompletions / 100);
     },
     loopsFinished() {
         addResource("reputation", 3);
     },
-    getPartName() {
-        return `${_txt(`actions>${getXMLName(this.name)}>label_part`)} ${numberToWords(Math.floor((towns[0].HealLoopCounter + 0.0001) / this.segments + 1))}`;
+    getPartName(loopCounter = towns[0].HealLoopCounter) {
+        return `${_txt(`actions>${getXMLName(this.name)}>label_part`)} ${numberToWords(Math.floor((loopCounter + 0.0001) / this.segments + 1))}`;
     },
     visible() {
         return towns[0].getLevel("Secrets") >= 20;
@@ -1496,11 +1494,11 @@ Action.FightMonsters = new MultipartAction("Fight Monsters", {
     canStart() {
         return resources.reputation >= 2;
     },
-    loopCost(segment) {
-        return fibonacci(Math.floor((towns[0].FightLoopCounter + segment) - towns[0].FightLoopCounter / 3 + 0.0000001)) * 10000;
+    loopCost(segment, loopCounter = towns[0].FightLoopCounter) {
+        return fibonacci(Math.floor((loopCounter + segment) - loopCounter / 3 + 0.0000001)) * 10000;
     },
-    tickProgress(offset) {
-        return getSelfCombat() * (1 + getLevel(this.loopStats[(towns[0].FightLoopCounter + offset) % this.loopStats.length]) / 100) * Math.sqrt(1 + towns[0].totalFight / 100);
+    tickProgress(_offset, _loopCounter, totalCompletions = towns[0].totalFight) {
+        return getSelfCombat() * Math.sqrt(1 + totalCompletions / 100);
     },
     loopsFinished() {
         // empty
@@ -1508,8 +1506,8 @@ Action.FightMonsters = new MultipartAction("Fight Monsters", {
     segmentFinished() {
         addResource("gold", 20);
     },
-    getPartName() {
-        const monster = Math.floor(towns[0].FightLoopCounter / 3 + 0.0000001);
+    getPartName(loopCounter = towns[0].FightLoopCounter) {
+        const monster = Math.floor(loopCounter / 3 + 0.0000001);
         if (monster >= this.segmentNames.length) return this.altSegmentNames[monster % 3];
         return this.segmentNames[monster];
     },
@@ -1562,17 +1560,16 @@ Action.SmallDungeon = new DungeonAction("Small Dungeon", 0, {
     manaCost() {
         return 2000;
     },
-    canStart() {
-        const curFloor = Math.floor((towns[this.townNum].SDungeonLoopCounter) / this.segments + 0.0000001);
+    canStart(loopCounter = towns[this.townNum].SDungeonLoopCounter) {
+        const curFloor = Math.floor((loopCounter) / this.segments + 0.0000001);
         return resources.reputation >= 2 && curFloor < dungeons[this.dungeonNum].length;
     },
-    loopCost(segment) {
-        return precision3(Math.pow(2, Math.floor((towns[this.townNum].SDungeonLoopCounter + segment) / this.segments + 0.0000001)) * 15000);
+    loopCost(segment, loopCounter = towns[this.townNum].SDungeonLoopCounter) {
+        return precision3(Math.pow(2, Math.floor((loopCounter + segment) / this.segments + 0.0000001)) * 15000);
     },
-    tickProgress(offset) {
-        const floor = Math.floor((towns[this.townNum].SDungeonLoopCounter) / this.segments + 0.0000001);
+    tickProgress(offset, loopCounter = towns[this.townNum].SDungeonLoopCounter) {
+        const floor = Math.floor((loopCounter) / this.segments + 0.0000001);
         return (getSelfCombat() + getSkillLevel("Magic")) *
-            (1 + getLevel(this.loopStats[(towns[this.townNum].SDungeonLoopCounter + offset) % this.loopStats.length]) / 100) *
             Math.sqrt(1 + dungeons[this.dungeonNum][floor].completed / 200);
     },
     loopsFinished() {
@@ -2621,14 +2618,14 @@ Action.DarkRitual = new MultipartAction("Dark Ritual", {
     allowed() {
         return 1;
     },
-    canStart() {
-        return resources.reputation <= -5 && towns[this.townNum].DarkRitualLoopCounter === 0 && checkSoulstoneSac(this.goldCost()) && getBuffLevel("Ritual") < getBuffCap("Ritual");
+    canStart(loopCounter = towns[this.townNum].DarkRitualLoopCounter) {
+        return resources.reputation <= -5 && loopCounter === 0 && checkSoulstoneSac(this.goldCost()) && getBuffLevel("Ritual") < getBuffCap("Ritual");
     },
     loopCost(segment) {
         return 1000000 * (segment * 2 + 1);
     },
     tickProgress(offset) {
-        return getSkillLevel("Dark") * (1 + getLevel(this.loopStats[(towns[1].DarkRitualLoopCounter + offset) % this.loopStats.length]) / 100) / (1 - towns[1].getLevel("Witch") * 0.005);
+        return getSkillLevel("Dark") / (1 - towns[1].getLevel("Witch") * 0.005);
     },
     grantsBuff: "Ritual",
     loopsFinished() {
@@ -3073,14 +3070,13 @@ Action.AdventureGuild = new MultipartAction("Adventure Guild", {
     canStart() {
         return guild === "";
     },
-    loopCost(segment) {
-        return precision3(Math.pow(1.2, towns[2][`${this.varName}LoopCounter`] + segment)) * 5e6;
+    loopCost(segment, loopCounter = towns[2][`${this.varName}LoopCounter`]) {
+        return precision3(Math.pow(1.2, loopCounter + segment)) * 5e6;
     },
-    tickProgress(offset) {
+    tickProgress(offset, loopCounter, totalCompletions = towns[2][`total${this.varName}`]) {
         return (getSkillLevel("Magic") / 2 +
                 getSelfCombat()) *
-                (1 + getLevel(this.loopStats[(towns[2][`${this.varName}LoopCounter`] + offset) % this.loopStats.length]) / 100) *
-                Math.sqrt(1 + towns[2][`total${this.varName}`] / 1000);
+                Math.sqrt(1 + totalCompletions / 1000);
     },
     loopsFinished() {
         if (curAdvGuildSegment >= 0) unlockStory("advGuildRankEReached");
@@ -3216,21 +3212,20 @@ Action.LargeDungeon = new DungeonAction("Large Dungeon", 1, {
     manaCost() {
         return 6000;
     },
-    canStart() {
-        const curFloor = Math.floor((towns[this.townNum].LDungeonLoopCounter) / this.segments + 0.0000001);
+    canStart(loopCounter = towns[this.townNum].LDungeonLoopCounter) {
+        const curFloor = Math.floor((loopCounter) / this.segments + 0.0000001);
         return resources.teamMembers >= 1 && curFloor < dungeons[this.dungeonNum].length;
     },
-    loopCost(segment) {
-        return precision3(Math.pow(3, Math.floor((towns[this.townNum].LDungeonLoopCounter + segment) / this.segments + 0.0000001)) * 5e5);
+    loopCost(segment, loopCounter = towns[this.townNum].LDungeonLoopCounter) {
+        return precision3(Math.pow(3, Math.floor((loopCounter + segment) / this.segments + 0.0000001)) * 5e5);
     },
-    tickProgress(offset) {
-        const floor = Math.floor((towns[this.townNum].LDungeonLoopCounter) / this.segments + 0.0000001);
+    tickProgress(offset, loopCounter = towns[this.townNum].LDungeonLoopCounter) {
+        const floor = Math.floor((loopCounter) / this.segments + 0.0000001);
         return (getTeamCombat() + getSkillLevel("Magic")) *
-            (1 + getLevel(this.loopStats[(towns[this.townNum].LDungeonLoopCounter + offset) % this.loopStats.length]) / 100) *
             Math.sqrt(1 + dungeons[this.dungeonNum][floor].completed / 200);
     },
-    loopsFinished() {
-        const curFloor = Math.floor((towns[this.townNum].LDungeonLoopCounter) / this.segments + 0.0000001 - 1);
+    loopsFinished(loopCounter = towns[this.townNum].LDungeonLoopCounter) {
+        const curFloor = Math.floor((loopCounter) / this.segments + 0.0000001 - 1);
         this.finishDungeon(curFloor);
     },
     visible() {
@@ -3292,14 +3287,13 @@ Action.CraftingGuild = new MultipartAction("Crafting Guild", {
     canStart() {
         return guild === "";
     },
-    loopCost(segment) {
-        return precision3(Math.pow(1.2, towns[2][`${this.varName}LoopCounter`] + segment)) * 2e6;
+    loopCost(segment, loopCounter = towns[2][`${this.varName}LoopCounter`]) {
+        return precision3(Math.pow(1.2, loopCounter + segment)) * 2e6;
     },
-    tickProgress(offset) {
+    tickProgress(_offset, _loopCounter, totalCompletions = towns[2][`total${this.varName}`]) {
         return (getSkillLevel("Magic") / 2 +
                 getSkillLevel("Crafting")) *
-                (1 + getLevel(this.loopStats[(towns[2][`${this.varName}LoopCounter`] + offset) % this.loopStats.length]) / 100) *
-                Math.sqrt(1 + towns[2][`total${this.varName}`] / 1000);
+                Math.sqrt(1 + totalCompletions / 1000);
     },
     loopsFinished() {
         if (curCraftGuildSegment >= 0) unlockStory("craftGuildRankEReached");
@@ -4180,11 +4174,11 @@ Action.HuntTrolls = new MultipartAction("Hunt Trolls", {
     manaCost() {
         return 8000;
     },
-    loopCost(segment) {
-        return precision3(Math.pow(2, Math.floor((towns[this.townNum].HuntTrollsLoopCounter + segment) / this.segments + 0.0000001)) * 1e6);
+    loopCost(segment, loopCounter = towns[this.townNum].HuntTrollsLoopCounter) {
+        return precision3(Math.pow(2, Math.floor((loopCounter + segment) / this.segments + 0.0000001)) * 1e6);
     },
-    tickProgress(offset) {
-        return (getSelfCombat() * (1 + getLevel(this.loopStats[(towns[3].HuntTrollsLoopCounter + offset) % this.loopStats.length]) / 100) * Math.sqrt(1 + towns[3].totalHuntTrolls / 100));
+    tickProgress(_offset, _loopCounter, totalCompletions = towns[3].totalHuntTrolls) {
+        return (getSelfCombat() * Math.sqrt(1 + totalCompletions / 100));
     },
     loopsFinished() {
         handleSkillExp(this.skills);
@@ -4325,14 +4319,14 @@ Action.ImbueMind = new MultipartAction("Imbue Mind", {
     allowed() {
         return 1;
     },
-    canStart() {
-        return towns[3].ImbueMindLoopCounter === 0 && checkSoulstoneSac(this.goldCost()) && getBuffLevel("Imbuement") < getBuffCap("Imbuement");
+    canStart(loopCounter = towns[3].ImbueMindLoopCounter) {
+        return loopCounter === 0 && checkSoulstoneSac(this.goldCost()) && getBuffLevel("Imbuement") < getBuffCap("Imbuement");
     },
     loopCost(segment) {
         return 100000000 * (segment * 5 + 1);
     },
     tickProgress(offset) {
-        return getSkillLevel("Magic") * (1 + getLevel(this.loopStats[(towns[3].ImbueMindLoopCounter + offset) % this.loopStats.length]) / 100);
+        return getSkillLevel("Magic");
     },
     grantsBuff: "Imbuement",
     loopsFinished() {
@@ -4394,18 +4388,18 @@ Action.ImbueBody = new MultipartAction("Imbue Body", {
     allowed() {
         return 1;
     },
-    canStart() {
+    canStart(loopCounter = towns[3].ImbueBodyLoopCounter) {
         let tempCanStart = true;
         for (const stat of statList) {
             if (getTalent(stat) < getBuffLevel("Imbuement2") + 1) tempCanStart = false;
         }
-        return towns[3].ImbueBodyLoopCounter === 0 && (getBuffLevel("Imbuement") > getBuffLevel("Imbuement2")) && tempCanStart;
+        return loopCounter === 0 && (getBuffLevel("Imbuement") > getBuffLevel("Imbuement2")) && tempCanStart;
     },
     loopCost(segment) {
         return 100000000 * (segment * 5 + 1);
     },
     tickProgress(offset) {
-        return getSkillLevel("Magic") * (1 + getLevel(this.loopStats[(towns[3].ImbueBodyLoopCounter + offset) % this.loopStats.length]) / 100);
+        return getSkillLevel("Magic");
     },
     grantsBuff: "Imbuement2",
     loopsFinished() {
@@ -4732,25 +4726,25 @@ Action.TidyUp = new MultipartAction("Tidy Up", {
     manaCost() {
         return 10000;
     },
-    loopCost(segment) {
-        return fibonacci(Math.floor((towns[4].TidyLoopCounter + segment) - towns[4].TidyLoopCounter / 3 + 0.0000001)) * 1000000; // Temp.
+    loopCost(segment, loopCounter = towns[4].TidyLoopCounter) {
+        return fibonacci(Math.floor((loopCounter + segment) - loopCounter / 3 + 0.0000001)) * 1000000; // Temp.
     },
-    tickProgress(offset) {
-        return getSkillLevel("Practical") * (1 + getLevel(this.loopStats[(towns[4].TidyLoopCounter + offset) % this.loopStats.length]) / 100) * Math.sqrt(1 + towns[4].totalTidy / 100);
+    tickProgress(offset, _loopCounter, totalCompletions = towns[4].totalTidy) {
+        return getSkillLevel("Practical") * Math.sqrt(1 + totalCompletions / 100);
     },
-    loopsFinished() {
+    loopsFinished(loopCounter = towns[4].TidyLoopCounter) {
         addResource("reputation", 1);
         addResource("gold", 5);
         unlockStory("tidiedUp");
-        if (towns[4].TidyLoopCounter >= 4) unlockStory("tidiedUp1Time")
-        if (towns[4].TidyLoopCounter >= 24) unlockStory("tidiedUp6Times")
-        if (towns[4].TidyLoopCounter >= 80) unlockStory("tidiedUp20Times")
+        if (loopCounter >= 4) unlockStory("tidiedUp1Time")
+        if (loopCounter >= 24) unlockStory("tidiedUp6Times")
+        if (loopCounter >= 80) unlockStory("tidiedUp20Times")
     },
     segmentFinished() {
         // empty.
     },
-    getPartName() {
-        return `${_txt(`actions>${getXMLName(this.name)}>label_part`)} ${numberToWords(Math.floor((towns[4].TidyLoopCounter + 0.0001) / this.segments + 1))}`;
+    getPartName(loopCounter = towns[4].TidyLoopCounter) {
+        return `${_txt(`actions>${getXMLName(this.name)}>label_part`)} ${numberToWords(Math.floor((loopCounter + 0.0001) / this.segments + 1))}`;
     },
     visible() {
         return towns[4].getLevel("Canvassed") >= 10;
@@ -5065,15 +5059,14 @@ Action.WizardCollege = new MultipartAction("Wizard College", {
         addResource("gold", -500);
         addResource("favors", -10);
     },
-    loopCost(segment) {
-        return precision3(Math.pow(1.3, towns[4][`${this.varName}LoopCounter`] + segment)) * 1e7; // Temp
+    loopCost(segment, loopCounter = towns[4][`${this.varName}LoopCounter`]) {
+        return precision3(Math.pow(1.3, loopCounter + segment)) * 1e7; // Temp
     },
-    tickProgress(offset) {
+    tickProgress(offset, _loopCounter, totalCompletions = towns[4][`total${this.varName}`]) {
         return (
             getSkillLevel("Magic") + getSkillLevel("Practical") + getSkillLevel("Dark") +
             getSkillLevel("Chronomancy") + getSkillLevel("Pyromancy") + getSkillLevel("Restoration") + getSkillLevel("Spatiomancy")) *
-            (1 + getLevel(this.loopStats[(towns[4][`${this.varName}LoopCounter`] + offset) % this.loopStats.length]) / 100) *
-            Math.sqrt(1 + towns[4][`total${this.varName}`] / 1000);
+            Math.sqrt(1 + totalCompletions / 1000);
     },
     loopsFinished() {
         // empty.
@@ -5445,13 +5438,12 @@ Action.FightFrostGiants = new MultipartAction("Fight Frost Giants", {
     canStart() {
         return resources.pegasus;
     },
-    loopCost(segment) {
-        return precision3(Math.pow(1.3, towns[4][`${this.varName}LoopCounter`] + segment)) * 1e7; // Temp
+    loopCost(segment, loopCounter = towns[4][`${this.varName}LoopCounter`]) {
+        return precision3(Math.pow(1.3, loopCounter + segment)) * 1e7; // Temp
     },
-    tickProgress(offset) {
+    tickProgress(_offset, _loopCounter, totalCompletions = towns[4][`total${this.varName}`]) {
         return (getSelfCombat() *
-            (1 + getLevel(this.loopStats[(towns[4][`${this.varName}LoopCounter`] + offset) % this.loopStats.length]) / 100) *
-            Math.sqrt(1 + towns[4][`total${this.varName}`] / 1000));
+            Math.sqrt(1 + totalCompletions / 1000));
     },
     loopsFinished() {
         handleSkillExp(this.skills);
@@ -5589,14 +5581,14 @@ Action.GreatFeast = new MultipartAction("Great Feast", {
     allowed() {
         return 1;
     },
-    canStart() {
-        return resources.reputation >= 100 && towns[this.townNum].GreatFeastLoopCounter === 0 && checkSoulstoneSac(this.goldCost()) && getBuffLevel("Feast") < getBuffCap("Feast");
+    canStart(loopCounter = towns[this.townNum].GreatFeastLoopCounter) {
+        return resources.reputation >= 100 && loopCounter === 0 && checkSoulstoneSac(this.goldCost()) && getBuffLevel("Feast") < getBuffCap("Feast");
     },
     loopCost(segment) {
         return 1000000000 * (segment * 5 + 1);
     },
     tickProgress(offset) {
-        return getSkillLevel("Practical") * (1 + getLevel(this.loopStats[(towns[4].GreatFeastLoopCounter + offset) % this.loopStats.length]) / 100);
+        return getSkillLevel("Practical");
     },
     grantsBuff: "Feast",
     loopsFinished() {
@@ -5907,22 +5899,21 @@ Action.TheSpire = new DungeonAction("The Spire", 2, {
     manaCost() {
         return 100000;
     },
-    canStart() {
-        const curFloor = Math.floor((towns[this.townNum].TheSpireLoopCounter) / this.segments + 0.0000001);
+    canStart(loopCounter = towns[this.townNum].TheSpireLoopCounter) {
+        const curFloor = Math.floor((loopCounter) / this.segments + 0.0000001);
         return curFloor < dungeons[this.dungeonNum].length;
     },
-    loopCost(segment) {
-        return precision3(Math.pow(2, Math.floor((towns[this.townNum].TheSpireLoopCounter + segment) / this.segments + 0.0000001)) * 1e7);
+    loopCost(segment, loopCounter = towns[this.townNum].TheSpireLoopCounter) {
+        return precision3(Math.pow(2, Math.floor((loopCounter + segment) / this.segments + 0.0000001)) * 1e7);
     },
-    tickProgress(offset) {
-        const floor = Math.floor((towns[this.townNum].TheSpireLoopCounter) / this.segments + 0.0000001);
+    tickProgress(_offset, loopCounter = towns[this.townNum].TheSpireLoopCounter) {
+        const floor = Math.floor((loopCounter) / this.segments + 0.0000001);
         return getTeamCombat() * (1 + 0.1 * resources.pylons) *
-        (1 + getLevel(this.loopStats[(towns[this.townNum].TheSpireLoopCounter + offset) % this.loopStats.length]) / 100) *
         Math.sqrt(1 + dungeons[this.dungeonNum][floor].completed / 200);
     },
     grantsBuff: "Aspirant",
-    loopsFinished() {
-        const curFloor = Math.floor((towns[this.townNum].TheSpireLoopCounter) / this.segments + 0.0000001 - 1);
+    loopsFinished(loopCounter = towns[this.townNum].TheSpireLoopCounter) {
+        const curFloor = Math.floor((loopCounter) / this.segments + 0.0000001 - 1);
         this.finishDungeon(curFloor);
         if (curFloor >= getBuffLevel("Aspirant")) addBuffAmt("Aspirant", 1, this);
         if (curFloor == dungeonFloors[this.dungeonNum]-1) unlockStory("clearedSpire");
@@ -6146,13 +6137,12 @@ Action.FightJungleMonsters = new MultipartAction("Fight Jungle Monsters", {
     canStart() {
         return true;
     },
-    loopCost(segment) {
-        return precision3(Math.pow(1.3, towns[6][`${this.varName}LoopCounter`] + segment)) * 1e8; // Temp
+    loopCost(segment, loopCounter = towns[6][`${this.varName}LoopCounter`]) {
+        return precision3(Math.pow(1.3, loopCounter + segment)) * 1e8; // Temp
     },
-    tickProgress(offset) {
+    tickProgress(_offset, _loopCounter, totalCompletions = towns[6][`total${this.varName}`]) {
         return (getSelfCombat() *
-            (1 + getLevel(this.loopStats[(towns[6][`${this.varName}LoopCounter`] + offset) % this.loopStats.length]) / 100) *
-            Math.sqrt(1 + towns[6][`total${this.varName}`] / 1000));
+            Math.sqrt(1 + totalCompletions / 1000));
     },
     loopsFinished() {
         handleSkillExp(this.skills);
@@ -6258,20 +6248,20 @@ Action.RescueSurvivors = new MultipartAction("Rescue Survivors", {
     canStart() {
         return true;
     },
-    loopCost(segment) {
-        return fibonacci(2 + Math.floor((towns[6].RescueLoopCounter + segment) / this.segments + 0.0000001)) * 5000;
+    loopCost(segment, loopCounter = towns[6].RescueLoopCounter) {
+        return fibonacci(2 + Math.floor((loopCounter + segment) / this.segments + 0.0000001)) * 5000;
     },
-    tickProgress(offset) {
-        return getSkillLevel("Magic") * Math.max(getSkillLevel("Restoration") / 100, 1) * (1 + getLevel(this.loopStats[(towns[6].RescueLoopCounter + offset) % this.loopStats.length]) / 100) * Math.sqrt(1 + towns[6].totalRescue / 100);
+    tickProgress(offset, loopCounter, totalCompletions = towns[6].totalRescue) {
+        return getSkillLevel("Magic") * Math.max(getSkillLevel("Restoration") / 100, 1) * Math.sqrt(1 + totalCompletions / 100);
     },
-    loopsFinished() {
+    loopsFinished(loopCounter = towns[6].RescueLoopCounter) {
         addResource("reputation", 4);
         unlockStory("survivorRescued");
-        if (towns[6].RescueLoopCounter >= 6) unlockStory("rescued6Survivors");
-        if (towns[6].RescueLoopCounter >= 20) unlockStory("rescued20Survivors");
+        if (loopCounter >= 6) unlockStory("rescued6Survivors");
+        if (loopCounter >= 20) unlockStory("rescued20Survivors");
     },
-    getPartName() {
-        return `${_txt(`actions>${getXMLName(this.name)}>label_part`)} ${numberToWords(Math.floor((towns[6].RescueLoopCounter + 0.0001) / this.segments + 1))}`;
+    getPartName(loopCounter = towns[6].RescueLoopCounter) {
+        return `${_txt(`actions>${getXMLName(this.name)}>label_part`)} ${numberToWords(Math.floor((loopCounter + 0.0001) / this.segments + 1))}`;
     },
     visible() {
         return towns[6].getLevel("ExploreJungle") >= 10;
@@ -6643,14 +6633,13 @@ Action.ThievesGuild = new MultipartAction("Thieves Guild", {
     canStart() {
         return guild === "" && resources.reputation < 0;
     },
-    loopCost(segment) {
-        return precision3(Math.pow(1.2, towns[7][`${this.varName}LoopCounter`] + segment)) * 5e8;
+    loopCost(segment, loopCounter = towns[7][`${this.varName}LoopCounter`]) {
+        return precision3(Math.pow(1.2, loopCounter + segment)) * 5e8;
     },
-    tickProgress(offset) {
+    tickProgress(_offset, _loopCounter, totalCompletions = towns[7][`total${this.varName}`]) {
         return (getSkillLevel("Practical") +
                 getSkillLevel("Thievery")) *
-                (1 + getLevel(this.loopStats[(towns[7][`${this.varName}LoopCounter`] + offset) % this.loopStats.length]) / 100) *
-                Math.sqrt(1 + towns[7][`total${this.varName}`] / 1000);
+                Math.sqrt(1 + totalCompletions / 1000);
     },
     loopsFinished() {
     },
@@ -7238,14 +7227,14 @@ Action.ImbueSoul = new MultipartAction("Imbue Soul", {
     allowed() {
         return 1;
     },
-    canStart() {
-        return towns[8].ImbueSoulLoopCounter === 0 && getBuffLevel("Imbuement") > 499 && getBuffLevel("Imbuement2") > 499 && getBuffLevel("Imbuement3") < 7;
+    canStart(loopCounter = towns[8].ImbueSoulLoopCounter) {
+        return loopCounter === 0 && getBuffLevel("Imbuement") > 499 && getBuffLevel("Imbuement2") > 499 && getBuffLevel("Imbuement3") < 7;
     },
     loopCost(segment) {
         return 100000000 * (segment * 5 + 1);
     },
     tickProgress(offset) {
-        return getSkillLevel("Magic") * (1 + getLevel(this.loopStats[(towns[8].ImbueSoulLoopCounter + offset) % this.loopStats.length]) / 100);
+        return getSkillLevel("Magic");
     },
     grantsBuff: "Imbuement3",
     loopsFinished() {

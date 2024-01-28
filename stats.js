@@ -102,11 +102,20 @@ class Stat extends Localizable {
     talentLevelExp = new LevelExp();
     soullessLevelExp = new LevelExp();
     soulstone = 0;
+    /** @type {BuffName} */
+    prestigeBuff;
+
 
     /** @param {StatName} name */
     constructor(name) {
         super(`stats>${name}`);
         Object.defineProperty(this, "name", {value: name});
+        if (["Str","Dex","Con","Spd","Per"].includes(name)) {
+            this.prestigeBuff = "PrestigePhysical";
+        }
+        if (["Cha","Int","Soul","Luck"].includes(name)) {
+            this.prestigeBuff = "PrestigeMental";
+        }
     }
 
     get exp() {
@@ -158,15 +167,38 @@ class Stat extends Localizable {
     }
 
     #levelCalc;
-    #manaMultiplier
-    get manaMultiplier() {
+    #effortMultiplier;
+    #manaMultiplier;
+    get effortMultiplier() {
         if (this.#levelCalc !== this.statLevelExp.level) {
-            this.#manaMultiplier = 1 / (1 + this.statLevelExp.level / 100);
+            this.#effortMultiplier = 1 + this.statLevelExp.level / 100;
+            this.#manaMultiplier = undefined;
             this.#levelCalc = this.statLevelExp.level;
+        }
+        return this.#effortMultiplier;
+    }
+    get manaMultiplier() {
+        if (this.#levelCalc !== this.statLevelExp.level || this.#manaMultiplier === undefined) {
+            this.#manaMultiplier = 1 / this.effortMultiplier; // will set levelCalc
         }
         return this.#manaMultiplier;
     }
-    
+
+    #tbxTalent;
+    #tbxSoulstone;
+    #tbxPrestige;
+    #totalBonusXP;
+    get totalBonusXP() {
+        const prestigeLevel = getBuffLevel(this.prestigeBuff);
+        if (this.#tbxSoulstone !== this.soulstone || this.#tbxTalent !== this.talentLevelExp.level || this.#tbxPrestige !== prestigeLevel) {
+            this.#tbxSoulstone = this.soulstone;
+            this.#tbxTalent = this.talentLevelExp.level;
+            this.#tbxPrestige = prestigeLevel;
+            this.#totalBonusXP = this.soulstoneMult * this.talentMult * prestigeBonus(this.prestigeBuff === "PrestigePhysical" ? PRESTIGE_PHYSICAL_BASE : PRESTIGE_MENTAL_BASE,  this.prestigeBuff);
+        }
+        return this.#totalBonusXP;
+    }
+
     toJSON() {
         const toSave = {...this};
         // Backwards compatibility
@@ -499,7 +531,7 @@ function addSkillExp(name, amount) {
     skills[name].levelExp.addExp(amount);
     const newLevel = getSkillLevel(name);
     if (oldLevel !== newLevel) {
-        actionLog.addSkillLevel(currentAction, name, newLevel, oldLevel);
+        actionLog.addSkillLevel(actions.currentAction, name, newLevel, oldLevel);
     }
     view.requestUpdate("updateSkill", name);
 }
@@ -584,15 +616,5 @@ function restartStats() {
 
 /** @param {typeof statList[number]} statName */
 function getTotalBonusXP(statName) {
-    const soulstoneBonus = stats[statName].soulstoneMult;
-
-        var statBonus=1
-        if (["Str","Dex","Con","Spd","Per"].includes(statName)) {
-            statBonus *= prestigeBonus(PRESTIGE_PHYSICAL_BASE, "PrestigePhysical")
-        }
-        if (["Cha","Int","Soul","Luck"].includes(statName)) {
-            statBonus *= prestigeBonus(PRESTIGE_MENTAL_BASE, "PrestigeMental")
-        }
-        
-    return statBonus * soulstoneBonus * stats[statName].talentMult;
+    return stats[statName].totalBonusXP;
 }
