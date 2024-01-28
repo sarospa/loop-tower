@@ -1771,14 +1771,19 @@ li#actionLogLatest {
         & main {
             grid-area: main;
             display: grid;
+            height: 100%;
             grid:
                 "actions town"
-                "stats town"
+                "stats log"
                 / minmax(min-content,3fr) minmax(min-content,2fr);
                 
         }
+        
+        & #townColumn {
+            display: contents;
+        }
 
-        & #statsColumn, & #actionsColumn, & #townColumn {
+        & #statsColumn, & #actionsColumn, & #shortTownColumn, & #actionLogContainer {
             overflow: initial;
         }
 
@@ -1812,6 +1817,7 @@ li#actionLogLatest {
             grid-area: actions;
             margin: 0 1em;
             overflow: hidden;
+            contain: size;
         }
     
         & #actionList {
@@ -1821,6 +1827,11 @@ li#actionLogLatest {
         }
         & #actionList > *:not(.showthat, #actionChanges, #expandableList) {
             display: none;
+        }
+        
+        & #shortTownColumn {
+            display: block;
+            grid-area: town;
         }
         
         & #townWindow {
@@ -1916,11 +1927,19 @@ li#actionLogLatest {
         & #trackedResources {
             margin-bottom: 0;
         }
+        
+        & #actionLogContainer {
+            display: flex;
+            flex-direction: column;
+            grid-area: log;
+            height: 100%;
+        }
     
         & #actionLog {
             margin-right:1em;
             max-height: none;
             flex-grow: 1;
+            contain: size;
         }
         
         & .actionLogEntry {
