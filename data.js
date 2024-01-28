@@ -63,10 +63,39 @@ class Data {
     /** @type {WeakMap<object, number>} */
     static objectIdMap = new WeakMap();
     // these language invariants need a way to have their identities transmitted across thread boundaries
-    static wellKnownObjects = Object.freeze({
-        [-1]: Object.prototype,
-        [-2]: Array.prototype,
-    });
+    static get wellKnownObjects() {
+        const wellKnownObjects = Object.freeze({
+            __proto__: null,
+            [-1]: Object.prototype,
+            [-2]: Array.prototype,
+            [-3]: Town.prototype,
+            [-4]: Stat.prototype,
+            [-5]: LevelExp.prototype,
+            [-6]: Skill.prototype,
+            [-7]: Buff.prototype,
+        });
+        Object.defineProperty(this, "wellKnownObjects", {
+            value: wellKnownObjects,
+            writable: false,
+            configurable: true,
+        });
+        // set the well-known ids, all negative
+        for (const [id, obj] of Object.entries(wellKnownObjects)) {
+            this.setObjectId(obj, parseInt(id));
+        }
+        return wellKnownObjects;
+    }
+    /** @satisfies {{[K in keyof typeof Data.wellKnownObjects]: (record: typeof Data.wellKnownObjects[K]) => typeof Data.wellKnownObjects[K]}} */
+    static wellKnownConstructors = {
+        __proto__: null,
+        [-1]: () => ({}),
+        [-2]: () => [],
+        [-3]: t => new Town(t.index),
+        [-4]: s => new Stat(s.name),
+        [-5]: () => new LevelExp(),
+        [-6]: s => new Skill(s.name),
+        [-7]: b => new Buff(b.name),
+    }
     static #nextObjectId = 1;
 
     static getObjectId(obj, assignNew=true) {
@@ -101,10 +130,6 @@ class Data {
     static {
         // root always gets id 1
         this.setObjectId(this.rootObjects, 1);
-        // set the well-known ids, all negative
-        for (const [id, obj] of Object.entries(this.wellKnownObjects)) {
-            this.setObjectId(obj, parseInt(id));
-        }
     }
 
     /** @type {<T>(key: string, object: T) => T} */
@@ -122,6 +147,8 @@ class Data {
     }
 
     static recordDefaults(resetData = false) {
+        // initialize the well-known object ids
+        this.wellKnownObjects;
         if (resetData) {
             this.snapshotStack.length = 0;
         }
@@ -644,6 +671,7 @@ class DataSnapshot {
             objects: {},
             idList: [],
         };
+        const prototypes = {};
         for (const [object, record] of this.objects) {
             const id = Data.getObjectId(object);
             const name = record[DataSnapshot_NAME]
@@ -653,6 +681,7 @@ class DataSnapshot {
             const refs = {};
             const deleted = [];
             const prototypeId = Data.getObjectId(Object.getPrototypeOf(object));
+            prototypes[prototypeId] = [name, object];
             for (const prop of Object.getOwnPropertyNames(record)) {
                 const value = record[prop];
                 if (value === DataSnapshot_DELETED) {
@@ -674,6 +703,7 @@ class DataSnapshot {
                 prototypeId,
             };
         }
+        console.log(`Prototypes for ${this.id}:`,prototypes);
         return data;
     }
 
@@ -705,7 +735,13 @@ class DataSnapshot {
                 if (!prototype) {
                     throw new TypeError(`Could not find prototype with id ${exportRecord.prototypeId}`, idMap);
                 }
-                object = prototype === Array.prototype ? [] : {__proto__: prototype};
+
+                if (exportRecord.prototypeId in Data.wellKnownConstructors) {
+                    object = Data.wellKnownConstructors[exportRecord.prototypeId](exportRecord.values);
+                } else {
+                    object = {__proto__: prototype};
+                }
+
                 Data.setObjectId(object, id);
                 idMap[id] = object;
             }
