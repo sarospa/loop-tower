@@ -514,6 +514,7 @@ let curGodsSegment = 0;
 let totalActionList = [];
 
 function initializeActions() {
+    totalActionList.length = 0;
     for (const prop in Action) {
         const action = Action[prop];
         totalActionList.push(action);
