@@ -1209,7 +1209,7 @@
         <imbue_mind>
             <label>Imbue Mind</label>
             <desc><![CDATA[Using power from soulstones, you can increase your mental prowess.<br>
-            Increases the max amount of times you can do each training action by 1 per level and improves some actions.]]>
+            Increases the max amount of times you can do each stat training action by 1 per level.]]>
             </desc>
         </imbue_mind>
         <imbue_body>
@@ -1221,7 +1221,7 @@
          <great_feast>
             <label>Great Feast</label>
             <desc><![CDATA[That feast was so filling that it manages to keep you well satiated through your loops! That's some impressive magic.<br>
-            Self and Team Combat are increased by 5% per level (rounded down.)]]>
+            Combat (from all sources) is increased by 5% per level.]]>
             </desc>
         </great_feast>
         <aspirant>
@@ -1239,7 +1239,7 @@
         <imbue_soul>
             <label>Imbue Soul</label>
             <desc><![CDATA[(Incomplete) Sacrifice everything for the ultimate power.<br>
-            Increases the exp multiplier of training actions by 100% and raises all action speeds by 50% per level additively.
+            Increases the exp multiplier of training actions by 100% and raises all action speeds by 50% per level.
             ]]></desc>
         </imbue_soul>
 
@@ -1252,7 +1252,7 @@
         <prestige_-_mental>
             <label>Prestige - Mental</label>
             <desc><![CDATA[ 
-            Increases Experience gain of all Mental skills (Cha, Int, Soul) by 20% per level. 
+            Increases Experience gain of all Mental skills (Cha, Int, Soul, Luck) by 20% per level. 
             ]]></desc>
         </prestige_-_mental>
         <prestige_-_combat>
@@ -1282,7 +1282,8 @@
         <prestige_-_experience_overflow>
             <label>Prestige - Experience Overflow</label>
             <desc><![CDATA[ 
-            Experience earned is spread amongst all stats by 2% per level. 
+            Gives (1.00222^n-1) times the normal amount of experience as extra, given to each stat.<br>
+            (n = the level of this buff.)
             ]]></desc>
         </prestige_-_experience_overflow>
         <tooltip>
@@ -1416,7 +1417,7 @@
             <list_explanation><![CDATA[
       Drag and drop the actions to re-arrange them.<br>
       The next list becomes the current list every restart.<br>
-      One second = 50 mana.<br>
+      One second = 50 mana (times your speed multiplier).<br>
       Minimum 1 tick per action.<br>
       Restarts automatically upon no actions left.]]></list_explanation>
             <locked_tooltip><![CDATA[<i>You sense opportunity ahead...</i>]]></locked_tooltip>
@@ -1439,10 +1440,9 @@
             <label_done>Surveyed</label_done>
             <tooltip><![CDATA[
             The explorers guild has taught you how to find what most would miss.<br>
-            Gives progress equal to the square root of average survey progress across all zones.<br>
-            Cannot re-survey completed zones.<br>
-            Requires a map for each action.<br>
-            Currently granting <div class='surveySkill'></div> exp per action.
+            Gives max(1,floor(sqrt(average survey progress))) exp per action. (Currently <div class='surveySkill'></div>)<br>
+            Each percent surveyed gives an additional 0.5% findables in this zone (additive with Spatiomancy).<br>
+            Costs 1 map and gives 1 completed map, unless this zone's survey is at 100%.
             ]]></tooltip>
             <!--Note: figure out how/where to show these stories.-->
             <story_1><![CDATA[<b>20% World Survey:</b>⮀ You decide it is time to discover the world, the journey is long but so worth it.]]></story_1>
@@ -1456,8 +1456,9 @@
             <label_done>Assassinated</label_done>
             <tooltip><![CDATA[
             Discreetly kill your mark in this town. The more well-known you are, for either good or evil, the harder pulling this off will be...<br>
-            Gives progress equal to (Sqrt(Practical) + Thievery + Assassin) * Stat/1000 * Sqrt(Completions/100) / Abs(reputation) / hearts^2.<br>
-            Rewards a heart.
+            Gives progress equal to (sqrt(practical) + thievery + assassination) * (1+stat/1000) * sqrt(1+completions/100) / max(1,abs(reputation)) / max(1,hearts) * base/actual cost.<br>
+            Lose max(0,250*zone-assassination) reputation, regardless of whether you were successful or not.
+            Rewards a heart on successful kill.
             ]]></tooltip>
             <segment_names>
                 <name>Scout Target</name>
@@ -1541,7 +1542,8 @@
             <tooltip><![CDATA[
             You find a strange kind of stone that resists change from the loop. When you move them, they remain in the new location the next time you return. Most of the rocks around are just ordinary though. It'll take a while to find the interesting ones.<br>
             You're sure you can use them for something, but they're too heavy to move more than one at a time.<br>
-            One in every one thousand Stones is Temporal.
+            One in every one thousand Stones is Temporal.<br>
+            Action fails if you have a Temporal Stone.
             ]]></tooltip>
             <story_1><![CDATA[<b>First Temporal Stone Found:</b>⮀ After digging through the cubical stones, you notice a swirl of light blue light glowing on the sides of the rock. While the light makes them easier to hold on to, they still weigh a ton...]]></story_1>
             <story_2><![CDATA[<b>Moved 100 Temporal Stones:</b>⮀ Carrying a chunk of rock nearly all the way from the very start of the loop to the Valley of Olympus is backbreaking work, but you're managing! Just keep putting one foot in front of the other.]]></story_2>
@@ -1556,7 +1558,8 @@
             <tooltip><![CDATA[
             Among the ruins on Mount Olympus, you find several large stones that appear mundane at first, but which seem unaffected by the time loops you're stuck in. Not many, and finding the ones with this trait will take some serious work.<br>
             You're sure you can use them for something, but they're too heavy to move more than one at a time.<br>
-            One in every one thousand Stones is Temporal.
+            One in every one thousand Stones is Temporal.<br>
+            Action fails if you have a Temporal Stone.
             ]]></tooltip>
             <story_1><![CDATA[<b>First Temporal Stone Found:</b>⮀ Digging through the large stone cubes, your hand brushes over a spiral glyph. As the previously invisible design begins to glow a cool blue, you find that you can hold on to the rock more easily! It still weighs a ton, though.]]></story_1>
             <story_2><![CDATA[<b>Moved 100 Temporal Stones:</b>⮀ You're not even halfway done and the pace is horrendously slow, but since you're certain you'd be crushed to jelly if you even tried to carry more than one, you just keep at it. One stone cube at a time.]]></story_2>
@@ -1571,7 +1574,8 @@
             <tooltip><![CDATA[
             While exploring Startington, you find the ruins of a few buildings you're certain do not exist in Beginnersville. Investigating further, you find that some of the stonework of those buildings is unaffected by the loops. Figuring which ones is going to take some doing...<br>
             You're sure you can use them for something, but they're too heavy to move more than one at a time.<br>
-            One in every one thousand Stones is Temporal.
+            One in every one thousand Stones is Temporal.<br>
+            Action fails if you have a Temporal Stone.
             ]]></tooltip>
             <story_1><![CDATA[<b>First Temporal Stone Found:</b>⮀ Practically the moment you identify one grey cube of rock as different from the surrounding, identical-looking grey cubes of rock, a spiral pattern lights up on its sides, practically glueing itself to your hand! You can still set it down, but it clearly wants to be carried.]]></story_1>
             <story_2><![CDATA[<b>Moved 100 Temporal Stones:</b>⮀ Wiggling the temporal stones out from among the mundane ones is the easy part, dragging them to the Valley of Olympus is the real pain in your back.]]></story_2>
@@ -1586,7 +1590,8 @@
             <tooltip><![CDATA[
             On one loop, you trip over a loose piece of stone. On the following loop, you notice it's no longer in the spot you tripped over it. Looking around more closely, you find that there are a few stones with this property. Too bad the Jungle is home to a <b>lot</b> of stones...<br>
             You're sure you can use them for something, but they're too heavy to move more than one at a time.<br>
-            One in every one thousand Stones is Temporal.
+            One in every one thousand Stones is Temporal.<br>
+            Action fails if you have a Temporal Stone.
             ]]></tooltip>
             <story_1><![CDATA[<b>First Temporal Stone Found:</b>⮀ Many of the temporal stones are covered in vegetation, and you nearly throw out your back trying to dislodge one. Lift from your legs!]]></story_1>
             <story_2><![CDATA[<b>Moved 100 Temporal Stones:</b>⮀ Heavy and hidden as they are, the blue swirl that ignites on the rocks makes them a lot easier to track. That, and it helps that they "let" you pick them up.]]></story_2>
@@ -1897,7 +1902,7 @@
             There are small changes each time; it's harder to get used to. The soulstones at the end last through loops, but they're not always in the dungeon... Strange.<br>The dungeon requires different skills at different points.<br>One action can clear multiple floors if your stats are high enough.<br>Gives (magic + self combat) * (1 + main stat / 100) * sqrt(1 + times floor completed / 200) * (original mana cost / actual mana cost) progress points per mana.<br>Unlocked at a combined Combat and Magic skill of 35.<br>Requires a reputation of 2 or above.<br>Gives 1 soulstone per completion - hover over Looted for info.
             ]]></tooltip>
             <completed_tooltip><![CDATA[
-            Each soulstone improves a random stat's exp gain by (1+(soulstones)^.8/30).<br>Each floor has a soulstone that, when received, reduces the chance you'll get the next one by 2%.<br>Chance to receive a soulstone recovers per floor at 0.00001% per mana.<br>
+            Each soulstone improves a random stat's exp gain by (1+(soulstones)^.8/30).<br>Each floor has a soulstone that, when received, multiplies the chance you'll get the next one by 0.98.<br>Chance to receive a soulstone recovers per floor at 0.00001% per mana.<br>
             ]]></completed_tooltip>
             <chance_label>Chance</chance_label>
             <last_stat_label>Last</last_stat_label>
@@ -2299,7 +2304,7 @@
             With your party, you set out to accomplish great feats of dungeoneering that you couldn't have done while alone.<br>Gives (magic + team combat) * (1 + main stat / 100) * sqrt(1 + times floor completed / 200) * (original mana cost / actual mana cost) progress points per mana.<br>Requires at least one other party member.<br>Unlocked at 20% Rumors Heard.<br>Gives 10 soulstones per completion - hover over Looted for info.
             ]]></tooltip>
             <completed_tooltip><![CDATA[
-            Each soulstone improves a random stat's exp gain by (1+(soulstones)^.8/30).<br>Each floor has 10 soulstones that, when received, reduces the chance you'll get the next one by 2%.<br>Chance to receive a soulstone recovers per floor at 0.00001% per mana.<br>
+            Each soulstone improves a random stat's exp gain by (1+(soulstones)^.8/30).<br>Each floor has 10 soulstones that, when received, multiplies the chance you'll get the next one by 0.98.<br>Chance to receive a soulstone recovers per floor at 0.00001% per mana.<br>
             ]]></completed_tooltip>
             <chance_label>Chance</chance_label>
             <last_stat_label>Last</last_stat_label>
@@ -2500,7 +2505,10 @@
         <looping_potion>
             <label>Looping Potion</label>
             <tooltip><![CDATA[
-            Using your aptitude of alchemy and your talent for time, you've managed to recreate the very potion that got you into this whole mess! It can't cure you, but maybe you can find another use for it.<br>Requires 400 herbs.<br>Unlocked with 200 Alchemy.
+            Using your aptitude of alchemy and your talent for time, you've managed to recreate the very potion that got you into this whole mess! It can't cure you, but maybe you can find another use for it.<br>
+            Costs 400 herbs.<br>
+            You can only have one looping potion at a time.<br>
+            Unlocked with 200 Alchemy.
             ]]></tooltip>
 			<story_1><![CDATA[<b>Potion Made:</b>⮀ There's no mistake, this is the same potion that you were transporting what feels like an eternity ago. This is chronomancy you'd never be able to do as a spell, and you take a moment to feel proud at how far you've come. And yet, you don't really know what to do with the thing. Maybe you'll figure something out later.]]></story_1>
         </looping_potion>
@@ -2631,7 +2639,7 @@
         <face_judgement>
             <label>Face Judgement</label>
             <tooltip><![CDATA[
-            Face the judgement of the gods. If your reputation is 50 or above, you'll be accepted into their good graces and granted passage to Valhalla. If your reputation is -50 or below, you'll be cast into the shadow realm.<br>Unlocked at 100% Mountain Explored.
+            Face the judgement of the gods. If your reputation is 50 or above, you'll be accepted into their good graces and granted passage to Valhalla. If your reputation is -50 or below, you'll be cast into the shadow realm.<br>(If neither, nothing happens.)<br>Unlocked at 100% Mountain Explored.
             ]]></tooltip>
 			<story_1><![CDATA[<b>Judgement Faced:</b>⮀ Their civilization may have fallen, but their gods are still very real, and the weight of their attention nearly drives you to your knees. Seeking to justify your presence, you begin to speak. Of your life, of your goal, and of your moral fibre. They are not impressed, you can tell, but they seem willing to lend you a hand. Before your eyes the world shifts and warps, and when it snaps back into focus you appear to be somewhere else entirely.]]></story_1>
 			<story_2><![CDATA[<b>Accepted by the Gods:</b>⮀ At the end of your story, a crack of lightning strikes behind the altar and leaves behind a cheerful man. Between the perfect bodily form and the power radiating from him, there's no doubt you're meeting a god in the flesh. He extends his hand, an offer of invitation, and you happily reach out and take it.]]></story_2>
@@ -2830,7 +2838,8 @@
 		<build_housing>
 			<label>Build Housing</label>
             <tooltip><![CDATA[
-            Build a house in the city that you can rent out.<br>Can build as many houses as your crafting guild bonus.<br>Requires 100% citizenship.<br>Unlocked at 100% Citizenship Exam Studied.
+            Build a house in the city that you can rent out.<br>Can build (crafting guild multiplier) * (1+min(5,spatiomancy/100)) houses.<br>
+            Requires Crafting Guild.<br>Unlocked at 100% Citizenship Exam Studied.
             ]]></tooltip>
             <story_1><![CDATA[<b>Built a house:</b>⮀ While it feels pretty nice to be building something on your own again, it's still exhausting work. At least the God moving in is thankful and polite.]]></story_1>
             <story_2><![CDATA[<b>Built 10 houses with maximum crafting guild rank:</b>⮀ If it wasn't for the fact that he was standing there himself, waiting for you to finish so he can move in, you could have sworn that Vulcan himself was guiding your hand as you build an entire neighborhood with your own two hands.]]></story_2>
@@ -2857,7 +2866,8 @@
 		<pegasus>
 			<label>Pegasus</label>
 			<tooltip><![CDATA[
-			Valhalla has more than its fair share of wonders. Amongst them are the Pegasi; mythical winged steeds, only available to the finest of citizens. If you wish to get your hands on one, you'll need to convince a local to guide you to one of their meeting grounds, and then prove yourself to it. Swift on land and sky, it takes more than just gold to own a creature like this.<br>Allows access to certain actions.<br>Costs 200 gold and 20 favors.<br>Unlocked at 90% of city toured.
+			Valhalla has more than its fair share of wonders. Amongst them are the Pegasi; mythical winged steeds, only available to the finest of citizens. If you wish to get your hands on one, you'll need to convince a local to guide you to one of their meeting grounds, and then prove yourself to it. Swift on land and sky, it takes more than just gold to own a creature like this.<br>
+      Costs 200 gold and 20 favors.<br>Unlocked at 90% of city toured.
 		    ]]></tooltip>
             <story_1><![CDATA[<b>Pegasus acquired:</b>⮀ While you vaguely recall a story of there being just one Pegasus, there is an entire herd flying overhead as you make your way to the meeting grounds. Neptune, the God looking after the flying steeds, is a good sort and reassures you he'll take care of the paperwork after you've given him the modest fee for the administrative costs. As you walk to the middle of the meeting grounds, several of the flying equines swoop down low to get a better look at you. A tiny one with a mane in all colours of the rainbow hovers in front of you for a moment before shaking its head and zooming off, allowing a rich brown Pegasus touches down a few steps in front of you. The steed patiently waits for you to approach, and soon you're riding off into the sunset atop your new steed, Coco!]]></story_1> <!--TODO: think of a better name.-->
             <story_2><![CDATA[<b>Pegasus acquired with 5 team members:</b>⮀ Your hired companions were already more than a little intimidated when the Gods welcomed you as almost one of their own, but seeing you ride a Steed of Legends is nearly too much for them. You have to talk Raven down from just walking away from "all this gods-damned nonsense" (especially after several Gods informed her it's been ages since they damned anything,) and Emily has to get Marcus back on his feet after fainting. Honestly, this could have gone worse.]]></story_2>
@@ -2922,7 +2932,8 @@
             <label>Meander</label>
             <label_done>Explored</label_done>
             <tooltip><![CDATA[
-            This place seems familiar, and yet... not. Everything is twisted and wrong. Just being here hurts your head. You'll need to fortify your mind to make any progress here.<br>Gives exp equal to Imbue Mind level.
+            This place seems familiar, and yet... not. Everything is twisted and wrong. Just being here hurts your head. You'll need to fortify your mind to make any progress here.<br>
+            Gives exp equal to Imbue Mind level. (You make no progress with 0 Imbue Mind.)
             ]]></tooltip>
             <story_1><![CDATA[<b>1% Explored:</b>⮀ The gloomy darkness in this twisted copy of that town you were in so long ago is pulling on your mind, making it hard to focus as you drift aimlessly.]]></story_1>
             <story_2><![CDATA[<b>5% Explored:</b>⮀ Given how it's the only source of light for apparently miles around, the glowing spire draws you to its base like a moth to a candleflame. Up close, you can feel the tell-tale tingle in your heart telling you there are a <i>lot</i> of soul stones in there.]]></story_2>
@@ -2942,7 +2953,7 @@
             <info_text3>Spots to check for wells</info_text3>
             <tooltip><![CDATA[
             Search the town for wells that still have any mana left. They seem to be rapidly draining.<br>
-            Full wells have 5000 mana, but lose 10 mana for every second that has passed in the loop, currently 
+            Full wells have 5000 mana, but lose 10 mana for every second that has passed in the loop (based on effective time), currently 
             ]]></tooltip>
             <tooltip2><![CDATA[
             mana.<br>
@@ -2972,7 +2983,8 @@
         <raise_zombie>
             <label>Raise Zombie</label>
             <tooltip><![CDATA[
-            Upon stumbling by the local cemetery, you realize that those numerous tombstones could perhaps benefit you in ways besides acting as building materials. With your knowledge of dark magic and a hint of troll's blood, you might just be able to raise a zombie of your very own!<br>Costs 1 blood.<br>Each zombie adds (dark magic / 2) * max(1,dark ritual / 100) to your team combat.<br>Unlocked at 1000 dark magic.
+            Upon stumbling by the local cemetery, you realize that those numerous tombstones could perhaps benefit you in ways besides acting as building materials. With your knowledge of dark magic and a hint of troll's blood, you might just be able to raise a zombie of your very own!<br>
+            Costs 1 blood.<br>Each zombie adds (dark magic / 2) * max(1,dark ritual / 100) to your team combat.<br>Unlocked at 1000 dark magic.
             ]]></tooltip>
             <story_1><![CDATA[<b>Zombie raised:</b>⮀ You swear the soul you plucked from the afterlife was crying as you forced it into the rotting corpse, but now it is entirely silent as the zombie sways a little in front of you.]]></story_1>
             <story_2><![CDATA[<b>Zombie raising attempt failed:</b>⮀ No matter how hard you try, the soul you plucked leaks out of the dead body well before your magic can force it into moving. Without some Trolls' blood, you're not going to be able to raise anything.]]></story_2>
@@ -2980,7 +2992,8 @@
         <dark_sacrifice>
             <label>Dark Sacrifice</label>
             <tooltip><![CDATA[
-            You make a sacrifice of troll's blood to dark gods.<br>Costs 1 blood.<br>Reduces the soulstone cost of dark ritual.<br>Unlocked at 60 dark ritual.
+            You make a sacrifice of troll's blood to dark gods.<br>Costs 1 blood.<br>
+            Reduces the soulstone cost of dark ritual.<br>Unlocked at 60 dark ritual.
             ]]></tooltip>
             <story_1><![CDATA[<b>Made a Dark Sacrifice:</b>⮀ The Dark Gods are a lot easier to reach in this world nearly without light, and you can feel their approval wash over you as you offer them the blood of an innocent creature, slain by your cruel hand. Maybe they'll accept a bit of haggling if you try a ritual now.]]></story_1>
             <story_2><![CDATA[<b>100 Commune:</b>⮀ While the Dark Gods are still accepting your offerings, you can feel an undercurrent of boredom when you attempt the ritual now. Still, the discount to the number of Soul Stones you need for the other ritual is too good to pass up.]]></story_2>
@@ -2995,7 +3008,7 @@
             Standing tall in the dead center of the town is the towering Spire. Surrounded by an eternal storm, it seems to drain the life from the shadowy world around it. This is surely your greatest task yet.<br>Gives (team combat) * (1 + main stat / 100) * sqrt(1 + times floor completed / 200) * (1 + pylons destroyed / 10) * (original mana cost / actual mana cost) progress points per mana.<br>Unlocked with 5% town meandered.<br>Gives 100 soulstones per completion - hover over Looted for info.
             ]]></tooltip>
             <completed_tooltip><![CDATA[
-            Each soulstone improves a random stat's exp gain by (1+(soulstones)^.8/30).<br>Each floor has 100 soulstones that, when received, reduce the chance you'll get the next one by 2%.<br>Chance to receive soulstones recovers per floor at 0.00001% per mana.<br>
+            Each soulstone improves a random stat's exp gain by (1+(soulstones)^.8/30).<br>Each floor has 100 soulstones that, when received, multiplies the chance you'll get the next one by 0.98.<br>Chance to receive soulstones recovers per floor at 0.00001% per mana.<br>
             ]]></completed_tooltip>
             <chance_label>Chance</chance_label>
             <last_stat_label>Last</last_stat_label>
@@ -3020,7 +3033,8 @@
         <purchase_supplies>
         <label>Buy Supplies</label>
             <tooltip><![CDATA[
-            Prepare to move on.<br>Costs 500 gold.<br>This merchant doesn't seem to be willing to haggle with you though.<br>You only need one set of supplies.<br>Unlocked with 75% town meandered.
+            Prepare to move on.<br>This merchant doesn't seem to be willing to haggle with you though.<br>
+            Costs 500 gold.<br>You only need one set of supplies.<br>Unlocked with 75% town meandered.
             ]]></tooltip>
             <story_1><![CDATA[<b>Supplies bought:</b>⮀ Try as you might, the merchant seems completely deaf at your every attempt at haggling. While you aren't happy to part with half a thousand gold, you do so anyway and take your bundle of supplies. In retrospect, the fact that the merchant had nothing else for sale suggests business isn't going all that smoothly.]]></story_1>
         </purchase_supplies>
@@ -3030,7 +3044,8 @@
             <label_part>Necropolis</label_part>
             <label_complete>Grave Defiled</label_complete>
             <tooltip><![CDATA[
-            You've found an old necropolis. It's <i>way</i> too haunted for you and your party, but you could probably send some zombies in to look for more bodies.<br>Only the combat gained from zombies counts toward this trial.<br>Rewards 1 Zombie per floor completion.<br>Unlocks when this zone is fully surveyed.
+            You've found an old necropolis. It's <i>way</i> too haunted for you and your party, but you could probably send some zombies in to look for more bodies.<br>
+            Only the combat gained from zombies counts toward this trial.<br>Rewards 1 Zombie per floor completion.<br>Unlocks when this zone is fully surveyed.
             ]]></tooltip>
             <segment_names>
                 <name>Persuade the Dead</name>
@@ -3045,7 +3060,8 @@
         <journey_forth>
             <label>Journey Forth</label>
             <tooltip><![CDATA[
-            Follow the trail out of town. Anywhere has to be better than here, you think as you look at the looming Jungle ahead.<br>Costs 1 supplies.<br>Unlocked with 100% town meandered.
+            Follow the trail out of town. Anywhere has to be better than here, you think as you look at the looming Jungle ahead.<br>
+            Requires (and costs) supplies.<br>Unlocked with 100% town meandered.
             ]]></tooltip>
             <story_1><![CDATA[<b>Journeyed out of town:</b>⮀ You adjust the straps of your backpack as you head out. While the town felt like it was dying by itself, the air around you starts to feel <i>hungry</i> as you make your way into the dense jungle rising before you.]]></story_1>
         </journey_forth>
@@ -3072,7 +3088,8 @@
             <label>Explore Jungle</label>
             <label_done>Explored</label_done>
             <tooltip><![CDATA[
-            It would be easier to explore here if there wasn't something waiting to jump out at you behind every tree.<br>Gives progress based on Fight Jungle multiplier.<br>Gives 1 herb.
+            It would be easier to explore here if there wasn't something waiting to jump out at you behind every tree.<br>
+            Gives progress based on Fight Jungle multiplier.<br>Gives 1 herb.
             ]]></tooltip>
             <story_1><![CDATA[<b>1% Explored:</b>⮀ Even after taking out the worst of the beasts making this Jungle their home, you constantly have to watch out for even the smallest movement in the corner of your eye as you explore.]]></story_1>
             <story_2><![CDATA[<b>10% Explored:</b>⮀ If the vibe of the jungle was "hungry" as you approached it, being among the densely growing trees feels like you've been swallowed by some impossibly massive monster that is taking its sweet time digesting you.]]></story_2>
@@ -3130,7 +3147,8 @@
         <open_portal>
             <label>Open Portal</label>
             <tooltip><![CDATA[
-            The Explorers' guild tells you of a secret grove within the Jungle, where the barrier between realms is weakest. With enough restoration skill, you might be able to open a rift back and leave the shadow realm. However, it seems quite a bit of time passes in the portal, and some merchants have closed up shop.<br>Travels to Forest Path.<br>Buy Mana actions can not be used for the rest of the current loop.<br>Requires 1000 Restoration.
+            The Explorers' guild tells you of a secret grove within the Jungle, where the barrier between realms is weakest. With enough restoration skill, you might be able to open a rift back and leave the shadow realm. However, it seems quite a bit of time passes in the portal, and some merchants have closed up shop.<br>
+            Travels to Forest Path.<br>Buy Mana actions can not be used for the rest of the current loop.<br>Requires 1000 Restoration.
             ]]></tooltip>
             <story_1><![CDATA[<b>Portal opened:</b>⮀ Despite the Veil being thin in this place, you still have to push quite a bit to get through. Whether it is due to the Gods trying to keep the Shadow Realm from invading or the simple physics of inter-realm travel, you can feel the hunger from the Jungle grow quiet as you approach the rippling portal you just created and step through to the forest on the other side. Looking at the sky, you're surprised to find that night is falling now!]]></story_1>
         </open_portal>
@@ -3154,7 +3172,14 @@
         <explorers_guild>
             <label>Explorers' Guild</label>
             <tooltip><![CDATA[
-            Ever feel like there's more stuff out there that you're missing? The Explorer's guild knows it! Learn to find more of everything, and with enough standing you'll even be taught new ways to move about the world.<br>You can only join 1 guild at a time (including those in Merchanton).<br>On first completion, unlocks the Buy Map action in Beginnersville and the Survey action in all zones.<br>If you bring completed maps, you'll gain exp as if you surveyed two random incomplete zones (per map).<br>Also gives you 30 maps if you have 0 maps.<br>Unlocks new shortcuts for every 25% world survey progress<br>Current world survey progress: <div id='totalSurveyProgress'></div>%.<br>Unlocked at 10% City seen.
+            Ever feel like there's more stuff out there that you're missing? The Explorer's guild knows it! Learn to find more of everything, and with enough standing you'll even be taught new ways to move about the world.<br>
+            You can only join 1 guild at a time (including those in Merchanton).<br>
+            On first completion, unlocks the Buy Map action in Beginnersville and the Survey action in all zones.<br>
+            If you bring completed maps, you'll gain exp as if you surveyed two random incomplete zones (per map).<br>
+            Also gives you 30 maps if you have 0 maps.<br>
+            Unlocks new shortcuts for every 25% world survey progress<br>
+            Current world survey progress: <div id='totalSurveyProgress'></div>%.<br>
+            Unlocked at 10% City seen.
             ]]></tooltip>
             <story_1><![CDATA[<b>Joined the Explorers' Guild:</b>⮀ While the building looks like it missed a few rounds of maintenence, the people inside are almost too eager to take you on once you tell them you passed through the Jungle. Apparently, adventurers capable of surviving harsh environments like that are always in short supply! Once your introduction is done and you've had your crash-course intro to cartography, the guildmaster all but kicks you out of the building while telling you to "go explore already!"]]></story_1>
             <story_2><![CDATA[<b>Turned in a complete map:</b>⮀ The guildmaster, in his typical brusque manner, nearly tears the map as he snatches it from your hand and starts inspecting it. After a while though, he gives you a nod before rummaging through the mountain of paper on his desk, giving you a partial map of another place you've been. You commit as much of the details to memory before heading out again.]]></story_2>
@@ -3166,7 +3191,11 @@
             <label>Thieves Guild</label>
             <label_done>Pursestrings Cut</label_done>
             <tooltip><![CDATA[
-            Learn to transfer wealth to those most in need. You, mostly.<br>Take their tests and earn a rank!<br>Requires negative reputation.<br>You can only join 1 guild at a time (including those in Merchanton), and only try once.<br>Gives 10 gold per segment completed.<br>Gives (practical magic skill + thievery skill) * (1 + main stat / 100) * sqrt(1 + times completed / 1000) * (original mana cost / actual mana cost) progress points per mana.<br>Unlocked at 25% City seen.<br>Gives Thievery exp upon segment completion, rather than upon action completion.
+            Learn to transfer wealth to those most in need. You, mostly.<br>Take their tests and earn a rank!<br>Requires negative reputation.<br>
+            You can only join 1 guild at a time (including those in Merchanton), and only try once.<br>
+            Gives 10 gold per segment completed.<br>
+            Gives (practical magic skill + thievery skill) * (1 + main stat / 100) * sqrt(1 + times completed / 1000) * (original mana cost / actual mana cost) progress points per mana.<br>
+            Unlocked at 25% City seen.<br>Gives Thievery exp upon segment completion, rather than upon action completion.
             ]]></tooltip>
             <story_1><![CDATA[<b>Thieves' guild test taken:</b>⮀ You make your way into the hidden guild your young "guide" brought you to last time and introduce yourself as a new recruit. The old yet intimidatingly muscular man in charge just grunts and demands you show your skills.]]></story_1>
             <story_2><![CDATA[<b>Thief rank E reached:</b>⮀ While your experiences with the other guilds prepared you for this, it's clear you once again are starting from the bottom. "Stealing candy from a baby" isn't nearly as easy as you were led to believe previously.]]></story_2>
@@ -3182,8 +3211,11 @@
             <label>Pick Pockets</label>
             <label_done>Pockets Picked</label_done>
             <tooltip><![CDATA[
-            Help travelers by making their burdens a bit lighter.<br>Requires thieves guild.<br>Can be completed <div id='actionAllowedPockets'>x</div> times based on excursion progress and spatiomancy.<br>Rewards
-            ]]></tooltip>
+            Help travelers by making their burdens a bit lighter.<br>
+            Requires thieves guild.<br>
+            Can be completed <div id='actionAllowedPockets'>x</div> times based on excursion progress and spatiomancy.<br>
+            Pockets picked progress is multiplied by Thieves guild multiplier.<br>
+            Rewards]]></tooltip>
             <tooltip2><![CDATA[gold, multiplied by your Thieves guild multiplier.]]></tooltip2>
             <story_1><![CDATA[<b>1% of pockets picked:</b>⮀ Picking your first target is kind of tricky, honestly. Eventually, you settle on a practically passed-out drunk. He takes a swing at you when he notices your hand in his pocket, but dodging it isn't difficult.]]></story_1>
             <story_2><![CDATA[<b>10% of pockets picked:</b>⮀ Bit by bit, you're getting the hang of picking your targets. This time, you try to pick a rich-looking guy. He doesn't notice, but his bodyguards do and you barely manage to shake them off in the maze of alleyways.]]></story_2>
@@ -3196,8 +3228,11 @@
         <rob_warehouse>
             <label>Rob Warehouse</label>
             <label_done>Warehouses Robbed</label_done>
-            <tooltip><![CDATA[Diversify your skills into inventory management.<br>Requires thieves guild and 100% pockets picked.<br>Can be completed <div id='actionAllowedWarehouses'>x</div> times based on excursion progress and spatiomancy.<br>Rewards
-            ]]></tooltip>
+            <tooltip><![CDATA[Diversify your skills into inventory management.<br>
+            Requires thieves guild and 100% pockets picked.<br>
+            Can be completed <div id='actionAllowedWarehouses'>x</div> times based on excursion progress and spatiomancy.<br>
+            Warehouses robbed progress is multiplied by Thieves guild multiplier.<br>
+            Rewards]]></tooltip>
             <tooltip2><![CDATA[gold, multiplied by your Thieves guild multiplier.]]></tooltip2>
             <story_1><![CDATA[<b>1% of warehouses robbed:</b>⮀ Your first attempt was an unmitigated disaster. Unlocking the door took ages, you had no way to grab most of the loot, and the warehouse guards nearly managed to grab you. All that, and you only managed to grab a few small knicknacks.]]></story_1>
             <story_2><![CDATA[<b>10% of warehouses robbed:</b>⮀ This time, you spend a while practicing your lockpicking before you try again. The guard still spots you though, and you have to leave most of the loot in-place, but at least you got a better haul this time.]]></story_2>
@@ -3214,8 +3249,8 @@
             Insurance is a scam, anyway. You're basically Robin Hood.<br>
             Requires thieves guild and 100% warehouses robbed.<br>
             Can be completed <div id='actionAllowedInsurance'>x</div> times based on excursion progress and spatiomancy.<br>
-            Rewards
-            ]]></tooltip>
+            Fraud committed progress is multiplied by Thieves guild multiplier.<br>
+            Rewards]]></tooltip>
             <tooltip2><![CDATA[gold, multiplied by your Thieves guild multiplier.]]></tooltip2>
             <story_1><![CDATA[<b>1% of fraud committed:</b>⮀ As per usual, your first attempts run into a few snags. More specifically, the insurance company is immediately suspicious that someone who signed up with them three minutes ago immediately has damages to declare, and only your silver tongue keeps them off your back until the end of the loop.]]></story_1>
             <story_2><![CDATA[<b>10% of fraud committed:</b>⮀ Slowly but surely, you're getting a little smarter. This time around, your insurance agent gives you a suspicious glare before handing over the agreed-upon sum after you put on a sob story of how you were beaten up right in front of the office and had your watch stolen! If anything, it's a little scary how eager your fellow guildmembers are to knock your teeth out.]]></story_2>
@@ -3229,6 +3264,8 @@
             <label>Assassins Guild</label>
             <tooltip><![CDATA[
             Join the Assassins guild and learn of their targets across the world. Bring back their hearts to learn more secrets from the guild.<br>
+            You can only join 1 guild at a time (including those in Merchanton).<br>
+            On first completion, unlocks an Assassinate action in each of the first 8 zones.<br>
             Gives Assassin exp equal to 100 * hearts^2.<br>
             Unlocked at 100% Insurance Fraud.
             ]]></tooltip>
@@ -3243,7 +3280,7 @@
             <label>Invest</label>
             <tooltip><![CDATA[
             Invest into the perpetual bank. Invested gold remains between loops.<br>
-            Total gold invested: <div id='goldInvested'></div>
+            Total gold invested: <div id='goldInvested'></div> (max 999999999999)
             ]]></tooltip>
             <story_1><![CDATA[<b>Made an investment:</b>⮀ The investment bank is, in a word, gaudy. White and marble everywhere, seats that somehow make you feel like you're sitting on an emperor's throne, the whole nine yards. The ]]></story_1>
             <story_2><![CDATA[<b>Made a second investment:</b>⮀ When you make your way into the gaudy building, ready to open a new account (again,) the cleric gives you a strange look before informing you that you already have an account. Seems like the name <i>perpetual</i> bank isn't just for show.]]></story_2>

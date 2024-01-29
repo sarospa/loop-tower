@@ -559,7 +559,7 @@ function SurveyAction(townNum) {
             Luck: 0.2
         },
         canStart() {
-            return resources.map > 0;
+            return (resources.map > 0) || towns[this.townNum].getLevel("Survey") == 100;
         },
         manaCost() {
             return 10000 * (this.townNum + 1);
@@ -900,7 +900,7 @@ Action.PickLocks = new Action("Pick Locks", {
     },
     goldCost() {
         let base = 10;
-        return Math.floor(base * getSkillMod("Practical",0,200,1) + base * getSkillBonus("Thievery") - base);
+        return Math.floor(base * getSkillMod("Practical",0,200,1) * getSkillBonus("Thievery"));
     },
     finish() {
         towns[0].finishRegular(this.varName, 10, () => {
