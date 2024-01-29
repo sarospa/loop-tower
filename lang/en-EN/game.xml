@@ -1163,7 +1163,7 @@
         <thievery>
             <label>Thievery</label>
             <desc>Allows you to redistribute wealth. Other people's wealth.</desc>
-            <desc2><![CDATA[Increases gold gain from Pick Locks (additive with Practical Magic), Gamble, and Thieving Guild actions by (1 + level / 60) ^ 0.25.<br>
+            <desc2><![CDATA[Increases gold gain from Pick Locks, Gamble, and Thieving Guild actions by (1 + level / 60) ^ 0.25.<br>
             Currently granting <div id='skillBonusThievery'></div>x increased gold.]]></desc2>
         </thievery>
         <leadership>
@@ -1225,7 +1225,7 @@
         <imbue_soul>
             <label>Imbue Soul</label>
             <desc><![CDATA[(Incomplete) Sacrifice everything for the ultimate power.<br>
-            Increases the exp multiplier of training actions by 100% and raises all action speeds by 50% per level (additive with Chronomancy / Dark Ritual)
+            Increases the exp multiplier of training actions by 100% and raises all action speeds by 50% per level.
             ]]></desc>
         </imbue_soul>
 
@@ -1428,7 +1428,7 @@
             The explorers guild has taught you how to find what most would miss.<br>
             Gives max(1,floor(sqrt(average survey progress))) exp per action. (Currently <div class='surveySkill'></div>)<br>
             Each percent surveyed gives an additional 0.5% findables in this zone (additive with Spatiomancy).<br>
-            Costs 1 map and gives 1 completed map, unless this zone's survey is at 100%.<br>
+            Costs 1 map and gives 1 completed map, unless this zone's survey is at 100%.
             ]]></tooltip>
             <!--Note: figure out how/where to show these stories.-->
             <story_1><![CDATA[<b>20% World Survey:</b>⮀ You decide it is time to discover the world, the journey is long but so worth it.]]></story_1>
@@ -1529,7 +1529,7 @@
             You find a strange kind of stone that resists change from the loop. When you move them, they remain in the new location the next time you return. Most of the rocks around are just ordinary though. It'll take a while to find the interesting ones.<br>
             You're sure you can use them for something, but they're too heavy to move more than one at a time.<br>
             One in every one thousand Stones is Temporal.<br>
-            Action fails if you have a Temporal Stone.<br>
+            Action fails if you have a Temporal Stone.
             ]]></tooltip>
             <story_1><![CDATA[<b>First Temporal Stone Found:</b>⮀ After digging through the cubical stones, you notice a swirl of light blue light glowing on the sides of the rock. While the light makes them easier to hold on to, they still weigh a ton...]]></story_1>
             <story_2><![CDATA[<b>Moved 100 Temporal Stones:</b>⮀ Carrying a chunk of rock nearly all the way from the very start of the loop to the Valley of Olympus is backbreaking work, but you're managing! Just keep putting one foot in front of the other.]]></story_2>
@@ -1545,7 +1545,7 @@
             Among the ruins on Mount Olympus, you find several large stones that appear mundane at first, but which seem unaffected by the time loops you're stuck in. Not many, and finding the ones with this trait will take some serious work.<br>
             You're sure you can use them for something, but they're too heavy to move more than one at a time.<br>
             One in every one thousand Stones is Temporal.<br>
-            Action fails if you have a Temporal Stone.<br>
+            Action fails if you have a Temporal Stone.
             ]]></tooltip>
             <story_1><![CDATA[<b>First Temporal Stone Found:</b>⮀ Digging through the large stone cubes, your hand brushes over a spiral glyph. As the previously invisible design begins to glow a cool blue, you find that you can hold on to the rock more easily! It still weighs a ton, though.]]></story_1>
             <story_2><![CDATA[<b>Moved 100 Temporal Stones:</b>⮀ You're not even halfway done and the pace is horrendously slow, but since you're certain you'd be crushed to jelly if you even tried to carry more than one, you just keep at it. One stone cube at a time.]]></story_2>
@@ -1561,7 +1561,7 @@
             While exploring Startington, you find the ruins of a few buildings you're certain do not exist in Beginnersville. Investigating further, you find that some of the stonework of those buildings is unaffected by the loops. Figuring which ones is going to take some doing...<br>
             You're sure you can use them for something, but they're too heavy to move more than one at a time.<br>
             One in every one thousand Stones is Temporal.<br>
-            Action fails if you have a Temporal Stone.<br>
+            Action fails if you have a Temporal Stone.
             ]]></tooltip>
             <story_1><![CDATA[<b>First Temporal Stone Found:</b>⮀ Practically the moment you identify one grey cube of rock as different from the surrounding, identical-looking grey cubes of rock, a spiral pattern lights up on its sides, practically glueing itself to your hand! You can still set it down, but it clearly wants to be carried.]]></story_1>
             <story_2><![CDATA[<b>Moved 100 Temporal Stones:</b>⮀ Wiggling the temporal stones out from among the mundane ones is the easy part, dragging them to the Valley of Olympus is the real pain in your back.]]></story_2>
@@ -1577,7 +1577,7 @@
             On one loop, you trip over a loose piece of stone. On the following loop, you notice it's no longer in the spot you tripped over it. Looking around more closely, you find that there are a few stones with this property. Too bad the Jungle is home to a <b>lot</b> of stones...<br>
             You're sure you can use them for something, but they're too heavy to move more than one at a time.<br>
             One in every one thousand Stones is Temporal.<br>
-            Action fails if you have a Temporal Stone.<br>
+            Action fails if you have a Temporal Stone.
             ]]></tooltip>
             <story_1><![CDATA[<b>First Temporal Stone Found:</b>⮀ Many of the temporal stones are covered in vegetation, and you nearly throw out your back trying to dislodge one. Lift from your legs!]]></story_1>
             <story_2><![CDATA[<b>Moved 100 Temporal Stones:</b>⮀ Heavy and hidden as they are, the blue swirl that ignites on the rocks makes them a lot easier to track. That, and it helps that they "let" you pick them up.]]></story_2>
@@ -2491,7 +2491,10 @@
         <looping_potion>
             <label>Looping Potion</label>
             <tooltip><![CDATA[
-            Using your aptitude of alchemy and your talent for time, you've managed to recreate the very potion that got you into this whole mess! It can't cure you, but maybe you can find another use for it.<br>Requires 400 herbs.<br>Unlocked with 200 Alchemy.
+            Using your aptitude of alchemy and your talent for time, you've managed to recreate the very potion that got you into this whole mess! It can't cure you, but maybe you can find another use for it.<br>
+            Costs 400 herbs.<br>
+            You can only have one looping potion at a time.<br>
+            Unlocked with 200 Alchemy.
             ]]></tooltip>
 			<story_1><![CDATA[<b>Potion Made:</b>⮀ There's no mistake, this is the same potion that you were transporting what feels like an eternity ago. This is chronomancy you'd never be able to do as a spell, and you take a moment to feel proud at how far you've come. And yet, you don't really know what to do with the thing. Maybe you'll figure something out later.]]></story_1>
         </looping_potion>

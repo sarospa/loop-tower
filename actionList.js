@@ -892,7 +892,7 @@ Action.PickLocks = new Action("Pick Locks", {
     },
     goldCost() {
         let base = 10;
-        return Math.floor(base * getSkillMod("Practical",0,200,1) + base * getSkillBonus("Thievery") - base);
+        return Math.floor(base * getSkillMod("Practical",0,200,1) * getSkillBonus("Thievery"));
     },
     finish() {
         towns[0].finishRegular(this.varName, 10, () => {
