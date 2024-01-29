@@ -551,7 +551,7 @@ function SurveyAction(townNum) {
             Luck: 0.2
         },
         canStart() {
-            return resources.map > 0;
+            return (resources.map > 0) || towns[this.townNum].getLevel("Survey") == 100;
         },
         manaCost() {
             return 10000 * (this.townNum + 1);
