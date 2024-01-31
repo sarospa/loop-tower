@@ -3225,7 +3225,7 @@
             Requires thieves guild.<br>
             Can be completed <div id='actionAllowedPockets'>x</div> times based on excursion progress and spatiomancy.<br>
             Pockets picked progress is multiplied by Thieves guild multiplier.<br>
-            Rewards]]></tooltip>
+            Rewards ]]></tooltip>
             <tooltip2><![CDATA[gold, multiplied by your Thieves guild multiplier.]]></tooltip2>
             <story_1><![CDATA[<b>1% of pockets picked:</b>⮀ Picking your first target is kind of tricky, honestly. Eventually, you settle on a practically passed-out drunk. He takes a swing at you when he notices your hand in his pocket, but dodging it isn't difficult.]]></story_1>
             <story_2><![CDATA[<b>10% of pockets picked:</b>⮀ Bit by bit, you're getting the hang of picking your targets. This time, you try to pick a rich-looking guy. He doesn't notice, but his bodyguards do and you barely manage to shake them off in the maze of alleyways.]]></story_2>
@@ -3239,10 +3239,11 @@
             <label>Rob Warehouse</label>
             <label_done>Warehouses Robbed</label_done>
             <tooltip><![CDATA[Diversify your skills into inventory management.<br>
-            Requires thieves guild and 100% pockets picked.<br>
+            Requires thieves guild.<br>
+            Unlocked at 100% pockets picked.<br>
             Can be completed <div id='actionAllowedWarehouses'>x</div> times based on excursion progress and spatiomancy.<br>
             Warehouses robbed progress is multiplied by Thieves guild multiplier.<br>
-            Rewards]]></tooltip>
+            Rewards ]]></tooltip>
             <tooltip2><![CDATA[gold, multiplied by your Thieves guild multiplier.]]></tooltip2>
             <story_1><![CDATA[<b>1% of warehouses robbed:</b>⮀ Your first attempt was an unmitigated disaster. Unlocking the door took ages, you had no way to grab most of the loot, and the warehouse guards nearly managed to grab you. All that, and you only managed to grab a few small knicknacks.]]></story_1>
             <story_2><![CDATA[<b>10% of warehouses robbed:</b>⮀ This time, you spend a while practicing your lockpicking before you try again. The guard still spots you though, and you have to leave most of the loot in-place, but at least you got a better haul this time.]]></story_2>
@@ -3257,10 +3258,11 @@
             <label_done>Fraud Committed</label_done>
             <tooltip><![CDATA[
             Insurance is a scam, anyway. You're basically Robin Hood.<br>
-            Requires thieves guild and 100% warehouses robbed.<br>
+            Requires thieves guild.<br>
+            Unlocked at 100% warehouses robbed.<br>
             Can be completed <div id='actionAllowedInsurance'>x</div> times based on excursion progress and spatiomancy.<br>
             Fraud committed progress is multiplied by Thieves guild multiplier.<br>
-            Rewards]]></tooltip>
+            Rewards ]]></tooltip>
             <tooltip2><![CDATA[gold, multiplied by your Thieves guild multiplier.]]></tooltip2>
             <story_1><![CDATA[<b>1% of fraud committed:</b>⮀ As per usual, your first attempts run into a few snags. More specifically, the insurance company is immediately suspicious that someone who signed up with them three minutes ago immediately has damages to declare, and only your silver tongue keeps them off your back until the end of the loop.]]></story_1>
             <story_2><![CDATA[<b>10% of fraud committed:</b>⮀ Slowly but surely, you're getting a little smarter. This time around, your insurance agent gives you a suspicious glare before handing over the agreed-upon sum after you put on a sob story of how you were beaten up right in front of the office and had your watch stolen! If anything, it's a little scary how eager your fellow guildmembers are to knock your teeth out.]]></story_2>
