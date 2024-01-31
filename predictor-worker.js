@@ -7,6 +7,7 @@ importScripts(
     "stats.js",
     "actions.js",
     "town.js",
+    "prestige.js",
     "saving.js",
     "predictor.js"
 );

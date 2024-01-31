@@ -7573,31 +7573,3 @@ Action.RestoreTime = new Action("Restore Time", {
 const actionsWithGoldCost = Object.values(Action).filter(
     action => action.goldCost !== undefined
 );
-
-
-// Prestige Functions
-
-/** @type {{[B in BuffName]?: {calc: number, bonus: number}}} */
-const prestigeCache = {};
-
-/** @param {number} base @param {BuffName} buff  */
-function prestigeBonus(base, buff) {
-    const cache = prestigeCache[buff] ??= {
-        calc: -1,
-        bonus: -1,
-    };
-    const level = getBuffLevel(buff);
-    if (level !== cache.calc) {
-        cache.bonus = Math.pow(base, level);
-        cache.calc = level;
-    }
-    return cache.bonus;
-}
-
-function adjustContentFromPrestige() {
-    return prestigeBonus(PRESTIGE_SPATIOMANCY_BASE, "PrestigeSpatiomancy")
-}
-
-function adjustGoldCostFromPrestige() {
-    return prestigeBonus(PRESTIGE_BARTERING_BASE, "PrestigeBartering")
-}

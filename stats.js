@@ -102,7 +102,7 @@ class Stat extends Localizable {
     talentLevelExp = new LevelExp();
     soullessLevelExp = new LevelExp();
     soulstone = 0;
-    /** @type {BuffName} */
+    /** @type {PrestigeBuffName} */
     prestigeBuff;
 
 
@@ -194,7 +194,7 @@ class Stat extends Localizable {
             this.#tbxSoulstone = this.soulstone;
             this.#tbxTalent = this.talentLevelExp.level;
             this.#tbxPrestige = prestigeLevel;
-            this.#totalBonusXP = this.soulstoneMult * this.talentMult * prestigeBonus(this.prestigeBuff === "PrestigePhysical" ? PRESTIGE_PHYSICAL_BASE : PRESTIGE_MENTAL_BASE,  this.prestigeBuff);
+            this.#totalBonusXP = this.soulstoneMult * this.talentMult * prestigeBonus(this.prestigeBuff);
         }
         return this.#totalBonusXP;
     }
@@ -494,7 +494,7 @@ function getSelfCombat() {
     return ((getSkillLevel("Combat") + getSkillLevel("Pyromancy") * 5) 
                 * getArmorLevel() 
                 * (1 + getBuffLevel("Feast") * .05)) 
-                * prestigeBonus(PRESTIGE_COMBAT_BASE, "PrestigeCombat");
+                * prestigeBonus("PrestigeCombat");
 }
 
 function getZombieStrength() {
@@ -502,7 +502,7 @@ function getZombieStrength() {
                 * resources.zombie / 2 
                 * Math.max(getBuffLevel("Ritual") / 100, 1) 
                 * (1 + getBuffLevel("Feast") * .05)  
-                * prestigeBonus(PRESTIGE_COMBAT_BASE, "PrestigeCombat");
+                * prestigeBonus("PrestigeCombat");
 }
 
 function getTeamStrength() {
@@ -510,7 +510,7 @@ function getTeamStrength() {
                 * (resources.teamMembers / 2) 
                 * getAdvGuildRank().bonus * getSkillBonus("Leadership") 
                 * (1 + getBuffLevel("Feast") * .05))
-                * prestigeBonus(PRESTIGE_COMBAT_BASE, "PrestigeCombat");
+                * prestigeBonus("PrestigeCombat");
 }
 
 function getTeamCombat() {

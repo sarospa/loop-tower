@@ -1,15 +1,6 @@
 // @ts-check
 "use strict";
 
-// Constants used as the base for Prestige exponential bonuses.
-const PRESTIGE_COMBAT_BASE       = 1.20;
-const PRESTIGE_PHYSICAL_BASE     = 1.20;
-const PRESTIGE_MENTAL_BASE       = 1.20;
-const PRESTIGE_BARTERING_BASE    = 1.10;
-const PRESTIGE_SPATIOMANCY_BASE  = 1.10;
-const PRESTIGE_CHRONOMANCY_BASE  = 1.05;
-const PRESTIGE_EXP_OVERFLOW_BASE = 1.00222;
-
 /**
  * ActionLoopType is an enum that describes what the "loops" property means. Actions without
  * a loopsType property default to the classic behavior of "actions" for non-multipart actions
@@ -427,7 +418,7 @@ function calcTalentMult(talent) {
 function getMaxTicksForAction(action, talentOnly=false) {
     let maxTicks = Number.MAX_SAFE_INTEGER;
     const expMultiplier = action.expMult * (action.manaCost() / action.adjustedTicks);
-    const overFlow=prestigeBonus(PRESTIGE_EXP_OVERFLOW_BASE, "PrestigeExpOverflow") - 1;
+    const overFlow=prestigeBonus("PrestigeExpOverflow") - 1;
     for (const stat of statList) {
         const expToNext = getExpToLevel(stat, talentOnly);
         const statMultiplier = expMultiplier * ((action.stats[stat]??0)+overFlow) * getTotalBonusXP(stat);
@@ -439,7 +430,7 @@ function getMaxTicksForAction(action, talentOnly=false) {
 /** @param {StatName} stat  */
 function getMaxTicksForStat(action, stat, talentOnly=false) {
     const expMultiplier = action.expMult * (action.manaCost() / action.adjustedTicks);
-    const overFlow=prestigeBonus(PRESTIGE_EXP_OVERFLOW_BASE, "PrestigeExpOverflow") - 1;
+    const overFlow=prestigeBonus("PrestigeExpOverflow") - 1;
     const expToNext = getExpToLevel(stat, talentOnly);
     const statMultiplier = expMultiplier * ((action.stats[stat]??0)+overFlow) * getTotalBonusXP(stat);
     return Mana.ceil(expToNext / statMultiplier);
@@ -447,7 +438,7 @@ function getMaxTicksForStat(action, stat, talentOnly=false) {
 
 function addExpFromAction(action, manaCount) {
     const adjustedExp = manaCount * action.expMult * (action.manaCost() / action.adjustedTicks);
-    const overFlow=prestigeBonus(PRESTIGE_EXP_OVERFLOW_BASE, "PrestigeExpOverflow") - 1;
+    const overFlow=prestigeBonus("PrestigeExpOverflow") - 1;
     for (const stat of statList) {
         const expToAdd = ((action.stats[stat]??0)+overFlow) * adjustedExp * getTotalBonusXP(stat);
 

@@ -35,7 +35,7 @@ function getSpeedMult(zone = curTown) {
     speedMult *= 1 + 0.5 * getBuffLevel("Imbuement3");
 
     // Prestige Chronomancy
-    speedMult *= Math.pow(1.05, getBuffLevel("PrestigeChronomancy"));
+    speedMult *= prestigeBonus("PrestigeChronomancy");
 
     return speedMult;
 }
