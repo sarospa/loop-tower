@@ -2266,7 +2266,7 @@ const Koviko = {
 
       var Affec = affected.map(name => {
         if (isNaN(resources[name])) this.updateHadNaNs = true;
-        if ( resources[name] != 0 ) return `<li class="${name}" title="${capitalizeFirst(name)}: ${isNaN(resources[name])?"?":formatNumber(resources[name])}">${intToString(resources[name], 1)}</li>`;
+        if ( resources[name] != 0 ) return `<li class="${name}" title="${capitalizeFirst(name)}: ${isNaN(resources[name])?"???":formatNumber(resources[name])}">${isNaN(resources[name])?"?":intToString(resources[name], 1)}</li>`;
         else return "";
       }).join('');
       return `<ul class='koviko ${isValid}'>` + Affec + `</ul><div class='koviko showthis'><table>${tooltip || '<b>N/A</b>'}</table></div>`;
