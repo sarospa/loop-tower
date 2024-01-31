@@ -3157,7 +3157,7 @@
             <label>Excursion</label>
             <label_done>Seen</label_done>
             <tooltip><![CDATA[
-            Pay a local street urchin to show you around town. As a tourist, it feels like you're getting ripped off.<br>Cost is reduced by 80% with local guild membership.<br>Currently costs
+            Pay a local street urchin to show you around town. As a tourist, it feels like you're getting ripped off.<br>Cost is reduced by 80% with local guild membership.<br>2× progress with glasses.<br>Currently costs
             ]]></tooltip>
             <tooltip2>gold.</tooltip2>
             <story_1><![CDATA[<b>1% Seen:</b>⮀ Finding someone to show you around town was looking to be a non-starter, until you flashed one of the (many) street urchins a few coins. Turns out just about everyone here will work for the right price.]]></story_1>
@@ -3282,7 +3282,7 @@
             Invest into the perpetual bank. Invested gold remains between loops.<br>
             Total gold invested: <div id='goldInvested'></div> (max 999999999999)
             ]]></tooltip>
-            <story_1><![CDATA[<b>Made an investment:</b>⮀ The investment bank is, in a word, gaudy. White and marble everywhere, seats that somehow make you feel like you're sitting on an emperor's throne, the whole nine yards. The ]]></story_1>
+            <story_1><![CDATA[<b>Made an investment:</b>⮀ The investment bank is, in a word, gaudy. White and marble everywhere, seats that somehow make you feel like you're sitting on an emperor's throne, the whole nine yards.]]></story_1>
             <story_2><![CDATA[<b>Made a second investment:</b>⮀ When you make your way into the gaudy building, ready to open a new account (again,) the cleric gives you a strange look before informing you that you already have an account. Seems like the name <i>perpetual</i> bank isn't just for show.]]></story_2>
             <story_3><![CDATA[<b>Invested 1,000,000 gold:</b>⮀ By now, you're getting used to the shiny gold the bank has absolutely everywhere as you go about your business. The staff is treating you a little nicer, and some even ask for your name every now and then.]]></story_3>
             <story_4><![CDATA[<b>Invested 1,000,000,000 gold:</b>⮀ You ask the cleric just how much you've invested, and you're briefly taken aback by the number you're given. A bit of back-of-an-envelope math says you could have bought a castle for that much money! Oh well, at least you get interest.]]></story_4>

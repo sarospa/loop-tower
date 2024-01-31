@@ -433,7 +433,7 @@ const Koviko = {
                                        .sort((a, b) => snapshotIds.indexOf(a.id) - snapshotIds.indexOf(b.id));
         if (requestedSnapshots.length === snapshotIds.length) {
           const estimatedSize = requestedSnapshots.map(s => s.sizeEstimate).reduce((a, b) => a + b);
-          console.debug(`Exporting ${requestedSnapshots.length} snapshots of estimated size ${estimatedSize}.`, snapshotIds, requestedSnapshots);
+          // console.debug(`Exporting ${requestedSnapshots.length} snapshots of estimated size ${estimatedSize}.`, snapshotIds, requestedSnapshots);
           this.worker.postMessage({type: "importSnapshots", snapshotExports: requestedSnapshots.map(s => s.export())});
         } else {
           console.debug(`Only found ${requestedSnapshots.length} of ${snapshotIds.length} requested snapshots. Ignoring request, probably stale.`, snapshotIds, requestedSnapshots);
@@ -1529,6 +1529,7 @@ const Koviko = {
           element.querySelector("ul.koviko").replaceWith(this.update.pre[i]);
         }
       }
+      this.updateHadNaNs = false;
 
       /**
        * Organize accumulated resources, accumulated stats, and accumulated progress into a single object
@@ -1692,6 +1693,11 @@ const Koviko = {
         await this.finishUpdate(container, runData);
         performance.mark("end-predictor-update");
         const updateTime = performance.measure("predictor-totalupdate", "start-predictor-update", "end-predictor-update");
+
+        if (this.updateHadNaNs) {
+          this.updateHadNaNs = false;
+          view.requestUpdate("updateNextActions");
+        }
         // console.debug(`Performed update ${id} in ${updateTime.duration}`, updateTime);
       } else {
         console.debug(`Predictor update ${id} interrupted by ${this.update.id}`);
@@ -2259,7 +2265,8 @@ const Koviko = {
       tooltip+= '<tr><td><b>TIME</b></td><td>' + precision3(resources.totalTicks/50, 1) + '</td><td>(+' + precision3(resources.actionTicks/50, 1) + ')</td></tr>';
 
       var Affec = affected.map(name => {
-        if ( resources[name] != 0 ) return `<li class="${name}" title="${capitalizeFirst(name)}: ${formatNumber(resources[name])}">${intToString(resources[name], 1)}</li>`;
+        if (isNaN(resources[name])) this.updateHadNaNs = true;
+        if ( resources[name] != 0 ) return `<li class="${name}" title="${capitalizeFirst(name)}: ${isNaN(resources[name])?"?":formatNumber(resources[name])}">${intToString(resources[name], 1)}</li>`;
         else return "";
       }).join('');
       return `<ul class='koviko ${isValid}'>` + Affec + `</ul><div class='koviko showthis'><table>${tooltip || '<b>N/A</b>'}</table></div>`;

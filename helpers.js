@@ -123,9 +123,9 @@ function toSuffix(value) {
     value = Math.round(value);
     const suffixes = ["", "K", "M", "B", "T", "Qa", "Qi", "Sx", "Sp", "O", "N", "Dc", "Ud", "Dd", "Td", "qd", "Qd", "sd", "Sd", "Od", "Nd", "V"];
     const suffixNum = Math.floor(((String(value)).length - 1) / 3);
-    let shortValue = parseFloat((suffixNum === 0 ? value : (value / Math.pow(1000, suffixNum))).toPrecision(3));
-    if (shortValue % 1 !== 0) shortValue = shortValue.toPrecision(3);
-    return shortValue + suffixes[suffixNum];
+    const shortValue = parseFloat((suffixNum === 0 ? value : (value / Math.pow(1000, suffixNum))).toPrecision(3));
+    const valueRepr = shortValue % 1 !== 0 ? shortValue.toPrecision(3) : shortValue.toString();
+    return valueRepr + suffixes[suffixNum];
 }
 
 const Mana = {
@@ -597,6 +597,7 @@ function nextIdle(idleRequestOptions) {
 
 // modified from: https://stackoverflow.com/questions/879152/how-do-i-make-javascript-beep/13194087#13194087
 function beep(duration) {
+    // @ts-ignore
     const ctxClass = window.audioContext || window.AudioContext || window.AudioContext || window.webkitAudioContext;
     const ctx = new ctxClass();
     const osc = ctx.createOscillator();

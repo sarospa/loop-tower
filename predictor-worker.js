@@ -80,13 +80,13 @@ function handleMessage(data) {
         //     break;
         case "setOptions":
             predictor.setOptions(data.options);
-            console.debug("set options");
+            // console.debug("set options");
             break;
         case "verifyDefaultIds":
             if (!Data.verifyDefaultIds(data.idRefs)) {
                 postMessage({type: "error", message: "default id verification failed"});
             }
-            console.debug("default ids verified");
+            // console.debug("default ids verified");
             break;
         case "importSnapshots":
             if (data.resetToDefaults) {
@@ -103,7 +103,7 @@ function handleMessage(data) {
                         console.debug(`Already loaded snapshot ${exportToLoad.id}`)
                         continue;
                     }
-                    console.debug(`importing snapshot ${exportToLoad.id}`);
+                    // console.debug(`importing snapshot ${exportToLoad.id}`);
                     Data.importSnapshot(exportToLoad);
                     loadCount++;
                 }
@@ -128,13 +128,13 @@ function handleMessage(data) {
             const {runData, snapshotHeritage} = data;
             const id = snapshotHeritage.at(-1);
             if (Data.getSnapshotIndex({id}) >= 0) {
-                console.debug(`Loading snapshot ${id}`);
+                // console.debug(`Loading snapshot ${id}`);
                 Data.getSnapshot({id}).applyState();
                 predictor.workerUpdate(runData);
-                console.debug("started update");
+                // console.debug("started update");
             } else {
                 const requiredSnapshots = snapshotHeritage.filter(id => Data.getSnapshotIndex({id}) === -1);
-                console.debug(`Requesting ${requiredSnapshots.length} snapshots for heritage of length ${snapshotHeritage.length}: ${requiredSnapshots.join(", ")}`, snapshotHeritage);
+                // console.debug(`Requesting ${requiredSnapshots.length} snapshots for heritage of length ${snapshotHeritage.length}: ${requiredSnapshots.join(", ")}`, snapshotHeritage);
                 queuedUpdate = data;
                 postMessage({type: "getSnapshots", snapshotIds: requiredSnapshots});
             }

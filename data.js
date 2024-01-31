@@ -703,7 +703,7 @@ class DataSnapshot {
                 prototypeId,
             };
         }
-        console.log(`Prototypes for ${this.id}:`,prototypes);
+        // console.log(`Prototypes for ${this.id}:`,prototypes);
         return data;
     }
 
