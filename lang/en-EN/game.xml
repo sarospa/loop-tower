@@ -9,6 +9,16 @@
                 <title>Changelog</title>
                 <version_prefix>Version</version_prefix>
             </meta>
+            <version verNum="3.P16.20"><![CDATA[
+            <b> Jan 31st, 2024</b>
+            • Many updates to the responsive UI, which should be better-behaved in Chrome and related browsers now. Give it a try; or, alternatively, don't.<br>
+            • Broke, and then fixed, the background predictor thread. It should disable more fully now, when disabled.<br>
+            • Broke, and then fixed, the prestige mechanic. Really on a roll here.<br>
+            • Fixed an issue where multiple actions would get added to the list when you click the button once. (Might have broken it first. Hard to say.)<br>
+            • General code cleanup, moving all prestige code into a single file where it will be safe from meddling. (It won't be.)<br>
+            • Added a workaround for the bug that causes "NaN" to show up in the predictor. Now it should show question marks instead.<br>
+            • Merged a PR from slabdrill on the Discord, updating lots of tooltips to match the game logic and addressing some long-standing calculation issues: the Imbue Soul buff and Thievery skill now have a multiplicative, rather than additive, effect. Thanks slabdrill!<br>
+            ]]></version>
             <version verNum="3.P16.19"><![CDATA[
             <b> Jan 22nd, 2024</b>
             • Spatiomancy training should no longer cause the game to slow to a crawl.<br>
