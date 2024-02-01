@@ -5101,6 +5101,7 @@ Action.WizardCollege = new MultipartAction("Wizard College", {
     },
     finish() {
         //guild = "Wizard";
+        resources.wizardCollege = true;
         unlockStory("wizardGuildTestTaken");
     },
 });
@@ -5160,6 +5161,9 @@ Action.Restoration = new Action("Restoration", {
         Soul: 0.3,
         Con: 0.2
     },
+    canStart() {
+        return resources.wizardCollege;
+    },
     affectedBy: ["Wizard College"],
     skills: {
         Restoration: 100
@@ -5201,6 +5205,9 @@ Action.Spatiomancy = new Action("Spatiomancy", {
     affectedBy: ["Wizard College"],
     skills: {
         Spatiomancy: 100
+    },
+    canStart() {
+        return resources.wizardCollege;
     },
     manaCost() {
         return 20000 / getWizCollegeRank().bonus;

@@ -151,7 +151,8 @@ let resources = {
     citizenship: false,
     pegasus: false,
     key: false,
-    stone: false
+    stone: false,
+    wizardCollege: false,
 };
 let hearts = [];
 const resourcesTemplate = copyObject(resources);

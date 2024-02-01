@@ -116,7 +116,7 @@ function handleMessage(data) {
                 }
                 return;
             }
-            console.debug(`imported ${loadCount} snapshots of ${snapshotExports.length} provided`, snapshotExports);
+            // console.debug(`imported ${loadCount} snapshots of ${snapshotExports.length} provided`, snapshotExports);
             if (queuedUpdate) {
                 // succeeded, go back into startUpdate
                 const qu = queuedUpdate;

@@ -582,12 +582,13 @@ class View {
         document.getElementById("effectiveTime").textContent = `${formatTime(effectiveTime)}`;
     };
     updateResource(resource) {
-        if (resource !== "gold") document.getElementById(`${resource}Div`).style.display = resources[resource] ? "inline-block" : "none";
+        const element = htmlElement(`${resource}Div`, false, false);
+        if (element) element.style.display = resources[resource] ? "inline-block" : "none";
 
         if (resource === "supplies") document.getElementById("suppliesCost").textContent = String(towns[0].suppliesCost);
         if (resource === "teamMembers") document.getElementById("teamCost").textContent = `${(resources.teamMembers + 1) * 100}`;
 
-        if (Number.isFinite(resources[resource])) document.getElementById(resource).textContent = resources[resource];
+        if (Number.isFinite(resources[resource])) htmlElement(resource).textContent = resources[resource];
     };
     updateResources() {
         for (const resource in resources) this.updateResource(resource);
