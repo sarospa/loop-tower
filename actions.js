@@ -33,6 +33,7 @@
  * @prop {number} manaRemaining
  * @prop {number} goldRemaining
  * @prop {number} timeSpent
+ * @prop {number} effectiveTimeElapsed
  * @prop {string} [errorMessage]
  * }} 
  * @typedef {CurrentActionEntry & AnyActionType} AnyActionEntry
@@ -189,7 +190,8 @@ class Actions {
 
         curAction.ticks += manaToSpend;
         curAction.manaUsed += manaToSpend;
-        curAction.timeSpent += manaToSpend / baseManaPerSecond / getActualGameSpeed();
+        curAction.timeSpent += manaToSpend / baseManaPerSecond / getSpeedMult();
+        curAction.effectiveTimeElapsed += manaToSpend / baseManaPerSecond / getSpeedMult();
 
         // exp gets added here, where it can factor in to adjustTicksNeeded
         addExpFromAction(curAction, manaToSpend);
@@ -236,6 +238,7 @@ class Actions {
         if (curAction.allowed && getNumOnCurList(curAction.name) > curAction.allowed()) {
             curAction.ticks = 0;
             curAction.timeSpent = 0;
+            curAction.effectiveTimeElapsed = 0;
             view.requestUpdate("updateCurrentActionBar", this.currentPos);
             return undefined;
         }
@@ -254,6 +257,7 @@ class Actions {
         }
         if (curAction && this.currentAction !== curAction) {
             this.currentAction = curAction;
+            curAction.effectiveTimeElapsed = effectiveTime;
         }
         return curAction;
     }
@@ -315,6 +319,7 @@ class Actions {
                 action.manaRemaining = 0;
                 action.goldRemaining = 0;
                 action.timeSpent = 0;
+                action.effectiveTimeElapsed = 0;
             }
 
         } else {
@@ -337,6 +342,7 @@ class Actions {
                 toAdd.manaRemaining = 0;
                 toAdd.goldRemaining = 0;
                 toAdd.timeSpent = 0;
+                toAdd.effectiveTimeElapsed = 0;
 
                 this.current.push(toAdd);
             }

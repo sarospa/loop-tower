@@ -1441,6 +1441,7 @@
             <mana_remaining>Mana Remaining:</mana_remaining>
             <gold_remaining>Gold Remaining:</gold_remaining>
             <time_spent>Time Spent:</time_spent>
+            <total_time_elapsed>Time In Loop:</total_time_elapsed>
             <failed_attempts>Failed Attempts:</failed_attempts>
             <error>Error:</error>
         </current_action>
