@@ -96,7 +96,7 @@ class View {
         for (const stat of statList) {
             const axisTip = statGraph.getAxisTip(stat);
             totalContainer.insertAdjacentHTML("beforebegin",
-            `<div class='statContainer showthat stat-${stat.toLowerCase()}' style='left:${axisTip[0]}%;top:${axisTip[1]+3}%;' onmouseover='view.showStat("${stat}")' onmouseout='view.showStat(undefined)'>
+            `<div class='statContainer showthat stat-${stat}' style='left:${axisTip[0]}%;top:${axisTip[1]+3}%;' onmouseover='view.showStat("${stat}")' onmouseout='view.showStat(undefined)'>
                 <div class='statLabelContainer'>
                     <div class='medium bold stat-name' style='margin-left:18px;margin-top:5px;'>${_txt(`stats>${stat}>long_form`)}</div>
                     <div class='medium statNum stat-soulstone' style='color:var(--stat-soulstone-color);' id='stat${stat}ss'></div>
@@ -895,10 +895,10 @@ class View {
         const div = document.getElementById(`action${index}Selected`);
         if (div) {
             div.style.opacity = isShowing ? "1" : "0";
-            document.getElementById(`actionTooltip${index}`).style.display = isShowing ? "inline-block" : "none";
+            document.getElementById(`actionTooltip${index}`).style.display = isShowing ? "" : "none";
         }
-        nextActionsDiv.style.display = isShowing ? "none" : "inline-block";
-        document.getElementById("actionTooltipContainer").style.display = isShowing ? "inline-block" : "none";
+        nextActionsDiv.style.display = isShowing ? "none" : "";
+        document.getElementById("actionTooltipContainer").style.display = isShowing ? "" : "none";
         view.updateCurrentActionBar(index);
     };
 
@@ -1172,27 +1172,27 @@ class View {
         let lastArcPoint = [0, -1]; // start at 12 o'clock
         for (const [stat, ratio] of statEntries) {
             const statLabel = _txt(`stats>${stat}>short_form`);
-            actionStats += `<dt class='stat-${stat.toLowerCase()}'>${statLabel}</dt> <dd class='stat-${stat.toLowerCase()}'>${ratio * 100}%</dd>`;
+            actionStats += `<dt class='stat-${stat}'>${statLabel}</dt> <dd class='stat-${stat}'>${ratio * 100}%</dd>`;
             const startRatio = totalRatio;
             totalRatio += ratio;
             if (totalRatio >= 0.999 && totalRatio <= 1.001) totalRatio = 1;
             const midRatio = (startRatio + totalRatio) / 2;
             const angle = Math.PI * 2 * totalRatio;
             const arcPoint = [Math.sin(angle), -Math.cos(angle)];
-            pieSlices.push(`<path class='pie-slice stat-${stat.toLowerCase()}' d='M0,0 L${lastArcPoint.join()} A1,1 0,${ratio >= 0.5 ? 1 : 0},1 ${arcPoint.join()} Z' />`);
+            pieSlices.push(`<path class='pie-slice stat-${stat}' d='M0,0 L${lastArcPoint.join()} A1,1 0,${ratio >= 0.5 ? 1 : 0},1 ${arcPoint.join()} Z' />`);
             if (gradientStops.length === 0) {
                 gradientOffset = midRatio;
-                gradientStops.push(`from ${gradientOffset}turn`, `var(--stat-${stat.toLowerCase()}-color) calc(${gradientOffset}turn * var(--pie-ratio))`);
+                gradientStops.push(`from ${gradientOffset}turn`, `var(--stat-${stat}-color) calc(${gradientOffset}turn * var(--pie-ratio))`);
             } else {
-                gradientStops.push(`var(--stat-${stat.toLowerCase()}-color) calc(${midRatio - gradientOffset}turn - (${ratio/2}turn * var(--pie-ratio))) calc(${midRatio - gradientOffset}turn + (${ratio/2}turn * var(--pie-ratio)))`);
+                gradientStops.push(`var(--stat-${stat}-color) calc(${midRatio - gradientOffset}turn - (${ratio/2}turn * var(--pie-ratio))) calc(${midRatio - gradientOffset}turn + (${ratio/2}turn * var(--pie-ratio)))`);
             }
             lastArcPoint = arcPoint;
         }
         // this is *almost* always true (but not always)
         if (statEntries.length > 0) {
-            gradientStops.push(`var(--stat-${statEntries[0][0].toLowerCase()}-color) calc(1turn - (${gradientOffset}turn * var(--pie-ratio)))`)
+            gradientStops.push(`var(--stat-${statEntries[0][0]}-color) calc(1turn - (${gradientOffset}turn * var(--pie-ratio)))`)
             const highestRatio = statEntries[0][1];
-            lockedStats = `(${statEntries.map(([stat, ratio]) => /** @type {const} */([ratio === highestRatio, stat.toLowerCase(), _txt(`stats>${stat}>short_form`)]))
+            lockedStats = `(${statEntries.map(([stat, ratio]) => /** @type {const} */([ratio === highestRatio, stat, _txt(`stats>${stat}>short_form`)]))
                                       .map(([isHighestStat, stat, label]) => `<span class='${isHighestStat?"bold":""} stat-${stat} stat-color'>${label}</span>`)
                                       .join(", ")})<br>`;
         }
@@ -1796,7 +1796,12 @@ for (let i = 0; i <= 8; i++) {
 
 /** @param {Element} theDiv @param {StatName} stat  */
 function addStatColors(theDiv, stat, forceColors=false) {
-    theDiv.classList.add(`stat-${stat.toLowerCase()}`, "stat-background");
+    for (const className of Array.from(theDiv.classList)) {
+        if (className.startsWith("stat-") && className.slice(5) in stats) {
+            theDiv.classList.remove(className);
+        }
+    }
+    theDiv.classList.add(`stat-${stat}`, "stat-background");
     if (forceColors) {
         theDiv.classList.add("use-stat-colors");
     }
@@ -1820,19 +1825,15 @@ function draggedUndecorate(i) {
 }
 
 function adjustActionListSize(amt) {
-    if (document.getElementById("expandableList").style.height === "" && amt > 0) {
-        document.getElementById("expandableList").style.height = `${500 + amt}px`;
-        curActionsDiv.style.maxHeight = `${457 + amt}px`;
-        nextActionsDiv.style.maxHeight = `${457 + amt}px`;
-    } else if (document.getElementById("expandableList").style.height === "" && amt === -100) {
-        document.getElementById("expandableList").style.height = "500px";
-        curActionsDiv.style.maxHeight = "457px";
-        nextActionsDiv.style.maxHeight = "457px";
+    let height = document.documentElement.style.getPropertyValue("--action-list-height");
+    if (height === "" && amt > 0) {
+        height = `${500 + amt}px`;
+    } else if (height === "" && amt === -100) {
+        height = "500px";
     } else {
-        document.getElementById("expandableList").style.height = `${Math.min(Math.max(parseInt(document.getElementById("expandableList").style.height) + amt, 500), 2000)}px`;
-        curActionsDiv.style.maxHeight = `${Math.min(Math.max(parseInt(curActionsDiv.style.maxHeight) + amt, 457), 1957)}px`;
-        nextActionsDiv.style.maxHeight = `${Math.min(Math.max(parseInt(nextActionsDiv.style.maxHeight) + amt, 457), 1957)}px`;
+        height = `${Math.min(Math.max(parseInt(height) + amt, 500), 2000)}px`;
     }
+    document.documentElement.style.setProperty("--action-list-height", height);
     setScreenSize();
     saveUISettings();
 }

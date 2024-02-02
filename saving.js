@@ -920,14 +920,13 @@ function loadDefaults() {
 }
 
 function loadUISettings() {
-    document.getElementById("expandableList").style.height = localStorage.getItem("actionListHeight");
-    curActionsDiv.style.maxHeight = `${parseInt(localStorage.getItem("actionListHeight")) - 43}px`;
-    nextActionsDiv.style.maxHeight = `${parseInt(localStorage.getItem("actionListHeight")) - 43}px`;
+    const height = localStorage.getItem("actionListHeight");
+    if (height !== "") document.documentElement.style.setProperty("--action-list-height", height);
 }
 
 function saveUISettings() {
-    if ((document.getElementById("expandableList").style.height === "")) localStorage.setItem("actionListHeight", document.getElementById("expandableList").style.height = "500px");
-    else localStorage.setItem("actionListHeight", document.getElementById("expandableList").style.height);
+    const height = document.documentElement.style.getPropertyValue("--action-list-height");
+    if (height !== "") localStorage.setItem("actionListHeight", height);
 }
 
 function needsDataSnapshots() {

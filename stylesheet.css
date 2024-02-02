@@ -86,6 +86,8 @@ button {
 :root {
     /* non-responsive view sets pixel-based font size */
     font-size: 14px;
+    /* default action list height for non-responsive */
+    --action-list-height: 500px;
 }
 
 body {
@@ -376,15 +378,15 @@ ul#faq > li {
 }
 
 /* These utility classes set a "stat context" for this element and its descendants */
-.stat-str {--stat-color: var(--stat-str-color);}
-.stat-dex {--stat-color: var(--stat-dex-color);}
-.stat-con {--stat-color: var(--stat-con-color);}
-.stat-per {--stat-color: var(--stat-per-color);}
-.stat-int {--stat-color: var(--stat-int-color);}
-.stat-cha {--stat-color: var(--stat-cha-color);}
-.stat-spd {--stat-color: var(--stat-spd-color);}
-.stat-luck {--stat-color: var(--stat-luck-color);}
-.stat-soul {--stat-color: var(--stat-soul-color);}
+.stat-Str {--stat-color: var(--stat-Str-color);}
+.stat-Dex {--stat-color: var(--stat-Dex-color);}
+.stat-Con {--stat-color: var(--stat-Con-color);}
+.stat-Per {--stat-color: var(--stat-Per-color);}
+.stat-Int {--stat-color: var(--stat-Int-color);}
+.stat-Cha {--stat-color: var(--stat-Cha-color);}
+.stat-Spd {--stat-color: var(--stat-Spd-color);}
+.stat-Luck {--stat-color: var(--stat-Luck-color);}
+.stat-Soul {--stat-color: var(--stat-Soul-color);}
 
 /* These expect to have one of the above classes on this or an enclosing element, and they're only enabled in full-color mode */
 .use-stat-colors .stat-color, .use-stat-colors.stat-color {
@@ -1048,15 +1050,15 @@ dl.action-stats {
 .actionOrTravelContainer:has(.stat-pie g:hover) dl.action-stats :is(dt,dd) {
     font-weight: normal;
 }
-.actionOrTravelContainer:has(.stat-pie .pie-slice.stat-str:hover) dl.action-stats .stat-str,
-.actionOrTravelContainer:has(.stat-pie .pie-slice.stat-dex:hover) dl.action-stats .stat-dex,
-.actionOrTravelContainer:has(.stat-pie .pie-slice.stat-con:hover) dl.action-stats .stat-con,
-.actionOrTravelContainer:has(.stat-pie .pie-slice.stat-per:hover) dl.action-stats .stat-per,
-.actionOrTravelContainer:has(.stat-pie .pie-slice.stat-int:hover) dl.action-stats .stat-int,
-.actionOrTravelContainer:has(.stat-pie .pie-slice.stat-cha:hover) dl.action-stats .stat-cha,
-.actionOrTravelContainer:has(.stat-pie .pie-slice.stat-spd:hover) dl.action-stats .stat-spd,
-.actionOrTravelContainer:has(.stat-pie .pie-slice.stat-luck:hover) dl.action-stats .stat-luck,
-.actionOrTravelContainer:has(.stat-pie .pie-slice.stat-soul:hover) dl.action-stats .stat-soul {font-weight: bold;}
+.actionOrTravelContainer:has(.stat-pie .pie-slice.stat-Str:hover) dl.action-stats .stat-Str,
+.actionOrTravelContainer:has(.stat-pie .pie-slice.stat-Dex:hover) dl.action-stats .stat-Dex,
+.actionOrTravelContainer:has(.stat-pie .pie-slice.stat-Con:hover) dl.action-stats .stat-Con,
+.actionOrTravelContainer:has(.stat-pie .pie-slice.stat-Per:hover) dl.action-stats .stat-Per,
+.actionOrTravelContainer:has(.stat-pie .pie-slice.stat-Int:hover) dl.action-stats .stat-Int,
+.actionOrTravelContainer:has(.stat-pie .pie-slice.stat-Cha:hover) dl.action-stats .stat-Cha,
+.actionOrTravelContainer:has(.stat-pie .pie-slice.stat-Spd:hover) dl.action-stats .stat-Spd,
+.actionOrTravelContainer:has(.stat-pie .pie-slice.stat-Luck:hover) dl.action-stats .stat-Luck,
+.actionOrTravelContainer:has(.stat-pie .pie-slice.stat-Soul:hover) dl.action-stats .stat-Soul {font-weight: bold;}
 
 .storyContainer {
     width: 102px;
@@ -1381,8 +1383,24 @@ li#actionLogLatest {
 
 #expandableList {
     position:relative;
-    height:500px;
+    height:var(--action-list-height);
     width:100%;
+}
+
+#curActionsList, #nextActionsList {
+    width: auto;
+    display: flex;
+    flex-direction: column;
+}
+#curActionsList {
+    max-height: calc(var(--action-list-height) - 55px);
+}
+#nextActionsList {
+    max-height: calc(var(--action-list-height) - 50px);
+}
+
+#nextActionsList[style*="none"] {
+    visibility: collapse;
 }
 
 /* Unused
@@ -1631,9 +1649,9 @@ li#actionLogLatest {
 
     & #curActionsList, & #nextActionsList {
         padding-bottom: 2ex;
-        max-height: none !important;
+        max-height: none;
         width: auto;
-        display: flex !important;
+        display: flex;
         flex-direction: column;
         flex: 1;
     }

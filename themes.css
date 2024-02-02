@@ -72,15 +72,15 @@
     --action-icon-hover-color: red;
     --action-icon-hover-background: rgba(0, 0, 0, 0.2);
 
-    --stat-str-color: #d70037;
-    --stat-dex-color: #92af29;
-    --stat-con-color: #b06f37;
-    --stat-per-color: #4ec3c8;
-    --stat-int-color: #2640b2;
-    --stat-cha-color: #D77093;
-    --stat-spd-color: #cfb905;
-    --stat-luck-color: #25b536;
-    --stat-soul-color: rebeccapurple;
+    --stat-Str-color: #d70037;
+    --stat-Dex-color: #92af29;
+    --stat-Con-color: #b06f37;
+    --stat-Per-color: #4ec3c8;
+    --stat-Int-color: #2640b2;
+    --stat-Cha-color: #D77093;
+    --stat-Spd-color: #cfb905;
+    --stat-Luck-color: #25b536;
+    --stat-Soul-color: rebeccapurple;
     
     --zone-tint-1: rgba(255, 152, 0, 0.2);
     --zone-tint-2: rgba(76, 175, 80, 0.2);
@@ -156,15 +156,15 @@
     /* fix some colors on popups */
     & .showthis {
         --text-color: var(--popup-color);
-        --stat-str-color: #d70037;
-        --stat-dex-color: #748a24;
-        --stat-con-color: #b06f37;
-        --stat-per-color: #41a0a4;
-        --stat-int-color: #2640b2;
-        --stat-cha-color: #B86582;
-        --stat-spd-color: #918000;
-        --stat-luck-color: #25b536;
-        --stat-soul-color: rebeccapurple;
+        --stat-Str-color: #d70037;
+        --stat-Dex-color: #748a24;
+        --stat-Con-color: #b06f37;
+        --stat-Per-color: #41a0a4;
+        --stat-Int-color: #2640b2;
+        --stat-Cha-color: #B86582;
+        --stat-Spd-color: #918000;
+        --stat-Luck-color: #25b536;
+        --stat-Soul-color: rebeccapurple;
     }
 
 }
@@ -263,15 +263,15 @@
     --action-icon-hover-color: red;
     --action-icon-hover-background: rgba(0, 0, 0, 0.2);
 
-    --stat-str-color: #e85a5a;
-    --stat-dex-color: #9fd430;
-    --stat-con-color: #c08450;
-    --stat-per-color: #7fcacf;
-    --stat-int-color: #707db4;
-    --stat-cha-color: #BD7990;
-    --stat-spd-color: #d8d066;
-    --stat-luck-color: #7ac283;
-    --stat-soul-color: #C25ED4;
+    --stat-Str-color: #e85a5a;
+    --stat-Dex-color: #9fd430;
+    --stat-Con-color: #c08450;
+    --stat-Per-color: #7fcacf;
+    --stat-Int-color: #707db4;
+    --stat-Cha-color: #BD7990;
+    --stat-Spd-color: #d8d066;
+    --stat-Luck-color: #7ac283;
+    --stat-Soul-color: #C25ED4;
 
     --zone-tint-1: rgba(193, 115, 0, 0.2);
     --zone-tint-2: rgba(24, 102, 27, 0.2);
@@ -344,15 +344,15 @@
     --predictor-giants-color: #93cee8;
     
     & .showthis {
-        --stat-str-color: #f86a6a;
-        --stat-dex-color: #9fd430;
-        --stat-con-color: #dca26f;
-        --stat-per-color: #4ce2e9;
-        --stat-int-color: #8c9dea;
-        --stat-cha-color: #E6A0B8;
-        --stat-spd-color: #f7ee7e;
-        --stat-luck-color: #91e19b;
-        --stat-soul-color: #D67EE6;
+        --stat-Str-color: #f86a6a;
+        --stat-Dex-color: #9fd430;
+        --stat-Con-color: #dca26f;
+        --stat-Per-color: #4ce2e9;
+        --stat-Int-color: #8c9dea;
+        --stat-Cha-color: #E6A0B8;
+        --stat-Spd-color: #f7ee7e;
+        --stat-Luck-color: #91e19b;
+        --stat-Soul-color: #D67EE6;
     }
 }
 
