@@ -1190,7 +1190,7 @@ class View {
         }
         // this is *almost* always true (but not always)
         if (statFractions.length > 0) {
-            gradientStops.push(`var(--stat-${statFractions[0].statName}-color) calc(1turn - (${gradientOffset}turn * var(--pie-ratio)))`)
+            gradientStops.push(`var(--stat-${statFractions[0].statName}-color) calc(1turn - (${gradientOffset.approximateValue}turn * var(--pie-ratio)))`)
             const highestFraction = statFractions[0];
             lockedStats = `(${statFractions.map((fraction) => /** @type {const} */([fraction.equals(highestFraction), fraction.statName, _txt(`stats>${fraction.statName}>short_form`)]))
                                       .map(([isHighestStat, stat, label]) => `<span class='${isHighestStat?"bold":""} stat-${stat} stat-color'>${label}</span>`)
