@@ -1561,7 +1561,7 @@ li#actionLogLatest {
         grid-area: town;
     }
 
-    & #townWindow {
+    & #townWindow, & #townActionTitle {
         display: flex;
         justify-content: center;
         align-items: center;
