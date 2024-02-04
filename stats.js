@@ -166,13 +166,22 @@ class Stat extends Localizable {
         return this.#talentMult;
     }
 
-    #effortMultiplier = new Rational();
-    #manaMultiplier = new Rational();
+    #levelCalc;
+    #effortMultiplier;
+    #manaMultiplier;
     get effortMultiplier() {
-        return this.#effortMultiplier.setValue(100 + this.statLevelExp.level, 100);
+        if (this.#levelCalc !== this.statLevelExp.level) {
+            this.#effortMultiplier = 1 + this.statLevelExp.level / 100;
+            this.#manaMultiplier = undefined;
+            this.#levelCalc = this.statLevelExp.level;
+        }
+        return this.#effortMultiplier;
     }
     get manaMultiplier() {
-        return this.#manaMultiplier.setValue(100, 100 + this.statLevelExp.level);
+        if (this.#levelCalc !== this.statLevelExp.level || this.#manaMultiplier === undefined) {
+            this.#manaMultiplier = 1 / this.effortMultiplier; // will set levelCalc
+        }
+        return this.#manaMultiplier;
     }
 
     #tbxTalent;

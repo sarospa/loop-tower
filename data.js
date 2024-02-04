@@ -73,8 +73,6 @@ class Data {
             [-5]: LevelExp.prototype,
             [-6]: Skill.prototype,
             [-7]: Buff.prototype,
-            [-8]: ImmutableRational.prototype,
-            [-9]: Rational.prototype,
         });
         Object.defineProperty(this, "wellKnownObjects", {
             value: wellKnownObjects,
@@ -97,8 +95,6 @@ class Data {
         [-5]: () => new LevelExp(),
         [-6]: s => new Skill(s.name),
         [-7]: b => new Buff(b.name),
-        [-8]: r => new ImmutableRational(r),
-        [-9]: r => new Rational(r),
     }
     static #nextObjectId = 1;
 
