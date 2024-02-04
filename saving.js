@@ -1023,6 +1023,11 @@ function doLoad(toLoad) {
     if (toLoad.actionLog !== undefined) {
         actionLog.load(toLoad.actionLog);
         actionLog.loadRecent();
+    } else {
+        actionLog.initialize();
+    }
+    if (actionLog.entries.length === 0) {
+        actionLog.addGlobalStory(0);
     }
 
     if (toLoad.totalTalent === undefined) {

@@ -55,13 +55,17 @@ class ActionLog {
         return extractStrings(this.entries);
     }
 
-    /** @param {unknown} data  */
-    load(data) {
+    initialize() {
         this.entries = [];
         this.#uniqueEntries = {};
         this.firstNewOrUpdatedEntry = null;
         this.earliestShownEntry = null;
         view.requestUpdate("updateActionLogEntry", "clear");
+    }
+
+    /** @param {unknown} data  */
+    load(data) {
+        this.initialize();
         if (!Array.isArray(data)) return;
         for (const entryData of restoreStrings(data)) {
             const entry = ActionLogEntry.create(entryData);
