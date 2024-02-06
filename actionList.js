@@ -5473,7 +5473,7 @@ Action.FightFrostGiants = new MultipartAction("Fight Frost Giants", {
         return `${getFrostGiantsRank(segment % 3).name}`;
     },
     visible() {
-        return towns[4].getLevel("Citizen") >= 80;
+        return towns[4].getLevel("Citizen") >= 80 || storyReqs.acquiredPegasus;
     },
     unlocked() {
         return towns[4].getLevel("Citizen") >= 100;
@@ -5550,7 +5550,7 @@ Action.SeekBlessing = new Action("Seek Blessing", {
         return 1000000;
     },
     visible() {
-        return towns[4].getLevel("Citizen") >= 80;
+        return towns[4].getLevel("Citizen") >= 80 || storyReqs.acquiredPegasus;
     },
     unlocked() {
         return towns[4].getLevel("Citizen") >= 100;
