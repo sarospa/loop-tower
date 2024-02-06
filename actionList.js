@@ -236,10 +236,11 @@ class Action extends Localizable {
     get tooltip2() { return this.memoize("tooltip2"); }
     get label() { return this.memoize("label"); }
     get labelDone() { return this.memoize("labelDone", ">label_done"); }
+    get labelGlobal() { return this.memoize("labelGlobal", ">label_global"); }
 
     static {
         // listing these means they won't get stored even if memoized
-        Data.omitProperties(this.prototype, ["tooltip", "tooltip2", "label", "labelDone"]);
+        Data.omitProperties(this.prototype, ["tooltip", "tooltip2", "label", "labelDone", "labelGlobal"]);
     }
     
     // all actions to date with info text have the same info text, so presently this is
@@ -6578,6 +6579,14 @@ function getExploreProgress() {
     });
     if (totalExploreProgress == 0) return 0;
     else return Math.max(Math.floor(totalExploreProgress / towns.length), 1);
+}
+function getExploreExp() {
+    //ExploreExp == total survey exp across all zones
+    let totalExploreExp = 0;
+    towns.forEach((town, index) => {
+        if (town.getLevel("SurveyZ"+index)) totalExploreExp += town[`expSurveyZ${index}`];
+    });
+    return totalExploreExp;
 }
 function getExploreSkill() {
     return Math.floor(Math.sqrt(getExploreProgress()));

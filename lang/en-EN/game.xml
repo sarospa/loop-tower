@@ -13,6 +13,7 @@
             <b>Recent changes</b>
             • Yet more typos quashed.<br>
             • Adjusted visibility conditions for some actions.<br>
+            • Added world survey display. Thanks to Eyel from the Discord for the idea!<br>
             ]]></version>
             <version verNum="3.P16.21"><![CDATA[
             <b> Feb 5th, 2024</b>
@@ -1464,6 +1465,7 @@
         <survey>
             <label>Survey</label>
             <label_done>Surveyed</label_done>
+            <label_global>World Surveyed</label_global>
             <tooltip><![CDATA[
             The explorers guild has taught you how to find what most would miss.<br>
             Gives max(1,floor(sqrt(average survey progress))) exp per action. (Currently <div class='surveySkill'></div>)<br>

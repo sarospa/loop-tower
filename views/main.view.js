@@ -911,15 +911,18 @@ class View {
         }
     };
 
-    updateProgressAction(updateInfo) {
-        const varName = updateInfo.name;
-        const town = updateInfo.town;
-        const level = town.getLevel(varName);
-        const levelPrc = `${town.getPrcToNext(varName)}%`;
-        document.getElementById(`prc${varName}`).textContent = level;
-        document.getElementById(`expBar${varName}`).style.width = levelPrc;
+    /** @param {{name: string, town: Town}} updateInfo */
+    updateProgressAction({name: varName, town},
+                         level = town.getLevel(varName),
+                         levelPrc = `${town.getPrcToNext(varName)}%`,
+    ) {
+        document.getElementById(`prc${varName}`).textContent = `${level}`;
+        document.getElementById(`expBar${varName}`)?.style.setProperty("width", levelPrc);
         document.getElementById(`progress${varName}`).textContent = intToString(levelPrc, 2);
         document.getElementById(`bar${varName}`).style.width = `${level}%`;
+        if (varName.startsWith("Survey") && !varName.endsWith("Global")) {
+            this.updateProgressAction({name: `${varName}Global`, town}, getExploreProgress(), `${getExploreExp() / (5050 * towns.length)}%`);
+        }
     };
 
     updateProgressActions() {
@@ -941,6 +944,9 @@ class View {
             } else if (action.unlocked()) {
                 if (infoDiv) {
                     removeClassFromDiv(infoDiv, "hidden");
+                    if (action.varName.startsWith("Survey")) {
+                        removeClassFromDiv(document.getElementById(`infoContainer${action.varName}Global`), "hidden");
+                    }
                 }
                 removeClassFromDiv(actionDiv, "locked");
                 removeClassFromDiv(actionDiv, "capped");
@@ -948,6 +954,9 @@ class View {
                 addClassToDiv(actionDiv, "locked");
                 if (infoDiv) {
                     addClassToDiv(infoDiv, "hidden");
+                    if (action.varName.startsWith("Survey")) {
+                        addClassToDiv(document.getElementById(`infoContainer${action.varName}Global`), "hidden");
+                    }
                 }
             }
             if (action.unlocked() && infoDiv) {
@@ -1128,34 +1137,43 @@ class View {
             const action = Action[prop];
             this.createTownAction(action);
             if (action.type === "limited") this.createTownInfo(action);
-            if (action.type === "progress") this.createActionProgress(action);
+            if (action.type === "progress") {
+                if (action.name.startsWith("Survey")) this.createGlobalSurveyProgress(action);
+                this.createActionProgress(action);
+            }
             if (action.type === "multipart") this.createMultiPartPBar(action);
             if (options.highlightNew) this.highlightIncompleteActions();
         }
     };
 
-    createActionProgress(action) {
+    /** @param {ActionOfType<"progress">} action  */
+    createGlobalSurveyProgress(action) {
+        this.createActionProgress(action, "Global", action.labelGlobal, false);
+    }
+
+    /** @param {ActionOfType<"progress">} action @param {string} [label] */
+    createActionProgress(action, varSuffix="", label, includeExpBar=true) {
         const totalDivText =
         `<div class='townStatContainer showthat'>
-            <div class='bold townLabel'>${action.labelDone}</div>
-            <div class='progressValue' id='prc${action.varName}'>5</div><div class='percentSign'>%</div>
-            <div class='thinProgressBarUpper'><div id='expBar${action.varName}' class='statBar townExpBar'></div></div>
-            <div class='thinProgressBarLower'><div id='bar${action.varName}' class='statBar townBar'></div></div>
+            <div class='bold townLabel'>${label ?? action.labelDone}</div>
+            <div class='progressValue' id='prc${action.varName}${varSuffix}'>5</div><div class='percentSign'>%</div>
+            ${includeExpBar ? `<div class='thinProgressBarUpper'><div id='expBar${action.varName}${varSuffix}' class='statBar townExpBar'></div></div>` : ""}
+            <div class='thinProgressBarLower'><div id='bar${action.varName}${varSuffix}' class='statBar townBar'></div></div>
 
             <div class='showthis'>
                 ${_txt("actions>tooltip>higher_done_percent_benefic")}<br>
-                <div class='bold'>${_txt("actions>tooltip>progress_label")}</div> <div id='progress${action.varName}'></div>%
+                <div class='bold'>${_txt("actions>tooltip>progress_label")}</div> <div id='progress${action.varName}${varSuffix}'></div>%
             </div>
         </div>`;
         const progressDiv = document.createElement("div");
         progressDiv.className = "townContainer progressType";
-        progressDiv.id = `infoContainer${action.varName}`;
+        progressDiv.id = `infoContainer${action.varName}${varSuffix}`;
         progressDiv.style.display = "";
         progressDiv.innerHTML = totalDivText;
         townInfos[action.townNum].appendChild(progressDiv);
     };
 
-    /** @param {Action} action  */
+    /** @param {AnyAction} action  */
     createTownAction(action) {
         let actionStats = "";
         let actionSkills = "";
@@ -1370,6 +1388,7 @@ class View {
         }
     };
 
+    /** @param {ActionOfType<"limited">} action  */
     createTownInfo(action) {
         const totalInfoText =
             // important that there be 8 element children of townInfoContainer (excluding the showthis popup)
@@ -1391,6 +1410,7 @@ class View {
         townInfos[action.townNum].appendChild(infoDiv);
     };
 
+    /** @param {ActionOfType<"multipart">} action  */
     createMultiPartPBar(action) {
         let pbars = "";
         const width = `style='width:calc(${91 / action.segments}% - 4px)'`;
