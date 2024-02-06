@@ -9,6 +9,11 @@
                 <title>Changelog</title>
                 <version_prefix>Version</version_prefix>
             </meta>
+            <version caption="Latest"><![CDATA[ 
+            <b>Recent changes</b>
+            • Yet more typos quashed.<br>
+            • Adjusted visibility conditions for some actions.<br>
+            ]]></version>
             <version verNum="3.P16.21"><![CDATA[
             <b> Feb 5th, 2024</b>
             • More typo fixes in tooltips and action stories.<br>
@@ -1970,6 +1975,7 @@
             <label>Hitch Ride</label>
             <tooltip><![CDATA[
             The Explorers' guild has a contract with various caravans for transport around the world. They have taught you the secret handsigns to gain passage. And this one just happens to have some spare mana to share on the journey!<br>
+            Unlocked with 25% of the world surveyed.<br>
             Travels to Merchanton.
             ]]></tooltip>
 		    <story_1><![CDATA[<b>Hitched a Ride:</b>⮀ You step up to the caravan rolling by, give the necessary handsigns, and are directed to a small wagon near the back of the line. As you climb in and see your fellow explorers, you can't help but grin - they may not recognize you, but you recognize several of them. Drinks are eagerly shared, numerous bad jokes are made, and the trip passes in the blink of an eye. When the caravan reaches Merchanton, you're singing so loudly you miss the call to get off, and you end up having to walk the half mile the wagon traveled before you noticed the retreating city in the back window.]]></story_1>
@@ -2465,6 +2471,7 @@
             <label>Underworld</label>
             <tooltip><![CDATA[
             Your knowledge in the explorers guild continues to open new doors. Grease the right hinges with a bit of gold, and who knows where you can end up.<br>
+            Unlocked with 50% of the world surveyed.<br>
             Travels to Commerceville.<br>Costs
             ]]></tooltip>
             <tooltip2>gold.</tooltip2>
@@ -2669,6 +2676,7 @@
         <guru>
             <label>Guru</label>
             <tooltip><![CDATA[The greatest explorer the guild has ever known was said to have found a path without judgement to Valhalla itself. Now, as his equal, he is willing to show you the way if you bring him a few herbs.<br>
+            Unlocked with 100% of the world surveyed.<br>
             Travels to Valhalla, bypassing Face Judgement and Reputation requirements.<br>
             Requires 1000 herbs.
             ]]></tooltip>
@@ -3169,6 +3177,7 @@
             <label>Open Portal</label>
             <tooltip><![CDATA[
             The Explorers' guild tells you of a secret grove within the Jungle, where the barrier between realms is weakest. With enough restoration skill, you might be able to open a rift back and leave the shadow realm. However, it seems quite a bit of time passes in the portal, and some merchants have closed up shop.<br>
+            Unlocked with 75% of the world surveyed.<br>
             Travels to Forest Path.<br>Buy Mana actions can not be used for the rest of the current loop.<br>Requires 1000 Restoration.
             ]]></tooltip>
             <story_1><![CDATA[<b>Portal opened:</b>⮀ Despite the Veil being thin in this place, you still have to push quite a bit to get through. Whether it is due to the Gods trying to keep the Shadow Realm from invading or the simple physics of inter-realm travel, you can feel the hunger from the Jungle grow quiet as you approach the rippling portal you just created and step through to the forest on the other side. Looking at the sky, you're surprised to find that night is falling now!]]></story_1>

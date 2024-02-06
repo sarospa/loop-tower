@@ -1410,7 +1410,7 @@ function processSave(saveData) {
 
 function saveFileName() {
     const gameName = document.title.replace('*PAUSED* ','')
-    const version = document.querySelector('#changelog').childNodes[1].firstChild.textContent.trim()
+    const version = document.querySelector('#changelog > li[data-verNum]').firstChild.textContent.trim()
     return `${gameName} ${version} - Loop ${totals.loops}.txt`
 }
 

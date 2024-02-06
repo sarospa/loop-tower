@@ -63,6 +63,14 @@ menu > li:focus-within, #story_control:focus-within, #story_control:focus-within
     display: none !important;
 }
 
+#changelog .showthis2 {
+    align-items: stretch;
+}
+#changelog .showthis2 > b:first-child {
+    display: block;
+    text-align: center;
+}
+
 button {
     font: inherit;
     padding: unset;

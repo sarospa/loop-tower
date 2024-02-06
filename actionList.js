@@ -1775,7 +1775,7 @@ Action.HitchRide = new Action("Hitch Ride", {
         return true;
     },
     visible() {
-        return getExploreProgress() >= 25;
+        return getExploreProgress() > 1;
     },
     unlocked() {
         return getExploreProgress() >= 25;
@@ -3764,7 +3764,7 @@ Action.Underworld = new Action("Underworld", {
         return resources.gold >= 500;
     },
     visible() {
-        return getExploreProgress() >= 50;
+        return getExploreProgress() > 25;
     },
     unlocked() {
         return getExploreProgress() >= 50;
@@ -4503,7 +4503,7 @@ Action.Guru = new Action("Guru", {
         return resources.herbs >= 1000;
     },
     visible() {
-        return getExploreProgress() >= 100;
+        return getExploreProgress() > 75;
     },
     unlocked() {
         return getExploreProgress() >= 100;
@@ -6429,9 +6429,12 @@ Action.OpenPortal = new Action("Open Portal", {
         return 50000;
     },
     visible() {
-        return getExploreProgress() >= 75;
+        return getExploreProgress() > 50;
     },
     unlocked() {
+        return getExploreProgress() >= 75;
+    },
+    canStart() {
         return getSkillLevel("Restoration") >= 1000;
     },
     finish() {

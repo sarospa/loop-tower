@@ -65,9 +65,11 @@ Views.registerView("menu", {
         let html = "";
         const versions = _txtsObj("menu>changelog>version");
         $(versions).each((_index, version) => {
+            const caption = $(version).attr("caption");
+            const verNum = $(version).attr("verNum");
             html += `
-                    <li class='showthat2' tabindex='0'>
-                        ${`${_txt("menu>changelog>meta>version_prefix")} ${$(version).attr("verNum")}`}
+                    <li class='showthat2' tabindex='0' ${verNum ? `data-verNum="${verNum}"` : ""}>
+                        ${caption ? caption : `${_txt("menu>changelog>meta>version_prefix")} ${verNum}`}
                         <div class='showthis2'>
                             ${$(version).text()}
                         </div>
