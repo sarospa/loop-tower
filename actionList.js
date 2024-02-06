@@ -6597,7 +6597,7 @@ function getExploreExpSinceLastProgress() {
     const totalExploreProgress = getTotalExploreProgress();
     let levelsSinceLastProgress = totalExploreProgress <= 1 ? 1
                                 : totalExploreProgress < towns.length * 2 ? totalExploreProgress - 1
-                                : totalExploreProgress % towns.length;
+                                : totalExploreProgress % towns.length + 1;
     /** @type {{[I in TownNum]?: number}} */
     const levelsPerTown = {};
     /** @param {Town} town  */

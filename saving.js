@@ -667,7 +667,7 @@ function isStringOption(option) {
     return stringOptions.includes(/** @type {StringOptionName} */(option));
 }
 
-/** @param {string} option @returns {option is BooleanOptionNameOptionName} */
+/** @param {string} option @returns {option is BooleanOptionName} */
 function isBooleanOption(option) {
     // I'm explicitly deciding to leave this open-ended, so unknown options are treated as booleans
     return !numericOptions.includes(/** @type {NumericOptionName} */(option)) 
