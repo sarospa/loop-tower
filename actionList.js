@@ -6571,12 +6571,17 @@ function fullyExploredZones() {
     })
     return fullyExplored;
 }
-function getExploreProgress() {
-    //ExploreProgress == mean of all zones' exploration progress, rounded down.
+function getTotalExploreProgress() {
+    //TotalExploreProgress == total of all zones' survey progress.
     let totalExploreProgress = 0;
     towns.forEach((town, index) => {
         if (town.getLevel("SurveyZ"+index)) totalExploreProgress += town.getLevel("SurveyZ"+index);
     });
+    return totalExploreProgress;
+}
+function getExploreProgress() {
+    //ExploreProgress == mean of all zones' survey progress, rounded down.
+    const totalExploreProgress = getTotalExploreProgress();
     if (totalExploreProgress == 0) return 0;
     else return Math.max(Math.floor(totalExploreProgress / towns.length), 1);
 }
@@ -6587,6 +6592,58 @@ function getExploreExp() {
         if (town.getLevel("SurveyZ"+index)) totalExploreExp += town[`expSurveyZ${index}`];
     });
     return totalExploreExp;
+}
+function getExploreExpSinceLastProgress() {
+    const totalExploreProgress = getTotalExploreProgress();
+    let levelsSinceLastProgress = totalExploreProgress <= 1 ? 1
+                                : totalExploreProgress < towns.length * 2 ? totalExploreProgress - 1
+                                : totalExploreProgress % towns.length;
+    /** @type {{[I in TownNum]?: number}} */
+    const levelsPerTown = {};
+    /** @param {Town} town  */
+    function expSinceLast(town) {
+        const varName = `SurveyZ${town.index}`;
+        const level = town.getLevel(varName) - (levelsPerTown[town.index] ?? 0);
+        const levelExp = getExpOfSingleLevel(level);
+        const levelStartExp = getExpOfLevel(level);
+        const curExp = (levelsPerTown[town.index] ?? 0) > 0 ? levelStartExp + levelExp : town[`exp${varName}`];
+        return curExp - levelStartExp;
+    }
+    const townsByExpOrder = [...towns].sort((a, b) => expSinceLast(a) - expSinceLast(b));
+    let totalExpGained = 0;
+    while (levelsSinceLastProgress--) {
+        totalExpGained += expSinceLast(townsByExpOrder[0]);
+        const index = townsByExpOrder[0].index;
+        levelsPerTown[index] ??= 0;
+        levelsPerTown[index]++;
+    }
+    return totalExpGained;
+}
+function getExploreExpToNextProgress() {
+    const totalExploreProgress = getTotalExploreProgress();
+    let levelsToNextProgress = totalExploreProgress === 0 ? 1
+                             : totalExploreProgress < towns.length * 2 ? towns.length * 2 - totalExploreProgress
+                             : towns.length - (totalExploreProgress % towns.length);
+    /** @type {{[I in TownNum]?: number}} */
+    const levelsPerTown = {};
+    /** @param {Town} town  */
+    function expToNext(town) {
+        const varName = `SurveyZ${town.index}`;
+        const level = town.getLevel(varName) + (levelsPerTown[town.index] ?? 0);
+        const levelExp = getExpOfSingleLevel(level + 1);
+        const levelStartExp = getExpOfLevel(level);
+        const curExp = (levelsPerTown[town.index] ?? 0) > 0 ? levelStartExp : town[`exp${varName}`];
+        return levelExp - (curExp - levelStartExp);
+    }
+    const townsByExpOrder = [...towns].sort((a, b) => expToNext(a) - expToNext(b));
+    let totalExpNeeded = 0;
+    while (levelsToNextProgress--) {
+        totalExpNeeded += expToNext(townsByExpOrder[0]);
+        const index = townsByExpOrder[0].index;
+        levelsPerTown[index] ??= 0;
+        levelsPerTown[index]++;
+    }
+    return totalExpNeeded;
 }
 function getExploreSkill() {
     return Math.floor(Math.sqrt(getExploreProgress()));

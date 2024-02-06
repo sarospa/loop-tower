@@ -921,7 +921,9 @@ class View {
         document.getElementById(`progress${varName}`).textContent = intToString(levelPrc, 2);
         document.getElementById(`bar${varName}`).style.width = `${level}%`;
         if (varName.startsWith("Survey") && !varName.endsWith("Global")) {
-            this.updateProgressAction({name: `${varName}Global`, town}, getExploreProgress(), `${getExploreExp() / (5050 * towns.length)}%`);
+            const expToNext = getExploreExpToNextProgress();
+            const expSinceLast = getExploreExpSinceLastProgress();
+            this.updateProgressAction({name: `${varName}Global`, town}, getExploreProgress(), `${expSinceLast * 100 / (expSinceLast + expToNext)}%`);
         }
     };
 
