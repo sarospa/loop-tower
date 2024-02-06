@@ -9,6 +9,16 @@
                 <title>Changelog</title>
                 <version_prefix>Version</version_prefix>
             </meta>
+            <version verNum="3.P16.21"><![CDATA[
+            <b> Feb 5th, 2024</b>
+            • More typo fixes in tooltips and action stories.<br>
+            • The "Time Spent" statistic that appears when you hover an action you completed this loop now measures effective in-game time, rather than realtime. In other words, it won't change based on whether or not Bonus Seconds is enabled.<br>
+            • Another statistic, "Time In Loop", has been added, which measures the total amount of effective in-game time you'd spent in this loop so far, at the time you finished the action. Just in case you ever have a need for that information—iykyk.<br>
+            • The Wizard College has tightened its requirements for whom it is willing to teach its secrets to: you are now required to enroll prior to attending your first class.<br>
+            • The Responsive UI is no longer experimental! It is now enabled by default for new games (but can still be turned off from the Options menu). Existing games should not be affected.<br>
+            • The initial story describing how you got into this mess will now show up in the Action Log when you start a new game, to reduce some amount of "what am I doing here" from new players.<br>
+            • It wouldn't be an Idle Loops update without small fixes for tooltip behavior. In particular, predictor tooltips should no longer obscure the predictor display in the classic UI.<br>
+            ]]></version>
             <version verNum="3.P16.20"><![CDATA[
             <b> Jan 31st, 2024</b>
             • Many updates to the responsive UI, which should be better-behaved in Chrome and related browsers now. Give it a try; or, alternatively, don't.<br>
@@ -602,7 +612,7 @@
                 The options in this menu allow you to customize the balance and functionality of the game in ways that affect the play experience. If experiencing the "vanilla" Idle Loops experience is
                 important to you, leave these options unchanged. Otherwise, have fun!
             </extras_warning>
-            <responsive_ui>Experimental responsive UI</responsive_ui>
+            <responsive_ui>Responsive UI</responsive_ui>
             <action_log>Show action log</action_log>
             <fractional_mana>Fractional mana consumption</fractional_mana>
             <highlight_new>Highlight new actions</highlight_new>

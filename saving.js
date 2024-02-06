@@ -597,7 +597,7 @@ const googleCloud = selfIsWorker ? null : new GoogleCloud();
 const options = {
     theme: "normal",
     themeVariant: "",
-    responsiveUI: false,
+    responsiveUI: true,
     actionLog: true,
     fractionalMana: false,
     keepCurrentList: false,
