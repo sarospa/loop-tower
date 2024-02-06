@@ -47,3 +47,4 @@ declare interface AssassinAction<const N, const E> {
 }
 
 declare const LZString = await import("lz-string");
+declare const Mousetrap = await import("mousetrap");

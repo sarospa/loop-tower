@@ -1,4 +1,4 @@
-Views.registerView("timeControls", {
+const timeControlsView = Views.registerView("timeControls", {
     selector: "#timeControls",
     stories() {
         let html = "";
@@ -34,7 +34,7 @@ Views.registerView("timeControls", {
                         <button style='margin-left:175px;' class='actionIcon fa fa-arrow-left control' id='storyLeft' onclick='view.updateStory(storyShowing-1)'></button>
                         <div style='' id='storyPage' class='bold control'></div>
                         <button style='' class='actionIcon fa fa-arrow-right control' id='storyRight' onclick='view.updateStory(storyShowing+1)'></button>
-                        ${this.stories()}
+                        ${timeControlsView.stories()}
                     </div>
                 </div>
             </div>

@@ -482,6 +482,7 @@ let bonusSpeed = 1;
 let bonusActive = false;
 let currentLoop = 0;
 const offlineRatio = 1;
+let windowFps = 50;
 let totals = {
     time: 0,
     effectiveTime: 0,
@@ -1225,7 +1226,7 @@ function doLoad(toLoad) {
         }
     }
 
-    for (const option of /** @type {OptionName[]} */(Object.keys(options))) {
+    for (const option of typedKeys(options)) {
         loadOption(option, options[option]); 
     }
     storyShowing = toLoad.storyShowing === undefined ? 0 : toLoad.storyShowing;

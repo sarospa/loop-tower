@@ -72,6 +72,7 @@ Mousetrap.prototype.stopCallback = (
 GameKeyboard.spins = [];
 
 function executeHotkey(action) {
+    // @ts-ignore
     if (!options.hotkeys || controlDown || document.activeElement.type === "text" || document.activeElement.type === "textarea") {
         return;
     }

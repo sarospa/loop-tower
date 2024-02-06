@@ -1,4 +1,4 @@
-Views.registerView("buffsContainer", {
+const buffsView = Views.registerView("buffsContainer", {
     selector: "#buffsContainer",
     html() {
         const fullNames = Buff.fullNames;

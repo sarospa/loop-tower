@@ -852,7 +852,7 @@ class View {
         log.addEventListener("scrollend", this.recordScrollPosition, {passive: true});
     }
     /** @this {HTMLElement & LastScrollRecord} */
-    recordScrollPosition = function() {
+    recordScrollPosition() {
         const {scrollTop, scrollHeight, clientHeight} = this;
         this.lastScroll = {scrollTop, scrollHeight, clientHeight};
     }
@@ -1184,7 +1184,7 @@ class View {
         let lockedSkills = "";
         const pieSlices = [];
         const gradientStops=[];
-        const statEntries = /** @type {[stat: StatName, ratio: number][]} */(Object.entries(action.stats));
+        const statEntries = typedEntries(action.stats);
         // sort high to low, then by statname index
         statEntries.sort(([aStat, aRatio], [bStat, bRatio]) => ((bRatio - aRatio) || (statList.indexOf(aStat) - statList.indexOf(bStat))));
         let totalRatio = 0;

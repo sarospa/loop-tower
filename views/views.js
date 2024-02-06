@@ -1,8 +1,31 @@
+/**
+ * @typedef ViewDefinition
+ * @prop {string} selector
+ * @prop {() => string} html
+ */
+/**
+ * @typedef {{
+ *  menu: typeof menuView,
+ *  buffsContainer: typeof buffsView,
+ *  talentTree: typeof talentTreeView,
+ *  timeControls: typeof timeControlsView,
+ *  trackedResources: typeof trackedResourcesView,
+ * }} ViewTypes
+ * @typedef {keyof ViewTypes} ViewName
+ * 
+ * @type {{
+ *  debug: boolean,
+ *  views: ViewName[],
+ *  registerView<N extends ViewName, V extends ViewDefinition>(viewName: N, view: V): V,
+ *  draw(): void,
+ * } & Partial<ViewTypes>}
+ */
 const Views = window['Views'] = {
     // activates verbose mode
     debug: true,
     // a vue can be registered if it implements an html function, that returns the html
     // once a view VIEWNAME is registered, it can be called using Views.VIEWNAME
+    /** @type {<N extends ViewName, V extends ViewDefinition>(viewName: N, view: V) => V} */
     registerView(viewName, view) {
         let canDraw = true;
         // error handling
@@ -18,7 +41,7 @@ const Views = window['Views'] = {
             }
         } else {
             console.error("Trying to register a view without giving a viewName.");
-            return false;
+            return null;
         }
         // this isn't blocking, a vue can exist without being drawn
         if (typeof (view.selector) === "undefined") {
@@ -29,18 +52,19 @@ const Views = window['Views'] = {
         if (typeof (view.html) === "undefined") {
             if (typeof (view.selector) !== "undefined") {
                 console.error(`Trying to register view ${viewName} with a selector but no html method. View not registered.`);
-                return false;
+                return null;
             }
         }
         if (canDraw)
             Views.views.push(viewName);
+        // @ts-ignore
         Views[viewName] = view;
-        return true;
+        return view;
     },
     views: [],
     draw() {
-        $(Views.views).each((_index, viewName) => {
+        for (const viewName of Views.views) {
             $(Views[viewName].selector).html(Views[viewName].html());
-        });
+        };
     }
 };

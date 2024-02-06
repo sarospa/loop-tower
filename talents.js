@@ -1,4 +1,4 @@
-const canvas = document.getElementById("talentTreeCanvas");
+const canvas = getElement("talentTreeCanvas", HTMLCanvasElement);
 const ctx = canvas.getContext("2d");
 
 const talents = {

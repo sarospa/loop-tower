@@ -679,3 +679,9 @@ function defineLazyGetter(object, name, getter) {
         configurable: true,
     });
 }
+
+/** Strongly-typed version of Object.keys */
+const typedKeys = /** @type {<K extends string|number|symbol>(object: Partial<Record<K, any>>) => K[]} */(Object.keys);
+
+/** Strongly-typed version of Object.keys */
+const typedEntries = /** @type {<K extends string|number|symbol, V>(object: Partial<Record<K, V>>) => [K, V][]} */(Object.entries);

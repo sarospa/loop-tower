@@ -1,4 +1,4 @@
-Views.registerView("trackedResources", {
+const trackedResourcesView = Views.registerView("trackedResources", {
     selector: "#trackedResources",
     html() {
         let html = "";

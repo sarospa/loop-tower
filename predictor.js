@@ -4,20 +4,20 @@
 const Koviko = {
   /**
    * IdleLoops view
-   * @typedef {Object} Koviko~View
+   * @typedef {Object} Koviko__View
    * @prop {function} updateNextActions Method responsible for updating the view
    */
 
   /**
    * Represents an action in the action list
-   * @typedef {Object} Koviko~ListedAction
+   * @typedef {Object} Koviko__ListedAction
    * @prop {string} name Name of the action
    * @prop {number} loops Number of loops to perform
    */
 
   /**
    * IdleLoops action
-   * @typedef {Object} Koviko~Action
+   * @typedef {Object} Koviko__Action
    * @prop {string} name Name of the action
    * @prop {number} expMult Experience multiplier (typically 1)
    * @prop {number} townNum The town to which the action belongs
@@ -31,19 +31,19 @@ const Koviko = {
 
   /**
    * IdleLoops town, which includes total progression for all actions
-   * @typedef {Object} Koviko~Town
+   * @typedef {Object} Koviko__Town
    */
 
   /**
    * IdleLoops dungeon floor
-   * @typedef {Object} Koviko~DungeonFloor
+   * @typedef {Object} Koviko__DungeonFloor
    * @prop {number} ssChance Chance to get a soulstone
    * @prop {number} completed Amount of times completed
    */
 
   /**
    * IdleLoops skill
-   * @typedef {Object} Koviko~Skill
+   * @typedef {Object} Koviko__Skill
    * @prop {number} exp Experience
    */
 
@@ -51,73 +51,80 @@ const Koviko = {
   Prediction: class {
     /**
      * Loop attributes for a prediction
-     * @typedef {Object} Koviko.Prediction~Loop
+     * @typedef {Object} Koviko_Prediction_Loop
      * @prop {function} cost Cost to complete a segment
      * @prop {function} tick Amount of progress completed in one tick
      * @prop {Object} effect Effects at the end of a loop or segment
      * @prop {function} [effect.segment] Effect at the end of a segment
      * @prop {function} [effect.loop] Effect at the end of a loop
+     * @prop {function} [effect.end] Who knows
+     * @prop {function} [max] idk
      */
 
     /**
      * Parameters to be passed to the Prediction constructor
-     * @typedef {Object} Koviko.Prediction~Parameters
+     * @typedef {Object} Koviko_Prediction_Parameters
      * @prop {Array.<string>} affected Affected resources
-     * @prop {function} effect Method that will mutate resources
-     * @prop {Koviko.Prediction~Loop} loop Loop attributes
+     * @prop {function} [effect] Method that will mutate resources
+     * @prop {Koviko_Prediction_Loop} [loop] Loop attributes
+     * @prop {true|((resources: Koviko_Predictor_Resources) => boolean)} [canStart]
+     * @prop {(resources: Koviko_Predictor_Resources, skills: Koviko_Predictor_Skills) => number} [manaCost]
      */
 
     /**
      * Create the prediction
-     * @param {string} name Name of the action
-     * @param {Koviko.Prediction~Parameters} params Parameter object
+     * @param {ActionName} name Name of the action
+     * @param {Koviko_Prediction_Parameters} params Parameter object
      */
     constructor(name, params) {
       /**
        * Name of the action
-       * @member {string}
+       * @type {string}
        */
       this.name = name;
 
       /**
        * Action being estimated
-       * @member {Koviko~Action}
+       * @type {Mutable<AnyAction> & {segments?: number}}
        */
       this.action = translateClassNames(name);
 
       /**
        * The pre-calculated amount of ticks needed for the action to complete.
-       * @member {number}
+       * @type {number}
        */
       this._ticks = 0;
 
       /**
        * Resources affected by the action
-       * @member {Array.<string>}
+       * @type {Array.<string>}
        */
       this.affected = params.affected || [];
 
       /**
        * Effect of the action.
-       * @member {function|null}
+       * @type {function|null}
        */
       this.effect = params.effect || null;
 
       /**
        * Effect(s) and tick calculations of the action's loops
-       * @member {Koviko.Prediction~Loop|null}
+       * @type {Koviko_Prediction_Loop|null}
        */
       this.loop = params.loop || null;
 
+      /** @type {Koviko_Prediction_Parameters["canStart"]|true} */
       this.canStart = params.canStart || true;
 
+      /** @type {Koviko_Prediction_Parameters["manaCost"]|false} */
       this.manaCost = params.manaCost || false;
     }
 
     /**
      * Calculate the number of ticks needed to complete the action.
-     * @param {Koviko.Prediction~Action} a Action object
-     * @param {Koviko.Predictor~Stats} s Accumulated stat experience
+     * @param {AnyAction} a Action object
+     * @param {Koviko_Predictor_Stats} s Accumulated stat experience
+     * @param {Koviko_Predictor_State} state 
      * @memberof Koviko.Prediction
      */
     updateTicks(a, s, state) {
@@ -127,7 +134,10 @@ const Koviko = {
       return (this._ticks = Math.ceil(baseMana * cost - .000001));
     }
 
-    //returns the base mana cost of the action referenced, taking the context
+    /** 
+     * returns the base mana cost of the action referenced, taking the context
+     * @param {Koviko_Predictor_State|false} state 
+     */
     baseManaCost(a,state=false) {
       if (this.manaCost) {
         if (state) {
@@ -150,8 +160,8 @@ const Koviko = {
 
     /**
      * Add the experience gained in one tick to the accumulated stat experience.
-     * @param {Koviko.Prediction~Action} a Action object
-     * @param {Koviko.Predictor~Stats} s Accumulated stat experience
+     * @param {AnyAction} a Action object
+     * @param {Koviko_Predictor_Stats} s Accumulated stat experience
      * @memberof Koviko.Prediction
      */
     exp(a, s, t, ss) {
@@ -203,31 +213,31 @@ const Koviko = {
   Snapshot: class {
     /**
      * Attributes to consider from one snapshot to the next.
-     * @typedef {Object.<string, number>} Koviko.Snapshot~Attributes
+     * @typedef {Object.<string, number>} Koviko_Snapshot_Attributes
      */
 
     /**
      * Comparison of current snapshot to last snapshot.
-     * @typedef {Object} Koviko.Snapshot~Comparison
+     * @typedef {Object} Koviko_Snapshot_Comparison
      * @prop {number} value New value after the snapshot is taken
      * @prop {number} delta Difference between new value and old value
      */
 
     /**
      * Create the snapshot handler.
-     * @param {Koviko.Snapshot~Attributes} attributes Attributes and their values
+     * @param {Koviko_Snapshot_Attributes} attributes Attributes and their values
      * @memberof Koviko.Snapshot
      */
     constructor(attributes) {
       /**
        * Valid attributes for a snapshot
-       * @member {Object.<string, number>}
+       * @type {Object.<string, Koviko_Snapshot_Comparison>}
        */
       this.attributes = {};
 
       /**
        * Whether the attributes have been initialized
-       * @member {boolean}
+       * @type {boolean}
        */
       this._isInitialized = false;
 
@@ -238,8 +248,8 @@ const Koviko = {
 
     /**
      * Initialize the attributes to consider in each snapshot.
-     * @param {Koviko.Snapshot~Attributes} attributes Attributes and their values
-     * @return {Object.<string, Koviko.Snapshot~Comparison>} Initial comparison values
+     * @param {Koviko_Snapshot_Attributes} attributes Attributes and their values
+     * @return {Object.<string, Koviko_Snapshot_Comparison>} Initial comparison values
      * @memberof Koviko.Snapshot
      */
     init(attributes) {
@@ -254,8 +264,8 @@ const Koviko = {
 
     /**
      * Take a snapshot of the attributes and compare them to the previous snapshot.
-     * @param {Koviko.Snapshot~Attributes} attributes Attributes and their values
-     * @return {Object.<string, Koviko.Snapshot~Comparison>} Comparison values from the last snapshot to the current one
+     * @param {Koviko_Snapshot_Attributes} attributes Attributes and their values
+     * @return {Object.<string, Koviko_Snapshot_Comparison>} Comparison values from the last snapshot to the current one
      * @memberof Koviko.Snapshot
      */
     snap(attributes) {
@@ -273,7 +283,7 @@ const Koviko = {
 
     /**
      * Get the snapshot.
-     * @return {Object.<string, Koviko.Snapshot~Comparison>} Comparison values from the last snapshot to the current one
+     * @return {Object.<string, Koviko_Snapshot_Comparison>} Comparison values from the last snapshot to the current one
      * @memberof Koviko.Snapshot
      */
     get() {
@@ -334,39 +344,45 @@ const Koviko = {
   Predictor: class {
     /**
      * Progression
-     * @typedef {Object} Koviko.Predictor~Progression
+     * @typedef {Object} Koviko_Predictor_Progression
      * @prop {number} completed The amount of total segments completed
      * @prop {number} progress The amount of progress in segments beyond that already represented in `completed`
      * @prop {number} total The amount of successful loops ever completed
+     * @prop {number[]} [costList]
+     * @prop {number} [loopTotalCost]
      */
 
     /**
      * Accumulated stat experience
-     * @typedef {Object.<string, number>} Koviko.Predictor~Stats
+     * @typedef {Object.<string, number>} Koviko_Predictor_Stats
      */
 
     /**
      * Accumulated skill experience
-     * @typedef {Object.<string, number>} Koviko.Predictor~Skills
+     * @typedef {Object.<string, number>} Koviko_Predictor_Skills
      */
 
     /**
      * Accumulated resources
-     * @typedef {Object.<string, number>} Koviko.Predictor~Resources
+     * @typedef {{guild: string, glasses?: boolean, pickaxe?: boolean, pegasus?: boolean, isManaDrought?: boolean} & Object.<string, number>} Koviko_Predictor_Resources
      */
 
     /**
      * Accumulated progress
-     * @typedef {Object.<string, Koviko.Predictor~Progression>} Koviko.Predictor~Progress
+     * @typedef {Object.<string, Koviko_Predictor_Progression>} Koviko_Predictor_Progress
      */
 
     /**
      * State object
-     * @typedef {Object} Koviko.Predictor~State
-     * @prop {Koviko.Predictor~Stats} stats Accumulated stat experience
-     * @prop {Koviko.Predictor~Skills} skills Accumulated skill experience
-     * @prop {Koviko.Predictor~Resources} resources Accumulated resources
-     * @prop {Koviko.Predictor~Progress} progress Accumulated progress
+     * @typedef {Object} Koviko_Predictor_State
+     * @prop {Koviko_Predictor_Stats} stats Accumulated stat experience
+     * @prop {Koviko_Predictor_Stats} talents Accumulated stat experience
+     * @prop {Koviko_Predictor_Skills} skills Accumulated skill experience
+     * @prop {Koviko_Predictor_Resources} resources Accumulated resources
+     * @prop {Koviko_Predictor_Progress} progress Accumulated progress
+     * @prop {Koviko_Snapshot|{}} [currProgress]
+     * @prop {Koviko_Snapshot|{}} [toNextLoop]
+     * @prop {any} soulstones
      */
 
     #nextUpdateId = 1;
@@ -473,9 +489,10 @@ const Koviko = {
      * @memberof Koviko.Predictor
      */
     test() {
+      /** @type {Partial<NextActionEntry>[]} */
       const actions = [];
 
-      for (const name in this.predictions) {
+      for (const name of typedKeys(this.predictions)) {
         actions.push({ name: name, loops: 100 });
       }
 
@@ -491,7 +508,7 @@ const Koviko = {
 
       /**
        * Element that displays the total amount of mana used in the action list
-       * @member {HTMLElement}
+       * @type {HTMLElement}
        */
       this.totalDisplay = htmlElement("predictorTotalDisplay");
       this.statisticDisplay = htmlElement("predictorStatisticDisplay");
@@ -508,7 +525,7 @@ const Koviko = {
         {}
       );
       for (const skill of skillList) {
-        Koviko.trackedStats['S'+skill.toLowerCase()] = {type:'S', name:skill.toLowerCase(), display_name:skill, hidden:()=>(!skills[skill].exp>0)}
+        Koviko.trackedStats['S'+skill.toLowerCase()] = {type:'S', name:skill.toLowerCase(), display_name:skill, hidden:()=>(skills[skill].exp<=0)}
       }
       for (const stat of statList) {
         Koviko.trackedStats['T'+stat] = {type:'T', name:stat, display_name:_txt('stats>'+stat+'>long_form')}
@@ -520,7 +537,7 @@ const Koviko = {
     }
 
     updateTrackedList() {
-      let statisticList = $("#predictorTrackedStatInput").children();
+      let statisticList = /** @type {JQuery<HTMLOptionElement>} */($("#predictorTrackedStatInput").children());
         for (const statistic of statisticList) {
           let trackedStat = Koviko.trackedStats[statistic.value];
           if(trackedStat && trackedStat.hidden) {
@@ -538,7 +555,7 @@ const Koviko = {
     initPredictions() {
       /**
        * Helper methods
-       * @member {Object.<string, function>}
+       * @type {Object.<string, function>}
        * @namespace
        */
       this.helpers = (this.helpers || {
@@ -552,7 +569,7 @@ const Koviko = {
 
         /**
          * Get the current guild rank's bonus, noting that there is a max of 15 ranks, base zero.
-         * @param {Koviko.Predictor~Resources} r Accumulated resources
+         * @param {number} guild Guild level as number
          * @return {number} Current bonus from guild rank
          * @memberof Koviko.Predictor#helpers
          */
@@ -560,8 +577,7 @@ const Koviko = {
 
         /**
          * Calculate the bonus given by "Wizard College"
-         * @param {Koviko.Predictor~Resources} r Accumulated resources
-         * @param {Koviko.Predictor~Skills} k Accumulated skills
+         * @param {Koviko_Predictor_Resources} r Accumulated resources
          * @return {number} Bonus Multiplier of the Wizard College
          * @memberof Koviko.Predictor#helpers
          */
@@ -573,8 +589,8 @@ const Koviko = {
 
         /**
          * Calculate the ArmorLevel specifically affecting the team leader
-         * @param {Koviko.Predictor~Resources} r Accumulated resources
-         * @param {Koviko.Predictor~Skills} k Accumulated skills
+         * @param {Koviko_Predictor_Resources} r Accumulated resources
+         * @param {Koviko_Predictor_Skills} k Accumulated skills
          * @return {number} Armor Multiplier for the Self Combat Calculation
          * @memberof Koviko.Predictor#helpers
          */
@@ -582,8 +598,8 @@ const Koviko = {
 
         /**
          * Calculate the combat skill specifically affecting the team leader
-         * @param {Koviko.Predictor~Resources} r Accumulated resources
-         * @param {Koviko.Predictor~Skills} k Accumulated skills
+         * @param {Koviko_Predictor_Resources} r Accumulated resources
+         * @param {Koviko_Predictor_Skills} k Accumulated skills
          * @return {number} Combat skill of the team leader
          * @memberof Koviko.Predictor#helpers
          */
@@ -605,7 +621,7 @@ const Koviko = {
 
       // Initialise cache
 
-      /** @type {PredictorCache<[ActionName, number, boolean], [PredictorRunState, string[]], [PredictorRunState, number, boolean]>} */
+      /** @type {PredictorCache<[ActionName, number, boolean]|any, [PredictorRunState, string[]]|any, [PredictorRunState, number, boolean]|any>} */
       this.cache = new Koviko.Cache();
       if(typeof(structuredClone) !== 'function'){
         console.log('Predictor: This browser does not support structuredClone, disabling the cache');
@@ -639,7 +655,7 @@ const Koviko = {
 
       /**
        * Prediction parameters
-       * @type {Object.<string, Koviko.Prediction~Parameters>}
+       * @satisfies {Record<ActionName, Koviko_Prediction_Parameters>}
        */
       const predictions = {
 
@@ -840,7 +856,7 @@ const Koviko = {
         'Train Speed':{ affected:['']},
         'Follow Flowers':{ affected:['']},
         'Bird Watching':{ affected:[''],
-          canStart:(input) => input.glasses},
+          canStart:(input) => !!input.glasses},
         'Clear Thicket':{ affected:['']},
         'Talk To Witch':{ affected:['']},
         'Dark Magic':{ affected:['rep'],
@@ -1315,7 +1331,7 @@ const Koviko = {
           effect:(r,k) => (r.town=1,k.restoration+=2500*(1+getBuffLevel("Heroism") * 0.02))},
         'Excursion':{ affected:['gold'],
           canStart:(input) => {
-          return input.gold>=(((input.guild==='explorer')||(input.guild==='thieves')) >= 0 ? 2 : 10);
+          return input.gold>=(((input.guild==='explorer')||(input.guild==='thieves')) ? 2 : 10);
         },
           effect:(r, k) => {
           r.gold -= (((r.guild==='explorer')||(r.guild==='thieves')) ? 2 : 10);
@@ -1475,12 +1491,12 @@ const Koviko = {
 
       /**
        * Prediction collection
-       * @member {Object.<string, Prediction>}
+       * @type {Partial<Record<ActionName, Koviko_Prediction & {_updateTicks?: any}>>}
        */
       this.predictions = {};
 
       // Create predictions
-      for (const name in predictions) {
+      for (const name of typedKeys(predictions)) {
         this.predictions[name] = new Koviko.Prediction(name, predictions[name]);
         if (name=="Secret Trial") {
           this.predictions["Secret Trial"]._updateTicks=this.predictions[name].updateTicks;
@@ -1488,7 +1504,7 @@ const Koviko = {
             if (!state.currProgress["Secret Trial"]) {
               return this.predictions["Secret Trial"]._updateTicks(a, s, state);
             }
-            return this._ticks;
+            return this.predictions["Secret Trial"]._ticks;
           }
         }
       }
@@ -1511,7 +1527,7 @@ const Koviko = {
 
     /**
      * Update the action list view.
-     * @param {NextActionEntry[]} actions Actions in the action list
+     * @param {Partial<NextActionEntry>[]} actions Actions in the action list
      * @param {HTMLElement} [container] Parent element of the action list
      * @param {boolean} [isDebug] Whether to log useful debug information
      * @memberof Koviko.Predictor
@@ -1533,7 +1549,7 @@ const Koviko = {
 
       /**
        * Organize accumulated resources, accumulated stats, and accumulated progress into a single object
-       * @var {Koviko.Predictor~State}
+       * @type {Koviko_Predictor_State}
        */
       let state;
 
@@ -1550,6 +1566,7 @@ const Koviko = {
 
       if (!state) {
         state = {
+          // @ts-ignore
           resources: { mana: 250, town: /** @type {TownNum} */(0), guild: "", totalTicks: 0 },
           stats: statList.reduce((stats, name) => (stats[name] = getExpOfLevel(buffs.Imbuement2.amt*(skills.Wunderkind.exp>=100?2:1)), stats), {}),
           talents:  statList.reduce((talents, name) => (talents[name] = stats[name].talent, talents), {}),
@@ -1577,9 +1594,11 @@ const Koviko = {
 
       /**
        * Snapshots of accumulated stats and accumulated skills
-       * @var {Object}
-       * @prop {Koviko.Snapshot} stats Snapshot of accumulated stats
-       * @prop {Koviko.Snapshot} skills Snapshot of accumulated skills
+       * @type {Object}
+       * @prop {Koviko_Snapshot} stats Snapshot of accumulated stats
+       * @prop {Koviko_Snapshot} skills Snapshot of accumulated skills
+       * @prop {Koviko_Snapshot} currProgress
+       * @prop {Koviko_Snapshot} toNextLoop
        */
       const snapshots = {
         stats: new Koviko.Snapshot(state.stats),
@@ -1592,14 +1611,14 @@ const Koviko = {
 
       /**
        * Total mana used for the action list
-       * @var {number}
+       * @type {number}
        */
       let total = 0;
 
 
       /**
        * All affected resources of the current action list
-       * @var {Array.<string>}
+       * @type {Array.<string>}
        */
       const affected = Object.keys(actions.reduce((stats, x) => (x.name in this.predictions && this.predictions[x.name].affected || []).reduce((stats, name) => (stats[name] = true, stats), stats), {}));
 
@@ -1679,7 +1698,7 @@ const Koviko = {
         const listedAction = actions[i];
         /**
          * Element for the action in the list
-         * @var {HTMLElement}
+         * @type {Element}
          */
         let div = container ? container.children[i] : null;
 
@@ -1847,7 +1866,7 @@ const Koviko = {
           cacheIsValid = false;
         }
 
-        /** @var {Koviko.Prediction} */
+        /** @type {Koviko_Prediction} */
         let prediction = this.predictions[listedAction.name];
 
         if (prediction) {
@@ -1857,12 +1876,12 @@ const Koviko = {
             // Reinitialise variables on cache miss
             isValid = (prediction.action.townNum==state.resources.town);
 
-            /** @var {number} */
+            /** @type {number} */
             let currentMana;
 
             // Make sure that the loop is properly represented in `state.progress`
             if (prediction.loop && !(prediction.name in state.progress)) {
-              /** @var {Koviko.Predictor~Progression} */
+              /** @type {Koviko_Predictor_Progression} */
               state.progress[prediction.name] = {
                 progress: 0,
                 completed: 0,
@@ -1907,6 +1926,7 @@ const Koviko = {
                 // Skip EXP calculations for the last element, when no longer necessary (only costs 1 mana)
                 if ((i==finalIndex) && (prediction.ticks()==1) &&(!prediction.loop) &&(loop>0)) {
                   state.resources.mana--;
+                // @ts-ignore
                 } else if (prediction.loop && prediction.loop.max &&((prediction.loop.max(prediction.action)*prediction.action.segments)<=state.progress[prediction.name].completed)) {
                   break;
                 } else {
@@ -1928,6 +1948,7 @@ const Koviko = {
 
 
                 // Calculate time spent
+                // @ts-ignore
                 let temp = (currentMana - state.resources.mana) / getSpeedMult(state.resources.town);
                 state.resources.totalTicks += temp;
                 state.resources.actionTicks+=temp;
@@ -1941,6 +1962,7 @@ const Koviko = {
 
                 // Run the effect, now that the mana checks are complete
                 if (prediction.effect) {
+                  // @ts-ignore
                   prediction.effect(state.resources, state.skills);
                 }
                 if (prediction.loop) {
@@ -2070,9 +2092,9 @@ const Koviko = {
       }
 
       if (this.resourcePerMinute>newStatisticValue) {
-        this.statisticDisplay.style='color: var(--predictor-worse-color)';
+        this.statisticDisplay.style.color='var(--predictor-worse-color)';
       } else {
-        this.statisticDisplay.style='color: var(--predictor-better-color)'
+        this.statisticDisplay.style.color='var(--predictor-better-color)'
       }
      this.resourcePerMinute=newStatisticValue;
 
@@ -2105,8 +2127,8 @@ const Koviko = {
       let h = Math.floor(seconds / 3600);
       let m = Math.floor(seconds % 3600 / 60);
       let s = Math.floor(seconds % 3600 % 60);
-      let ms = Math.floor(seconds % 1 * Math.pow(10,options.predictorTimePrecision));
-      while(ms.toString().length < options.predictorTimePrecision) { ms = "0" + ms; }
+      let ms = Math.floor(seconds % 1 * Math.pow(10,options.predictorTimePrecision)).toString();
+      while(ms.length < options.predictorTimePrecision) { ms = "0" + ms; }
 
       return ('0' + h).slice(-2) + ":" + ('0' + m).slice(-2) + ":" + ('0' + s).slice(-2) + "." + ms;
     }
@@ -2154,16 +2176,18 @@ const Koviko = {
      * Generate the element showing the resources accumulated for an action in the action list.
      * @param {Array.<string>} affected Names of resources to display
      * @param {string} currname Name of the snapshot on hoverover
-     * @param {Koviko.Predictor~Resources} resources Accumulated resources
+     * @param {Koviko_Predictor_Resources} resources Accumulated resources
      * @param {Object} snapshots Snapshots with value comparisons
-     * @param {Koviko.Snapshot} snapshots.stats Value comparisons of stats from one snapshot to the next
-     * @param {Koviko.Snapshot} snapshots.skills Value comparisons of skills from one snapshot to the next
+     * @param {Koviko_Snapshot} snapshots.stats Value comparisons of stats from one snapshot to the next
+     * @param {Koviko_Snapshot} snapshots.skills Value comparisons of skills from one snapshot to the next
+     * @param {Koviko_Snapshot} snapshots.currProgress
+     * @param {Koviko_Snapshot} snapshots.toNextLoop
      * @param {boolean} isValid Whether the amount of mana remaining is valid for this action
      * @return {string} HTML of the new element
      * @memberof Koviko.Predictor
      */
     template(currname, affected, resources, snapshots, isValid) {
-      isValid = isValid ? 'valid' : 'invalid';
+      const isValidStr = isValid ? 'valid' : 'invalid';
       let stats = snapshots.stats.get();
       let skills = snapshots.skills.get();
       let currProgress = snapshots.currProgress.get();
@@ -2262,42 +2286,43 @@ const Koviko = {
           tooltip += '<tr><td><b>NEXT</b><td>' +Math.floor(toNextLoop[currname].value*100*Math.pow(10,options.predictorNextPrecision))/Math.pow(10,options.predictorNextPrecision) +'%</td><td></td></tr>';
       }
       //Timer
-      tooltip+= '<tr><td><b>TIME</b></td><td>' + precision3(resources.totalTicks/50, 1) + '</td><td>(+' + precision3(resources.actionTicks/50, 1) + ')</td></tr>';
+      tooltip+= '<tr><td><b>TIME</b></td><td>' + precision3(resources.totalTicks/50) + '</td><td>(+' + precision3(resources.actionTicks/50) + ')</td></tr>';
 
       var Affec = affected.map(name => {
         if (isNaN(resources[name])) this.updateHadNaNs = true;
         if ( resources[name] != 0 ) return `<li class="${name}" title="${capitalizeFirst(name)}: ${isNaN(resources[name])?"???":formatNumber(resources[name])}">${isNaN(resources[name])?"?":intToString(resources[name], 1)}</li>`;
         else return "";
       }).join('');
-      return `<ul class='koviko ${isValid}'>` + Affec + `</ul><div class='koviko showthis'><table>${tooltip || '<b>N/A</b>'}</table></div>`;
+      return `<ul class='koviko ${isValidStr}'>` + Affec + `</ul><div class='koviko showthis'><table>${tooltip || '<b>N/A</b>'}</table></div>`;
     };
 
     /**
      * Perform one tick of a prediction.
-     * @param {Koviko.Prediction} prediction Prediction object
-     * @param {Koviko.Predictor~State} state State object
+     * @param {Koviko_Prediction} prediction Prediction object
+     * @param {Koviko_Predictor_State} state State object
      * @return {boolean} Whether another tick can occur
      * @memberof Koviko.Predictor
      */
     tick(prediction, state) {
       // Apply the accumulated stat experience, not for 0 Exp actions (Secret Trial & Restore Time)
+      // @ts-ignore
       if (prediction.action.expMult!=0) prediction.exp(prediction.action, state.stats,state.talents,state.soulstones);
 
       // Handle the loop if it exists
       if (prediction.loop) {
-        /** @var {Koviko.Predictor~Progression} */
+        /** @type {Koviko_Predictor_Progression} */
         const progression = state.progress[prediction.name];
 
-        /** @var {function} */
+        /** @type {function} */
         const loopCost = prediction.loop.cost(progression, prediction.action);
 
-        /** @var {function} */
+        /** @type {function} */
         const tickProgress = prediction.loop.tick(progression, prediction.action, state.stats, state.skills, state.resources);
 
-        /** @var {number} */
+        /** @type {number} */
         const totalSegments = prediction.action.segments;
 
-        /** @var {number} */
+        /** @type {number} */
         const maxSegments = prediction.loop.max ? prediction.loop.max(prediction.action) * totalSegments : Infinity;
 
         // Helper for caching cost Calculations
@@ -2312,13 +2337,13 @@ const Koviko = {
         }
         /**
          * Current segment within the loop
-         * @var {number}
+         * @type {number}
          */
         let segment = 0;
 
         /**
          * Progress through the current loop
-         * @var {number}
+         * @type {number}
          */
         let progress = progression.progress;
 
@@ -2327,7 +2352,7 @@ const Koviko = {
 
         /**
          * Progress of the tick
-         * @var {number}
+         * @type {number}
          */
         let additionalProgress = tickProgress(segment) * (prediction.baseManaCost(prediction.action) / prediction.ticks());
 
@@ -2378,12 +2403,13 @@ const Koviko = {
 
     /**
      * Perform all ticks of a prediction
-     * @param {Koviko.Prediction} prediction Prediction object
-     * @param {Koviko.Predictor~state} state State object
+     * @param {Koviko_Prediction} prediction Prediction object
+     * @param {Koviko_Predictor_State} state State object
      * @memberof Koviko.Predictor
      */
     predict(prediction, state) {
       // Update the amount of ticks necessary to complete the action, but only once at the start of the action
+      // @ts-ignore
       prediction.updateTicks(prediction.action, state.stats, state);
 
       // Perform all ticks in succession
@@ -2419,12 +2445,14 @@ const Koviko = {
   },
 };
 
+/** @typedef {InstanceType<(typeof Koviko)["Snapshot"]>} Koviko_Snapshot */
+/** @typedef {InstanceType<(typeof Koviko)["Prediction"]>} Koviko_Prediction */
 /** @typedef {InstanceType<(typeof Koviko)["Predictor"]>} Predictor */
 /**
  * @template {*} K
  * @template {*} R
  * @template {*} T
- * @typedef {InstanceType<typeof Koviko.Cache<K,R,T>} PredictorCache
+ * @typedef {InstanceType<typeof Koviko.Cache<K,R,T>>} PredictorCache
  */
 
 /** @typedef {Awaited<ReturnType<Predictor["update"]>>} PredictorRunData */

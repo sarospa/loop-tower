@@ -54,7 +54,6 @@ class Town {
         return Math.floor((Math.sqrt(8 * this[`exp${varName}`] / 100 + 1) - 1) / 2);
     };
 
-    /** @this {Town<TN> & TownVars<TN>} */
     restart() {
         for (let i = 0; i < this.varNames.length; i++) {
             const varName = this.varNames[i];
@@ -112,7 +111,7 @@ class Town {
         // only checks unchecked items 
         // IF there are unchecked items 
         // AND the user has not disabled checking unchecked items OR there are no checked items left
-        const searchToggler = document.getElementById(`searchToggler${varName}`);
+        const searchToggler = inputElement(`searchToggler${varName}`, false, false);
         if (this[`total${varName}`] - this[`checked${varName}`] > 0 && ((searchToggler && !searchToggler.checked) || this[`goodTemp${varName}`] <= 0)) {
             this[`checked${varName}`]++;
             if (this[`checked${varName}`] % rewardRatio === 0) {

@@ -88,7 +88,7 @@ function animationTick(animationTime) {
 function tick() {
     const newTime = Date.now();
     gameTicksLeft += newTime - curTime;
-    if (document.getElementById("radarStats").checked) radarUpdateTime += newTime - curTime;
+    if (inputElement("radarStats").checked) radarUpdateTime += newTime - curTime;
     const delta = newTime - curTime;
     curTime = newTime;
 
@@ -99,7 +99,7 @@ function tick() {
     }
 
     // don't do any updates until we've got enough time built up to match the refresh rate setting
-    if (gameTicksLeft < 1000 / window.fps) {
+    if (gameTicksLeft < 1000 / windowFps) {
         return;
     }
 
@@ -127,7 +127,7 @@ function tick() {
         return;
     }
 
-    const deadline = performance.now() + 1000 / window.fps; // don't go past the current frame update time
+    const deadline = performance.now() + 1000 / windowFps; // don't go past the current frame update time
     // Data.recordSnapshot("tick");
 
     executeGameTicks(deadline);
@@ -228,7 +228,7 @@ function executeGameTicks(deadline) {
 }
 
 function recalcInterval(fps) {
-    window.fps = fps;
+    windowFps = fps;
     if (mainTickLoop !== undefined) {
         clearInterval(mainTickLoop);
     }
@@ -377,7 +377,7 @@ function addActionToList(name, townNum, isTravelAction, insertAtIndex) {
                     if (shiftDown && hasLimit(name)) {
                         capAmount(index, townNum);
                     } else if (shiftDown && isTraining(name)) {
-                        capTraining(index, townNum);
+                        capTraining(index);
                     }
                 }
             }
@@ -414,12 +414,12 @@ function resetResources() {
 
 function changeActionAmount(amount, num) {
     actions.addAmount = amount;
-    document.getElementById("amountCustom").value = amount;
+    inputElement("amountCustom").value = amount;
     view.updateAddAmount(num);
 }
 
 function setCustomActionAmount() {
-    const value = isNaN(parseInt(document.getElementById("amountCustom").value)) ? 1 : parseInt(document.getElementById("amountCustom").value);
+    const value = isNaN(parseInt(inputElement("amountCustom").value)) ? 1 : parseInt(inputElement("amountCustom").value);
     if (value >= 0 && value <= Number.MAX_VALUE) actions.addAmount = Math.min(value, 1e12);
     if (value === 1) {
         view.updateAddAmount(1);
@@ -438,7 +438,7 @@ function selectLoadout(num) {
     } else {
         curLoadout = num;
     }
-    document.getElementById("renameLoadout").value = loadoutnames[curLoadout - 1];
+    inputElement("renameLoadout").value = loadoutnames[curLoadout - 1];
     view.updateLoadout(curLoadout);
 }
 
@@ -457,10 +457,10 @@ function saveList() {
     nameList(false);
     loadouts[curLoadout] = copyArray(actions.next);
     save();
-    if ((document.getElementById("renameLoadout").value !== "Saved!")) globalCustomInput = document.getElementById("renameLoadout").value;
-    document.getElementById("renameLoadout").value = "Saved!";
+    if ((inputElement("renameLoadout").value !== "Saved!")) globalCustomInput = inputElement("renameLoadout").value;
+    inputElement("renameLoadout").value = "Saved!";
     setTimeout(() => {
-        document.getElementById("renameLoadout").value = globalCustomInput;
+        inputElement("renameLoadout").value = globalCustomInput;
     }, 1000);
 }
 
@@ -469,14 +469,14 @@ function nameList(saveGame) {
     // and the user tries to save under a numeric name, the loadout will
     // be saved under an old name
     // if both the old AND the new names are numeric, then we insist on a non-numeric name
-    if (isNaN(document.getElementById("renameLoadout").value)) {
-        if (document.getElementById("renameLoadout").value.length > 30) {
-            document.getElementById("renameLoadout").value = "30 Letter Max";
-        } else if (document.getElementById("renameLoadout").value !== "Saved!") {
-            loadoutnames[curLoadout - 1] = document.getElementById("renameLoadout").value;
+    if (isNaN(parseFloat(inputElement("renameLoadout").value))) {
+        if (inputElement("renameLoadout").value.length > 30) {
+            inputElement("renameLoadout").value = "30 Letter Max";
+        } else if (inputElement("renameLoadout").value !== "Saved!") {
+            loadoutnames[curLoadout - 1] = inputElement("renameLoadout").value;
         }
-    } else if (!isNaN(loadoutnames[curLoadout - 1])) {
-        document.getElementById("renameLoadout").value = "Enter a name!";
+    } else if (!isNaN(parseFloat(loadoutnames[curLoadout - 1]))) {
+        inputElement("renameLoadout").value = "Enter a name!";
     }
     document.getElementById(`load${curLoadout}`).textContent = loadoutnames[curLoadout -1];
     if (saveGame) save();
@@ -486,7 +486,7 @@ function loadList() {
     if (curLoadout === 0) {
         return;
     }
-    document.getElementById("amountCustom").value = actions.addAmount;
+    inputElement("amountCustom").value = actions.addAmount.toString();
     if (loadouts[curLoadout]) {
         actions.next = copyArray(loadouts[curLoadout]);
     } else {
@@ -572,6 +572,7 @@ function capTraining(index) {
 function capAllTraining() {
     for (const [index,action] of actions.next.entries())
     {
+        // @ts-ignore
         if (trainingActions.includes(action.name)) {
             //console.log("Training Action on list: " + action.name);
             capTraining(index);
@@ -652,6 +653,7 @@ function handleDragStart(event) {
 }
 
 function handleDirectActionDragStart(event, actionName, townNum, actionVarName, isTravelAction) {
+    // @ts-ignore
     document.getElementById(`container${actionVarName}`).children[2].style.display = "none";
     const actionData = { _actionName: actionName, _townNum: townNum, _isTravelAction: isTravelAction };
     const serialData = JSON.stringify(actionData);
@@ -661,6 +663,7 @@ function handleDirectActionDragStart(event, actionName, townNum, actionVarName, 
 
 
 function handleDirectActionDragEnd(actionVarName) {
+    // @ts-ignore
     document.getElementById(`container${actionVarName}`).children[2].style.display = "";
     showActionIcons();
 }

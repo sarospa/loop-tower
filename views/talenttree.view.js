@@ -1,10 +1,10 @@
-Views.registerView("talentTree", {
+const talentTreeView = Views.registerView("talentTree", {
     selector: "#talentTree",
     talentTree() {
         let html = "";
-        for (const talent in talentData) {
-            html += talent;
-        }
+        // for (const talent in talentData) {
+        //     html += talent;
+        // }
         return html;
     },
     html() {

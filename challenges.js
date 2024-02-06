@@ -18,14 +18,17 @@ function loadChallenge() {
             Action.BuyManaZ5.visible = function() {return false;}
             break;
         case 2:
+            // @ts-ignore
             getSelfCombat = function() {
                 return Math.max(getZombieStrength(), getTeamStrength()) / 2;
             }
+            // @ts-ignore
             getTeamCombat = function() {
                 return getZombieStrength() + getTeamStrength();
             }
             break;
         case 3:
+            // @ts-ignore
             restart = function() {
                 shouldRestart = false;
                 timer = 0;

@@ -4,7 +4,11 @@
         "allowJs": true,
         "checkJs": true,
         "moduleResolution": "node",
+        "noEmit": false,
+        "emitDeclarationOnly": true,
+        "declaration": true,
+        "declarationDir": "types",
     },
-    "include": ["*.js", "views/*.js", "*.d.ts", "index.html", "types.d.ts"],
-    "files": ["index.html", "types.d.ts"],
+    "include": ["*.js", "views/*.js", "*.d.ts", "types.d.ts"],
+    "files": ["types.d.ts"],
 }
