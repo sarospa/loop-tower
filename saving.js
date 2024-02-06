@@ -490,6 +490,7 @@ let totals = {
     actions: 0
 };
 
+/** @type {{challengeMode?: number, inChallenge?: boolean}} */
 let challengeSave = {
     challengeMode: 0,
     inChallenge: false
@@ -1224,7 +1225,7 @@ function doLoad(toLoad) {
         }
     }
 
-    for (const option in options) {
+    for (const option of /** @type {OptionName[]} */(Object.keys(options))) {
         loadOption(option, options[option]); 
     }
     storyShowing = toLoad.storyShowing === undefined ? 0 : toLoad.storyShowing;
@@ -1458,7 +1459,7 @@ function importCurrentList() {
         if (!toImport[i]) {
             continue;
         }
-        const name = toImport[i].substr(toImport[i].indexOf("x") + 1).trim();
+        const name = /** @type {ActionName} */(toImport[i].substr(toImport[i].indexOf("x") + 1).trim());
         const loops = toImport[i].substr(0, toImport[i].indexOf("x"));
         try {
             const action = translateClassNames(name);

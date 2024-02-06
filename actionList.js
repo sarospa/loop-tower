@@ -17,11 +17,11 @@ function withoutSpaces(name) {
     return name.replace(/ /gu, "");
 }
 
-/** @template {Action<any>} A @typedef {A extends Action<any, infer E> ? E : never} ExtrasOf */
-/** @template {Action<any>} A @typedef {A extends Action<infer N, any> ? N : never} NameOf */
-/** @template {Action<any>} A @typedef {A["varName"]} VarNameOf */
-/** @template {Action<any>} A @typedef {A extends Action<any, infer E> ? number extends E["townNum"] ? never : E["townNum"] : never} TownNumOf */
-/** @template {Action<any>} A @typedef {A extends Action<any, infer E> ? number extends E["type"] ? never : E["type"] : never} ActionTypeOf */
+/** @template {Action<any, any>} A @typedef {A extends Action<any, infer E> ? E : never} ExtrasOf */
+/** @template {Action<any, any>} A @typedef {A extends Action<infer N, any> ? N : never} NameOf */
+/** @template {Action<any, any>} A @typedef {A["varName"]} VarNameOf */
+/** @template {Action<any, any>} A @typedef {A extends Action<any, infer E> ? number extends E["townNum"] ? never : E["townNum"] : never} TownNumOf */
+/** @template {Action<any, any>} A @typedef {A extends Action<any, infer E> ? number extends E["type"] ? never : E["type"] : never} ActionTypeOf */
 // reverse lookup
 /** @template {AnyAction} A @typedef {A extends ActionConstructor[infer I extends ActionId] ? I : never} ActionIdOf */
 
@@ -40,8 +40,6 @@ function withoutSpaces(name) {
 /** @template {ActionType} T @typedef {ActionOfTownAndType<any,T>} ActionOfType */
 
 /**
- * @typedef {TownNumOf<ActionOfTown<1>>} T0
- * @typedef {NameOf<ActionOfType<"multipart">>} TS
  * @typedef {Action<any>|MultipartAction<any>} AnyActionType
  * @typedef {typeof Action} ActionConstructor
  * @typedef {{
