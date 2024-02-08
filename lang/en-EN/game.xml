@@ -15,6 +15,9 @@
             • Adjusted visibility conditions for some actions.<br>
             • Added world survey display. Thanks to Eyel from the Discord for the idea!<br>
             • All world survey bars should now update together.<br>
+            • Added inline level, talent, and soulstone bars for the Stats panel in the responsive UI.<br>
+            • Rearranged the two-column layout of the responsive UI to take advantage of the inline stat bars.<br>
+            • Stat bars now have a faded right edge to signify that they don't have a maximum, and they will rescale more often so that more of the bar width gets used more often.<br>
             ]]></version>
             <version verNum="3.P16.21"><![CDATA[
             <b> Feb 5th, 2024</b>

@@ -36,7 +36,9 @@
 class Town {
     /** @type {TN} */
     index;
+    /** @type {string[]} */
     varNames = [];
+    /** @type {string[]} */
     progressVars = [];
     /** @type {ActionOfTown<TN>[]} */
     totalActionList = [];

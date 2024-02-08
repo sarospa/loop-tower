@@ -129,6 +129,7 @@ function toSuffix(value) {
 }
 
 const Mana = {
+    /** @param {number} value @param {number} [minNonZero] */
     ceil(value, minNonZero) {
         return value === 0 ? 0
                 : !options.fractionalMana ? Math.ceil(value)
@@ -137,6 +138,7 @@ const Mana = {
                 : Math.min(value, -minNonZero);
     },
     
+    /** @param {number} value @param {number} [minNonZero] */
     floor(value, minNonZero) {
         return value === 0 ? 0
                 : !options.fractionalMana ? Math.floor(value)
@@ -145,6 +147,7 @@ const Mana = {
                 : Math.min(value, -minNonZero);
     },
     
+    /** @param {number} value @param {number} [minNonZero] */
     round(value, minNonZero) {
         return value === 0 ? 0
                 : !options.fractionalMana ? Math.round(value)

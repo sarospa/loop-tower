@@ -98,7 +98,8 @@ class View {
             totalContainer.insertAdjacentHTML("beforebegin",
             `<div class='statContainer showthat stat-${stat}' style='left:${axisTip[0]}%;top:${axisTip[1]+3}%;' onmouseover='view.showStat("${stat}")' onmouseout='view.showStat(undefined)'>
                 <div class='statLabelContainer'>
-                    <div class='medium bold stat-name' style='margin-left:18px;margin-top:5px;'>${_txt(`stats>${stat}>long_form`)}</div>
+                    <div class='medium bold stat-name long-form' style='margin-left:18px;margin-top:5px;'>${_txt(`stats>${stat}>long_form`)}</div>
+                    <div class='medium bold stat-name short-form' style='margin-left:18px;margin-top:5px;'>${_txt(`stats>${stat}>short_form`)}</div>
                     <div class='medium statNum stat-soulstone' style='color:var(--stat-soulstone-color);' id='stat${stat}ss'></div>
                     <div class=' statNum stat-talent'></div>
                     <div class='medium statNum stat-talent statBarWrapper'>
@@ -348,6 +349,12 @@ class View {
         }
     };
 
+    logBarScaleBase = 1.25;
+    /** @param {number} maxValue  */
+    getMaxLogBarScale(maxValue) {
+        return this.logBarScaleBase ** Math.ceil(Math.log(maxValue) / Math.log(this.logBarScaleBase));
+    }
+
     /**
      * @param {string} maxContainerId 
      * @param {string} logBarId
@@ -362,7 +369,7 @@ class View {
 
         const logBar = htmlElement(logBarId);
         if (level > maxValue) {
-            maxValue = Math.pow(2, Math.ceil(Math.log2(level + 1)));
+            maxValue = this.getMaxLogBarScale(level + 1);
             maxContainer.style.setProperty("--max-bar-value", String(maxValue));
         }
         logBar.style.setProperty("--bar-value", String(logLevel));
@@ -376,7 +383,7 @@ class View {
                 maxValue = Math.max(value, maxValue);
             }
         }
-        maxValue = Math.pow(2, Math.ceil(Math.log2(maxValue)));
+        maxValue = this.getMaxLogBarScale(maxValue);
         const statsContainer = htmlElement("statsContainer");
         if (skipAnimation) {
             statsContainer.classList.remove("animate-logBars");
@@ -1158,7 +1165,7 @@ class View {
 
     /** @param {ActionOfType<"progress">} action  */
     createGlobalSurveyProgress(action) {
-        this.createActionProgress(action, "Global", action.labelGlobal, false);
+        this.createActionProgress(action, "Global", action.labelGlobal, true);
     }
 
     /** @param {ActionOfType<"progress">} action @param {string} [label] */
@@ -1635,10 +1642,8 @@ class View {
         const statsWindow = document.getElementById("statsWindow");
         if (inputElement("regularStats").checked) {
             statsWindow.dataset.view = "regular";
-            htmlElement("statsColumn").style.width = "316px";
         } else {
             statsWindow.dataset.view = "radar";
-            htmlElement("statsColumn").style.width = "410px";
             statGraph.update();
         }
     };

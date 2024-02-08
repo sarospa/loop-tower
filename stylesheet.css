@@ -561,32 +561,24 @@ input[type="checkbox"][disabled] + label {
     box-shadow: 0 3px var(--button-inactive-shadow)
 }
 
-/* Apparently unused?
-.container {
-    border:1px solid black;
-    margin:10px;
-    padding:3px 8px;
-    position:absolute;
-    border-radius:5px;
-    text-align:center;
-    min-width:100px;
-    opacity:.7;
-    background-color: #c3d2ff;
+#statsColumn {
+    width: 316px;
+    vertical-align: top;
 }
-.container:hover {
-    opacity:1;
-}
-*/
 
 #statsWindow {
+    width: calc(100% - 12px);
+    margin-left: 12px;
+    text-align: center;
+    position: relative;
+    overflow: visible;
     display: grid;
     grid:
-        "title title title title"
-        "selector selector selector selector"
-        "stats stats stats stats"
-        "skills skills skills skills"
-        "buffs buffs buffs buffs"
-        / [fullrow-start] 1fr max-content max-content max-content [fullrow-end];
+        "title"
+        "selector"
+        "stats"
+        "skills"
+        "buffs"
 }
 
 #statsTitle {
@@ -612,6 +604,21 @@ input[type="checkbox"][disabled] + label {
 .use-stat-colors .statLabelContainer .stat-name,
 .use-stat-colors .statLabelContainer .stat-level {
     color: var(--stat-color);
+}
+
+.use-stat-colors .statLabelContainer .stat-talent {
+    color: color-mix(in srgb,
+                     var(--default-color) 40%,
+                     color-mix(in srgb, 
+                               var(--stat-color),
+                               var(--progress-bar-talent-color) 75%));
+}
+.use-stat-colors .statLabelContainer .stat-soulstone {
+    --stat-soulstone-color: color-mix(in srgb,
+                                      var(--default-color) 20%,
+                                      color-mix(in srgb,
+                                                var(--stat-color),
+                                                var(--progress-bar-town-color) 75%));
 }
 
 .skillContainer {
@@ -677,18 +684,23 @@ input[type="checkbox"][disabled] + label {
     & #statsContainer {
         margin: 15px 0;
         display: grid;
-        grid-template-columns: [fullrow-start] 1fr max-content max-content max-content [fullrow-end];
-        grid-template-columns: subgrid;
+        grid-row-gap: 4px;
+        grid-template-columns: [fullrow-start] max-content 1fr max-content max-content max-content [fullrow-end];
+        container: stats-container / inline-size;
+        min-width: 225px;
     }
     & .statContainer {
         width:100%;
+        height: 28px;
         display: grid;
         grid-column: fullrow;
         grid-template:
-            "name level talent soulstone"
-            "bars bars bars bars";
+            "name expbar       level talent soulstone"
+            "name talentbar    level talent soulstone"
+            "name soulstonebar level talent soulstone"
+            ;
         /* Chrome etc don't support subgrid in the grid-template value? */
-        grid-template-columns: [fullrow-start] 1fr max-content max-content max-content [fullrow-end];
+        grid-template-columns: [fullrow-start] max-content 1fr max-content max-content max-content [fullrow-end];
         grid-template-columns: subgrid;
 
         &:hover {
@@ -696,9 +708,18 @@ input[type="checkbox"][disabled] + label {
         }
         & > .statLabelContainer {
             display: contents;
+            & > .statNum {
+                margin-top: 0;
+                padding-top: 6px;
+            }
         }
         & .stat-name {
             grid-area: name;
+            margin-right: 0.5em;
+            padding-top: 1px;
+        }
+        & .stat-name.short-form {
+            display: none;
         }
         & .stat-level {
             grid-area: level;
@@ -709,15 +730,51 @@ input[type="checkbox"][disabled] + label {
         & .stat-soulstone {
             grid-area: soulstone;
         }
-        & .thinProgressBarUpper {
-            margin-top: 2px;
-            grid-column: fullrow;
+        & > .expBar {
+            grid-area: expbar;
         }
-        & .thinProgressBarLower {
-            grid-column: fullrow;
+        & > .talentBar {
+            grid-area: talentbar;
+        }
+        & > .soulstoneBar {
+            grid-area: soulstonebar;
+        }
+        
+        & > :is(.thinProgressBarUpper, .thinProgressBarLower) {
+            margin: 0;
+            min-width: 4em;
+            height: 100%;
+            background: linear-gradient(to left, transparent, var(--progress-bar-background) max(32px,50%));
         }
     }
+}
 
+@container stats-container (max-width: 350px) {
+    #statsWindow[data-view=regular] .statContainer {
+        height: auto;
+        grid-template-areas:
+            "name         name         level        talent       soulstone   "
+            "expbar       expbar       expbar       expbar       expbar      "
+            "talentbar    talentbar    talentbar    talentbar    talentbar   "
+            "soulstonebar soulstonebar soulstonebar soulstonebar soulstonebar";
+        grid-template-rows: max-content 4px 4px 4px;
+        grid-row-gap: 2px;
+
+        & > :is(.thinProgressBarUpper, .thinProgressBarLower) {
+            margin-left: 18px;
+        }
+    }
+}
+
+@container stats-container (max-width: 275px) {
+    #statsWindow[data-view=regular] .statContainer {
+        & .stat-name.long-form {
+            display: none;
+        }
+        & .stat-name.short-form {
+            display: block;
+        }
+    }
 }
 
 .statContainer.stat-total {
@@ -767,7 +824,7 @@ input[type="checkbox"][disabled] + label {
     z-index: 0;
     & .thinProgressBarLower {
         position: absolute;
-        inset: -3px 0 0 0;
+        inset: 0;
         height: auto;
         width: auto;
         z-index: 0;
@@ -791,7 +848,7 @@ input[type="checkbox"][disabled] + label {
     display:block;
 }
 .logBar {
-    width: calc(var(--bar-value,0) / var(--max-bar-value,1) * 75%);
+    width: calc(var(--bar-value,0) / var(--max-bar-value,1) * (100% - 4px));
 }
 .animate-logBars .logBar {
     transition: width 100ms ease;
@@ -1481,7 +1538,7 @@ li#actionLogLatest {
         grid:
             "header header header" max-content
             "actions town stats" minmax(0, 1fr)
-            / minmax(min-content, 1fr) minmax(535px, 2fr) minmax(316px, 1fr)
+            / minmax(min-content, 1fr) minmax(535px, 2fr) minmax(min-content, 1fr)
             ;
         justify-items: stretch;
     }
@@ -1818,8 +1875,8 @@ li#actionLogLatest {
                 "title skills" 1lh
                 "selector skills" 1lh
                 "stats skills"
-                "stats buffs" 
-                / minmax(min-content, 1fr) minmax(min-content, 1fr);
+                "buffs skills"
+                / minmax(min-content, 3fr) minmax(max-content, 2fr);
             width: 100% !important;
             box-sizing: border-box;
             margin: 0 !important;
@@ -1828,14 +1885,10 @@ li#actionLogLatest {
             justify-items: stretch;
             justify-content: stretch;
         }
-        
-        & #statsWindow[data-view="regular"] #statsContainer {
-            grid-template-columns: [fullrow-start] 1fr max-content max-content max-content [fullrow-end];
-        }
-    
         & #skillList,
         & #buffList {
-            display: block;
+            display: flex;
+            flex-direction: column;
             width: auto !important;
         }
     
@@ -1974,7 +2027,7 @@ li#actionLogLatest {
     }
 }
 /* mobile support, only for responsive */
-@media (max-width: 780px) {
+@media (max-width: 810px) {
     .responsive {
         & body {
             width: 100vw;
@@ -2138,6 +2191,15 @@ li#actionLogLatest {
             grid-area: stats;  
         }  
     
+        & #statsWindow {
+            grid:
+                "title"
+                "selector"
+                "stats"
+                "skills"
+                "buffs";
+        }
+
         & #statsWindow > .showthat > .showthis {
             right:0%;
         }
