@@ -647,6 +647,7 @@ class View {
         })
     };
     updateNextActions() {
+        const {scrollTop} = nextActionsDiv; // save the current scroll position
         if (options.predictor) {
             Koviko.preUpdateHandler(nextActionsDiv);
         }
@@ -729,6 +730,7 @@ class View {
         if (options.predictor) {
             Koviko.postUpdateHandler(actions.next, nextActionsDiv);
         }
+        nextActionsDiv.scrollTop = Math.max(nextActionsDiv.scrollTop, scrollTop); // scrolling down to see the new thing added is okay, scrolling up when you click an action button is not
     };
 
     updateCurrentActionsDivs() {
