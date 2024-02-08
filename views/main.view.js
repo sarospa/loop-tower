@@ -603,6 +603,10 @@ class View {
         Array.from(document.getElementsByClassName("surveySkill")).forEach(div => {
             div.textContent = `${getExploreSkill()}`;
         });
+        for (const town of towns) {
+            const varName = town.progressVars.find(v => v.startsWith("Survey"));
+            this.updateGlobalSurvey(varName, town);
+        }
     }
     updateTeamCombat() {
         if (towns[2].unlocked) {
@@ -921,10 +925,14 @@ class View {
         document.getElementById(`progress${varName}`).textContent = intToString(levelPrc, 2);
         document.getElementById(`bar${varName}`).style.width = `${level}%`;
         if (varName.startsWith("Survey") && !varName.endsWith("Global")) {
+            this.updateGlobalSurvey(varName, town);
+        }
+    };
+
+    updateGlobalSurvey(varName, town) {
             const expToNext = getExploreExpToNextProgress();
             const expSinceLast = getExploreExpSinceLastProgress();
             this.updateProgressAction({name: `${varName}Global`, town}, getExploreProgress(), `${expSinceLast * 100 / (expSinceLast + expToNext)}%`);
-        }
     };
 
     updateProgressActions() {
