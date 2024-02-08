@@ -688,6 +688,9 @@ input[type="checkbox"][disabled] + label {
         grid-template-columns: [fullrow-start] max-content 1fr max-content max-content max-content [fullrow-end];
         container: stats-container / inline-size;
         min-width: 225px;
+        &:hover {
+            z-index: 1;
+        }
     }
     & .statContainer {
         width:100%;
