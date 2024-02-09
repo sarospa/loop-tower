@@ -6595,6 +6595,7 @@ function getExploreExp() {
 }
 function getExploreExpSinceLastProgress() {
     const totalExploreProgress = getTotalExploreProgress();
+    if (totalExploreProgress === 100 * towns.length) return 1;
     let levelsSinceLastProgress = totalExploreProgress <= 1 ? 1
                                 : totalExploreProgress < towns.length * 2 ? totalExploreProgress - 1
                                 : totalExploreProgress % towns.length + 1;
@@ -6625,6 +6626,7 @@ function getExploreExpSinceLastProgress() {
 }
 function getExploreExpToNextProgress() {
     const totalExploreProgress = getTotalExploreProgress();
+    if (totalExploreProgress === 100 * towns.length) return 0;
     let levelsToNextProgress = totalExploreProgress === 0 ? 1
                              : totalExploreProgress < towns.length * 2 ? towns.length * 2 - totalExploreProgress
                              : towns.length - (totalExploreProgress % towns.length);
