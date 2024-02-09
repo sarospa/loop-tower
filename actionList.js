@@ -6604,10 +6604,13 @@ function getExploreExpSinceLastProgress() {
     function expSinceLast(town) {
         const varName = `SurveyZ${town.index}`;
         const level = town.getLevel(varName) - (levelsPerTown[town.index] ?? 0);
-        const levelExp = getExpOfSingleLevel(level);
-        const levelStartExp = getExpOfLevel(level);
-        const curExp = (levelsPerTown[town.index] ?? 0) > 0 ? levelStartExp + levelExp : town[`exp${varName}`];
-        return curExp - levelStartExp;
+        if (level === 0 || level === 100) return Infinity;
+        if (levelsPerTown[town.index]) {
+            return getExpOfSingleLevel(level);
+        } else {
+            const curExp = town[`exp${varName}`];
+            return curExp - getExpOfLevel(level) + 1;
+        }
     }
     const townsByExpOrder = [...towns].sort((a, b) => expSinceLast(a) - expSinceLast(b));
     let totalExpGained = 0;
@@ -6616,6 +6619,7 @@ function getExploreExpSinceLastProgress() {
         const index = townsByExpOrder[0].index;
         levelsPerTown[index] ??= 0;
         levelsPerTown[index]++;
+        townsByExpOrder.sort((a, b) => expSinceLast(a) - expSinceLast(b));
     }
     return totalExpGained;
 }
@@ -6630,10 +6634,13 @@ function getExploreExpToNextProgress() {
     function expToNext(town) {
         const varName = `SurveyZ${town.index}`;
         const level = town.getLevel(varName) + (levelsPerTown[town.index] ?? 0);
-        const levelExp = getExpOfSingleLevel(level + 1);
-        const levelStartExp = getExpOfLevel(level);
-        const curExp = (levelsPerTown[town.index] ?? 0) > 0 ? levelStartExp : town[`exp${varName}`];
-        return levelExp - (curExp - levelStartExp);
+        if (level >= 100) return Infinity;
+        if (levelsPerTown[town.index]) {
+            // we're at a level boundary so we can shortcut
+            return getExpOfSingleLevel(level + 1);
+        } else {
+            return getExpOfLevel(level + 1) - town[`exp${varName}`];
+        }
     }
     const townsByExpOrder = [...towns].sort((a, b) => expToNext(a) - expToNext(b));
     let totalExpNeeded = 0;
@@ -6642,6 +6649,7 @@ function getExploreExpToNextProgress() {
         const index = townsByExpOrder[0].index;
         levelsPerTown[index] ??= 0;
         levelsPerTown[index]++;
+        townsByExpOrder.sort((a, b) => expToNext(a) - expToNext(b));
     }
     return totalExpNeeded;
 }
