@@ -221,9 +221,9 @@ class ActionLogEntry {
 
     /** @type {(key: string) => string} */
     getReplacement(key) {
-        if (key === "loop") return intToString(this.loop, 1);
-        if (key === "loopStart") return intToString(this.loop, 1);
-        if (key === "loopEnd") return intToString(this.loop, 1);
+        if (key === "loop") return formatNumber(this.loop);
+        if (key === "loopStart") return formatNumber(this.loop);
+        if (key === "loopEnd") return formatNumber(this.loop);
         if (key === "town") return townNames[this.action?.townNum];
         if (key === "action") return this.action?.label;
         if (key === "header") return _txt("actions>log>header");
@@ -267,8 +267,8 @@ class RepeatableLogEntry extends ActionLogEntry {
 
     /** @param {string} key  */
     getReplacement(key) {
-        if (key === "loop") return this.loop === this.loopEnd ? intToString(this.loop, 1) : _txt("actions>log>multiloop");
-        if (key === "loopEnd") return intToString(this.loopEnd, 1);
+        if (key === "loop") return this.loop === this.loopEnd ? formatNumber(this.loop) : _txt("actions>log>multiloop");
+        if (key === "loopEnd") return formatNumber(this.loopEnd);
         return super.getReplacement(key);
     }
 

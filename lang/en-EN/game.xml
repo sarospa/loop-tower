@@ -19,6 +19,7 @@
             • Rearranged the two-column layout of the responsive UI to take advantage of the inline stat bars.<br>
             • Stat bars now have a faded right edge to signify that they don't have a maximum, and they will rescale more often so that more of the bar width gets used more often.<br>
             • The action list should stop scrolling up when you click action buttons in Chrome.<br>
+            • Loop numbers now display in full in the Action Log.<br>
             ]]></version>
             <version verNum="3.P16.21"><![CDATA[
             <b> Feb 5th, 2024</b>
