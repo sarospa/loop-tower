@@ -9,17 +9,21 @@
                 <title>Changelog</title>
                 <version_prefix>Version</version_prefix>
             </meta>
+            <!--
             <version caption="Latest"><![CDATA[ 
             <b>Recent changes</b>
+            ]]></version>
+            -->
+            <version verNum="3.P16.22"><![CDATA[
+            <b> Feb 9th, 2024</b>
             • Yet more typos quashed.<br>
             • Adjusted visibility conditions for some actions.<br>
             • Added world survey display. Thanks to Eyel from the Discord for the idea!<br>
-            • All world survey bars should now update together.<br>
-            • Added inline level, talent, and soulstone bars for the Stats panel in the responsive UI.<br>
-            • Rearranged the two-column layout of the responsive UI to take advantage of the inline stat bars.<br>
+            • Added inline level, talent, and soulstone bars for the Stats panel in the responsive UI, and rearranged the two-column layout to take advantage of the smaller footprint.<br>
             • Stat bars now have a faded right edge to signify that they don't have a maximum, and they will rescale more often so that more of the bar width gets used more often.<br>
             • The action list should stop scrolling up when you click action buttons in Chrome.<br>
             • Loop numbers now display in full in the Action Log.<br>
+            • Fixed the story unlock conditions for the Haul action.<br>
             ]]></version>
             <version verNum="3.P16.21"><![CDATA[
             <b> Feb 5th, 2024</b>
@@ -1611,7 +1615,7 @@
             One in every one thousand Stones is Temporal.<br>
             Action fails if you have a Temporal Stone.
             ]]></tooltip>
-            <story_1><![CDATA[<b>First Temporal Stone Found:</b>⮀ Practically the moment you identify one grey cube of rock as different from the surrounding, identical-looking grey cubes of rock, a spiral pattern lights up on its sides, practically glueing itself to your hand! You can still set it down, but it clearly wants to be carried.]]></story_1>
+            <story_1><![CDATA[<b>First Temporal Stone Found:</b>⮀ Practically the moment you identify one grey cube of rock as different from the surrounding, identical-looking grey cubes of rock, a spiral pattern lights up on its sides, practically gluing itself to your hand! You can still set it down, but it clearly wants to be carried.]]></story_1>
             <story_2><![CDATA[<b>Moved 100 Temporal Stones:</b>⮀ Wiggling the temporal stones out from among the mundane ones is the easy part, dragging them to the Valley of Olympus is the real pain in your back.]]></story_2>
             <story_3><![CDATA[<b>Moved 250 Temporal Stones:</b>⮀ The final stone, conveniently enough, was near the top of a wall that housed several Temporal stones. The wall has collapsed from having so many bricks removed by the time you're looking for the final stone, so you can just pick it up and make the final delivery to the Valley of Olympus.]]></story_3>
         </haulz5>

@@ -644,7 +644,7 @@ function adjustRocks(townNum) {
     town[`totalStonesZ${townNum}`] = baseStones;
     town[`goodStonesZ${townNum}`] = Math.floor(town[`checkedStonesZ${townNum}`] / 1000) - usedStones;
     town[`goodTempStonesZ${townNum}`] = Math.floor(town[`checkedStonesZ${townNum}`] / 1000) - usedStones;
-    if (usedStones === 250) town.checkedStones = 250000;
+    if (usedStones === 250) town[`checkedStonesZ${townNum}`] = 250000;
 }
 function adjustAllRocks() {
     adjustRocks(1);
@@ -686,11 +686,11 @@ function HaulAction(townNum) {
         storyReqs(storyNum) {
           switch (storyNum) {
               case 1:
-                  return towns[this.townNum][`good${this.varName}`] >= 1;
+                  return towns[this.townNum][`good${this.varName}`] + stonesUsed[this.townNum] >= 1;
               case 2:
-                  return towns[this.townNum][`good${this.varName}`] >= 100;
+                  return towns[this.townNum][`good${this.varName}`] + stonesUsed[this.townNum] >= 100;
               case 3:
-                  return towns[this.townNum][`good${this.varName}`] >= 250;
+                  return towns[this.townNum][`good${this.varName}`] + stonesUsed[this.townNum] >= 250;
           }
           return false;
         }
