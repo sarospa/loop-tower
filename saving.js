@@ -612,7 +612,7 @@ const options = {
     speedIncreaseCustom: 5,
     speedIncreaseBackground: -1,
     highlightNew: true,
-    statColors: false,
+    statColors: true,
     statHints: false,
     pingOnPause: false,
     notifyOnPause: false,
@@ -935,7 +935,7 @@ function needsDataSnapshots() {
     return options.predictor && options.predictorBackgroundThread;
 }
 
-function load(inChallenge) {
+function load(inChallenge, saveJson = window.localStorage[saveName]) {
     loadDefaults();
     loadUISettings();
 
@@ -947,9 +947,9 @@ function load(inChallenge) {
 
     let toLoad = {};
     // has a save file
-    if (window.localStorage[saveName] && window.localStorage[saveName] !== "null") {
+    if (saveJson && saveJson !== "null") {
         closeTutorial();
-        toLoad = JSON.parse(window.localStorage[saveName]);
+        toLoad = JSON.parse(saveJson);
     }
 
     console.log("Loading game from: " + saveName + " inChallenge: " + inChallenge);
@@ -1365,8 +1365,10 @@ function doSave() {
 
 function save() {
     const toSave = doSave();
-    window.localStorage[saveName] = JSON.stringify(toSave);
+    const saveJson = JSON.stringify(toSave);
+    storeSaveJson(saveJson);
     window.localStorage["updateRate"] = options.updateRate;
+    return saveJson;
 }
 
 function currentSaveData() {
@@ -1374,11 +1376,13 @@ function currentSaveData() {
 }
 
 function exportSave() {
-    save();
+    const saveJson = save();
     // idle loops save version 01. patch v0.94, moved from old save system to lzstring base 64
-    inputElement("exportImport").value = `ILSV01${LZString.compressToBase64(window.localStorage[saveName])}`;
+    inputElement("exportImport").value = `ILSV01${LZString.compressToBase64(saveJson)}`;
     inputElement("exportImport").select();
-    document.execCommand("copy");
+    if (!document.execCommand("copy")) {
+        alert("Copying the save to the clipboard failed! You will need to copy the highlighted value yourself.");
+    }
 }
 
 function importSave() {
@@ -1395,18 +1399,38 @@ function processSave(saveData) {
             return;
         }
     }
+    let saveJson = "";
     // idle loops save version 01. patch v0.94, moved from old save system to lzstring base 64
     if (saveData.substr(0, 6) === "ILSV01") {
-        window.localStorage[saveName] = LZString.decompressFromBase64(saveData.substr(6));
+        saveJson = LZString.decompressFromBase64(saveData.substr(6));
     } else {
         // handling for old saves from stopsign or patches prior to v0.94
-        window.localStorage[saveName] = decode(saveData);
+        saveJson = decode(saveData);
+    }
+    if (saveJson) {
+        storeSaveJson(saveJson);
     }
     actions.next = [];
     actions.current = [];
-    load();
+    load(null, saveJson);
     pauseGame();
     restart();
+}
+
+let overquotaWarned = false;
+function storeSaveJson(saveJson) {
+    try {
+        window.localStorage[saveName] = saveJson;
+    } catch (e) {
+        if (e instanceof DOMException && e.name === "QuotaExceededError") {
+            if (!overquotaWarned) {
+                alert("The game's save file has exceeded this browser's storage quota.\nThis is EXTREMELY unusual and means something has gone very wrong.\n\nYOU ARE AT RISK OF LOSING GAME PROGRESS.\n\nAttempting to proceed anyway. You should export your save and keep it somewhere safe, and if possible, please report this bug in the Discord (link under Options)!");
+                overquotaWarned = true;
+            }
+        } else {
+            throw e;
+        }
+    }
 }
 
 function saveFileName() {
@@ -1416,8 +1440,8 @@ function saveFileName() {
 }
 
 function exportSaveFile() {
-    save();
-    const saveData = `ILSV01${LZString.compressToBase64(window.localStorage[saveName])}`;
+    const saveJson = save();
+    const saveData = `ILSV01${LZString.compressToBase64(saveJson)}`;
     const a = document.createElement('a');
     a.setAttribute('href', 'data:text/plain;charset=utf-8,' + saveData);
     a.setAttribute('download', saveFileName());

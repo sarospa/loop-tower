@@ -9,9 +9,17 @@
                 <title>Changelog</title>
                 <version_prefix>Version</version_prefix>
             </meta>
+            <!--
             <version caption="Latest"><![CDATA[ 
             <b>Recent changes</b>
+            ]]></version>
+            -->
+            <version verNum="3.P16.23"><![CDATA[
+            <b> Feb 11th, 2024</b>
             • Build Tower now displays progress with linear scaling, so the percentage displayed will be accurate to the amount of progress required. This does not change the actual progress required, only how it is displayed.<br>
+            • Fixed a bug that prevented Action Log entries from properly merging with each other when the Action Log is hidden, which allowed the log to grow to an unbounded size. Added code to fix unmerged log entries on game load.<br>
+            • Added detection and warning for if your game save exceeds your browser's localStorage quota, like for example as a result of the above bug. Many apologies to OWD from the Discord for the lost progress, but thanks for bringing it to my attention!<br>
+            • The "Use stat colors in menu and tooltips" option now defaults to on for new games, because I like colorful things. This should not affect existing games, and you can turn it off if it's too much or makes things hard to read.<br>
             ]]></version>
             <version verNum="3.P16.22"><![CDATA[
             <b> Feb 9th, 2024</b>

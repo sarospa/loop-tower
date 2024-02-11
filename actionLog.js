@@ -70,7 +70,7 @@ class ActionLog {
         for (const entryData of restoreStrings(data)) {
             const entry = ActionLogEntry.create(entryData);
             if (entry) {
-                this.addEntry(entry, true);
+                this.addOrUpdateEntry(entry, true);
             }
         }
     }
@@ -101,7 +101,7 @@ class ActionLog {
      * @returns {T}
      */
     addOrUpdateEntry(entry, init) {
-        for (let i = this.entries.length - 1; this.earliestShownEntry != null && i >= this.earliestShownEntry; i--)  {
+        for (let i = this.entries.length - 1; i >= 0; i--)  {
             const other = this.entries[i];
             if (other instanceof RepeatableLogEntry && other.canMerge(entry)) {
                 other.merge(entry);
