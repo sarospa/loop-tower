@@ -17,6 +17,7 @@ declare interface Action<const N, const E> {
     skills?: E["skills"];
     grantsBuff?: E["grantsBuff"];
     affectedBy?: readonly string[];
+    progressScaling?: ProgressScalingType;
 }
 
 declare interface MultipartAction<const N, const E> {

@@ -168,6 +168,7 @@ const townNames = ["Beginnersville", "Forest Path", "Merchanton", "Mt. Olympus",
 // type names are "normal", "progress", "limited", and "multipart".
 // define one of these in the action, and they will create any additional UI elements that are needed
 /** @typedef {"normal"|"progress"|"limited"|"multipart"} ActionType */
+/** @typedef {"default"|"linear"} ProgressScalingType */
 
 /** 
  * @typedef {{
@@ -189,6 +190,7 @@ const townNames = ["Beginnersville", "Forest Path", "Merchanton", "Mt. Olympus",
  *     skills?: Partial<Record<SkillName, number | (() => number)>>,
  *     grantsBuff?: BuffName,
  *     affectedBy?: readonly string[],
+ *     progressScaling?: ProgressScalingType,
  * }} ActionExtras
  */
 
@@ -7363,6 +7365,7 @@ function adjustTrainingExpMult() {
 
 Action.BuildTower = new Action("Build Tower", {
     type: "progress",
+    progressScaling: "linear",
     expMult: 1,
     townNum: 8,
     storyReqs(storyNum) {

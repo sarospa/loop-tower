@@ -40,6 +40,8 @@ class Town {
     varNames = [];
     /** @type {string[]} */
     progressVars = [];
+    /** @type {Record<string, ProgressScalingType>} */
+    progressScaling = {};
     /** @type {ActionOfTown<TN>[]} */
     totalActionList = [];
 
@@ -53,6 +55,7 @@ class Town {
 
     getLevel(varName) {
         if (varName === "Survey") varName = varName + "Z" + this.index;
+        if (this.progressScaling[varName] === "linear") return Math.floor(this[`exp${varName}`] / 5050);
         return Math.floor((Math.sqrt(8 * this[`exp${varName}`] / 100 + 1) - 1) / 2);
     };
 
@@ -94,6 +97,7 @@ class Town {
     getPrcToNext(varName) {
         const level = this.getLevel(varName);
         if (level >= 100) return 100;
+        if (this.progressScaling[varName] === "linear") return this[`exp${varName}`] / 5050 % 1 * 100;
         const expOfCurLevel = this.expFromLevel(level);
         const curLevelProgress = this[`exp${varName}`] - expOfCurLevel;
         const nextLevelNeeds = this.expFromLevel(level + 1) - expOfCurLevel;
@@ -148,12 +152,14 @@ class Town {
         }
     };
 
-    createProgressVars(varName) {
+    /** @param {ProgressScalingType} [progressScaling] */
+    createProgressVars(varName, progressScaling = "default") {
         if (this[`exp${varName}`] === undefined) {
             this[`exp${varName}`] = 0;
         }
         if (this.progressVars.indexOf(varName) === -1) {
             this.progressVars.push(varName);
+            this.progressScaling[varName] = progressScaling;
         }
     };
 
@@ -169,7 +175,7 @@ class Town {
                 // @ts-ignore
                 this.totalActionList.push(action);
                 if (action.type === "limited") this.createVars(action.varName);
-                if (action.type === "progress") this.createProgressVars(action.varName);
+                if (action.type === "progress") this.createProgressVars(action.varName, action.progressScaling);
                 if (action.type === "multipart") this.createMultipartVars(action.varName);
             }
         }
