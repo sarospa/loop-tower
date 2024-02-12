@@ -1120,14 +1120,10 @@ class View {
         htmlElement(`good${varName}`).textContent = String(town[`good${varName}`]);
     };
 
-    updateAddAmount(num) {
-        for (let i = 0; i < 6; i++) {
-            const elem = document.getElementById(`amount${num}`);
-            if (elem) {
-                addClassToDiv(elem, "unused");
-            }
+    updateAddAmount(amount) {
+        for (const elem of document.getElementsByClassName("change-amount")) {
+            elem.classList.toggle("unused", elem.textContent !== String(amount));
         }
-        if (num > 0) removeClassFromDiv(document.getElementById(`amount${num}`), "unused");
     };
 
     updateLoadout(num) {

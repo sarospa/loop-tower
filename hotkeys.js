@@ -117,10 +117,14 @@ GameKeyboard.bindHotkey("b", () => toggleOffline());
 
 for (let i = 1; i < 6; i++) {
     // eslint-disable-next-line no-loop-func
-    GameKeyboard.bindHotkey(`${i}`, () => selectLoadout(i));
-    // eslint-disable-next-line no-loop-func
     GameKeyboard.bindHotkey(`shift+${i}`, () => loadLoadout(i));
 }
+
+for (let i = 1; i <= 9; i++) {
+    GameKeyboard.bindHotkey(`${i}`, () => changeActionAmount(i));
+}
+GameKeyboard.bindHotkey("0", () => changeActionAmount(actions.addAmount * 10));
+GameKeyboard.bindHotkey("backspace", () => changeActionAmount(Math.floor(actions.addAmount / 10)));
 
 GameKeyboard.bindHotkey("shift+s", () => saveList());
 GameKeyboard.bindHotkey("shift+l", () => loadList());

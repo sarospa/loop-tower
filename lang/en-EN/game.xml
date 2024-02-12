@@ -9,11 +9,10 @@
                 <title>Changelog</title>
                 <version_prefix>Version</version_prefix>
             </meta>
-            <!--
             <version caption="Latest"><![CDATA[ 
             <b>Recent changes</b>
+            • When no input field has focus, the digits 1-9 now act as hotkeys to set the Amount field directly to that value, the 0 key multiplies it by 10, and Backspace removes the last digit. (Other hotkeys are unchanged and can be viewed by hovering the Hotkeys option.)<br>
             ]]></version>
-            -->
             <version verNum="3.P16.23"><![CDATA[
             <b> Feb 11th, 2024</b>
             • Build Tower now displays progress with linear scaling, so the percentage displayed will be accurate to the amount of progress required. This does not change the actual progress required, only how it is displayed.<br>
@@ -663,7 +662,9 @@
                 Spacebar: Pause/play<br>
                 R: Restart<br>
                 B: Toggle bonus seconds<br>
-                1-5: Select loadout 1-5<br>
+                1-9: Set current action list multiplier to 1-9<br>
+                0: Multiply action list multiplier by 10<br>
+                Backspace: Remove last digit of action list multiplier<br>
                 Shift+1-5: Select and load loadout 1-5<br>
                 +/-: Increase/decrease action list size<br>
                 Shift+S: Save current list to selected loadout<br>

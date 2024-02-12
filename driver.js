@@ -412,24 +412,20 @@ function resetResources() {
     view.requestUpdate("updateResources", null);
 }
 
-function changeActionAmount(amount, num) {
+function changeActionAmount(amount) {
+    amount = Math.max(amount, 1);
+    amount = Math.min(amount, 1e12);
     actions.addAmount = amount;
-    inputElement("amountCustom").value = amount;
-    view.updateAddAmount(num);
+    const customInput = inputElement("amountCustom");
+    if (document.activeElement !== customInput) {
+        customInput.value = amount;
+    }
+    view.updateAddAmount(amount);
 }
 
 function setCustomActionAmount() {
-    const value = isNaN(parseInt(inputElement("amountCustom").value)) ? 1 : parseInt(inputElement("amountCustom").value);
-    if (value >= 0 && value <= Number.MAX_VALUE) actions.addAmount = Math.min(value, 1e12);
-    if (value === 1) {
-        view.updateAddAmount(1);
-    } else if (value === 5) {
-        view.updateAddAmount(2);
-    } else if (value === 10) {
-        view.updateAddAmount(3);
-    } else {
-        view.updateAddAmount(0);
-    }
+    const value = parseInt(inputElement("amountCustom").value) || 1;
+    changeActionAmount(value);
 }
 
 function selectLoadout(num) {
