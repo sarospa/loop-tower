@@ -698,9 +698,9 @@ input[type="checkbox"][disabled] + label {
         display: grid;
         grid-column: fullrow;
         grid-template:
-            "name expbar       level talent soulstone"
-            "name talentbar    level talent soulstone"
-            "name soulstonebar level talent soulstone"
+            "name expbar       level talent soulstone" 1fr
+            "name talentbar    level talent soulstone" 1fr
+            "name soulstonebar level talent soulstone" 1fr
             ;
         /* Chrome etc don't support subgrid in the grid-template value? */
         grid-template-columns: [fullrow-start] max-content 1fr max-content max-content max-content [fullrow-end];
