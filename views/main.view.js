@@ -333,21 +333,23 @@ class View {
         document.getElementById(`stat${stat}Talent`).textContent = intToString(talent, 1);
         document.getElementById(`stattotalLevel`).textContent = intToString(totalLevel, 1);
         document.getElementById(`stattotalTalent`).textContent = intToString(totalTalent, 1);
+        document.getElementById(`stattotalLevel2`).textContent = formatNumber(totalLevel);
+        document.getElementById(`stattotalTalent2`).textContent = formatNumber(totalTalent);
 
         if (statShowing === stat || document.getElementById(`stat${stat}LevelExp`).innerHTML === "") {
-            document.getElementById(`stat${stat}Level2`).textContent = intToString(level, 1);
+            document.getElementById(`stat${stat}Level2`).textContent = formatNumber(level);
             document.getElementById(`stat${stat}LevelExp`).textContent = intToString(stats[stat].statLevelExp.exp, 1);
             document.getElementById(`stat${stat}LevelExpNeeded`).textContent = intToString(stats[stat].statLevelExp.expRequiredForNextLevel, 1);
             document.getElementById(`stat${stat}LevelProgress`).textContent = intToString(levelPrc, 2);
 
-            document.getElementById(`stat${stat}Talent2`).textContent = intToString(talent, 1);
+            document.getElementById(`stat${stat}Talent2`).textContent = formatNumber(talent);
             document.getElementById(`stat${stat}TalentExp`).textContent = intToString(stats[stat].talentLevelExp.exp, 1);
             document.getElementById(`stat${stat}TalentExpNeeded`).textContent = intToString(stats[stat].talentLevelExp.expRequiredForNextLevel, 1);
             document.getElementById(`stat${stat}TalentMult`).textContent = intToString(stats[stat].talentMult, 3);
             document.getElementById(`stat${stat}TalentProgress`).textContent = intToString(talentPrc, 2);
             document.getElementById(`stat${stat}TotalMult`).textContent = intToString(getTotalBonusXP(stat), 3);
         }
-    };
+};
 
     logBarScaleBase = 1.25;
     /** @param {number} maxValue  */
@@ -1563,8 +1565,8 @@ class View {
                 total += stats[stat].soulstone;
                 htmlElement(`stat${stat}SoulstoneLogBar`).parentElement.style.display = "";
                 this.updateLevelLogBar("statsContainer", `stat${stat}SoulstoneLogBar`, stats[stat].soulstone);
-                document.getElementById(`ss${stat}Container`).style.display = "inline-block";
-                document.getElementById(`ss${stat}`).textContent = intToString(stats[stat].soulstone, 1);
+                document.getElementById(`ss${stat}Container`).style.display = "";
+                document.getElementById(`ss${stat}`).textContent = formatNumber(stats[stat].soulstone);
                 document.getElementById(`stat${stat}SSBonus`).textContent = intToString(stats[stat].soulstone ? stats[stat].soulstoneMult : 0);
                 document.getElementById(`stat${stat}ss`).textContent = intToString(stats[stat].soulstone, 1);
             } else {
@@ -1576,9 +1578,12 @@ class View {
         if (total > 0) {
             document.getElementById(`stattotalss`).style.display = "";
             document.getElementById(`stattotalss`).textContent = intToString(total, 1);
+            document.getElementById(`sstotalContainer`).style.display = "";
+            document.getElementById(`sstotal`).textContent = formatNumber(total);
         } else {
             document.getElementById(`stattotalss`).style.display = "none";
             document.getElementById(`stattotalss`).textContent = "";
+            document.getElementById(`sstotalContainer`).style.display = "none";
         }
     };
 

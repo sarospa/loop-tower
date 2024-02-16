@@ -215,6 +215,7 @@ body:not(.loading) > .hideWhenLoaded {
     margin-top:5px;
     z-index: 999999;
     text-align:left;
+    font-style:normal;
 }
 
 .showthisH {
@@ -383,6 +384,9 @@ ul#faq > li {
 }
 .text-wrap {
     white-space: initial;
+}
+.colon-after::after {
+    content: ":";
 }
 
 /* These utility classes set a "stat context" for this element and its descendants */
@@ -782,7 +786,7 @@ input[type="checkbox"][disabled] + label {
 
 .statContainer.stat-total {
     font-style: italic;
-    opacity: 0.75;
+    color: color-mix(in srgb, var(--default-color), transparent 25%);
 }
 
 .statLabelContainer {
@@ -1443,10 +1447,6 @@ li#actionLogLatest {
 .statTooltipPerc {
     float: right;
     margin-left: 3px;
-}
-
-.ssContainer {
-    display:none;
 }
 
 #expandableList {

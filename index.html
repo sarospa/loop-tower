@@ -81,12 +81,25 @@
                     <div class="showthis localized" style="margin-top:20px;width:375px" data-lockey="stats>tooltip>graph_legend"></div>
                 </div>
                 <div id="statsContainer">
-                    <div class='statContainer stat-total' id="totalStatContainer">
+                    <div class='statContainer stat-total showthat' id="totalStatContainer">
                         <div class='statLabelContainer'>
-                            <div class='medium bold stat-name localized' style='margin-left:18px;margin-top:5px;' data-lockey="stats>total"></div>
+                            <div class='medium bold stat-name localized' style='margin-left:18px;margin-top:5px;' data-lockey="stats>total>singular"></div>
                             <div class='medium statNum stat-soulstone' style='color:var(--stat-soulstone-color);' id='stattotalss'></div>
                             <div class='medium statNum stat-talent' id='stattotalTalent'>0</div>
                             <div class='medium statNum stat-level' id='stattotalLevel'>0</div>
+                        </div>
+                        <div class='showthis' id='stattotalTooltip' style='width:225px;'>
+                            <div class='medium bold localized' data-lockey="stats>total>plural"></div>
+                            <br>
+                            <div class="localized" data-lockey="stats>total>blurb"></div>
+                            <br>
+                            <div class='medium bold localized colon-after' data-lockey="stats>tooltip>level"></div> <div id='stattotalLevel2'></div>
+                            <br>
+                            <div class='medium bold localized colon-after' data-lockey="stats>tooltip>talent"></div> <div id='stattotalTalent2'></div>
+                            <br>
+                            <div id='sstotalContainer' class='ssContainer'>
+                                <div class='bold localized colon-after' data-lockey="stats>tooltip>soulstone"></div> <div id='sstotal'></div>
+                            </div>
                         </div>
                     </div>
                 </div>

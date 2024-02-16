@@ -9,11 +9,12 @@
                 <title>Changelog</title>
                 <version_prefix>Version</version_prefix>
             </meta>
-            <version caption="Latest"><![CDATA[ 
+            <version caption="Latest"><![CDATA[
             <b>Recent changes</b>
             • When no input field has focus, the digits 1-9 now act as hotkeys to set the Amount field directly to that value, the 0 key multiplies it by 10, and Backspace removes the last digit. (Other hotkeys are unchanged and can be viewed by hovering the Hotkeys option.)<br>
             • Inline stat bars should now display properly when you have no soulstones.<br>
             • Fixed Prestige Mental/Physical tooltips to note that they affect stats, not skills. Thanks to Kagato87 from the discord for the heads-up!<br>
+            • By request of Mithlug from the discord, your total level, talent, and soulstones can be seen in full by hovering the Total line in the stats panel. The other stat tooltips will now also show these numbers in full, rather than abbreviated.<br>
             ]]></version>
             <version verNum="3.P16.23"><![CDATA[
             <b> Feb 11th, 2024</b>
@@ -1076,7 +1077,11 @@
             <long_form>Soul</long_form>
             <short_form>Soul</short_form>
         </soul>
-        <total>Total</total>
+        <total>
+            <blurb>It all adds up.</blurb>
+            <singular>Total</singular>
+            <plural>Totals</plural>
+        </total>
         <tooltip>
             <level>Level</level>
             <level_exp>Level Exp</level_exp>
