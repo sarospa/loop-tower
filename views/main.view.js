@@ -1676,7 +1676,7 @@ class View {
         let travelMenu = $("#TownSelect");
         travelMenu.empty()
         townNames.forEach((town, index) => {
-            travelMenu.append("<option value="+index+" hidden=''>"+town+"</option>");
+            travelMenu.append(`"<option value=${index} class='zone-${index+1}' hidden=''>${town}</option>`);
         });
         travelMenu.change(function() {
             view.showTown(Number($(this).val()));
