@@ -2,6 +2,7 @@
 :root {
     --default-color: black;
     --default-border: black;
+    --default-background: var(--body-background);
     --text-color: var(--default-color);
     --link-color: #06c;
     --link-visited-color: rebeccapurple; /* Dream sweet big-girl dreams, Rebecca Meyer ;_; */
@@ -82,16 +83,26 @@
     --stat-Luck-color: #25b536;
     --stat-Soul-color: rebeccapurple;
     
-    --zone-tint-1: rgba(255, 152, 0, 0.2);
-    --zone-tint-2: rgba(76, 175, 80, 0.2);
-    --zone-tint-3: rgba(255, 235, 59, 0.2);
-    --zone-tint-4: rgba(96, 125, 139, 0.2);
-    --zone-tint-4-opaque: rgb(183, 203, 196);
-    --zone-tint-5: rgba(255, 255, 255, 0.2);
-    --zone-tint-6: rgba(103, 58, 183, 0.2);
-    --zone-tint-7: rgba(76, 175, 80, 0.4);
-    --zone-tint-8: rgba(255, 235, 59, 0.4);
-    --zone-tint-9: rgba(103, 58, 183, 0.4);
+    --zone-1-color: color-mix(in srgb, var(--next-actions-background), rgb(255, 152, 0) 40%);
+    --zone-2-color: color-mix(in srgb, var(--next-actions-background), rgb(76, 175, 80) 40%);
+    --zone-3-color: color-mix(in srgb, var(--next-actions-background), rgb(255, 235, 59) 40%);
+    --zone-4-color: color-mix(in srgb, var(--next-actions-background), rgb(96, 125, 139) 40%);
+    --zone-5-color: color-mix(in srgb, var(--next-actions-background), rgb(255, 255, 255) 40%);
+    --zone-6-color: color-mix(in srgb, var(--next-actions-background), rgb(103, 58, 183) 40%);
+    --zone-7-color: color-mix(in srgb, var(--next-actions-background), rgb(76, 175, 80) 80%);
+    --zone-8-color: color-mix(in srgb, var(--next-actions-background), rgb(255, 235, 59) 80%);
+    --zone-9-color: color-mix(in srgb, var(--next-actions-background), rgb(103, 58, 183) 80%);
+
+    --zone-tint-1: color-mix(in srgb, var(--zone-1-color) 50%, transparent);
+    --zone-tint-2: color-mix(in srgb, var(--zone-2-color) 50%, transparent);
+    --zone-tint-3: color-mix(in srgb, var(--zone-3-color) 50%, transparent);
+    --zone-tint-4: color-mix(in srgb, var(--zone-4-color) 50%, transparent);
+    --zone-tint-5: color-mix(in srgb, var(--zone-5-color) 50%, transparent);
+    --zone-tint-6: color-mix(in srgb, var(--zone-6-color) 50%, transparent);
+    --zone-tint-7: color-mix(in srgb, var(--zone-7-color) 50%, transparent);
+    --zone-tint-8: color-mix(in srgb, var(--zone-8-color) 50%, transparent);
+    --zone-tint-9: color-mix(in srgb, var(--zone-9-color) 50%, transparent);
+    --zone-tint-4-opaque: color-mix(in srgb, var(--zone-4-color) 50%, var(--next-actions-background));
 
     /* regular scrollbars take same colors as action scrollbars but dimmed a bit with alpha */
     --scrollbar-track-background: #b7dbb2;
@@ -273,16 +284,26 @@
     --stat-Luck-color: #7ac283;
     --stat-Soul-color: #C25ED4;
 
-    --zone-tint-1: rgba(193, 115, 0, 0.2);
-    --zone-tint-2: rgba(24, 102, 27, 0.2);
-    --zone-tint-3: rgba(170, 153, 0, 0.2);
-    --zone-tint-4: rgba(42, 107, 139, 0.2);
-    --zone-tint-4-opaque: #25433e;
-    --zone-tint-5: rgba(156, 155, 155, 0.2);
-    --zone-tint-6: rgba(48, 14, 108, 0.2);
-    --zone-tint-7: rgba(24, 102, 27, 0.4);
-    --zone-tint-8: rgba(170, 153, 0, 0.4);
-    --zone-tint-9: rgba(48, 14, 108, 0.4);
+    --zone-1-color: color-mix(in srgb, var(--next-actions-background), rgb(193, 115, 0) 40%);
+    --zone-2-color: color-mix(in srgb, var(--next-actions-background), rgb(24, 102, 27) 40%);
+    --zone-3-color: color-mix(in srgb, var(--next-actions-background), rgb(170, 153, 0) 40%);
+    --zone-4-color: color-mix(in srgb, var(--next-actions-background), rgb(42, 107, 139) 40%);
+    --zone-5-color: color-mix(in srgb, var(--next-actions-background), rgb(156, 155, 155) 40%);
+    --zone-6-color: color-mix(in srgb, var(--next-actions-background), rgb(48, 14, 108) 40%);
+    --zone-7-color: color-mix(in srgb, var(--next-actions-background), rgb(24, 102, 27) 80%);
+    --zone-8-color: color-mix(in srgb, var(--next-actions-background), rgb(170, 153, 0) 80%);
+    --zone-9-color: color-mix(in srgb, var(--next-actions-background), rgb(48, 14, 108) 80%);
+    
+    --zone-tint-1: color-mix(in srgb, var(--zone-1-color) 50%, transparent);
+    --zone-tint-2: color-mix(in srgb, var(--zone-2-color) 50%, transparent);
+    --zone-tint-3: color-mix(in srgb, var(--zone-3-color) 50%, transparent);
+    --zone-tint-4: color-mix(in srgb, var(--zone-4-color) 50%, transparent);
+    --zone-tint-5: color-mix(in srgb, var(--zone-5-color) 50%, transparent);
+    --zone-tint-6: color-mix(in srgb, var(--zone-6-color) 50%, transparent);
+    --zone-tint-7: color-mix(in srgb, var(--zone-7-color) 50%, transparent);
+    --zone-tint-8: color-mix(in srgb, var(--zone-8-color) 50%, transparent);
+    --zone-tint-9: color-mix(in srgb, var(--zone-9-color) 50%, transparent);
+    --zone-tint-4-opaque: color-mix(in srgb, var(--zone-4-color) 50%, var(--next-actions-background));
 
     --scrollbar-track-background: #2b4522;
     --scrollbar-button-background: #256628;
@@ -399,16 +420,26 @@
 
     --action-icon-hover-color: hsl(180, 100%, 50%);
 
-    --zone-tint-1: hsla(215.8, 100%, 50%, 0.2);
-    --zone-tint-2: hsla(302.4, 39.4%, 49.2%, 0.2);
-    --zone-tint-3: hsla(233.9, 100%, 61.6%, 0.2);
-    --zone-tint-4: hsla(19.5, 18.3%, 46.1%, 0.2);
-    --zone-tint-4-opaque: hsl(339, 16.1%, 75.7%);
-    --zone-tint-5: hsla(180, 0%, 100%, 0.2);
-    --zone-tint-6: hsla(81.6, 51.9%, 47.3%, 0.2);
-    --zone-tint-7: hsla(302.4, 39.4%, 49.2%, 0.4);
-    --zone-tint-8: hsla(233.9, 100%, 61.6%, 0.4);
-    --zone-tint-9: hsla(81.6, 51.9%, 47.3%, 0.4);
+    --zone-1-color: color-mix(in srgb, var(--next-actions-background), hsl(215.8, 100%, 50%) 40%);
+    --zone-2-color: color-mix(in srgb, var(--next-actions-background), hsl(302.4, 39.4%, 49.2%) 40%);
+    --zone-3-color: color-mix(in srgb, var(--next-actions-background), hsl(233.9, 100%, 61.6%) 40%);
+    --zone-4-color: color-mix(in srgb, var(--next-actions-background), hsl(19.5, 18.3%, 46.1%) 40%);
+    --zone-5-color: color-mix(in srgb, var(--next-actions-background), hsl(180, 0%, 100%) 40%);
+    --zone-6-color: color-mix(in srgb, var(--next-actions-background), hsl(81.6, 51.9%, 47.3%) 40%);
+    --zone-7-color: color-mix(in srgb, var(--next-actions-background), hsl(302.4, 39.4%, 49.2%) 80%);
+    --zone-8-color: color-mix(in srgb, var(--next-actions-background), hsl(233.9, 100%, 61.6%) 80%);
+    --zone-9-color: color-mix(in srgb, var(--next-actions-background), hsl(81.6, 51.9%, 47.3%) 80%);
+    
+    --zone-tint-1: color-mix(in srgb, var(--zone-1-color) 50%, transparent);
+    --zone-tint-2: color-mix(in srgb, var(--zone-2-color) 50%, transparent);
+    --zone-tint-3: color-mix(in srgb, var(--zone-3-color) 50%, transparent);
+    --zone-tint-4: color-mix(in srgb, var(--zone-4-color) 50%, transparent);
+    --zone-tint-5: color-mix(in srgb, var(--zone-5-color) 50%, transparent);
+    --zone-tint-6: color-mix(in srgb, var(--zone-6-color) 50%, transparent);
+    --zone-tint-7: color-mix(in srgb, var(--zone-7-color) 50%, transparent);
+    --zone-tint-8: color-mix(in srgb, var(--zone-8-color) 50%, transparent);
+    --zone-tint-9: color-mix(in srgb, var(--zone-9-color) 50%, transparent);
+    --zone-tint-4-opaque: color-mix(in srgb, var(--zone-4-color) 50%, var(--next-actions-background));
 
     --scrollbar-track-background: hsl(292.7, 36.3%, 77.8%);
     --scrollbar-button-background: hsl(302, 34.1%, 64.9%);
@@ -500,16 +531,26 @@
 
     --action-icon-hover-color: hsl(180, 100%, 50%);
 
-    --zone-tint-1: hsla(215.8, 100%, 37.8%, 0.2);
-    --zone-tint-2: hsla(302.3, 61.9%, 24.7%, 0.2);
-    --zone-tint-3: hsla(234, 100%, 33.3%, 0.2);
-    --zone-tint-4: hsla(19.8, 53.6%, 35.5%, 0.2);
-    --zone-tint-4-opaque: hsl(350, 28.8%, 20.4%);
-    --zone-tint-5: hsla(180, 0.5%, 61%, 0.2);
-    --zone-tint-6: hsla(81.7, 77%, 23.9%, 0.2);
-    --zone-tint-7: hsla(302.3, 61.9%, 24.7%, 0.4);
-    --zone-tint-8: hsla(234, 100%, 33.3%, 0.4);
-    --zone-tint-9: hsla(81.7, 77%, 23.9%, 0.4);
+    --zone-1-color: color-mix(in srgb, var(--next-actions-background), hsl(215.8, 100%, 37.8%) 40%);
+    --zone-2-color: color-mix(in srgb, var(--next-actions-background), hsl(302.3, 61.9%, 24.7%) 40%);
+    --zone-3-color: color-mix(in srgb, var(--next-actions-background), hsl(234, 100%, 33.3%) 40%);
+    --zone-4-color: color-mix(in srgb, var(--next-actions-background), hsl(19.8, 53.6%, 35.5%) 40%);
+    --zone-5-color: color-mix(in srgb, var(--next-actions-background), hsl(180, 0.5%, 61%) 40%);
+    --zone-6-color: color-mix(in srgb, var(--next-actions-background), hsl(81.7, 77%, 23.9%) 40%);
+    --zone-7-color: color-mix(in srgb, var(--next-actions-background), hsl(302.3, 61.9%, 24.7%) 80%);
+    --zone-8-color: color-mix(in srgb, var(--next-actions-background), hsl(234, 100%, 33.3%) 80%);
+    --zone-9-color: color-mix(in srgb, var(--next-actions-background), hsl(81.7, 77%, 23.9%) 80%);
+    
+    --zone-tint-1: color-mix(in srgb, var(--zone-1-color) 50%, transparent);
+    --zone-tint-2: color-mix(in srgb, var(--zone-2-color) 50%, transparent);
+    --zone-tint-3: color-mix(in srgb, var(--zone-3-color) 50%, transparent);
+    --zone-tint-4: color-mix(in srgb, var(--zone-4-color) 50%, transparent);
+    --zone-tint-5: color-mix(in srgb, var(--zone-5-color) 50%, transparent);
+    --zone-tint-6: color-mix(in srgb, var(--zone-6-color) 50%, transparent);
+    --zone-tint-7: color-mix(in srgb, var(--zone-7-color) 50%, transparent);
+    --zone-tint-8: color-mix(in srgb, var(--zone-8-color) 50%, transparent);
+    --zone-tint-9: color-mix(in srgb, var(--zone-9-color) 50%, transparent);
+    --zone-tint-4-opaque: color-mix(in srgb, var(--zone-4-color) 50%, var(--next-actions-background));
 
     --scrollbar-track-background: hsl(284.6, 34%, 20.2%);
     --scrollbar-button-background: hsl(302.8, 46.8%, 27.3%);

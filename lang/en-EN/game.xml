@@ -15,6 +15,7 @@
             • Inline stat bars should now display properly when you have no soulstones.<br>
             • Fixed Prestige Mental/Physical tooltips to note that they affect stats, not skills. Thanks to Kagato87 from the discord for the heads-up!<br>
             • By request of Mithlug from the discord, your total level, talent, and soulstones can be seen in full by hovering the Total line in the stats panel. The other stat tooltips will now also show these numbers in full, rather than abbreviated.<br>
+            • The current zone color is now used to decorate the town area, to improve the association with the action list backgrounds.<br>
             ]]></version>
             <version verNum="3.P16.23"><![CDATA[
             <b> Feb 11th, 2024</b>

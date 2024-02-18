@@ -702,7 +702,7 @@ class View {
             totalDivText +=
                 `<div
                     id='nextActionContainer${i}'
-                    class='nextActionContainer small showthat'
+                    class='nextActionContainer small showthat zone-${townNum+1}'
                     ondragover='handleDragOver(event)'
                     ondrop='handleDragDrop(event)'
                     ondragstart='handleDragStart(event)'
@@ -1087,6 +1087,8 @@ class View {
         else actionOptionsTown[townNum].style.display = "";
         townInfos[townNum].style.display = "";
         $("#TownSelect").val(townNum);
+        htmlElement("shortTownColumn").classList.remove(`zone-${townShowing+1}`);
+        htmlElement("shortTownColumn").classList.add(`zone-${townNum+1}`);
         document.getElementById("townDesc").textContent = _txt(`towns>town${townNum}>desc`);
         townShowing = townNum;
     };
