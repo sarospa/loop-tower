@@ -255,50 +255,72 @@ function removeClassFromDiv(div, className) {
 /**
  * @template {Element} [T=Element]
  * 
- * @param {string} id 
+ * @param {string|Element} elementOrId 
  * @param {(new() => T)|((new() => T)[])} [expectedClass]
  * @param {boolean} [throwIfMissing] 
  * @param {boolean} [warnIfMissing] 
  * @returns {T}
  */
-function getElement(id, expectedClass=/** @type {new()=>T} */(Element), throwIfMissing=true, warnIfMissing=true) {
+function getElement(elementOrId, expectedClass=/** @type {new()=>T} */(Element), throwIfMissing=true, warnIfMissing=true) {
     const expectedClasses = Array.isArray(expectedClass) ? expectedClass : [expectedClass];
-    const element = document.getElementById(id);
+    const element = typeof elementOrId === "string" ? document.getElementById(elementOrId) : elementOrId;
     for (const expected of expectedClasses) {
         if (element instanceof expected) return element;
     }
     if (warnIfMissing) {
-        console.warn("Expected element missing or wrong type!", id, expectedClass, element);
+        console.warn("Expected element missing or wrong type!", elementOrId, expectedClass, element);
     }
     if (throwIfMissing) {
-        throw new Error(`Expected to find element of type ${expectedClasses.join("|")} with ${id}, instead found ${element}!`);
+        throw new Error(`Expected to find element of type ${expectedClasses.join("|")} with ${elementOrId}, instead found ${element}!`);
     }
     return undefined;
 }
 
-function htmlElement(id, throwIfMissing=true, warnIfMissing=true) {
-    return getElement(id, HTMLElement, throwIfMissing, warnIfMissing);
+/** @param {string|Element} elementOrId  */
+function htmlElement(elementOrId, throwIfMissing=true, warnIfMissing=true) {
+    return getElement(elementOrId, HTMLElement, throwIfMissing, warnIfMissing);
 }
 
-function inputElement(id, throwIfMissing=true, warnIfMissing=true) {
-    return getElement(id, HTMLInputElement, throwIfMissing, warnIfMissing);
+/** @param {string|Element} elementOrId  */
+function inputElement(elementOrId, throwIfMissing=true, warnIfMissing=true) {
+    return getElement(elementOrId, HTMLInputElement, throwIfMissing, warnIfMissing);
 }
 
-function textAreaElement(id, throwIfMissing=true, warnIfMissing=true) {
-    return getElement(id, HTMLTextAreaElement, throwIfMissing, warnIfMissing);
+/** @param {string|Element} elementOrId  */
+function textAreaElement(elementOrId, throwIfMissing=true, warnIfMissing=true) {
+    return getElement(elementOrId, HTMLTextAreaElement, throwIfMissing, warnIfMissing);
 }
 
-function selectElement(id, throwIfMissing=true, warnIfMissing=true) {
-    return getElement(id, HTMLSelectElement, throwIfMissing, warnIfMissing);
+/** @param {string|Element} elementOrId  */
+function selectElement(elementOrId, throwIfMissing=true, warnIfMissing=true) {
+    return getElement(elementOrId, HTMLSelectElement, throwIfMissing, warnIfMissing);
 }
 
 /** @typedef {HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement} HTMLValueElement */
-function valueElement(id, throwIfMissing=true, warnIfMissing=true) {
-    return getElement(id, [/** @type {new() => HTMLValueElement} */(HTMLInputElement), HTMLTextAreaElement, HTMLSelectElement], throwIfMissing, warnIfMissing);
+/** @param {string|Element} elementOrId  */
+function valueElement(elementOrId, throwIfMissing=true, warnIfMissing=true) {
+    return getElement(elementOrId, [/** @type {new() => HTMLValueElement} */(HTMLInputElement), HTMLTextAreaElement, HTMLSelectElement], throwIfMissing, warnIfMissing);
 }
 
-function svgElement(id, throwIfMissing=true, warnIfMissing=true) {
-    return getElement(id, SVGElement, throwIfMissing, warnIfMissing);
+/** @param {string|Element} elementOrId  */
+function svgElement(elementOrId, throwIfMissing=true, warnIfMissing=true) {
+    return getElement(elementOrId, SVGElement, throwIfMissing, warnIfMissing);
+}
+
+/** @param {string|Element} elementOrId  */
+function templateElement(elementOrId, throwIfMissing=true, warnIfMissing=true) {
+    return getElement(elementOrId, HTMLTemplateElement, throwIfMissing, warnIfMissing);
+}
+
+/** @param {string} templateId */
+function cloneTemplate(templateId) {
+    const template = templateElement(templateId);
+    const fragment = /** @type {DocumentFragment} */(template.content.cloneNode(true));
+    if (fragment.childElementCount === 1) {
+        return fragment.firstElementChild;
+    } else {
+        return fragment;
+    }
 }
 
 const numbers = "zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen".split(" ");

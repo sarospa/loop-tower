@@ -1,0 +1,161 @@
+:root {
+  --absence-text: "absent";
+}
+
+ul + .button {
+  margin-top:4px;
+}
+
+.elementList {
+  padding-left: 1em;
+}
+
+.elementList > li {
+  list-style-type: none;
+}
+
+.elementList > li > details > summary {
+  font-weight: bold;
+  font-size: larger;
+}
+
+.elementList > li > details > fieldset {
+  margin-bottom: 1lh;
+}
+
+fieldset > * {
+  display: block;
+  margin: 0.25lh 0 0;
+}
+
+.fieldrow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1em;
+  align-content: stretch;
+  justify-content: stretch;
+}
+
+.fieldrow > label {
+  flex: 1 0 min-content;
+  display: flex;
+  align-items: baseline;
+  white-space: nowrap;
+  gap: 0.5em;
+}
+
+.fieldrow > label > * {
+  flex: 1 0 min-content;
+}
+
+.actionDefinition:not([data-action-type="normal"]) .normalOnly,
+.actionDefinition:not([data-action-type="limited"]) .limitedOnly,
+.actionDefinition:not([data-action-type="progress"]) .progressOnly,
+.actionDefinition:not([data-action-type="multipart"]) .multipartOnly
+{
+  display: none;
+}
+
+.numericEvaluation > details > summary > input[value] ~ .baseValueCalculation {
+  display: none;
+}
+
+.optional > details > summary:has(>label>input.elementPresent:not(:checked)) {
+  list-style-type: disc;
+  color: color-mix(in srgb, currentColor, transparent 50%);
+  &:not(details[open]>summary) {
+    pointer-events: none;
+  }
+  &>label {
+    pointer-events: auto;
+  }
+  &>label ~ * {
+    display:none;
+  }
+  &::after {
+    content: " (" var(--absence-text) ")";
+  }
+}
+
+ul.adjustments {
+  padding-left: 2em;
+}
+
+li.evaluationRule {
+  list-style: none;
+}
+
+li.evaluationRule > details > summary {
+  list-style-type: disc;
+}
+
+details:not([open]) > summary:has( ~ .evaluationRules > .evaluationRule)::after {
+  content: "(...)";
+}
+
+ul.conditions > .evaluationRule > details > summary > .evaluationElementType > optgroup[label=Adjustment] {
+  display: none;
+}
+
+.evaluationRule > details > summary > select.evaluationRuleType ~ * {
+  display: none;
+}
+
+details.baseValueCalculation {
+  display: inline-block;
+}
+details.baseValueCalculation > summary {
+  list-style: none;
+}
+
+details.baseValueCalculation > summary > select.baseValueType ~ * {
+  display: none;
+}
+details.nameSelect > summary > details > summary > select[name=name] {
+  display: revert;
+}
+details.varName > summary > details > summary > select[name=varName] {
+  display: revert;
+}
+
+.evaluationRule.nameSelect > details > summary > select[name=name] {
+  display: revert;
+}
+
+.evaluationRule.varName > details > summary > select[name=varName] {
+  display: revert;
+}
+
+.evaluationRule.numericCondition > details > summary > .numericTestType.numericTest1 {
+  display: revert;
+  &[value] ~ .numericTestValue.numericTest1 {
+    display: revert;
+  }
+  &[value] ~ span.numericTestType.numericTest2:has(+.numericTest2[value]) {
+    display: revert;
+  }
+  &[value] ~ select.numericTestType.numericTest2 {
+    display: revert;
+    &[value] ~ .numericTestValue.numericTest2 {
+      display: revert;
+    }
+  }
+}
+
+.evaluationRule.skillMod > details > summary > :is(.numericTestType, .numericTestValue) {
+  display: revert;
+}
+.evaluationRule.skillMod > details > summary > .skillModOnly {
+  display: revert;
+}
+
+input.numericTestValue {
+  width: 5em;
+}
+input.skillModOnly {
+  width: 5em;
+}
+
+.addAdjustment, .addCondition {
+  margin-left: 2em;
+}

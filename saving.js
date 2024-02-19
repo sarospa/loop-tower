@@ -71,6 +71,7 @@ const challengeSaveName = "idleLoopsChallenge";
 let saveName = defaultSaveName;
 
 const selfIsWorker = typeof window === "undefined";
+const selfIsGame = typeof View !== "undefined";
 
 const timeNeededInitial = 5 * 50;
 // eslint-disable-next-line prefer-const
@@ -79,9 +80,9 @@ let timer = timeNeededInitial;
 let timeNeeded = timeNeededInitial;
 // eslint-disable-next-line prefer-const
 let gameIsStopped = false;
-const view = selfIsWorker ? null : new View();
+const view = selfIsGame ? new View() : null;
 const actions = new Actions();
-const actionLog = selfIsWorker ? null : new ActionLog();
+const actionLog = selfIsGame ? new ActionLog() : null;
 /**
  * @template {number} Count Number of towns
  * @template {any[]} [Towns=[]] Tuple of towns
@@ -593,7 +594,7 @@ function virtualizeGlobalVariables(variables) {
 
 /** @type {Notification} */
 let pauseNotification = null;
-const googleCloud = selfIsWorker ? null : new GoogleCloud();
+const googleCloud = selfIsGame ? new GoogleCloud() : null;
 
 const options = {
     theme: "normal",
@@ -706,7 +707,7 @@ function importPredictorSettings() {
     }
     return newOptions;
 }
-if (!selfIsWorker) {
+if (selfIsGame) {
     Object.assign(options, importPredictorSettings()); // override hardcoded defaults if not in worker
 }
 

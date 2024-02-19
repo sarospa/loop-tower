@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>IL Content Editor</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel="stylesheet" href="themes.css">
+    <link rel="stylesheet" href="stylesheet.css">
+    <link rel="stylesheet" href="editor.css">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+
+    <style type="text/css">
+        body {
+            margin: 1em;
+        }
+    </style>
+
+    <script src='lib/jquery.min.js'></script>
+    <script src='polyfills.js'></script>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-D7MKZE2ZZH"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-D7MKZE2ZZH');
+    </script>
+</head>
+
+<body>
+    <script>
+        if (localStorage["latestTheme"]) {
+            document.body.className = `t-${localStorage["latestTheme"]}`;
+        }
+    </script>
+
+    <h1>IL Content Editor</h1>
+
+    <h2>Global Definitions</h2>
+    <ul id="defs" class="elementList">
+    </ul>
+
+    <template id="defineAdjustmentTemplate">
+        <li>
+            <details open>
+                <summary></summary>
+                <fieldset>
+                    <label>
+                        Name: <input name="name">
+                    </label>
+                    <ul class="adjustments evaluationRules"></ul>
+                    <button class="addAdjustment button">Add adjustment/condition</button>
+                </fieldset>
+            </details>
+        </li>
+    </template>
+
+    <h2>Actions</h2>
+    <ul id="actions" class="elementList">
+    </ul>
+
+    <template id="actionDefinitionTemplate">
+        <li class="actionDefinition" data-action-type="normal">
+            <details open>
+                <summary></summary>
+                <fieldset>
+                    <div class="fieldrow">
+                        <label>
+                            Action type:
+                            <select name="type">
+                                <option value="normal">Normal</option>
+                                <option value="limited">Limited</option>
+                                <option value="progress">Progress</option>
+                                <option value="multipart">Multipart</option>
+                            </select>
+                        </label>
+                        <label>
+                            Name: <input name="name">
+                        </label>
+                        <label>
+                            Variable name: <input name="varName">
+                        </label>
+                        <label>
+                            XML name: <input name="xmlName">
+                        </label>
+                    </div>
+                    <div class="numericEvaluation" data-xml-name="effortCost"><label title="formerly manaCost">Effort cost</label></div>
+                    <div class="optional numericEvaluation" data-xml-name="expMult" style="--absence-text:'1'"><label>Exp multiplier</label></div>
+                    <div class="optional numericEvaluation" data-xml-name="primaryValue"><label title="formerly goldCost">Primary value</label></div>
+                    <div class="optional conditionalEvaluation" data-xml-name="visible" style="--absence-text:'never'"><label>Action is visible</label></div>
+                    <div class="optional conditionalEvaluation" data-xml-name="unlocked" style="--absence-text:'never'"><label>Action is unlocked</label></div>
+                    <div class="optional numericEvaluation" data-xml-name="allowed" style="--absence-text:'unlimited'"><label>Max allowed in loop</label></div>
+                    <div class="optional conditionalEvaluation" data-xml-name="canStart" style="--absence-text:'always'"><label>Action can be started</label></div>
+                    <div class="progressOnly numericEvaluation" data-xml-name="progress"><label>Progress exp</label></div>
+                    <div class="limitedOnly numericEvaluation" data-xml-name="totalDiscovered"><label>Total items discovered</label></div>
+                    <div class="limitedOnly numericEvaluation" data-xml-name="oneInEvery"><label>One good item in every</label></div>
+                </fieldset>
+            </details>
+        </li>
+    </template>
+
+    <template id="numericEvaluationTemplate">
+        <details>
+            <summary>
+                <slot name="label"></slot>:
+                <input name="value" placeholder="calculated from:">
+                <details class="baseValueCalculation">
+                    <summary>
+                        <select name="tagName" class="baseValueType"></select>
+                        <!-- All following elements get autohidden by CSS-->
+                        <select name="name"></select>
+                        <select name="varName"></select>
+                        <!-- <input class="baseValueArg"> -->
+                    </summary>
+                </details>
+            </summary>
+            <ul class="adjustments evaluationRules"></ul>
+            <button class="addAdjustment button">Add adjustment/condition</button>
+        </details>
+    </template>
+
+    <template id="conditionalEvaluationTemplate">
+        <details>
+            <summary>
+                <slot name="label"></slot>
+            </summary>
+            <ul class="conditions evaluationRules"></ul>
+            <button class="addCondition button">Add condition</button>
+        </details>
+    </template>
+
+    <template id="evaluationRuleTemplate">
+        <li class="evaluationRule">
+            <details>
+                <summary>
+                    <select name="tagName" class="evaluationRuleType"></select>
+                    <!-- All following elements get autohidden by CSS-->
+                    <select name="name"></select>
+                    <input name="name">
+                    <select name="varName"></select>
+                    <span class="skillModOnly">when level is</span>
+                    <select name="numericTest1" class="numericTestType numericTest1"></select>
+                    <input type="number" name="numericTest1Value" class="numericTestValue numericTest1" placeholder="0">
+                    <span class="numericTestType numericTest2"> and </span>
+                    <select name="numericTest2" class="numericTestType numericTest2">
+                    <input type="number" name="numericTest2Value" class="numericTestValue numericTest2" placeholder="0"></select><span
+                    class="skillModOnly">, increase by</span>
+                    <input type="number" name="percentChange" placeholder="0"
+                        class="skillModOnly"><span class="skillModOnly">% per level (101%, 102%, 103%...)</span>
+                </summary>
+            </details>
+        </li>
+    </template>
+
+    <script src="data.js"></script>
+    <script src="localization.js"></script>
+    <script src="helpers.js"></script>
+    <script src="actionList.js"></script>
+    <script src="actionLog.js"></script>
+    <script src="driver.js"></script>
+    <script src="stats.js"></script>
+    <script src="actions.js"></script>
+    <script src="town.js"></script>
+    <script src="prestige.js"></script>
+    <script src="saving.js"></script>
+    <script src="editor.js"></script>
+    <script defer>
+        startEditor();
+    </script>
+</body>
+</html>
