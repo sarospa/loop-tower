@@ -165,7 +165,7 @@ let portalUsed = false;
 let stoneLoc = 0;
 
 let curLoadout = 0;
-/** @type {{name: string}[][]} */
+/** @type {NextActionEntry[][]} */
 let loadouts;
 /** @type {string[] & {"-1"?: string}} */
 let loadoutnames;
@@ -1071,7 +1071,7 @@ function doLoad(toLoad) {
     goldInvested = toLoad.goldInvested === undefined ? 0 : toLoad.goldInvested;
     stonesUsed = toLoad.stonesUsed === undefined ? {1:0, 3:0, 5:0, 6:0} : toLoad.stonesUsed;
 
-    actions.next = [];
+    actions.clearActions();
     if (toLoad.nextList) {
         for (const action of toLoad.nextList) {
             if (action.name === "Sell Gold") {
@@ -1092,10 +1092,9 @@ function doLoad(toLoad) {
                 action.name = "Buy Mana Z3";
             }
             if(totalActionList.some(x => x.name === action.name))
-                actions.next.push(action);
+                actions.addActionRecord(action, -1, false);
         }
     }
-    actions.nextLast = copyObject(actions.next);
 
     if (toLoad.loadouts) {
         for (let i = 0; i < loadouts.length; i++) {
@@ -1418,7 +1417,7 @@ function processSave(saveData) {
     if (saveJson) {
         storeSaveJson(saveJson);
     }
-    actions.next = [];
+    actions.clearActions();
     actions.current = [];
     load(null, saveJson);
     pauseGame();
@@ -1487,7 +1486,7 @@ function exportCurrentList() {
 
 function importCurrentList() {
     const toImport = textAreaElement("exportImportList").value.split("\n");
-    actions.next = [];
+    actions.clearActions();
     for (let i = 0; i < toImport.length; i++) {
         if (!toImport[i]) {
             continue;
@@ -1495,9 +1494,9 @@ function importCurrentList() {
         const name = /** @type {ActionName} */(toImport[i].substr(toImport[i].indexOf("x") + 1).trim());
         const loops = toImport[i].substr(0, toImport[i].indexOf("x"));
         try {
-            const action = translateClassNames(name);
+            const action = getActionPrototype(name);
             if (action.unlocked()) {
-                actions.next.push({ name, loops: Number(loops), disabled: false });
+                actions.addActionRecord({ name, loops: Number(loops), disabled: false }, -1, false);
             }
         } catch (e) {
             if (e instanceof ClassNameNotFoundError) {

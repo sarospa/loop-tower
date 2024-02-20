@@ -355,7 +355,6 @@ function manualRestart() {
 
 
 function addActionToList(name, townNum, isTravelAction, insertAtIndex) {
-    actions.nextLast = copyObject(actions.next);
     for (const action of towns[townNum].totalActionList) {
         if (action.name === name) {
             if (action.visible() && action.unlocked() && (!action.allowed || getNumOnList(action.name) < action.allowed())) {
@@ -482,17 +481,16 @@ function loadList() {
         return;
     }
     inputElement("amountCustom").value = actions.addAmount.toString();
+    actions.clearActions();
     if (loadouts[curLoadout]) {
-        actions.next = copyArray(loadouts[curLoadout]);
-    } else {
-        actions.next = [];
+        actions.appendActionRecords(loadouts[curLoadout]);
     }
     view.updateNextActions();
     view.adjustDarkRitualText();
 }
 
 function clearList() {
-    actions.next = [];
+    actions.clearActions();
     view.updateNextActions();
 }
 
@@ -546,9 +544,7 @@ function capAmount(index, townNum) {
     if (action.name.startsWith("Survey")) newLoops = 500 - alreadyExisting;
     if (action.name === "Gather Team") newLoops = 5 + Math.floor(getSkillLevel("Leadership") / 100) - alreadyExisting;
     else newLoops = towns[townNum][varName] - alreadyExisting;
-    actions.nextLast = copyObject(actions.next);
-    if (action.loops + newLoops < 0) action.loops = 0;
-    else action.loops += newLoops;
+    actions.updateAction(index, {loops: clamp(action.loops + newLoops, 0, null)});
     view.updateNextActions();
     view.updateLockedHidden();
 }
@@ -557,9 +553,7 @@ function capTraining(index) {
     const action = actions.next[index];
     const alreadyExisting = getNumOnList(action.name) + (action.disabled ? action.loops : 0);
     const newLoops = trainingLimits - alreadyExisting;
-    actions.nextLast = copyObject(actions.next);
-    if (action.loops + newLoops < 0) action.loops = 0;
-    else action.loops += newLoops;
+    actions.updateAction(index, {loops: clamp(action.loops + newLoops, 0, null)});
     view.updateNextActions();
     view.updateLockedHidden();
 }
@@ -577,7 +571,6 @@ function capAllTraining() {
 }
 
 function addLoop(index) {
-    actions.nextLast = copyObject(actions.next);
     const action = actions.next[index];
     const theClass = translateClassNames(action.name);
     let addAmount = actions.addAmount;
@@ -588,38 +581,24 @@ function addLoop(index) {
             addAmount = numMax - numHave;
         }
     }
-    if (action.loops + addAmount === Infinity) action.loops = 1e12;
-    else action.loops += addAmount;
+    actions.updateAction(index, {loops: clamp(action.loops + addAmount, 0, 1e12)});
     view.updateNextActions();
     view.updateLockedHidden();
 }
 function removeLoop(index) {
-    actions.nextLast = copyObject(actions.next);
     const action = actions.next[index];
-    action.loops -= actions.addAmount;
-    if (action.loops < 0) {
-        action.loops = 0;
-    }
+    actions.updateAction(index, {loops: clamp(action.loops - actions.addAmount, 0, 1e12)});
     view.updateNextActions();
     view.updateLockedHidden();
 }
 function split(index) {
-    actions.nextLast = copyObject(actions.next);
-    const toSplit = actions.next[index];
-    const isDisabled = toSplit.disabled;
-    actions.addAction(toSplit.name, Math.ceil(toSplit.loops / 2), index, isDisabled);
-    toSplit.loops = Math.floor(toSplit.loops / 2);
+    actions.splitAction(index);
     view.updateNextActions();
 }
 
 function collapse(index) {
-    actions.nextLast = copyObject(actions.next);
     const action = actions.next[index];
-    if (action.collapsed) {
-        action.collapsed = false;
-    } else {
-        action.collapsed = true;
-    }
+    actions.updateAction(index, {collapsed: !action.collapsed});
     view.updateNextActions();
 }
 
@@ -685,68 +664,39 @@ function moveQueuedAction(initialIndex, resultingIndex) {
     if (initialIndex < 0 || initialIndex > actions.next.length || resultingIndex < 0 || resultingIndex > actions.next.length - 1) {
         return;
     }
-    const difference = initialIndex - resultingIndex;
-    if (difference === 0) {
-        return;
-    }
 
-    actions.nextLast = copyObject(actions.next);
-    const delta = Math.abs(difference);
-   
-    if (difference > 0) {
-        for (let i = 0; i < delta; i++) {
-            const targetIndex = actions.next[initialIndex - i - 1];
-            actions.next[initialIndex - i - 1] = actions.next[initialIndex - i];
-            actions.next[initialIndex - i] = targetIndex;
-        }
-    } else {
-        for (let i = 0; i < delta; i++) {
-            const targetIndex = actions.next[initialIndex + i + 1];
-            actions.next[initialIndex + i + 1] = actions.next[initialIndex + i];
-            actions.next[initialIndex + i] = targetIndex;
-        }
-    }
+    actions.moveAction(initialIndex, resultingIndex, true);
     
     view.updateNextActions();
 }
 
 function moveUp(index) {
-    actions.nextLast = copyObject(actions.next);
     if (index <= 0) {
         return;
     }
-    const targetIndex = actions.next[index - 1];
-    actions.next[index - 1] = actions.next[index];
-    actions.next[index] = targetIndex;
+    actions.moveAction(index, index - 1);
     view.updateNextActions();
 }
 function moveDown(index) {
-    actions.nextLast = copyObject(actions.next);
     if (index >= actions.next.length - 1) {
         return;
     }
-    const targetIndex = actions.next[index + 1];
-    actions.next[index + 1] = actions.next[index];
-    actions.next[index] = targetIndex;
+    actions.moveAction(index, index + 1);
     view.updateNextActions();
 }
 function disableAction(index) {
-    actions.nextLast = copyObject(actions.next);
     const action = actions.next[index];
-    const travelNum = getTravelNum(action.name);
-    const translated = translateClassNames(action.name);
+    const translated = getActionPrototype(action.name);
     if (action.disabled) {
-        if (!translated.allowed || getNumOnList(action.name) + action.loops <= translated.allowed()) action.disabled = false;
+        if (!translated.allowed || getNumOnList(action.name) + action.loops <= translated.allowed()) actions.updateAction(index, {disabled: false});
     } else {
-        action.disabled = true;
+        actions.updateAction(index, {disabled: true});
     }
     view.updateNextActions();
     view.requestUpdate("updateLockedHidden", null);
 }
 function removeAction(index) {
-    actions.nextLast = copyObject(actions.next);
-    const travelNum = getTravelNum(actions.next[index].name);
-    actions.next.splice(index, 1);
+    actions.removeAction(index);
     view.updateNextActions();
     view.requestUpdate("updateLockedHidden", null);
 }

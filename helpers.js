@@ -157,6 +157,13 @@ const Mana = {
     },
 }
 
+/** @param {number} value @param {number} min @param {number} max */
+function clamp(value, min, max) {
+    value = Math.max(value, min ?? -Infinity);
+    value = Math.min(value, max ?? Infinity);
+    return value;
+}
+
 const si = [
     { value: 1E63, symbol: "V" },
     { value: 1E60, symbol: "Nd" },

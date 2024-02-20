@@ -139,6 +139,11 @@ function hasLimit(name) {
     // @ts-ignore
     return limitedActions.includes(name);
 }
+function getPossibleTravel(name) {
+    if (name === "Face Judgement") return [1,2];
+    const travelNum = getTravelNum(name);
+    return travelNum ? [travelNum] : [];
+}
 function getTravelNum(name) {
     if (name === "Face Judgement" && resources.reputation <= 50) return 2;
     if (name === "Face Judgement" && resources.reputation >= 50) return 1;

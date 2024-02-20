@@ -146,9 +146,7 @@ function handleTownHotkey(townNum) {
 }
 
 function undo() {
-    const before = copyArray(actions.next);
-    actions.next = copyArray(actions.nextLast);
-    actions.nextLast = copyArray(before);
+    actions.undoLast();
     view.updateNextActions();
     view.updateLockedHidden();
 }

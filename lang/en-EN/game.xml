@@ -9,14 +9,20 @@
                 <title>Changelog</title>
                 <version_prefix>Version</version_prefix>
             </meta>
+            <!--
             <version caption="Latest"><![CDATA[
             <b>Recent changes</b>
+            ]]></version>
+            -->
+            <version verNum="3.P16.24"><![CDATA[
+            <b>Feb 20th, 2024</b>
             • When no input field has focus, the digits 1-9 now act as hotkeys to set the Amount field directly to that value, the 0 key multiplies it by 10, and Backspace removes the last digit. (Other hotkeys are unchanged and can be viewed by hovering the Hotkeys option.)<br>
             • Inline stat bars should now display properly when you have no soulstones.<br>
             • Fixed Prestige Mental/Physical tooltips to note that they affect stats, not skills. Thanks to Kagato87 from the discord for the heads-up!<br>
             • By request of Mithlug from the discord, your total level, talent, and soulstones can be seen in full by hovering the Total line in the stats panel. The other stat tooltips will now also show these numbers in full, rather than abbreviated.<br>
             • The current zone color is now used to decorate the town area, to improve the association with the action list backgrounds.<br>
             • The on/off state of bonus seconds will now be saved with the game, and the current state is visible in the UI. Thank you so much to juulsezaar from the discord for the request, I'd been meaning to get to this one for a while! ♥<br>
+            • By popular acclaim, actions will now sort themselves into the right zone when adding actions to the list or when dragging actions around within the list. The up and down arrows still let you move actions to impossible places, if you really want to.<br>
             ]]></version>
             <version verNum="3.P16.23"><![CDATA[
             <b> Feb 11th, 2024</b>

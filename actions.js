@@ -58,11 +58,15 @@ function isMultipartAction(action) {
 class Actions {
     /** @type {AnyActionEntry[]} */
     current = [];
-    /** @type {NextActionEntry[]} */
+    /** @readonly @type {readonly Readonly<NextActionEntry>[]} */
     next = [];
-    /** @type {NextActionEntry[]} */
-    nextLast;
+    /** @type {readonly Readonly<NextActionEntry>[]} */
+    #nextLast;
     addAmount = 1;
+
+    get #writableNext() {
+        return /** @type {NextActionEntry[]} */(this.next);
+    }
 
     totalNeeded = 0;
     completedTicks = 0;
@@ -72,7 +76,7 @@ class Actions {
     currentAction;
 
     static {
-        Data.omitProperties(this.prototype, ["next", "nextLast"]);
+        Data.omitProperties(this.prototype, ["next"]);
     }
 
     tick(availableMana) {
@@ -324,7 +328,7 @@ class Actions {
 
         } else {
             this.current = [];
-            for (const action of this.next) {
+            for (const action of this.#writableNext) {
                 // don't add empty/disabled ones
                 if (action.loops === 0 || action.disabled) {
                     continue;
@@ -368,6 +372,37 @@ class Actions {
         view.requestUpdate("updateTotalTicks", null);
     }
 
+    /** @type {ZoneSpan[]} */
+    #zoneSpans;
+    get zoneSpans() {
+        if (!this.#zoneSpans) {
+            let currentZones = [0];
+            let currentStartIndex = 0;
+            this.#zoneSpans = [];
+            for (const [index, action] of this.next.entries()) {
+                const actionProto = getActionPrototype(action.name);
+                if (action.disabled || !action.loops || !actionProto) {
+                    continue;
+                }
+                const travelDeltas = getPossibleTravel(action.name);
+                if (!travelDeltas.length) continue;
+                if (currentZones.length > 1 && currentZones.includes(actionProto.townNum)) {
+                    currentZones = [actionProto.townNum];
+                }
+                this.#zoneSpans.push(new ZoneSpan(currentStartIndex, index, currentZones, this.#zoneSpans.length));
+                currentStartIndex = index + 1;
+                currentZones = travelDeltas.map(x => x + actionProto.townNum);
+            }
+            this.#zoneSpans.push(new ZoneSpan(currentStartIndex, this.next.length, currentZones, this.#zoneSpans.length));
+        }
+        return this.#zoneSpans;
+    }
+    zoneSpanAtIndex(index) {
+        return this.zoneSpans.find(zs => index >= zs.start && index <= zs.end);
+    }
+
+    /** @type {number} */
+    #lastModifiedIndex;
 
     /**
      * @param {ActionName}     action
@@ -377,29 +412,178 @@ class Actions {
      * @param {ActionLoopType} [loopsType]
      * @returns {number}
      */
-    addAction(action, loops, initialOrder, disabled, loopsType) {
-        /** @type {NextActionEntry} */
-        const toAdd = {};
-        toAdd.name = action;
-        if (disabled) toAdd.disabled = true;
-        else toAdd.disabled = false;
+    addAction(action, loops = this.addAmount, initialOrder = options.addActionsToTop ? 0 : -1, disabled = false, loopsType = "actions", addAtClosestValidIndex = true) {
+        return this.addActionRecord({
+            name: action,
+            disabled,
+            loops,
+            loopsType,
+        }, initialOrder, addAtClosestValidIndex);
+    }
 
-        toAdd.loops = loops === undefined ? this.addAmount : loops;
-        toAdd.loopsType = loopsType ?? "actions";
-
-        if (initialOrder === undefined) {
-            if (options.addActionsToTop) {
-                this.next.splice(0, 0, toAdd);
-                initialOrder = 0;
-            } else {
-                initialOrder = this.next.length;
-                this.next.push(toAdd);
-            }
-        } else {
-            // insert at index
-            this.next.splice(initialOrder, 0, toAdd);
+    /** @param {NextActionEntry} toAdd  */
+    addActionRecord(toAdd, initialOrder = options.addActionsToTop ? 0 : -1, addAtClosestValidIndex = true) {
+        if (initialOrder < 0) initialOrder += this.next.length + 1;
+        initialOrder = clamp(initialOrder, 0, this.next.length);
+        if (addAtClosestValidIndex) {
+            const actionProto = getActionPrototype(toAdd.name);
+            initialOrder = this.closestValidIndexForAction(actionProto?.townNum, initialOrder);
         }
+        this.#nextLast = structuredClone(this.next);
+        this.#writableNext.splice(initialOrder, 0, toAdd);
+        this.#zoneSpans = null;
+        this.#lastModifiedIndex = undefined;
         return initialOrder;
+    }
+
+    /** @param {NextActionEntry[]} records */
+    appendActionRecords(records) {
+        for (const record of records) {
+            this.addActionRecord(record, -1, false);
+        }
+    }
+
+    /** @param {number|NextActionEntry} initialIndexOrAction @param {number} resultingIndex */
+    moveAction(initialIndexOrAction, resultingIndex, moveToClosestValidIndex = false) {
+        let initialIndex = typeof initialIndexOrAction === "number" ? initialIndexOrAction : this.next.indexOf(initialIndexOrAction);
+        if (initialIndex < 0) initialIndex += this.next.length;
+        if (resultingIndex < 0) resultingIndex += this.next.length;
+
+        if (initialIndex < 0 || initialIndex >= this.next.length) return -1;
+
+        resultingIndex = clamp(resultingIndex, 0, this.next.length - 1);
+        if (moveToClosestValidIndex) {
+            const townNum = (getActionPrototype(this.next[initialIndex].name))?.townNum;
+            if (townNum != null) {
+                resultingIndex = this.closestValidIndexForAction(townNum, resultingIndex, initialIndex);
+            }
+        }
+        if (initialIndex === resultingIndex) return resultingIndex;
+        this.#nextLast = structuredClone(this.next);
+        const actionToMove = this.next[initialIndex];
+        if (initialIndex < resultingIndex) {
+            this.#writableNext.copyWithin(initialIndex, initialIndex + 1, resultingIndex + 1);
+        } else {
+            this.#writableNext.copyWithin(resultingIndex + 1, resultingIndex, initialIndex);
+        }
+        this.#writableNext[resultingIndex] = actionToMove;
+        this.#zoneSpans = null;
+        this.#lastModifiedIndex = undefined;
+        return resultingIndex;
+    }
+
+    /** @param {number|NextActionEntry} indexOrAction */
+    removeAction(indexOrAction) {
+        let index = typeof indexOrAction === "number" ? indexOrAction : this.next.indexOf(indexOrAction);
+        if (index < 0) index += this.next.length;
+        if (index < 0 || index >= this.next.length) return;
+
+        if (this.#lastModifiedIndex !== index) this.#nextLast = structuredClone(this.next);
+        this.#zoneSpans = null;
+        this.#lastModifiedIndex = undefined;
+        return this.#writableNext.splice(index, 1)[0];
+    }
+
+    /** @param {number|NextActionEntry} indexOrAction @param {Partial<NextActionEntry>} [update] */
+    updateAction(indexOrAction, update) {
+        let index = typeof indexOrAction === "number" ? indexOrAction : this.next.indexOf(indexOrAction);
+        if (index < 0) index += this.next.length;
+        if (index < 0 || index >= this.next.length) return;
+
+        if (this.#lastModifiedIndex !== index) this.#nextLast = structuredClone(this.next);
+        this.#zoneSpans = null;
+        this.#lastModifiedIndex = index;
+        return Object.assign(this.#writableNext[index], update);
+    }
+
+    /** @param {number|NextActionEntry} indexOrAction @param {number} [amountToSplit] @param {number} [targetIndex] */
+    splitAction(indexOrAction, amountToSplit, targetIndex, splitToClosestValidIndex = false) {
+        let index = typeof indexOrAction === "number" ? indexOrAction : this.next.indexOf(indexOrAction);
+        if (index < 0) index += this.next.length;
+        if (index < 0 || index >= this.next.length) return;
+
+        const action = this.next[index];
+        amountToSplit ??= Math.ceil(action.loops / 2), index;
+
+        if (splitToClosestValidIndex) {
+            const townNum = getActionPrototype(action.name)?.townNum;
+            if (townNum != null) {
+                targetIndex = this.closestValidIndexForAction(townNum, targetIndex);
+            }
+        }
+        const splitIndex = this.addActionRecord({...action, loops: amountToSplit});
+        this.#lastModifiedIndex = index + (splitIndex <= index ? 1 : 0); // tell updateAction not to save this undo
+        this.updateAction(this.#lastModifiedIndex, {loops: action.loops - amountToSplit});
+    }
+
+    clearActions() {
+        if (this.next.length === 0) return;
+        this.#nextLast = structuredClone(this.next);
+        this.#lastModifiedIndex = undefined;
+        this.#writableNext.length = 0;
+    }
+
+    undoLast() {
+        // @ts-ignore
+        [this.next, this.#nextLast] = [this.#nextLast, this.next];
+        this.#lastModifiedIndex = undefined;
+        this.#zoneSpans = null;
+    }
+
+    /** @param {number} townNum @param {number} index  */
+    isValidIndexForAction(townNum, index) {
+        return this.zoneSpanAtIndex(index)?.zones.includes(townNum) ?? false;
+    }
+
+    /** @param {number} townNum @param {number} desiredIndex @param {number} [ignoreIndex]  */
+    closestValidIndexForAction(townNum, desiredIndex, ignoreIndex) {
+        if (desiredIndex < 0) desiredIndex += this.next.length + 1;
+        desiredIndex = clamp(desiredIndex, 0, this.next.length);
+        if (townNum == null) return desiredIndex;
+        const {zoneSpans} = this;
+        const spanIndex = zoneSpans.findIndex(zs => desiredIndex >= zs.ignoringStart(ignoreIndex) && desiredIndex <= zs.ignoringEnd(ignoreIndex));
+        if (zoneSpans[spanIndex].zones.includes(townNum)) return desiredIndex;
+        let nextValidIndex = Infinity, prevValidIndex = -Infinity;
+        for (let index = spanIndex + 1; index < zoneSpans.length; index++) {
+            if (zoneSpans[index]?.zones.includes(townNum)) {
+                nextValidIndex = zoneSpans[index].ignoringStart(ignoreIndex);
+                break;
+            }
+        }
+        for (let index = spanIndex - 1; index >= 0; index--) {
+            if (zoneSpans[index]?.zones.includes(townNum)) {
+                prevValidIndex = clamp(zoneSpans[index].ignoringEnd(ignoreIndex), 0, this.next.length);
+            }
+        }
+        if (nextValidIndex === Infinity && prevValidIndex === -Infinity) return desiredIndex; // nowhere is good so anywhere is fine
+        return nextValidIndex - desiredIndex <= desiredIndex - prevValidIndex ? nextValidIndex : prevValidIndex; // send it to whichever is closer
+    }
+}
+
+class ZoneSpan {
+    start;
+    end;
+    zones;
+    spanIndex;
+    /** @param {number} start @param {number} end @param {number[]} zones @param {number} spanIndex */
+    constructor(start, end, zones, spanIndex) {
+        this.start = start;
+        this.end = end;
+        this.zones = zones;
+        this.spanIndex = spanIndex;
+    }
+
+    /** @param {number} [ignoringIndex] */
+    ignoringStart(ignoringIndex) {
+        if (ignoringIndex == null) return this.start;
+        return this.start - (this.start > ignoringIndex ? 1 : 0);
+    }
+
+    /** @param {number} [ignoringIndex] */
+    ignoringEnd(ignoringIndex) {
+        if (ignoringIndex == null) return this.end;
+        if (this.end === ignoringIndex) return Infinity; // the final travel action can move as far as it wants
+        return this.end - (this.end > ignoringIndex ? 1 : 0);
     }
 }
 
