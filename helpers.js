@@ -312,11 +312,13 @@ function templateElement(elementOrId, throwIfMissing=true, warnIfMissing=true) {
     return getElement(elementOrId, HTMLTemplateElement, throwIfMissing, warnIfMissing);
 }
 
+/** @overload @param {string} templateId @param {boolean} [alwaysReturnFragment] @returns {Element | DocumentFragment} */
+/** @overload @param {string} templateId @param {true} alwaysReturnFragment @returns {DocumentFragment} */
 /** @param {string} templateId */
-function cloneTemplate(templateId) {
+function cloneTemplate(templateId, alwaysReturnFragment=false) {
     const template = templateElement(templateId);
     const fragment = /** @type {DocumentFragment} */(template.content.cloneNode(true));
-    if (fragment.childElementCount === 1) {
+    if (!alwaysReturnFragment && fragment.childElementCount === 1) {
         return fragment.firstElementChild;
     } else {
         return fragment;

@@ -108,19 +108,25 @@
             <summary>
                 <slot name="label"></slot>:
                 <input name="value" placeholder="calculated from:">
-                <details class="baseValueCalculation">
-                    <summary>
-                        <select name="tagName" class="baseValueType"></select>
-                        <!-- All following elements get autohidden by CSS-->
-                        <select name="name"></select>
-                        <select name="varName"></select>
-                        <!-- <input class="baseValueArg"> -->
-                    </summary>
-                </details>
+                <details class="baseValueCalculation"></details>
             </summary>
             <ul class="adjustments evaluationRules"></ul>
             <button class="addAdjustment button">Add adjustment/condition</button>
         </details>
+    </template>
+
+    <template id="baseValueCalculationTemplate">
+        <summary>
+            <select name="tagName" class="baseValueType fromDataList" data-list="baseValueTypes"></select>
+            <!-- All following elements get autohidden by CSS-->
+            <select name="actionName" class="fromDataList" data-list="actionNames"></select>
+            <select name="skillName" class="fromDataList" data-list="skills"></select>
+            <select name="buffName" class="fromDataList" data-list="buffs"></select>
+            <select name="resourceName" class="fromDataList" data-list="resources"></select>
+            <select name="functionName" class="fromDataList" data-list="jsFunctions"></select>
+            <select name="varName" class="fromDataList" data-list="varNames"></select>
+        </summary>
+        <ul class="adjustments evaluationRules"></ul>
     </template>
 
     <template id="conditionalEvaluationTemplate">
@@ -137,24 +143,53 @@
         <li class="evaluationRule">
             <details>
                 <summary>
-                    <select name="tagName" class="evaluationRuleType"></select>
+                    <select name="tagName" class="evaluationRuleType">
+                        <optgroup label="Conditions" class="fromDataList" data-list="conditionalRuleTypes"></optgroup>
+                        <optgroup label="Adjustments" class="fromDataList" data-list="numericAdjustmentTypes"></optgroup>
+                    </select>
                     <!-- All following elements get autohidden by CSS-->
-                    <select name="name"></select>
-                    <input name="name">
-                    <select name="varName"></select>
+                    <select name="statName" class="fromDataList" data-list="stats"></select>
+                    <select name="skillName" class="fromDataList" data-list="skills"></select>
+                    <select name="buffName" class="fromDataList" data-list="buffs"></select>
+                    <select name="prestigeBuffName" class="fromDataList" data-list="prestigeBuffs"></select>
+                    <select name="storyFlagName" class="fromDataList" data-list="storyFlags"></select>
+                    <select name="resourceName" class="fromDataList" data-list="resources"></select>
+                    <select name="adjustmentName" class="fromDataList" data-list="namedAdjustments"></select>
+                    <select name="actionName" class="fromDataList" data-list="actionNames" data-empty-option-label="(this Action)"></select>
+                    <select name="varName" class="fromDataList" data-list="varNames" data-empty-option-label="(this Action)"></select>
                     <span class="skillModOnly">when level is</span>
-                    <select name="numericTest1" class="numericTestType numericTest1"></select>
+                    <select name="numericTest1" class="numericTestType numericTest1 fromDataList" data-list="numericTestTypes" data-empty-option-label=""></select>
                     <input type="number" name="numericTest1Value" class="numericTestValue numericTest1" placeholder="0">
                     <span class="numericTestType numericTest2"> and </span>
-                    <select name="numericTest2" class="numericTestType numericTest2">
-                    <input type="number" name="numericTest2Value" class="numericTestValue numericTest2" placeholder="0"></select><span
-                    class="skillModOnly">, increase by</span>
+                    <select name="numericTest2" class="numericTestType numericTest2 fromDataList" data-list="numericTestTypes" data-empty-option-label=""></select>
+                    <input type="number" name="numericTest2Value" class="numericTestValue numericTest2" placeholder="0"><span
+                        class="skillModOnly">, increase by</span>
                     <input type="number" name="percentChange" placeholder="0"
                         class="skillModOnly"><span class="skillModOnly">% per level (101%, 102%, 103%...)</span>
                 </summary>
             </details>
         </li>
     </template>
+
+    <div id="datalists">
+        <!-- Datalists used to populate "*Name" fields -->
+        <datalist id="stats"></datalist>
+        <datalist id="skills"></datalist>
+        <datalist id="buffs"></datalist>
+        <datalist id="prestigeBuffs"></datalist>
+        <datalist id="jsFunctions"></datalist>
+        <datalist id="storyFlags"></datalist>
+        <datalist id="resources"></datalist>
+        <datalist id="namedAdjustments"></datalist>
+        <datalist id="actionNames"></datalist>
+        <datalist id="varNames"></datalist>
+
+        <!-- Datalists only used explicitly -->
+        <datalist id="baseValueTypes"></datalist>
+        <datalist id="numericTestTypes"></datalist>
+        <datalist id="numericAdjustmentTypes"></datalist>
+        <datalist id="conditionalRuleTypes"></datalist>
+    </div>
 
     <script src="data.js"></script>
     <script src="localization.js"></script>

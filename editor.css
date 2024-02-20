@@ -1,51 +1,51 @@
 :root {
-  --absence-text: "absent";
+    --absence-text: "absent";
 }
 
 ul + .button {
-  margin-top:4px;
+    margin-top:4px;
 }
 
 .elementList {
-  padding-left: 1em;
+    padding-left: 1em;
 }
 
 .elementList > li {
-  list-style-type: none;
+    list-style-type: none;
 }
 
 .elementList > li > details > summary {
-  font-weight: bold;
-  font-size: larger;
+    font-weight: bold;
+    font-size: larger;
 }
 
 .elementList > li > details > fieldset {
-  margin-bottom: 1lh;
+    margin-bottom: 1lh;
 }
 
 fieldset > * {
-  display: block;
-  margin: 0.25lh 0 0;
+    display: block;
+    margin: 0.25lh 0 0;
 }
 
 .fieldrow {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1em;
-  align-content: stretch;
-  justify-content: stretch;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1em;
+    align-content: stretch;
+    justify-content: stretch;
 }
 
 .fieldrow > label {
-  flex: 1 0 min-content;
-  display: flex;
-  align-items: baseline;
-  white-space: nowrap;
-  gap: 0.5em;
+    flex: 1 0 min-content;
+    display: flex;
+    align-items: baseline;
+    white-space: nowrap;
+    gap: 0.5em;
 }
 
 .fieldrow > label > * {
-  flex: 1 0 min-content;
+    flex: 1 0 min-content;
 }
 
 .actionDefinition:not([data-action-type="normal"]) .normalOnly,
@@ -53,109 +53,123 @@ fieldset > * {
 .actionDefinition:not([data-action-type="progress"]) .progressOnly,
 .actionDefinition:not([data-action-type="multipart"]) .multipartOnly
 {
-  display: none;
+    display: none;
 }
 
 .numericEvaluation > details > summary > input[value] ~ .baseValueCalculation {
-  display: none;
+    display: none;
 }
 
 .optional > details > summary:has(>label>input.elementPresent:not(:checked)) {
-  list-style-type: disc;
-  color: color-mix(in srgb, currentColor, transparent 50%);
-  &:not(details[open]>summary) {
-    pointer-events: none;
-  }
-  &>label {
-    pointer-events: auto;
-  }
-  &>label ~ * {
-    display:none;
-  }
-  &::after {
-    content: " (" var(--absence-text) ")";
-  }
+    list-style-type: disc;
+    color: color-mix(in srgb, currentColor, transparent 50%);
+    &:not(details[open]>summary) {
+        pointer-events: none;
+    }
+    &>label {
+        pointer-events: auto;
+    }
+    &>label ~ * {
+        display:none;
+    }
+    &::after {
+        content: " (" var(--absence-text) ")";
+    }
 }
 
 ul.adjustments {
-  padding-left: 2em;
+    padding-left: 2em;
 }
 
 li.evaluationRule {
-  list-style: none;
+    list-style: none;
 }
 
 li.evaluationRule > details > summary {
-  list-style-type: disc;
+    list-style-type: disc;
 }
 
 details:not([open]) > summary:has( ~ .evaluationRules > .evaluationRule)::after {
-  content: "(...)";
+    content: "(...)";
 }
 
 ul.conditions > .evaluationRule > details > summary > .evaluationElementType > optgroup[label=Adjustment] {
-  display: none;
-}
-
-.evaluationRule > details > summary > select.evaluationRuleType ~ * {
-  display: none;
+    display: none;
 }
 
 details.baseValueCalculation {
-  display: inline-block;
+    display: inline-block;
 }
 details.baseValueCalculation > summary {
-  list-style: none;
+    list-style: none;
 }
 
+.evaluationRule > details > summary > select.evaluationRuleType ~ *,
 details.baseValueCalculation > summary > select.baseValueType ~ * {
-  display: none;
+    display: none;
 }
-details.nameSelect > summary > details > summary > select[name=name] {
-  display: revert;
+:is(.evaluationRule.skillName > details, details.skillName) > summary > select[name=skillName] {
+    display: revert;
 }
-details.varName > summary > details > summary > select[name=varName] {
-  display: revert;
+:is(.evaluationRule.buffName > details, details.buffName) > summary > select[name=buffName] {
+    display: revert;
+}
+:is(.evaluationRule.actionName > details, details.actionName) > summary > select[name=actionName] {
+    display: revert;
+}
+:is(.evaluationRule.functionName > details, details.functionName) > summary > select[name=functionName] {
+    display: revert;
+}
+:is(.evaluationRule.varName > details, details.varName) > summary > select[name=varName] {
+    display: revert;
 }
 
-.evaluationRule.nameSelect > details > summary > select[name=name] {
-  display: revert;
+.evaluationRule.adjustmentName > details > summary > select[name=adjustmentName] {
+    display: revert;
+}
+
+.evaluationRule.prestigeBuffName > details > summary > select[name=prestigeBuffName] {
+    display: revert;
 }
 
 .evaluationRule.varName > details > summary > select[name=varName] {
-  display: revert;
+    display: revert;
 }
 
 .evaluationRule.numericCondition > details > summary > .numericTestType.numericTest1 {
-  display: revert;
-  &[value] ~ .numericTestValue.numericTest1 {
     display: revert;
-  }
-  &[value] ~ span.numericTestType.numericTest2:has(+.numericTest2[value]) {
-    display: revert;
-  }
-  &[value] ~ select.numericTestType.numericTest2 {
-    display: revert;
-    &[value] ~ .numericTestValue.numericTest2 {
-      display: revert;
+    &[value] ~ .numericTestValue.numericTest1 {
+        display: revert;
     }
-  }
+    &[value] ~ span.numericTestType.numericTest2:has(+.numericTest2[value]) {
+        display: revert;
+    }
+    &[value] ~ select.numericTestType.numericTest2 {
+        display: revert;
+        &[value] ~ .numericTestValue.numericTest2 {
+            display: revert;
+        }
+    }
 }
 
 .evaluationRule.skillMod > details > summary > :is(.numericTestType, .numericTestValue) {
-  display: revert;
+    display: revert;
 }
 .evaluationRule.skillMod > details > summary > .skillModOnly {
-  display: revert;
+    display: revert;
+}
+.evaluationRule.skillMod > details > summary > select[name=numericTest1] > option:not([value=minExclusive]),
+.evaluationRule.skillMod > details > summary > select[name=numericTest2] > option:not([value=max]){
+    display: none;
 }
 
 input.numericTestValue {
-  width: 5em;
+    width: 5em;
 }
 input.skillModOnly {
-  width: 5em;
+    width: 5em;
 }
 
 .addAdjustment, .addCondition {
-  margin-left: 2em;
+    margin-left: 2em;
 }

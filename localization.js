@@ -14,6 +14,12 @@ const Localization = self["Localization"] = {
     // html selector of the div to put the localization menu in
     handle: "#localization_menu",
 
+    // ready detection
+    isReady: false,
+    /** @type {Promise} */
+    ready: null,
+    _resolveReady: v => {},
+
     // vars
     currentLang: null,
     libs: {},
@@ -22,6 +28,7 @@ const Localization = self["Localization"] = {
     // ====== PUBLIC ======
     // starts up the module
     init() {
+        Localization.ready = new Promise(r => Localization._resolveReady = r);
         Localization.currentLang = Localization.getUrlVars()[Localization.getKey];
         if (typeof(Localization.currentLang) === "undefined")
             Localization.currentLang = Localization.defaultLang;
@@ -32,6 +39,11 @@ const Localization = self["Localization"] = {
             Localization.saveLib(libName, xmlData);
             if (typeof(callback) !== "undefined") callback.call(this);
         });
+    },
+    setReady() {
+        Localization._resolveReady?.(Localization);
+        delete Localization._resolveReady;
+        Localization.isReady = true;
     },
     // lib can be ignored to use the last used lib. returns the text for the given key
     /** @type {(path: string, lib?: string) => string} */
@@ -93,13 +105,12 @@ const Localization = self["Localization"] = {
 // binding the _txt function for simplier use
 const _txt = self["_txt"] = Localization.txt;
 const _txtsObj = self["_txtsObj"] = Localization.txtsObj;
-let locCheck = false;
 
 if (typeof window !== "undefined") {
     Localization.init();
     
     Localization.loadLib("fallback", () => {
-        Localization.loadLib("game", () => locCheck = true);
+        Localization.loadLib("game", () => Localization.setReady());
     });
 }
 

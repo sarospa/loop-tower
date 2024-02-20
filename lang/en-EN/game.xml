@@ -738,140 +738,140 @@
     <tracked_resources>
         <reset_on_restart_txt>Resets when the loop restarts.</reset_on_restart_txt>
         <!--countable items with names and counts on the top bar-->
-        <resource initially_hidden="true">
+        <resource id="power" initially_hidden="true">
+            <label>Divine Power</label>
             <title><![CDATA[<img src="img/power.svg" class="smallIcon">]]></title>
-            <id>power</id>
             <desc>Powers of the gods.</desc>
         </resource>
-        <resource no_reset_on_restart="true">
+        <resource id="timer" no_reset_on_restart="true">
+            <label>Mana</label>
             <title><![CDATA[<i class='il-icon il-mana'></i> Mana:]]></title>
-            <id>timer</id>
             <desc>Your main resource. The higher your mana, the more you can do before reset.</desc>
         </resource>
-        <resource>
+        <resource id="gold">
+            <label>Gold</label>
             <title>Gold:</title>
-            <id>gold</id>
             <desc>Coins to buy mana crystals and other items with.</desc>
         </resource>
-        <resource initially_hidden="true">
+        <resource id="reputation" initially_hidden="true">
+            <label>Reputation</label>
             <title>Reputation:</title>
-            <id>reputation</id>
             <desc>The influence you have over the people in town.</desc>
         </resource>
-        <resource initially_hidden="true">
+        <resource id="herbs" initially_hidden="true">
+            <label>Herbs</label>
             <title>Herbs:</title>
-            <id>herbs</id>
             <desc>The beneficial plants you've found.</desc>
         </resource>
-        <resource initially_hidden="true">
+        <resource id="hide" initially_hidden="true">
+            <label>Hide</label>
             <title>Hide:</title>
-            <id>hide</id>
             <desc>Results of successful hunting.</desc>
         </resource>
-        <resource initially_hidden="true">
+        <resource id="potions" initially_hidden="true">
+            <label>Potions</label>
             <title>Potions:</title>
-            <id>potions</id>
             <desc>Rare, but not complex. Worth some money.</desc>
         </resource>
-        <resource initially_hidden="true">
+        <resource id="teamMembers" initially_hidden="true">
+            <label>Team Members</label>
             <title>Team Members:</title>
-            <id>teamMembers</id>
             <desc>You know their personalities and fighting style. They don't know your name.</desc>
         </resource>
-        <resource initially_hidden="true">
+        <resource id="armor" initially_hidden="true">
+            <label>Armor</label>
             <title>Armor:</title>
-            <id>armor</id>
             <desc>Crafted by your own hand, it protects you from dangers.</desc>
         </resource>
-        <resource initially_hidden="true">
+        <resource id="blood" initially_hidden="true">
+            <label>Blood</label>
             <title>Blood:</title>
-            <id>blood</id>
             <desc>Regaled for it's regenerative properties.</desc>
         </resource>
-        <resource initially_hidden="true">
+        <resource id="artifacts" initially_hidden="true">
+            <label>Artifacts</label>
             <title>Artifacts:</title>
-            <id>artifacts</id>
             <desc>Various old rings, bracelets, amulets, and pendants. They look like they're worth a pretty penny.</desc>
         </resource>
-        <resource initially_hidden="true">
+        <resource id="favors" initially_hidden="true">
+            <label>Favors</label>
             <title>Favors:</title>
-            <id>favors</id>
             <desc>You've been generous to important people.</desc>
         </resource>
-        <resource initially_hidden="true">
+        <resource id="enchantments" initially_hidden="true">
+            <label>Enchanted Armor</label>
             <title>Enchanted Armor:</title>
-            <id>enchantments</id>
             <desc>Divinely blessed weapons and armor, like a hero of legend.</desc>
         </resource>
-        <resource initially_hidden="true">
+        <resource id="houses" initially_hidden="true">
+            <label>Houses</label>
             <title>Houses:</title>
-            <id>houses</id>
             <desc>Property constructed in Valhalla. You can collect taxes from tenants.</desc>
         </resource>
-        <resource initially_hidden="true">
+        <resource id="pylons" initially_hidden="true">
+            <label>Pylons</label>
             <title>Pylons:</title>
-            <id>pylons</id>
             <desc>Lingering fragments from the destroyed pylon.</desc>
         </resource>
-        <resource initially_hidden="true">
+        <resource id="zombie" initially_hidden="true">
+            <label>Zombies</label>
             <title>Zombies:</title>
-            <id>zombie</id>
             <desc>A shambling pile of deceased flesh. Super gross.</desc>
         </resource>
-        <resource initially_hidden="true">
+        <resource id="map" initially_hidden="true">
+            <label>Maps</label>
             <title>Maps:</title>
-            <id>map</id>
             <desc>A cartographer's kit that can be used to survey areas and discover new secrets.</desc>
         </resource>
-        <resource initially_hidden="true">
+        <resource id="completedMap" initially_hidden="true">
+            <label>Finished Maps</label>
             <title>Finished Maps:</title>
-            <id>completedMap</id>
             <desc>You've mapped out some part of the world. The Explorer's guild would happily buy this knowledge off of you.</desc>
         </resource>
-        <resource initially_hidden="true">
+        <resource id="heart" initially_hidden="true">
+            <label>Beating Hearts</label>
             <title><![CDATA[<img src="img/heart.svg" class="smallIcon">]]></title>
-            <id>heart</id>
             <desc>The still-beating heart of your target. The Assassin's guild will reward you for this.</desc>
         </resource>
         <!--singular items with img icons rather than counts-->
-        <resource initially_hidden="true" no_count="true">
+        <resource id="glasses" initially_hidden="true" no_count="true">
+            <label>Glasses</label>
             <title><![CDATA[<img src="img/buyGlasses.svg" class="smallIcon">]]></title>
-            <id>glasses</id>
             <desc>Woah, trees have so many leaves on them.</desc>
         </resource>
-        <resource initially_hidden="true" no_count="true">
+        <resource id="supplies" initially_hidden="true" no_count="true">
+            <label>Travel Supplies</label>
             <title><![CDATA[<img src="img/buySupplies.svg" class="smallIcon">]]></title>
-            <id>supplies</id>
             <desc>Needed to go to the next town.</desc>
         </resource>
-        <resource initially_hidden="true" no_count="true">
+        <resource id="pickaxe" initially_hidden="true" no_count="true">
+            <label>Pickaxe</label>
             <title><![CDATA[<img src="img/buyPickaxe.svg" class="smallIcon">]]></title>
-            <id>pickaxe</id>
             <desc>It's heavy, but you can make use of it.</desc>
         </resource>
-        <resource initially_hidden="true" no_count="true">
+        <resource id="loopingPotion" initially_hidden="true" no_count="true">
+            <label>Looping Potion</label>
             <title><![CDATA[<img src="img/loopingPotion.svg" class="smallIcon">]]></title>
-            <id>loopingPotion</id>
             <desc>It's a potion made with the very same formula that got you into this mess. Why exactly did you make this?</desc>
         </resource>
-        <resource initially_hidden="true" no_count="true">
+        <resource id="citizenship" initially_hidden="true" no_count="true">
+            <label>Valhalla Citizenship</label>
             <title><![CDATA[<img src="img/seekCitizenship.svg" class="smallIcon">]]></title>
-            <id>citizenship</id>
             <desc>You're one of Valhalla's proud citizens now, giving you the right to fight in their honor.</desc>
         </resource>
-        <resource initially_hidden="true" no_count="true">
+        <resource id="pegasus" initially_hidden="true" no_count="true">
+            <label>Pegasus</label>
             <title><![CDATA[<img src="img/pegasus.svg" class="smallIcon">]]></title>
-            <id>pegasus</id>
             <desc>A horse with great angelic wings. It can run across clouds as easily as dirt.</desc>
         </resource>
-        <resource initially_hidden="true" no_count="true">
+        <resource id="key" initially_hidden="true" no_count="true">
+            <label>Commerceville Key</label>
             <title><![CDATA[<img src="img/purchaseKey.svg" class="smallIcon">]]></title>
-            <id>key</id>
             <desc>Needed to go to the next town.</desc>
         </resource>
-        <resource initially_hidden="true" no_count="true">
+        <resource id="stone" initially_hidden="true" no_count="true">
+            <label>Temporal Stone</label>
             <title><![CDATA[<img src="img/temporalStone.svg" class="smallIcon">]]></title>
-            <id>stone</id>
             <desc>A strange rock that seems unaffected by the time loops.</desc>
         </resource>
     </tracked_resources>

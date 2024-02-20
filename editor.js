@@ -39,7 +39,7 @@ const conditionalRuleTypes = {
     ifDiscoveredItems: "If total discovered items",
     ifCheckedItems: "If total checked items",
 };
-const numericOrConditionalElementTypes = {
+const numericOrConditionalRuleTypes = {
     "Condition": conditionalRuleTypes,
     "Adjustment": numericAdjustmentTypes,
 };
@@ -85,47 +85,47 @@ function isEvaluationRuleType(type) {
     return isConditionalRuleType(type) || isNumericAdjustmentType(type);
 }
 
-/** @satisfies {Record<BaseValueType, string>} */
+/** @satisfies {Record<BaseValueType, string[]>} */
 const baseValueClasses = /** @type {const} */({
-    progressLevel: "varName progressVarName",
-    skillLevel: "nameSelect skillName",
-    buffLevel: "nameSelect buffName",
-    primaryValue: "nameSelect actionName",
-    value: "numericEvaluation",
-    function: "nameSelect functionName",
-    checkedItems: "varName limitedVarName",
-    discoveredItems: "varName limitedVarName",
-    goodItems: "varName limitedVarName",
+    progressLevel: ["varName", "progressVarName"],
+    skillLevel: ["nameSelect", "skillName"],
+    buffLevel: ["nameSelect", "buffName"],
+    primaryValue: ["nameSelect", "actionName"],
+    value: ["numericEvaluation"],
+    function: ["nameSelect", "functionName"],
+    checkedItems: ["varName", "limitedVarName"],
+    discoveredItems: ["varName", "limitedVarName"],
+    goodItems: ["varName", "limitedVarName"],
 });
 
-/** @satisfies {Record<EvaluationRuleType, string>} */
+/** @satisfies {Record<EvaluationRuleType, string[]>} */
 const ruleClasses = /** @type {const} */({
-    addition: "numericEvaluation",
-    subtraction: "numericEvaluation",
-    multiplier: "numericEvaluation",
-    divisor: "numericEvaluation",
-    adjustment: "nameSelect adjustmentName",
-    skillBonus: "nameSelect skillName",
-    prestigeBonus: "nameSelect prestigeBuffName",
-    surveyBonus: "",
-    additiveBonus: "",
-    skillMod: "nameSelect skillName skillMod",
-    setValue: "numericEvaluation",
-    ceil: "",
-    floor: "",
-    round: "",
-    clampMin: "numericEvaluation",
-    clampMax: "numericEvaluation",
-    if: "numericEvaluation numericCondition",
-    ifPrimaryValue: "nameSelect actionName",
-    ifCurrentValue: "numericCondition",
-    ifResource: "nameSelect numericCondition resourceName",
-    ifHasResource: "nameSelect booleanCondition resourceName",
-    ifStoryFlag: "nameSelect booleanCondition storyFlagName",
-    ifProgress: "numericCondition varName progressVarName",
-    ifGoodItems: "numericCondition varName limitedVarName",
-    ifDiscoveredItems: "numericCondition varName limitedVarName",
-    ifCheckedItems: "numericCondition varName limitedVarName",
+    addition: ["numericEvaluation"],
+    subtraction: ["numericEvaluation"],
+    multiplier: ["numericEvaluation"],
+    divisor: ["numericEvaluation"],
+    adjustment: ["nameSelect", "adjustmentName"],
+    skillBonus: ["nameSelect", "skillName"],
+    prestigeBonus: ["nameSelect", "prestigeBuffName"],
+    surveyBonus: [],
+    additiveBonus: [],
+    skillMod: ["nameSelect", "skillName", "skillMod"],
+    setValue: ["numericEvaluation"],
+    ceil: [],
+    floor: [],
+    round: [],
+    clampMin: ["numericEvaluation"],
+    clampMax: ["numericEvaluation"],
+    if: ["numericEvaluation", "numericCondition"],
+    ifPrimaryValue: ["nameSelect", "actionName", "numericCondition"],
+    ifCurrentValue: ["numericCondition"],
+    ifResource: ["nameSelect", "numericCondition", "resourceName"],
+    ifHasResource: ["nameSelect", "booleanCondition", "resourceName"],
+    ifStoryFlag: ["nameSelect", "booleanCondition", "storyFlagName"],
+    ifProgress: ["numericCondition", "varName", "progressVarName"],
+    ifGoodItems: ["numericCondition", "varName", "limitedVarName"],
+    ifDiscoveredItems: ["numericCondition", "varName", "limitedVarName"],
+    ifCheckedItems: ["numericCondition", "varName", "limitedVarName"],
 });
 
 /**
@@ -134,10 +134,9 @@ const ruleClasses = /** @type {const} */({
  */
 
 /**
- * @typedef {Split<typeof baseValueClasses[BaseValueType]>} BaseValueClass
- * @typedef {Split<typeof ruleClasses[EvaluationRuleType]>} RuleClass
+ * @typedef {Split<typeof baseValueClasses[BaseValueType][number]>} BaseValueClass
+ * @typedef {Split<typeof ruleClasses[EvaluationRuleType][number]>} RuleClass
  */
-
 
 class DataElement {
     static defaultIndent = 4;
@@ -249,9 +248,9 @@ class DataElement {
         return this;
     }
 
-    /** @param {string} templateId @param {Element} container @param {Element} insertBefore */
-    spawnUIFromTemplate(templateId, container = this.parent?.uiElement, insertBefore = null) {
-        const clonedTemplate = cloneTemplate(templateId);
+    /** @param {string|DocumentFragment|Element} templateOrId @param {Element} container @param {Element} insertBefore */
+    spawnUIFromTemplate(templateOrId, container = this.parent?.uiElement, insertBefore = null) {
+        const clonedTemplate = typeof templateOrId === "string" ? cloneTemplate(templateOrId) : templateOrId;
         container.insertBefore(clonedTemplate, insertBefore);
         this.uiElement = htmlElement(clonedTemplate instanceof DocumentFragment ? container : clonedTemplate);
         const summaryElement = this.uiElement.querySelector(":scope>details>summary, details:scope>summary");
@@ -263,6 +262,11 @@ class DataElement {
 
     bindUI() {
         if (!this.uiElement) return;
+        for (const [name, required] of Object.entries(this.fieldRequirements ?? {})) {
+            for (const element of /** @type {NodeListOf<HTMLValueElement>} */(this.uiElement.querySelectorAll(`[name="${name}"]`))) {
+                element.addEventListener("input", evt => this.stringFields[name] = (!element.value?.length && !required) ? undefined : element.value);
+            }
+        }
         for (const evaluationField of this.uiElement.querySelectorAll(":is(.numericEvaluation,.conditionalEvaluation)[data-xml-name]")) {
             const isNumericEvaluation = evaluationField.classList.contains("numericEvaluation");
             const tagName = evaluationField.getAttribute("data-xml-name");
@@ -299,26 +303,74 @@ class DataElement {
 }
 
 class BaseValueElement extends DataElement {
-    
+    static {
+        this.defaultTemplate = "baseValueCalculationTemplate";
+        this.addDefaultFields(
+            ["tagName"],
+            ["actionName",
+             "skillName",
+             "buffName",
+             "resourceName",
+             "functionName",
+             "varName"]);
+    }
+    uiElementClass = "";
+
+    /** @param {BaseValueClass} className */
+    hasBaseValueClass(className) {
+        // @ts-ignore
+        return isBaseValueType(this.tagName) && baseValueClasses[this.tagName]?.includes(className) === true;
+    }
+
+    changeBaseValueType(type="") {
+        this.tagName = type;
+        this.uiElement.dataset.baseValueType = type;
+        if (!isBaseValueType(type)) {
+            return;
+        }
+        const baseValueClass = baseValueClasses[type];
+        this.uiElement.className = `${this.uiElementClass} ${baseValueClass}`;
+    }
+
+    bindUI() {
+        super.bindUI();
+        this.uiElementClass = this.uiElement.className;
+        const typeSelect = valueElement(this.uiElement.querySelector("select.baseValueType"));
+        (typeSelect.onchange = () => this.changeBaseValueType(typeSelect.value))();
+    }
 }
 
 class EvaluationRuleElement extends DataElement {
     static {
         this.defaultTemplate = "evaluationRuleTemplate";
-        this.addDefaultFields(["tagName"], ["name","varName","numericTest1","numericTest1Value","numericTest2","numericTest2Value","percentChange"]);
+        this.addDefaultFields(
+            ["tagName"],
+            ["statName",
+             "skillName",
+             "buffName",
+             "prestigeBuffName",
+             "storyFlagName",
+             "resourceName",
+             "adjustmentName",
+             "actionName",
+             "varName",
+             "percentChange",
+             "numericTest1", "numericTest1Value", "numericTest2", "numericTest2Value"]);
     }
-    uiElementClass = "";
 
     numericTest1 = "";
     numericTest1Value = "";
     numericTest2 = "";
     numericTest2Value = "";
 
-    /** @param {RuleClass} className */
-    hasRuleClass(className) {
-        return isEvaluationRuleType(this.tagName) && ruleClasses[this.tagName].split(" ").includes(className);
-    }
+    /** @type {readonly string[]} */
+    lastRuleClasses = [];
 
+    /** @template {RuleClass} C @param {C} className */
+    hasRuleClass(className) {
+        // @ts-ignore
+        return isEvaluationRuleType(this.tagName) && ruleClasses[this.tagName]?.includes(className) === true;
+    }
 
     init() {
         if (this.xmlElement) {
@@ -344,44 +396,22 @@ class EvaluationRuleElement extends DataElement {
         if (!isEvaluationRuleType(type)) {
             return;
         }
-        const ruleClass = ruleClasses[type];
-        this.uiElement.className = `${this.uiElementClass} ${ruleClass}`;
-        for (const className of ruleClass.split(" ")) {
-            switch (className) {
-                case "skillName":
-                    populateSelectOptions(this.uiElement, "select[name=name]", skills, this.stringFields.name, s => s.label);
-                    break;
-                case "prestigeBuffName":
-                    populateSelectOptions(this.uiElement, "select[name=name]", buffs, this.stringFields.name, b => b.name in prestigeBases && b.label);
-                    break;
-                case "adjustmentName":
-                    populateSelectOptions(this.uiElement, "select[name=name]", editor.defs, this.stringFields.name, d => d instanceof NamedAdjustment && d.name);
-                    break;
-                case "storyFlagName":
-                    populateSelectOptions(this.uiElement, "select[name=name]", storyReqs, this.stringFields.name, (_, k) => k);
-                    break;
-                case "resourceName":
-                    populateSelectOptions(this.uiElement, "select[name=name]", resources, this.stringFields.name, (_, k) => k);
-                    break;
-                case "actionName":
-                    populateSelectOptions(this.uiElement, "select[name=name]", editor.actions, this.stringFields.name, a => a instanceof ActionDefinition && a.name, (_,a) => a instanceof ActionDefinition && a.name);
-                    break;
-                case "limitedVarName":
-                    populateSelectOptions(this.uiElement, "select[name=varName]", {...editor.actions, "": ""}, this.stringFields.varName, a => a === "" ? "(this Action)" : a instanceof ActionDefinition && a.type === "limited" && a.name, (_,a)=>a instanceof ActionDefinition ? a.effectiveVarName : String(a));
-                    break;
-                case "progressVarName":
-                    populateSelectOptions(this.uiElement, "select[name=varName]", {...editor.actions, "": ""}, this.stringFields.varName, a => a === "" ? "(this Action)" :  a instanceof ActionDefinition && a.type === "progress" && a.name, (_,a)=>a instanceof ActionDefinition ? a.effectiveVarName : String(a));
-                    break;
-                case "varName":
-                    populateSelectOptions(this.uiElement, "select[name=varName]", {...editor.actions, "": ""}, this.stringFields.varName, a => a === "" ? "(this Action)" :  a instanceof ActionDefinition && a.name, (_,a)=>a instanceof ActionDefinition ? a.effectiveVarName : String(a))
-                    break;
-            }
+        this.uiElement.classList.remove(...this.lastRuleClasses);
+        this.uiElement.classList.add(...(this.lastRuleClasses = ruleClasses[type]));
+        if (this.hasRuleClass("skillMod") && (this.numericTest1 !== "minExclusive" || this.numericTest2 !== "max")) {
+            // just set the values in the select, CSS will prevent changes
+            selectElement(this.uiElement.querySelector("select[name=numericTest1]")).value = "minExclusive";
+            selectElement(this.uiElement.querySelector("select[name=numericTest2]")).value = "max";
+            // and record that we've done so
+            this.uiElement.classList.add("forced-skillMod");
+        } else if (this.uiElement.classList.contains("forced-skillMod")) {
+            this.uiElement.classList.remove("forced-skillMod");
+            this.populateUIFields();
         }
     }
 
     bindUI() {
         super.bindUI();
-        this.uiElementClass = this.uiElement.className;
         const typeSelect = valueElement(this.uiElement.querySelector("select[name=tagName]"));
         (typeSelect.onchange = () => this.changeRuleType(typeSelect.value))();
     }
@@ -463,6 +493,13 @@ class NumericEvaluationElement extends ConditionalEvaluationElement {
     /** @type {string} */
     value;
 
+    /** @type {BaseValueElement} */
+    baseValue;
+
+    get effectiveValue() {
+        return this.value === "" ? this.baseValue : this.value;
+    }
+
     init() {
         super.init();
         if (this.xmlElement?.firstChild?.nodeType === Node.TEXT_NODE && this.value == null) {
@@ -470,57 +507,18 @@ class NumericEvaluationElement extends ConditionalEvaluationElement {
             if (text.length) {
                 this.value = text;
             }
+        } else if (isBaseValueType(this.xmlElement?.firstElementChild?.tagName ?? "")) {
+            this.baseValue = new BaseValueElement(this, this.xmlElement.firstElementChild, true, true);
         }
-    }
-
-    /** @param {BaseValueClass} className */
-    hasBaseValueClass(className) {
-        return isBaseValueType(this.tagName) && baseValueClasses[this.tagName].split(" ").includes(className);
-    }
-
-    changeBaseValueType(type="") {
-        this.uiElement.dataset.baseValueType = type;
-        if (!isBaseValueType(type)) {
-            return;
-        }
-        const baseValueClass = baseValueClasses[type];
-        this.uiElement.className = `${this.uiElementClass} ${baseValueClass}`;
-
-        for (const className of baseValueClass.split(" ")) {
-            switch (className) {
-                case "skillName":
-                    populateSelectOptions(this.uiElement, "select.baseValueType ~ select[name=name]", skills, this.stringFields.name, s => s.label);
-                    break;
-                case "buffName":
-                    populateSelectOptions(this.uiElement, "select.baseValueType ~ select[name=name]", buffs, this.stringFields.name, b => !(b.name in prestigeBases) && b.label);
-                    break;
-                // case "resourceName":
-                //     populateSelectOptions(this.uiElement, "select.baseValueType ~ select[name=name]", resources, this.stringFields.name, (_, k) => k);
-                //     break;
-                case "functionName":
-                    populateSelectOptions(this.uiElement, "select.baseValueType ~ select[name=name]", jsFunctions, this.stringFields.name, f => f.toString().replace(/\).*/,")"));
-                    break;
-                case "actionName":
-                    populateSelectOptions(this.uiElement, "select.baseValueType ~ select[name=name]", editor.actions, this.stringFields.name, a => a instanceof ActionDefinition && a.name, (_, a) => a instanceof ActionDefinition && withoutSpaces(a.name));
-                    break;
-                case "limitedVarName":
-                    populateSelectOptions(this.uiElement, "select.baseValueType ~ select[name=varName]", {"": "", ...editor.actions}, this.stringFields.varName, a => a === "" ? "(this Action)" : a instanceof ActionDefinition && a.type === "limited" && a.name, (_,a)=>a instanceof ActionDefinition ? a.effectiveVarName : String(a));
-                    break;
-                case "progressVarName":
-                    populateSelectOptions(this.uiElement, "select.baseValueType ~ select[name=varName]", {"": "", ...editor.actions}, this.stringFields.varName, a => a === "" ? "(this Action)" : a instanceof ActionDefinition && a.type === "progress" && a.name, (_,a)=>a instanceof ActionDefinition ? a.effectiveVarName : String(a))
-                    break;
-                case "varName":
-                    populateSelectOptions(this.uiElement, "select.baseValueType ~ select[name=varName]", {"": "", ...editor.actions}, this.stringFields.varName, a => a === "" ? "(this Action)" : a instanceof ActionDefinition && a.name, (_,a)=>a instanceof ActionDefinition ? a.effectiveVarName : String(a))
-                    break;
-                }
-        }
+        this.baseValue ??= new BaseValueElement(this, "", true, false);
     }
 
     bindUI() {
         super.bindUI();
-        this.uiElementClass = this.uiElement.className;
-        const typeSelect = valueElement(this.uiElement.querySelector("select.baseValueType"));
-        (typeSelect.onchange = () => this.changeBaseValueType(typeSelect.value))();
+        const baseValue = htmlElement(this.uiElement.querySelector("details.baseValueCalculation"));
+        this.baseValue.spawnUI(baseValue);
+        const nameInput = inputElement(this.uiElement.querySelector("input[name=value]"));
+        nameInput.oninput = () => this.baseValue.isPresent = nameInput.value === "";
     }
 }
 
@@ -610,15 +608,129 @@ function setValueAttribute(event) {
     }
 }
 
+/**
+ * @template {string|number|symbol} K
+ * @template {*} V
+ */
+class DataListBinding {
+    static identity(x) {
+        return x;
+    }
+
+    /** @type {HTMLDataListElement} */
+    list;
+    /** @type {Record<K, V>|V[]} */
+    optionsSource;
+    /** @type {(value: V, key: K) => string|false} */
+    labelFunc;
+    /** @type {(key: K, value: V) => string|false} */
+    keyFunc;
+    /** @type {(value: V, key: K) => string} */
+    classFunc;
+
+    /**
+     * @param {string|Element} listId
+     * @param {Record<K, V>|V[]} optionsSource
+     * @param {(value: V, key: K) => string|false} labelFunc
+     * @param {(key: K, value: V) => string|false} keyFunc
+     * @param {(value: V, key: K) => string} [classFunc]
+     */
+    constructor(listId, optionsSource, labelFunc = DataListBinding.identity, keyFunc = DataListBinding.identity, classFunc) {
+        this.list = getElement(listId, HTMLDataListElement);
+        this.optionsSource = optionsSource;
+        this.labelFunc = labelFunc;
+        this.keyFunc = keyFunc;
+        this.classFunc = classFunc;
+    }
+
+    updateFromSource() {
+        let isDirty = false;
+        /** @type {Record<string, HTMLOptionElement>} */
+        const currentOptions = {};
+        /** @type {Record<string, boolean>} */
+        const seenOptionKeys = {};
+        for (const option of this.list.options) {
+            currentOptions[`${option.value}\0${option.text}`] = option;
+        }
+        const newOptions = [];
+        for (const [sourceKey, sourceValue] of /** @type {[K,V][]} */(Object.entries(this.optionsSource))) {
+            const optionLabel = this.labelFunc(sourceValue, sourceKey);
+            const optionValue = this.keyFunc(sourceKey, sourceValue);
+            const optionClass = this.classFunc?.(sourceValue, sourceKey) ?? "";
+            if (optionValue === false || optionLabel === false) continue;
+            const optionKey = `${optionValue}\0${optionLabel}`;
+            if (seenOptionKeys[optionKey]) {
+                console.warn("Already saw option with value and label:", optionValue, optionLabel);
+            }
+            seenOptionKeys[optionKey] = true;
+            let newOption = currentOptions[optionKey];
+            if (!newOption) {
+                newOption = new Option(optionLabel, optionValue);
+                isDirty = true;
+            }
+            if (optionClass !== newOption.className) {
+                newOption.className = optionClass;
+                isDirty = true;
+            }
+            newOptions.push(newOption);
+        }
+        if (isDirty) {
+            this.list.replaceChildren(...newOptions);
+            this.updateAllOptions();
+        }
+        return isDirty;
+    }
+
+    /** @param {Document|DocumentFragment|Element} [context]  */
+    updateAllOptions(context = document) {
+        for (const container of context.querySelectorAll(`.fromDataList[data-list="${this.list.id}"]`)) {
+            this.updateOptionsFromList(htmlElement(container));
+        }
+    }
+
+    /** @param {HTMLElement} container @param {string} [currentValue] */
+    updateOptionsFromList(container, currentValue) {
+        // check the container and its parent, in case container is an <optgroup>
+        const valueHolder = valueElement(container, false, false) ?? valueElement(container.parentElement);
+        currentValue ??= valueHolder.getAttribute("value") ?? "";
+        const oldValue = valueHolder.value;
+        const emptyOptionLabel = container.dataset.emptyOptionLabel;
+        /** @type {HTMLOptionElement[]} */
+        const newOptions = [];
+        if (typeof emptyOptionLabel === "string") {
+            newOptions.push(new Option(emptyOptionLabel, "", currentValue === "", currentValue === ""));
+        }
+        for (const {value, text, className} of this.list.options) {
+            const newOption = new Option(text, value, value === currentValue, value === currentValue);
+            newOption.className = className;
+            newOptions.push(newOption);
+        }
+        container.replaceChildren(...newOptions);
+        if (valueHolder.value !== oldValue && (valueHolder.value === currentValue || container === valueHolder)) {
+            valueHolder.dispatchEvent(new Event("input", {
+                bubbles: true,
+                cancelable: true,
+            }));
+            valueHolder.dispatchEvent(new Event("change", {
+                bubbles: true,
+                cancelable: true,
+            }));
+        }
+    }
+}
+
 class ActionListEditor {
-    /** @type {NamedAdjustment[]} */
+    /** @readonly @type {NamedAdjustment[]} */
     defs = [];
-    /** @type {ActionDefinition[]} */
+    /** @readonly @type {ActionDefinition[]} */
     actions = [];
     url = "";
     xmlText = "";
     /** @type {XMLDocument} */
     xmlDoc;
+
+    /** @type {Record<string, DataListBinding>} */
+    dataListBindings = {__proto__: null};
 
     windowBound = false;
 
@@ -629,14 +741,53 @@ class ActionListEditor {
         if (!this.windowBound) {
             this.windowBound = true;
             addEventListener("input", setValueAttribute, {capture: true, passive: true});
-            for (const template of document.getElementsByTagName("template")) {
-                populateSelectOptions(template.content, "select.baseValueType", baseValueTypes);
-                populateSelectOptions(template.content, "select.numericTestType", {"": "", ...numericTestTypes});
-                populateSelectOptionGroups(template.content, "select.evaluationRuleType", numericOrConditionalElementTypes);
-            }
+
+            this.bindDataList("skills", skills, s => s.label);
+            this.bindDataList("buffs", buffs, b => !(b.name in prestigeBases) && b.label);
+            this.bindDataList("prestigeBuffs", buffs, b => b.name in prestigeBases && b.label);
+            this.bindDataList("storyFlags", storyReqs, (_, k) => k);
+            this.bindDataList("jsFunctions", jsFunctions, (_, k) => k);
+            this.bindDataList("resources", resources, (_, k) => _txt(`tracked_resources>resource[id=${k}]>label`), k => k, v => typeof v);
+            this.bindDataList("namedAdjustments", this.defs, d => d.name, (_, d) => d.name);
+            this.bindDataList("actionNames", this.actions, a => a.name, (_,a) => a.name, a => a.type);
+            this.bindDataList("varNames", this.actions, a => a.name, (_,a)=>a.effectiveVarName, a => a.type);
+            this.bindDataList("baseValueTypes", baseValueTypes);
+            this.bindDataList("numericTestTypes", numericTestTypes);
+            this.bindDataList("numericAdjustmentTypes", numericAdjustmentTypes);
+            this.bindDataList("conditionalRuleTypes", conditionalRuleTypes);
         }
 
         return this;
+    }
+
+    /**
+     * @template {string|number|symbol} K
+     * @template {*} V
+     * @param {string} listId
+     * @param {Record<K, V>|V[]} options
+     * @param {(value: V, key: K) => string|false} [labelFunc]
+     * @param {(key: K, value: V) => string|false} [keyFunc]
+     * @param {(value: V, key: K) => string} [classFunc]
+     */
+    bindDataList(listId, options, labelFunc, keyFunc, classFunc) {
+        this.dataListBindings[listId] = (new DataListBinding(listId, options, labelFunc, keyFunc, classFunc));
+    }
+
+    updateDataLists() {
+        for (const binding of Object.values(this.dataListBindings)) {
+            if (binding.updateFromSource()) {
+                for (const template of document.getElementsByTagName("template")) {
+                    binding.updateAllOptions(template.content);
+                }
+            }
+        }
+    }
+
+    /** @param {HTMLElement} container @param {string} [currentValue] */
+    updateOptions(container, currentValue) {
+        if (!container.classList.contains("fromDataList")) return;
+        const listId = container.dataset.list;
+        this.dataListBindings[listId].updateOptionsFromList(container, currentValue);
     }
 
     /** @param {string} url  */
@@ -675,13 +826,17 @@ class ActionListEditor {
                 }
             }
         }
+        this.updateDataLists();
     }
 }
 
 let editor = new ActionListEditor();
 
 async function startEditor() {
+    console.log("Loading defaults...")
     loadDefaults();
+    console.log("Waiting for localization framework...");
+    await Localization.ready;
     console.log("Starting editor...");
     await editor.init().load("data/actionList.xml");
     console.log(`Loaded ${editor.url}`);
@@ -690,7 +845,7 @@ async function startEditor() {
 /**
  * @template {string|number|symbol} K
  * @template {*} V
- * @param {DocumentFragment|Element} context
+ * @param {Document|DocumentFragment|Element} context
  * @param {string} selector
  * @param {Record<K, V>} options
  * @param {string} [currentSelection]
@@ -714,7 +869,7 @@ function populateSelectOptions(context, selector, options, currentSelection, lab
  * @template {string} K
  * @template {*} V
  * @template {Record<K, V>} KV
- * @param {DocumentFragment|Element} context
+ * @param {Document|DocumentFragment|Element} context
  * @param {string} selector
  * @param {Record<string, KV>} optionGroups
  * @param {string} [currentSelection]

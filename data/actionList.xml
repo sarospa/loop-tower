@@ -28,11 +28,11 @@
             </story>
         </storyReqs>
         <stats>
-            <stat name="Per">20</stat>
-            <stat name="Con">20</stat>
-            <stat name="Cha">20</stat>
-            <stat name="Spd">30</stat>
-            <stat name="Luck">10</stat>
+            <stat statName="Per">20</stat>
+            <stat statName="Con">20</stat>
+            <stat statName="Cha">20</stat>
+            <stat statName="Spd">30</stat>
+            <stat statName="Luck">10</stat>
         </stats>
         <affectedBy>
             <action name="Buy Glasses" />
@@ -42,7 +42,7 @@
         <unlocked/>
         <progress value="200">
             <multiplier value="4">
-                <ifResource name="glasses" />
+                <ifResource resourceName="glasses" />
             </multiplier>
         </progress>
     </action>
@@ -57,9 +57,9 @@
             </story>
         </storyReqs>
         <stats>
-            <stat name="Str">20</stat>
-            <stat name="Per">20</stat>
-            <stat name="Spd">60</stat>
+            <stat statName="Str">20</stat>
+            <stat statName="Per">20</stat>
+            <stat statName="Spd">60</stat>
         </stats>
         <effortCost value="50">
             <skillBonus name="Practical" />
@@ -102,10 +102,10 @@
             </story>
         </storyReqs>
         <stats>
-            <stat name="Dex">50</stat>
-            <stat name="Per">30</stat>
-            <stat name="Spd">10</stat>
-            <stat name="Luck">10</stat>
+            <stat statName="Dex">50</stat>
+            <stat statName="Per">30</stat>
+            <stat statName="Spd">10</stat>
+            <stat statName="Luck">10</stat>
         </stats>
         <effortCost>400</effortCost>
         <visible>
@@ -138,7 +138,7 @@
         <expMult>1</expMult>
         <storyReqs>
             <story num="1">
-                <ifStoryFlag name="glassesBought" />
+                <ifStoryFlag storyFlagName="glassesBought" />
             </story>
             <story num="2">
                 <if min="100">
@@ -147,8 +147,8 @@
             </story>
         </storyReqs>
         <stats>
-            <stat name="Cha">70</stat>
-            <stat name="Spd">30</stat>
+            <stat statName="Cha">70</stat>
+            <stat statName="Spd">30</stat>
         </stats>
         <allowed>1</allowed>
         <cost>

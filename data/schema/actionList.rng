@@ -94,27 +94,88 @@
                 <ref name="numericCondition" />
             </element>
             <element name="ifResource">
-                <ref name="namedNumericCondition" />
+                <ref name="resourceName" />
+                <ref name="numericCondition" />
             </element>
             <element name="ifHasResource">
-                <ref name="namedBooleanCondition" />
+                <ref name="resourceName" />
+                <ref name="booleanCondition" />
             </element>
             <element name="ifStoryFlag">
-                <ref name="namedBooleanCondition" />
+                <ref name="storyFlagName" />
+                <ref name="booleanCondition" />
             </element>
             <element name="ifProgress">
-                <ref name="varNumericCondition" />
+                <ref name="varName" />
+                <ref name="numericCondition" />
             </element>
             <element name="ifGoodItems">
-                <ref name="varNumericCondition" />
+                <ref name="varName" />
+                <ref name="numericCondition" />
             </element>
             <element name="ifDiscoveredItems">
-                <ref name="varNumericCondition" />
+                <ref name="varName" />
+                <ref name="numericCondition" />
             </element>
             <element name="ifCheckedItems">
-                <ref name="varNumericCondition" />
+                <ref name="varName" />
+                <ref name="numericCondition" />
             </element>
         </choice>
+    </define>
+    <define name="statName">
+        <attribute name="statName">
+            <data type="NCName" />
+        </attribute>
+    </define>
+    <define name="skillName">
+        <attribute name="skillName">
+            <data type="NCName" />
+        </attribute>
+    </define>
+    <define name="buffName">
+        <attribute name="buffName">
+            <data type="NCName" />
+        </attribute>
+    </define>
+    <define name="prestigeBuffName">
+        <attribute name="prestigeBuffName">
+            <data type="NCName" />
+        </attribute>
+    </define>
+    <define name="resourceName">
+        <attribute name="resourceName">
+            <data type="NCName" />
+        </attribute>
+    </define>
+    <define name="storyFlagName">
+        <attribute name="storyFlagName">
+            <data type="NCName" />
+        </attribute>
+    </define>
+    <define name="actionName">
+        <optional>
+            <attribute name="actionName">
+                <data type="NCName" />
+            </attribute>
+        </optional>
+    </define>
+    <define name="varName">
+        <optional>
+            <attribute name="varName">
+                <data type="NCName" />
+            </attribute>
+        </optional>
+    </define>
+    <define name="functionName">
+        <attribute name="functionName">
+            <data type="NCName" />
+        </attribute>
+    </define>
+    <define name="adjustmentName">
+        <attribute name="adjustmentName">
+            <data type="NCName" />
+        </attribute>
     </define>
     <define name="booleanCondition">
         <ref name="conditionalEvaluation" />
@@ -124,14 +185,6 @@
                     <value>inverted</value>
                     <empty />
                 </choice>
-            </attribute>
-        </optional>
-    </define>
-    <define name="namedBooleanCondition">
-        <ref name="booleanCondition"/>
-        <optional>
-            <attribute name="name">
-                <data type="NCName" />
             </attribute>
         </optional>
     </define>
@@ -169,20 +222,6 @@
             <attribute name="notEquals">
                 <data type="decimal" />
             </attribute>
-        </optional>
-    </define>
-    <define name="namedNumericCondition">
-        <ref name="numericCondition"/>
-        <optional>
-            <attribute name="name">
-                <data type="NCName" />
-            </attribute>
-        </optional>
-    </define>
-    <define name="varNumericCondition">
-        <ref name="numericCondition"/>
-        <optional>
-            <attribute name="varName"/>
         </optional>
     </define>
     <define name="numericValue" combine="choice">
@@ -352,7 +391,7 @@
             <element name="stats">
                 <zeroOrMore>
                     <element name="stat">
-                        <attribute name="name"/>
+                        <ref name="statName" />
                         <data type="decimal"/>
                     </element>
                 </zeroOrMore>
