@@ -501,9 +501,10 @@ class Actions {
         let index = typeof indexOrAction === "number" ? indexOrAction : this.next.indexOf(indexOrAction);
         if (index < 0) index += this.next.length;
         if (index < 0 || index >= this.next.length) return;
-
+        
         const action = this.next[index];
-        amountToSplit ??= Math.ceil(action.loops / 2), index;
+        amountToSplit ??= Math.ceil(action.loops / 2);
+        targetIndex ??= index;
 
         if (splitToClosestValidIndex) {
             const townNum = getActionPrototype(action.name)?.townNum;
@@ -511,7 +512,7 @@ class Actions {
                 targetIndex = this.closestValidIndexForAction(townNum, targetIndex);
             }
         }
-        const splitIndex = this.addActionRecord({...action, loops: amountToSplit});
+        const splitIndex = this.addActionRecord({...action, loops: amountToSplit}, targetIndex, splitToClosestValidIndex);
         this.#lastModifiedIndex = index + (splitIndex <= index ? 1 : 0); // tell updateAction not to save this undo
         this.updateAction(this.#lastModifiedIndex, {loops: action.loops - amountToSplit});
     }
