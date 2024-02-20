@@ -247,7 +247,6 @@ let skillShowing;
 let buffShowing;
 let curActionShowing;
 let dungeonShowing;
-let actionTownNum;
 let trainingLimits = 10;
 let storyShowing = 0;
 let storyMax = 0;
@@ -561,7 +560,6 @@ const globalVariables = virtualizeGlobalVariables({
     stoneLoc,
     goldInvested,
     stonesUsed,
-    actionTownNum,
     trainingLimits,
     storyMax,
     unreadActionStories,
@@ -1059,7 +1057,6 @@ function doLoad(toLoad) {
             completedActions.push(action);
         });
     completedActions.push("FoundGlasses");
-    actionTownNum = toLoad.actionTownNum === undefined ? 0 : toLoad.actionTownNum;
     trainingLimits = 10 + getBuffLevel("Imbuement");
     goldInvested = toLoad.goldInvested === undefined ? 0 : toLoad.goldInvested;
     stonesUsed = toLoad.stonesUsed === undefined ? {1:0, 3:0, 5:0, 6:0} : toLoad.stonesUsed;
@@ -1305,7 +1302,6 @@ function doSave() {
     toSave.trials = trials;
     toSave.townsUnlocked = townsUnlocked;
     toSave.completedActions = completedActions;
-    toSave.actionTownNum = actionTownNum;
 
     toSave.stats = stats;
     toSave.totalTalent = totalTalent;

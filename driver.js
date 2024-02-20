@@ -368,7 +368,6 @@ function addActionToList(name, townNum, isTravelAction, insertAtIndex) {
                     }
                 }
                 if (isTravelAction) {
-                    actionTownNum = townNum + 1;
                     const index = actions.addAction(name, 1, insertAtIndex);
                     view.requestUpdate("highlightAction", index);
                 } else {
@@ -735,9 +734,6 @@ function disableAction(index) {
     actions.nextLast = copyObject(actions.next);
     const action = actions.next[index];
     const travelNum = getTravelNum(action.name);
-    if (travelNum) {
-        actionTownNum = travelNum - 1;
-    }
     const translated = translateClassNames(action.name);
     if (action.disabled) {
         if (!translated.allowed || getNumOnList(action.name) + action.loops <= translated.allowed()) action.disabled = false;
@@ -750,9 +746,6 @@ function disableAction(index) {
 function removeAction(index) {
     actions.nextLast = copyObject(actions.next);
     const travelNum = getTravelNum(actions.next[index].name);
-    if (travelNum) {
-        actionTownNum = travelNum - 1;
-    }
     actions.next.splice(index, 1);
     view.updateNextActions();
     view.requestUpdate("updateLockedHidden", null);
