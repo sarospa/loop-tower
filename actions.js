@@ -553,6 +553,7 @@ class Actions {
         for (let index = spanIndex - 1; index >= 0; index--) {
             if (zoneSpans[index]?.zones.includes(townNum)) {
                 prevValidIndex = clamp(zoneSpans[index].ignoringEnd(ignoreIndex), 0, this.next.length);
+                break;
             }
         }
         if (nextValidIndex === Infinity && prevValidIndex === -Infinity) return desiredIndex; // nowhere is good so anywhere is fine
