@@ -20,6 +20,7 @@ const timeControlsView = Views.registerView("timeControls", {
             <button onclick='manualRestart()' class='button showthatO control'>${_txt("time_controls>restart_button")}
                 <div class='showthis' style='color:var(--default-color);width:230px;'>${_txt("time_controls>restart_text")}</div>
             </button>
+            <input id='bonusIsActiveInput' type='checkbox' onchange='setOption("bonusIsActive", this.checked)'/>
             <button class='button showthatO control' onclick='toggleOffline()'>${_txt("time_controls>bonus_seconds>title")}
                 <div class='showthis' id='bonusText' style='max-width:500px;color:var(--default-color);'>
                     ${view.getBonusText()}

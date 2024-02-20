@@ -571,9 +571,14 @@ input[type="checkbox"][disabled] + label {
     margin: 3px;
 }
 
+#bonusIsActiveInput:not(:checked) + .button,
 .unused {
     background-color: var(--button-inactive-background);
     box-shadow: 0 3px var(--button-inactive-shadow)
+}
+
+#bonusIsActiveInput {
+    display: none;
 }
 
 #statsColumn {

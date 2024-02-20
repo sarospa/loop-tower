@@ -610,6 +610,7 @@ const options = {
     speedIncrease20x: false,
     speedIncreaseCustom: 5,
     speedIncreaseBackground: -1,
+    bonusIsActive: false,
     highlightNew: true,
     statColors: true,
     statHints: false,
@@ -728,6 +729,7 @@ const isStandardOption = {
     speedIncrease20x: true,
     speedIncreaseCustom: true,
     speedIncreaseBackground: false,
+    bonusIsActive: false,
     highlightNew: true,
     statColors: true,
     statHints: false,
@@ -815,6 +817,11 @@ const optionValueHandlers = {
             document.getElementById("speedIncreaseBackgroundWarning").style.display = "none";
         }
     },
+    bonusIsActive(value, init) {
+        if (!value !== !isBonusActive()) {
+            toggleOffline();
+        }
+    },
     repeatLastAction() {
         if (options.predictor) {
             view.requestUpdate("updateNextActions");
@@ -860,18 +867,21 @@ function handleOption(option, value, init, getInput) {
     }
 }
 
-/** @type {<K extends OptionName>(option: K, value: OptionType<K>) => void} */
-function setOption(option, value) {
+/** @template {OptionName} K @param {K} option @param {OptionType<K>} value */
+function setOption(option, value, updateUI = false) {
     const oldValue = options[option];
     options[option] = value;
     handleOption(option, value, false, () => valueElement(`${option}Input`));
     if (options[option] !== oldValue) {
         save();
     }
+    if (updateUI && (options[option] !== oldValue || options[option] !== value)) {
+        loadOption(option, options[option], false);
+    }
 }
 
-/** @type {<K extends OptionName>(option: K, value: OptionType<K>) => void} */
-function loadOption(option, value) {
+/** @template {OptionName} K @param {K} option @param {OptionType<K>} value */
+function loadOption(option, value, callHandler = true) {
     const input = valueElement(`${option}Input`, false); // this is allowed to have errors
     if (!input) return;
     if (input instanceof HTMLInputElement && input.type === "checkbox") input.checked = !!value;
@@ -1224,6 +1234,8 @@ function doLoad(toLoad) {
         }
     }
 
+    totalOfflineMs = toLoad.totalOfflineMs === undefined ? 0 : toLoad.totalOfflineMs; // must load before options
+
     for (const option of typedKeys(options)) {
         loadOption(option, options[option]); 
     }
@@ -1239,7 +1251,6 @@ function doLoad(toLoad) {
         }
     }
 
-    totalOfflineMs = toLoad.totalOfflineMs === undefined ? 0 : toLoad.totalOfflineMs;
     if (toLoad.totals != undefined) {
         totals.time = toLoad.totals.time === undefined ? 0 : toLoad.totals.time;
         totals.effectiveTime = toLoad.totals.effectiveTime === undefined ? 0 : toLoad.totals.effectiveTime;

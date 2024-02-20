@@ -817,6 +817,7 @@ function toggleOffline() {
         bonusActive = false;
         document.getElementById("isBonusOn").textContent = _txt("time_controls>bonus_seconds>state>off");
     }
+    setOption("bonusIsActive", bonusActive, true);
     view.requestUpdate("updateTime", null);
 }
 
