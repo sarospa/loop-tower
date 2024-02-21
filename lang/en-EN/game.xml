@@ -9,11 +9,11 @@
                 <title>Changelog</title>
                 <version_prefix>Version</version_prefix>
             </meta>
-            <!--
             <version caption="Latest"><![CDATA[
             <b>Recent changes</b>
+            • Removed the Adblock Plus warning, which is no longer relevant.<br>
+            • Edited the final Pyromancy action story to make the reference clearer.<br>
             ]]></version>
-            -->
             <version verNum="3.P16.24"><![CDATA[
             <b>Feb 20th, 2024</b>
             • When no input field has focus, the digits 1-9 now act as hotkeys to set the Amount field directly to that value, the 0 key multiplies it by 10, and Backspace removes the last digit. (Other hotkeys are unchanged and can be viewed by hovering the Hotkeys option.)<br>
@@ -639,7 +639,7 @@
                 <link>https://discord.gg/dnKA6Xd</link>
                 <title>Discord Link</title>
             </discord>
-            <adblock_warning>WARNING: For some reason, Adblock Plus can cause massive lag. This game won't ever have ads, so if your game is freezing frequently, please disable it on this page.
+            <adblock_warning><![CDATA[WARNING: This game won't ever have ads. <small>(This spot used to mention an incompatibility with ad-blockers, but that has since been fixed. Feel free to leave them enabled.)</small>]]>
             </adblock_warning>
             <extras_warning>
                 The options in this menu allow you to customize the balance and functionality of the game in ways that affect the play experience. If experiencing the "vanilla" Idle Loops experience is
@@ -2583,8 +2583,8 @@
 			<story_1><![CDATA[<b>1 Pyromancy:</b>⮀ Pyromancy is more normal than chronomancy, but it makes up for it by being extra dangerous. Fire, you quickly learn, will consume you just as happily as your foes. Your control has to be ironclad at all times or you might lose a hand in the time it takes to draw a breath.]]></story_1>
 			<story_2><![CDATA[<b>50 Pyromancy:</b>⮀ Without the loops to restore you to normal you'd probably be dead five times over by now, but the rewards you've gained are impressive indeed. Turning that lethality on monsters is a sight to behold, and it's much more versatile than melee combat. Fights often end before they even have a chance to get close.]]></story_2>
 			<story_3><![CDATA[<b>100 Pyromancy:</b>⮀ You feel like an unstoppable wildfire, burning enemies to a crisp in an instant. You haven't had an… accident in a long time, and controlling the flames is becoming second-nature. Fire isn't the solution to every problem, but here and now you feel like it just might be.]]></story_3>
-            <!--Referencing "the ambitious Alchemist", a 4-panel joke comic at the end of one Fullmetal Alchemist book.-->
-            <story_4><![CDATA[<b>1,000 Pyromancy:</b>⮀ You snap your fingers idly a few times, getting a feel for the motion before turning your attention to a piece of wood you prepared. With a snap, the entire length of the wood catches fire all at once, turning into a cozy camp fire. Mundane as such a trick may seem, making fire just from the friction between your fingers is the kind of fire mastery the ancient masters could only dream of! ...Briefly, the idea of an army of women in mini skirts comes to mind, but you push that weird thought to the side.]]></story_4>
+            <!--Referencing Roy Mustang from Fullmetal Alchemist.-->
+            <story_4><![CDATA[<b>1,000 Pyromancy:</b>⮀ You snap your fingers idly a few times, getting a feel for the motion before turning your attention to a piece of wood you prepared. With one last snap, the entire length of the wood catches fire all at once, and within moments a cozy campfire crackles merrily before you. Mundane as such a trick may seem, making fire just from the friction between your fingers is so complex that the runes you studied only hinted that it <i>might</i> be possible. You smirk as you recall one beautifully-illustrated account you found in a side tunnel that told of Mustang, a legendary pyromancer who wore a specially-crafted pair of white gloves that would create a spark whenever he snapped his fingers, just so that he could do what you can now do with your bare hands. Truly, you have surpassed the ancient masters!]]></story_4>
         </pyromancy>
         <explore_cavern>
             <label>Explore Cavern</label>
