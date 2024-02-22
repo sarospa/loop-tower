@@ -524,7 +524,7 @@ class View {
 
     updateTime() {
         document.getElementById("timeBar").style.width = `${100 - timer / timeNeeded * 100}%`;
-        document.getElementById("timer").textContent = `${intToString((timeNeeded - timer), options.fractionalMana ? 2 : 1)} | ${formatTime((timeNeeded - timer) / 50 / getActualGameSpeed())}`;
+        document.getElementById("timer").textContent = `${intToString((timeNeeded - timer), options.fractionalMana ? 2 : 1, true)} | ${formatTime((timeNeeded - timer) / 50 / getActualGameSpeed())}`;
         this.adjustGoldCost({varName:"Wells", cost: Action.ManaWell.goldCost()});
     };
     updateOffline() {

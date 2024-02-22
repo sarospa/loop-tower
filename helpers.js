@@ -91,11 +91,11 @@ function intToStringNegative(value, amount) {
     return (isPositive === 1 ? "+" : "-") + parseFloat(value).toFixed(baseValue - 1);
 }
 
-function intToString(value, amount) {
+function intToString(value, amount, fixPrecision = false) {
     const prefix = value < 0 ? "-" : "";
     value = Math.abs(parseFloat(value));
     if (value >= 10000) {
-        return prefix + nFormatter(value, 3);
+        return prefix + nFormatter(value, 3, fixPrecision);
     }
     if (value >= 1000) {
         let baseValue = 3;
@@ -189,14 +189,15 @@ const si = [
 ];
 const rx = /\.0+$|(\.[0-9]*[1-9])0+$/u;
 
-function nFormatter(num, digits) {
+function nFormatter(num, digits, fixPrecision=false) {
     for (let i = 0; i < si.length; i++) {
         // /1.000501 to handle rounding
         if ((num) >= si[i].value / 1.000501) {
-            return (num / si[i].value).toPrecision(digits).replace(rx, "$1") + si[i].symbol;
+            // not the most elegant way to implement fixPrecision but whatever
+            return (num / si[i].value).toPrecision(digits).replace(rx, fixPrecision ? "$&" : "$1") + si[i].symbol;
         }
     }
-    return num.toPrecision(digits).replace(rx, "$1");
+    return num.toPrecision(digits).replace(rx, fixPrecision ? "$&" : "$1");
 }
 
 function camelize(str) {

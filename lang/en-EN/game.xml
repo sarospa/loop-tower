@@ -13,6 +13,7 @@
             <b>Recent changes</b>
             • Removed the Adblock Plus warning, which is no longer relevant.<br>
             • Edited the final Pyromancy action story to make the reference clearer.<br>
+            • Mana remaining should now display with fixed precision, making the screen a little less jumpy.<br>
             ]]></version>
             <version verNum="3.P16.24"><![CDATA[
             <b>Feb 20th, 2024</b>
