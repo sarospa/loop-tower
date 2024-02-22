@@ -45,25 +45,25 @@ function withoutSpaces(name) {
  * @typedef {{
  *  [K in Exclude<keyof ActionConstructor, "prototype">]: ActionConstructor[K] extends Action<any, any> ? K : never
  * }[Exclude<keyof ActionConstructor, "prototype">]} ActionId
- * 
+ *
  * @typedef {ActionConstructor[ActionId]} AnyAction
- * 
+ *
  * @typedef {{
  *  [K in ActionId]: string extends VarNameOf<ActionConstructor[K]> ? never : VarNameOf<ActionConstructor[K]>
  * }[ActionId]} ActionVarName
- * 
+ *
  * @typedef {{
  *  [K in ActionId]: string extends ActionTypeOf<ActionConstructor[K]> ? never : ActionTypeOf<ActionConstructor[K]> extends 'limited'|'normal' ? VarNameOf<ActionConstructor[K]> : never
  * }[ActionId]} StandardActionVarName
- * 
+ *
  * @typedef {{
  *  [K in ActionId]: string extends ActionTypeOf<ActionConstructor[K]> ? never : ActionTypeOf<ActionConstructor[K]> extends 'progress' ? VarNameOf<ActionConstructor[K]> : never
  * }[ActionId]} ProgressActionVarName
- * 
+ *
  * @typedef {{
  *  [K in ActionId]: ActionConstructor[K] extends MultipartAction<any> ? VarNameOf<ActionConstructor[K]> : never
  * }[ActionId]} MultipartActionVarName
- * 
+ *
  * @typedef {{
  *  [K in ActionId]: string extends NameOf<ActionConstructor[K]> ? never : NameOf<ActionConstructor[K]>
  * }[ActionId]} ActionName
@@ -108,7 +108,7 @@ function translateClassNames(name) {
 const limitedActions = [
     "Smash Pots",
     "Pick Locks",
-    "Short Quest",  
+    "Short Quest",
     "Long Quest",
     "Gather Herbs",
     "Wild Mana",
@@ -175,7 +175,7 @@ const townNames = ["Beginnersville", "Forest Path", "Merchanton", "Mt. Olympus",
 /** @typedef {"normal"|"progress"|"limited"|"multipart"} ActionType */
 /** @typedef {"default"|"linear"} ProgressScalingType */
 
-/** 
+/**
  * @typedef {{
  *     type: ActionType,
  *     varName?: string,
@@ -214,7 +214,7 @@ class Action extends Localizable {
     /** @type {E extends {varName: infer VN extends string} ? VN : WithoutSpaces<N>} */
     varName;
 
-    /** 
+    /**
      * @overload @param {N} name @param {E & ThisType<Action<N>>} extras
      * @constructor
      * @param {N} name @param {E} extras
@@ -234,7 +234,7 @@ class Action extends Localizable {
             : getXMLName(name);
     }
 
-    
+
     /* eslint-disable no-invalid-this */
     // not all actions have tooltip2 or labelDone, but among actions that do, the XML format is
     // always the same; these are loaded lazily once (and then they become own properties of the
@@ -249,7 +249,7 @@ class Action extends Localizable {
         // listing these means they won't get stored even if memoized
         Data.omitProperties(this.prototype, ["tooltip", "tooltip2", "label", "labelDone", "labelGlobal"]);
     }
-    
+
     // all actions to date with info text have the same info text, so presently this is
     // centralized here (function will not be called by the game code if info text is not
     // applicable)
@@ -262,7 +262,7 @@ class Action extends Localizable {
                 <br><span class='bold'>${`${_txt("actions>tooltip>total_found")}: `}</span><div id='total${this.varName}'></div>
                 <br><span class='bold'>${`${_txt("actions>tooltip>total_checked")}: `}</span><div id='checked${this.varName}'></div>`;
     };
-    
+
     /** @param {SkillName} skill */
     teachesSkill(skill) {
         // if we don't give exp in the skill we don't teach it
@@ -276,7 +276,7 @@ class Action extends Localizable {
         const exp = typeof reward === "function" ? reward() : reward;
         return exp > 0;
     }
-    
+
 }
 
 /**
@@ -290,7 +290,7 @@ class Action extends Localizable {
  *     getPartName(loopCounter?: number): string,
  *     completedTooltip?: () => string,
  * } & ActionExtras} MultipartActionExtras
- * 
+ *
  */
 
 // same as Action, but contains shared code to load segment names for multipart actions.
@@ -304,14 +304,14 @@ class MultipartAction extends Action {
     /** @type {number} */
     segments;
 
-    /** 
+    /**
      * @param {N} name @param {E & ThisType<MultipartAction<N>>} extras
      */
     constructor(name, extras) {
         super(name, extras);
         this.segments = (extras.varName === "Fight") ? 3 : extras.loopStats.length;
     }
-    
+
     // lazily calculate segment names when explicitly requested (to give chance for localization
     // code to be loaded first)
 
@@ -321,7 +321,7 @@ class MultipartAction extends Action {
             this.txtsObj.find(">segment_names>name")
         ).map(elt => elt.textContent));
     }
-    
+
     /** @returns {string[]} */
     get altSegmentNames() {
         return this.memoizeValue("altSegmentNames",  Array.from(
@@ -378,7 +378,7 @@ class DungeonAction extends MultipartAction {
     /** @type {number} */
     dungeonNum;
 
-    /** 
+    /**
      * @param {N} name @param {number} dungeonNum, @param {E & ThisType<DungeonAction<N>>} extras
      */
     constructor(name, dungeonNum, extras) {
@@ -431,7 +431,7 @@ class DungeonAction extends MultipartAction {
 class TrialAction extends MultipartAction {
     /** @type {number} */
     trialNum;
-    /** 
+    /**
      * @param {N} name @param {number} trialNum, @param {E & ThisType<E & TrialAction<N>>} extras
      */
     constructor(name, trialNum, extras) {
@@ -495,7 +495,7 @@ class TrialAction extends MultipartAction {
  * @extends {MultipartAction<N,E&AssassinActionDefaults&AssassinActionImpl>}
  */
 class AssassinAction extends MultipartAction {
-    /** 
+    /**
      * @param {N} name @param {E & ThisType<E & AssassinAction<N>>} extras
      */
     constructor (name, extras) {
@@ -512,7 +512,7 @@ class AssassinAction extends MultipartAction {
             stats: {Per: 0.2, Int: 0.1, Dex: 0.3, Luck: 0.2, Spd: 0.2},
             loopStats: ["Per", "Int", "Dex", "Luck", "Spd"],
         });
-    
+
     manaCost() {return 50000;}
     // @ts-ignore
     allowed() {return 1;}
@@ -581,7 +581,7 @@ function SurveyAction(townNum) {
                 addResource("map", -1);
                 addResource("completedMap", 1);
                 towns[this.townNum].finishProgress(this.varName, getExploreSkill());
-                view.requestUpdate("updateActionTooltips", null);    
+                view.requestUpdate("updateActionTooltips", null);
             } else if (options.pauseOnComplete) {
                 pauseGame(true, "Survey complete! (Game paused)");
             }
@@ -1315,6 +1315,8 @@ Action.WarriorLessons = new Action("Warrior Lessons", {
             case 4:
                 return getSkillLevel("Combat") >= 250;
             case 5:
+                return getSkillLevel("Combat") >= 500;
+            case 6:
                 return getSkillLevel("Combat") >= 1000;
         }
         return false;
@@ -4307,7 +4309,7 @@ Action.ImbueMind = new MultipartAction("Imbue Mind", {
             case 2:
                 return getBuffLevel("Imbuement") >= 1;
             case 3:
-                return getBuffLevel("Imbuement") >= 250;
+                return getBuffLevel("Imbuement") >= 50;
             case 4:
                 return getBuffLevel("Imbuement") >= 500;
         }
@@ -4372,7 +4374,7 @@ Action.ImbueBody = new MultipartAction("Imbue Body", {
             case 2:
                 return getBuffLevel("Imbuement2") >= 1;
             case 3:
-                return getBuffLevel("Imbuement2") >= 250;
+                return getBuffLevel("Imbuement2") >= 50;
             case 4:
                 return getBuffLevel("Imbuement2") >= 500;
             case 5:
@@ -4444,11 +4446,17 @@ Action.FaceJudgement = new Action("Face Judgement", {
     townNum: 3,
     storyReqs(storyNum) {
         switch (storyNum) {
+            // Stories 2 and 3 used to exist, but have been removed (really reordered). So if story 1 is finished, we
+            // want to consider 2 and 3 finished as well for visibility purposes.
             case 1:
-                return storyReqs.judgementFaced;
             case 2:
-                return storyReqs.acceptedIntoValhalla;
             case 3:
+                return storyReqs.judgementFaced;
+            case 4:
+                return storyReqs.ignoredByGods;
+            case 5:
+                return storyReqs.acceptedIntoValhalla;
+            case 6:
                 return storyReqs.castIntoShadowRealm;
         }
         return false;
@@ -4480,6 +4488,8 @@ Action.FaceJudgement = new Action("Face Judgement", {
             unlockStory("castIntoShadowRealm");
             unlockGlobalStory(7);
             unlockTown(5);
+        } else {
+            unlockStory("ignoredByGods");
         }
     },
 });
@@ -4883,6 +4893,7 @@ Action.Mercantilism = new Action("Mercantilism", {
             case 1: return getSkillLevel("Mercantilism") >= 1;
             case 2: return getSkillLevel("Mercantilism") >= 30;
             case 3: return getSkillLevel("Mercantilism") >= 100;
+            case 4: return getSkillLevel("Mercantilism") >= 500;
         }
     },
     stats: {
@@ -4926,6 +4937,7 @@ Action.CharmSchool = new Action("Charm School", {
             case 2: return getTalent("Cha") >= 100;
             case 3: return getTalent("Cha") >= 1000;
             case 4: return getTalent("Cha") >= 10000;
+            case 5: return getTalent("Cha") >= 100000;
         }
     },
     stats: {
@@ -4959,6 +4971,7 @@ Action.Oracle = new Action("Oracle", {
             case 2: return getTalent("Luck") >= 100;
             case 3: return getTalent("Luck") >= 1000;
             case 4: return getTalent("Luck") >= 10000;
+            case 5: return getTalent("Luck") >= 100000;
         }
     },
     stats: {
@@ -5674,8 +5687,8 @@ Action.Meander = new Action("Meander", {
     storyReqs(storyNum) {
         switch(storyNum) {
             case 1: return towns[5].getLevel("Meander") >= 1;
-            case 2: return towns[5].getLevel("Meander") >= 5;
-            case 3: return towns[5].getLevel("Meander") >= 10;
+            case 2: return towns[5].getLevel("Meander") >= 2;
+            case 3: return towns[5].getLevel("Meander") >= 5;
             case 4: return towns[5].getLevel("Meander") >= 15;
             case 5: return towns[5].getLevel("Meander") >= 25;
             case 6: return towns[5].getLevel("Meander") >= 50;
@@ -5749,14 +5762,14 @@ Action.ManaWell = new Action("Mana Well", {
         towns[5].finishRegular(this.varName, 100, () => {
         let wellMana = this.goldCost();
         addMana(wellMana);
-        if (wellMana === 0) 
+        if (wellMana === 0)
             unlockStory("drewDryWell");
         else
             unlockStory("wellDrawn");
         return wellMana;
         });
         if (towns[5].goodWells >= 10) unlockStory("drew10Wells");
-        if (towns[5].goodWells >= 15) unlockStory("drew15Wells");    
+        if (towns[5].goodWells >= 15) unlockStory("drew15Wells");
     },
 });
 function adjustWells() {
@@ -6524,7 +6537,7 @@ function adjustInsurance() {
 }
 
 Action.ExplorersGuild = new Action("Explorers Guild", {
-    //Note: each time the 'survey' action is performed, one 'map' is exchanged for a 
+    //Note: each time the 'survey' action is performed, one 'map' is exchanged for a
     //'completed map'; not just when a zone is 100% surveyed.
     type: "normal",
     expMult: 1,
@@ -7303,8 +7316,8 @@ Action.ImbueSoul = new MultipartAction("Imbue Soul", {
             case 1: return storyReqs.soulInfusionAttempted;
             case 2: return buffs["Imbuement3"].amt > 0;
             case 3: return buffs["Imbuement3"].amt > 6;
-            case 4: return buffs["Imbuement"].amt > 499 
-                        && buffs["Imbuement2"].amt > 499 
+            case 4: return buffs["Imbuement"].amt > 499
+                        && buffs["Imbuement2"].amt > 499
                         && buffs["Imbuement3"].amt > 6;
         }
     },
@@ -7475,7 +7488,7 @@ Action.GodsTrial = new TrialAction("Gods Trial", 1, {
         if (this.currentFloor() >= 70) unlockStory("trailGods70Done");
         if (this.currentFloor() >= 80) unlockStory("trailGods80Done");
         if (this.currentFloor() >= 90) unlockStory("trailGods90Done");
-        
+
         if (this.currentFloor() === trialFloors[this.trialNum]) //warning: the predictor assumes the old behavior, but this is clearly the intended
         {
             unlockStory("trailGodsAllDone");
@@ -7563,32 +7576,32 @@ Action.ChallengeGods = new TrialAction("Challenge Gods", 2, {
         curGodsSegment++;
         //Round 7 is segments 55 through 63
         switch(curGodsSegment) {
-            case 1: 
-                unlockStory("fightGods01"); 
+            case 1:
+                unlockStory("fightGods01");
                 break;
-            case 2: 
-                unlockStory("fightGods03"); 
+            case 2:
+                unlockStory("fightGods03");
                 break;
-            case 3: 
-                unlockStory("fightGods05"); 
+            case 3:
+                unlockStory("fightGods05");
                 break;
-            case 4: 
-                unlockStory("fightGods07"); 
+            case 4:
+                unlockStory("fightGods07");
                 break;
-            case 5: 
-                unlockStory("fightGods09"); 
+            case 5:
+                unlockStory("fightGods09");
                 break;
-            case 6: 
-                unlockStory("fightGods11"); 
+            case 6:
+                unlockStory("fightGods11");
                 break;
-            case 7: 
-                unlockStory("fightGods13"); 
+            case 7:
+                unlockStory("fightGods13");
                 break;
-            case 8: 
-                unlockStory("fightGods15"); 
+            case 8:
+                unlockStory("fightGods15");
                 break;
-            case 9: 
-                unlockStory("fightGods17"); 
+            case 9:
+                unlockStory("fightGods17");
                 break;
             case 55:
                 if (getTalent("Dex") > 500000) unlockStory("fightGods02");

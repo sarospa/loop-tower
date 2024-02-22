@@ -173,12 +173,12 @@ let loadoutnames;
 const skillList = /** @type {const} */(["Combat", "Magic", "Practical", "Alchemy", "Crafting", "Dark", "Chronomancy", "Pyromancy", "Restoration", "Spatiomancy", "Mercantilism", "Divine", "Commune", "Wunderkind", "Gluttony", "Thievery", "Leadership", "Assassin"]);
 /** @typedef {typeof skillList[number]} SkillName */
 const skills = /** @type {{[K in SkillName]: Skill}} */({});
-const buffList = /** @type {const} */(["Ritual", 
-    "Imbuement", 
-    "Imbuement2", 
-    "Feast", 
-    "Aspirant", 
-    "Heroism", 
+const buffList = /** @type {const} */(["Ritual",
+    "Imbuement",
+    "Imbuement2",
+    "Feast",
+    "Aspirant",
+    "Heroism",
     "Imbuement3",
     "PrestigePhysical",
     "PrestigeMental",
@@ -326,6 +326,7 @@ const storyReqs = {
     imbueBodyThirdSegmentReached: false,
     failedImbueBody: false,
     judgementFaced: false,
+    ignoredByGods: false,
     acceptedIntoValhalla: false,
     castIntoShadowRealm: false,
     spokeToGuru: false,
@@ -670,7 +671,7 @@ function isStringOption(option) {
 /** @param {string} option @returns {option is BooleanOptionName} */
 function isBooleanOption(option) {
     // I'm explicitly deciding to leave this open-ended, so unknown options are treated as booleans
-    return !numericOptions.includes(/** @type {NumericOptionName} */(option)) 
+    return !numericOptions.includes(/** @type {NumericOptionName} */(option))
         && !stringOptions.includes(/** @type {StringOptionName} */(option));
 }
 
@@ -1236,7 +1237,7 @@ function doLoad(toLoad) {
     totalOfflineMs = toLoad.totalOfflineMs === undefined ? 0 : toLoad.totalOfflineMs; // must load before options
 
     for (const option of typedKeys(options)) {
-        loadOption(option, options[option]); 
+        loadOption(option, options[option]);
     }
     storyShowing = toLoad.storyShowing === undefined ? 0 : toLoad.storyShowing;
     storyMax = toLoad.storyMax === undefined ? 0 : toLoad.storyMax;
@@ -1362,7 +1363,7 @@ function doSave() {
     toSave.date = new Date();
     toSave.totalOfflineMs = totalOfflineMs;
     toSave.totals = totals;
-    
+
     toSave.challengeSave = challengeSave;
     for (const challengeProgress in challengeSave)
         toSave.challengeSave[challengeProgress] = challengeSave[challengeProgress];
