@@ -5046,17 +5046,29 @@ Action.WizardCollege = new MultipartAction("Wizard College", {
     varName: "wizCollege",
     storyReqs(storyNum) {
         switch(storyNum) {
-            case 1: return storyReqs.wizardGuildTestTaken;
-            case 2: return storyReqs.wizardGuildRankEReached;
-            case 3: return storyReqs.wizardGuildRankDReached;
-            case 4: return storyReqs.wizardGuildRankCReached;
-            case 5: return storyReqs.wizardGuildRankBReached;
-            case 6: return storyReqs.wizardGuildRankAReached;
-            case 7: return storyReqs.wizardGuildRankSReached;
-            case 8: return storyReqs.wizardGuildRankSSReached;
-            case 9: return storyReqs.wizardGuildRankSSSReached;
-            case 10: return storyReqs.wizardGuildRankUReached;
-            case 11: return storyReqs.wizardGuildRankGodlikeReached;
+            // Hack to make reordering work
+            // This mostly works, but causes some weirdness (empty cases
+            // show up in the action log). A less hacky solution would be better.
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+            case 8:
+            case 9:
+            case 10:
+            case 11: return true;
+            case 12: return storyReqs.wizardGuildTestTaken;
+            case 13: return storyReqs.wizardGuildStudentAchieved;
+            case 14: return storyReqs.wizardGuildApprenticeAchieved;
+            case 15: return storyReqs.wizardGuildSpellcasterAchieved;
+            case 16: return storyReqs.wizardGuildWizardAchieved;
+            case 17: return storyReqs.wizardGuildSageAchieved;
+            case 18: return storyReqs.wizardGuildMagusAchieved;
+            case 19: return storyReqs.wizardGuildCouncilMemberAchieved;
+            case 20: return storyReqs.wizardGuildChairAchieved;
         }
     },
     stats: {
@@ -5094,17 +5106,14 @@ Action.WizardCollege = new MultipartAction("Wizard College", {
         curWizCollegeSegment++;
         view.requestUpdate("adjustManaCost", "Restoration");
         view.requestUpdate("adjustManaCost", "Spatiomancy");
-        if (curWizCollegeSegment >= 6) unlockStory("wizardGuildRankEReached");
-        if (curWizCollegeSegment >= 12) unlockStory("wizardGuildRankDReached");
-        if (curWizCollegeSegment >= 18) unlockStory("wizardGuildRankCReached");
-        if (curWizCollegeSegment >= 24) unlockStory("wizardGuildRankBReached");
-        if (curWizCollegeSegment >= 30) unlockStory("wizardGuildRankAReached");
-        if (curWizCollegeSegment >= 36) unlockStory("wizardGuildRankSReached");
-        if (curWizCollegeSegment >= 42) unlockStory("wizardGuildRankSSReached");
-        if (curWizCollegeSegment >= 48) unlockStory("wizardGuildRankSSSReached");
-        if (curWizCollegeSegment >= 54) unlockStory("wizardGuildRankUReached");
-        if (curWizCollegeSegment >= 60) unlockStory("wizardGuildRankGodlikeReached");
-
+        if (curWizCollegeSegment >= 3) unlockStory("wizardGuildStudentAchieved");
+        if (curWizCollegeSegment >= 6) unlockStory("wizardGuildApprenticeAchieved");
+        if (curWizCollegeSegment >= 12) unlockStory("wizardGuildSpellcasterAchieved");
+        if (curWizCollegeSegment >= 18) unlockStory("wizardGuildWizardAchieved");
+        if (curWizCollegeSegment >= 30) unlockStory("wizardGuildSageAchieved");
+        if (curWizCollegeSegment >= 42) unlockStory("wizardGuildMagusAchieved");
+        if (curWizCollegeSegment >= 54) unlockStory("wizardGuildCouncilMemberAchieved");
+        if (curWizCollegeSegment >= 57) unlockStory("wizardGuildChairAchieved");
     },
     getPartName() {
         return `${getWizCollegeRank().name}`;
@@ -5119,7 +5128,6 @@ Action.WizardCollege = new MultipartAction("Wizard College", {
         return towns[4].getLevel("Tour") >= 60;
     },
     finish() {
-        //guild = "Wizard";
         resources.wizardCollege = true;
         unlockStory("wizardGuildTestTaken");
     },
@@ -5127,25 +5135,24 @@ Action.WizardCollege = new MultipartAction("Wizard College", {
 function getWizCollegeRank(offset) {
     let name = [
         "Initiate",
-        "Student",     //E
+        "Student",
         "Apprentice",
-        "Disciple",    //D
+        "Disciple",
         "Spellcaster",
-        "Magician",    //C
+        "Magician",
         "Wizard",
-        "Great Wizard",//B
+        "Great Wizard",
         "Grand Wizard",
-        "Archwizard",  //A
+        "Archwizard",
         "Sage",
-        "Great Sage",  //S
+        "Great Sage",
         "Grand Sage",
-        "Archsage",    //SS
+        "Archsage",
         "Magus",
-        "Great Magus", //SSS
+        "Great Magus",
         "Grand Magus",
-        "Archmagus",   //U
+        "Archmagus",
         "Member of The Council of the Seven",
-        "Chair of The Council of the Seven" //godlike
     ][Math.floor(curWizCollegeSegment / 3 + 0.00001)];
     const segment = (offset === undefined ? 0 : offset - (curWizCollegeSegment % 3)) + curWizCollegeSegment;
     let bonus = precision3(1 + 0.02 * Math.pow(segment, 1.05));
@@ -5156,7 +5163,7 @@ function getWizCollegeRank(offset) {
             name += ["-", "", "+"][offset % 3];
         }
     } else {
-        name = "Merlin";
+        name = "Chair of The Council of the Seven";
         bonus = 5;
     }
     name += `, Mult x${bonus}`;
