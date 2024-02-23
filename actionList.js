@@ -1074,16 +1074,11 @@ Action.TrainStrength = new Action("Train Strength", {
     townNum: 0,
     storyReqs(storyNum) {
         switch (storyNum) {
-            case 1:
-                return storyReqs.strengthTrained;
-            case 2:
-                return getTalent("Str") >= 100;
-            case 3:
-                return getTalent("Str") >= 1000;
-            case 4:
-                return getTalent("Str") >= 10000;
-            case 5:
-                return getTalent("Str") >= 100000;
+            case 1: return storyReqs.strengthTrained;
+            case 2: return storyReqs.strengthTrained && getTalent("Str") >= 100;
+            case 3: return storyReqs.strengthTrained && getTalent("Str") >= 1000;
+            case 4: return storyReqs.strengthTrained && getTalent("Str") >= 10000;
+            case 5: return storyReqs.strengthTrained && getTalent("Str") >= 100000;
         }
         return false;
     },
@@ -2023,16 +2018,11 @@ Action.SitByWaterfall = new Action("Sit By Waterfall", {
     townNum: 1,
     storyReqs(storyNum) {
         switch (storyNum) {
-            case 1:
-                return storyReqs.satByWaterfall;
-            case 2:
-                return getTalent("Soul") >= 100;
-            case 3:
-                return getTalent("Soul") >= 1000;
-            case 4:
-                return getTalent("Soul") >= 10000;
-            case 5:
-                return getTalent("Soul") >= 100000;
+            case 1: return storyReqs.satByWaterfall;
+            case 2: return storyReqs.satByWaterfall && getTalent("Soul") >= 100;
+            case 3: return storyReqs.satByWaterfall && getTalent("Soul") >= 1000;
+            case 4: return storyReqs.satByWaterfall && getTalent("Soul") >= 10000;
+            case 5: return storyReqs.satByWaterfall && getTalent("Soul") >= 100000;
         }
         return false;
     },
@@ -2292,16 +2282,11 @@ Action.TrainDexterity = new Action("Train Dexterity", {
     townNum: 1,
     storyReqs(storyNum) {
         switch (storyNum) {
-            case 1:
-                return storyReqs.dexterityTrained;
-            case 2:
-                return getTalent("Dex") >= 100;
-            case 3:
-                return getTalent("Dex") >= 1000;
-            case 4:
-                return getTalent("Dex") >= 10000;
-            case 5:
-                return getTalent("Dex") >= 100000;
+            case 1: return storyReqs.dexterityTrained;
+            case 2: return storyReqs.dexterityTrained && getTalent("Dex") >= 100;
+            case 3: return storyReqs.dexterityTrained && getTalent("Dex") >= 1000;
+            case 4: return storyReqs.dexterityTrained && getTalent("Dex") >= 10000;
+            case 5: return storyReqs.dexterityTrained && getTalent("Dex") >= 100000;
         }
         return false;
     },
@@ -2332,16 +2317,11 @@ Action.TrainSpeed = new Action("Train Speed", {
     townNum: 1,
     storyReqs(storyNum) {
         switch (storyNum) {
-            case 1:
-                return storyReqs.speedTrained;
-            case 2:
-                return getTalent("Spd") >= 100;
-            case 3:
-                return getTalent("Spd") >= 1000;
-            case 4:
-                return getTalent("Spd") >= 10000;
-            case 5:
-                return getTalent("Spd") >= 100000;
+            case 1: return storyReqs.speedTrained;
+            case 2: return storyReqs.speedTrained && getTalent("Spd") >= 100;
+            case 3: return storyReqs.speedTrained && getTalent("Spd") >= 1000;
+            case 4: return storyReqs.speedTrained && getTalent("Spd") >= 10000;
+            case 5: return storyReqs.speedTrained && getTalent("Spd") >= 100000;
         }
         return false;
     },
@@ -2416,16 +2396,11 @@ Action.BirdWatching = new Action("Bird Watching", {
     townNum: 1,
     storyReqs(storyNum) {
         switch (storyNum) {
-            case 1:
-                return storyReqs.birdsWatched;
-            case 2:
-                return getTalent("Per") >= 100;
-            case 3:
-                return getTalent("Per") >= 1000;
-            case 4:
-                return getTalent("Per") >= 10000;
-            case 5:
-                return getTalent("Per") >= 100000;
+            case 1: return storyReqs.birdsWatched;
+            case 2: return storyReqs.birdsWatched && getTalent("Per") >= 100;
+            case 3: return storyReqs.birdsWatched && getTalent("Per") >= 1000;
+            case 4: return storyReqs.birdsWatched && getTalent("Per") >= 10000;
+            case 5: return storyReqs.birdsWatched && getTalent("Per") >= 100000;
         }
         return false;
     },
@@ -3566,16 +3541,11 @@ Action.ReadBooks = new Action("Read Books", {
     townNum: 2,
     storyReqs(storyNum) {
         switch (storyNum) {
-            case 1:
-                return storyReqs.booksRead;
-            case 2:
-                return getTalent("Int") >= 100;
-            case 3:
-                return getTalent("Int") >= 1000;
-            case 4:
-                return getTalent("Int") >= 10000;
-            case 5:
-                return getTalent("Int") >= 100000;
+            case 1: return storyReqs.booksRead;
+            case 2: return storyReqs.booksRead && getTalent("Int") >= 100;
+            case 3: return storyReqs.booksRead && getTalent("Int") >= 1000;
+            case 4: return storyReqs.booksRead && getTalent("Int") >= 10000;
+            case 5: return storyReqs.booksRead && getTalent("Int") >= 100000;
         }
         return false;
     },
@@ -4723,9 +4693,9 @@ Action.TidyUp = new MultipartAction("Tidy Up", {
     storyReqs(storyNum) {
         switch(storyNum){
             case 1: return storyReqs.tidiedUp;
-            case 2: return storyReqs.tidiedUp1Time;
-            case 3: return storyReqs.tidiedUp6Times;
-            case 4: return storyReqs.tidiedUp20Times;
+            case 5: return towns[4].totalTidy >= 100;
+            case 6: return towns[4].totalTidy >= 1000;
+            case 7: return towns[4].totalTidy >= 10000;
         }
     },
     stats: {
@@ -4930,10 +4900,10 @@ Action.CharmSchool = new Action("Charm School", {
     storyReqs(storyNum) {
         switch(storyNum) {
             case 1: return storyReqs.charmSchoolVisited;
-            case 2: return getTalent("Cha") >= 100;
-            case 3: return getTalent("Cha") >= 1000;
-            case 4: return getTalent("Cha") >= 10000;
-            case 5: return getTalent("Cha") >= 100000;
+            case 2: return storyReqs.charmSchoolVisited && getTalent("Cha") >= 100;
+            case 3: return storyReqs.charmSchoolVisited && getTalent("Cha") >= 1000;
+            case 4: return storyReqs.charmSchoolVisited && getTalent("Cha") >= 10000;
+            case 5: return storyReqs.charmSchoolVisited && getTalent("Cha") >= 100000;
         }
     },
     stats: {
@@ -4964,10 +4934,10 @@ Action.Oracle = new Action("Oracle", {
     storyReqs(storyNum) {
         switch(storyNum) {
             case 1: return storyReqs.oracleVisited;
-            case 2: return getTalent("Luck") >= 100;
-            case 3: return getTalent("Luck") >= 1000;
-            case 4: return getTalent("Luck") >= 10000;
-            case 5: return getTalent("Luck") >= 100000;
+            case 2: return storyReqs.oracleVisited && getTalent("Luck") >= 100;
+            case 3: return storyReqs.oracleVisited && getTalent("Luck") >= 1000;
+            case 4: return storyReqs.oracleVisited && getTalent("Luck") >= 10000;
+            case 5: return storyReqs.oracleVisited && getTalent("Luck") >= 100000;
         }
     },
     stats: {
