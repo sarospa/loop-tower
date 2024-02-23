@@ -23,6 +23,10 @@ ul + .button {
     margin-bottom: 1lh;
 }
 
+summary {
+    cursor: pointer;
+}
+
 fieldset > * {
     display: block;
     margin: 0.25lh 0 0;
@@ -56,7 +60,7 @@ fieldset > * {
     display: none;
 }
 
-.numericEvaluation > details > summary > input[value] ~ .baseValueCalculation {
+.numericEvaluation > details > summary > [value] ~ .baseValueCalculation {
     display: none;
 }
 
@@ -77,7 +81,7 @@ fieldset > * {
     }
 }
 
-ul.adjustments {
+ul.evaluationRules {
     padding-left: 2em;
 }
 
@@ -85,15 +89,16 @@ li.evaluationRule {
     list-style: none;
 }
 
-li.evaluationRule > details > summary {
-    list-style-type: disc;
+.evaluationRule > details > summary {
+    list-style-position: outside;
+    margin-left: 1em;
 }
 
 details:not([open]) > summary:has( ~ .evaluationRules > .evaluationRule)::after {
     content: "(...)";
 }
 
-ul.conditions > .evaluationRule > details > summary > .evaluationElementType > optgroup[label=Adjustment] {
+.conditionalEvaluation > details > .evaluationRules > .evaluationRule > details > summary > .evaluationRuleType > optgroup[label=Adjustments] {
     display: none;
 }
 
@@ -108,31 +113,14 @@ details.baseValueCalculation > summary {
 details.baseValueCalculation > summary > select.baseValueType ~ * {
     display: none;
 }
-:is(.evaluationRule.skillName > details, details.skillName) > summary > select[name=skillName] {
-    display: revert;
-}
-:is(.evaluationRule.buffName > details, details.buffName) > summary > select[name=buffName] {
-    display: revert;
-}
-:is(.evaluationRule.actionName > details, details.actionName) > summary > select[name=actionName] {
-    display: revert;
-}
-:is(.evaluationRule.functionName > details, details.functionName) > summary > select[name=functionName] {
-    display: revert;
-}
-:is(.evaluationRule.varName > details, details.varName) > summary > select[name=varName] {
-    display: revert;
-}
-
-.evaluationRule.adjustmentName > details > summary > select[name=adjustmentName] {
-    display: revert;
-}
-
-.evaluationRule.prestigeBuffName > details > summary > select[name=prestigeBuffName] {
-    display: revert;
-}
-
-.evaluationRule.varName > details > summary > select[name=varName] {
+:is(.evaluationRule.skillName > details, details.skillName) > summary > shrink-wrap[name=skillName],
+:is(.evaluationRule.buffName > details, details.buffName) > summary > shrink-wrap[name=buffName],
+:is(.evaluationRule.actionName > details, details.actionName) > summary > shrink-wrap[name=actionName],
+:is(.evaluationRule.functionName > details, details.functionName) > summary > shrink-wrap[name=functionName],
+:is(.evaluationRule.varName > details, details.varName) > summary > shrink-wrap[name=varName],
+.evaluationRule.adjustmentName > details > summary > shrink-wrap[name=adjustmentName],
+.evaluationRule.prestigeBuffName > details > summary > shrink-wrap[name=prestigeBuffName],
+.evaluationRule.varName > details > summary > shrink-wrap[name=varName] {
     display: revert;
 }
 
@@ -144,12 +132,16 @@ details.baseValueCalculation > summary > select.baseValueType ~ * {
     &[value] ~ span.numericTestType.numericTest2:has(+.numericTest2[value]) {
         display: revert;
     }
-    &[value] ~ select.numericTestType.numericTest2 {
+    &[value] ~ shrink-wrap.numericTestType.numericTest2 {
         display: revert;
         &[value] ~ .numericTestValue.numericTest2 {
             display: revert;
         }
     }
+}
+
+.evaluationRule.numericEvaluation > details > summary > [name=value] {
+    display: revert;
 }
 
 .evaluationRule.skillMod > details > summary > :is(.numericTestType, .numericTestValue) {
@@ -163,13 +155,26 @@ details.baseValueCalculation > summary > select.baseValueType ~ * {
     display: none;
 }
 
-input.numericTestValue {
-    width: 5em;
-}
-input.skillModOnly {
-    width: 5em;
+.shrink-wrapped.label {
+    display: inline-block;
+    min-width: 1ch;
+    min-height: 1lh;
+    padding: 1px;
+    border: 1px dashed currentColor;
+    margin: 1px 0
 }
 
-.addAdjustment, .addCondition {
+shrink-wrap:focus-within > .label {
+    margin: 1px 2px;
+}
+
+.addRule {
     margin-left: 2em;
+}
+.addRule::after {
+    content: "Add adjustment/condition";
+}
+.evaluationRule:not(.numericEvaluation) > details > .addRule::after,
+.conditionalEvaluation > details > .addRule::after {
+    content: "Add condition";
 }

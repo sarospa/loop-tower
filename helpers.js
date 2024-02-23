@@ -260,6 +260,8 @@ function removeClassFromDiv(div, className) {
     div.classList.remove(className);
 }
 
+const wrappedElementSymbol = Symbol("wrappedElement");
+
 /**
  * @template {Element} [T=Element]
  * 
@@ -275,11 +277,16 @@ function getElement(elementOrId, expectedClass=/** @type {new()=>T} */(Element),
     for (const expected of expectedClasses) {
         if (element instanceof expected) return element;
     }
+    if (element && wrappedElementSymbol in element) {
+        // last try before bailing
+        const wrappedResult = getElement(/** @type {Element}*/(element[wrappedElementSymbol]), expectedClasses, false, false);
+        if (wrappedResult) return /** @type {T} */(element); // returning the wrapper so it can intercept IDL behaviors
+    }
     if (warnIfMissing) {
         console.warn("Expected element missing or wrong type!", elementOrId, expectedClass, element);
     }
     if (throwIfMissing) {
-        throw new Error(`Expected to find element of type ${expectedClasses.join("|")} with ${elementOrId}, instead found ${element}!`);
+        throw new Error(`Expected to find element of type ${expectedClasses.map(c=>c.name).join("|")} with ${elementOrId}, instead found ${element}!`);
     }
     return undefined;
 }
@@ -310,6 +317,11 @@ function valueElement(elementOrId, throwIfMissing=true, warnIfMissing=true) {
     return getElement(elementOrId, [/** @type {new() => HTMLValueElement} */(HTMLInputElement), HTMLTextAreaElement, HTMLSelectElement], throwIfMissing, warnIfMissing);
 }
 
+/** @returns {node is HTMLValueElement} */
+function isValueElement(node) {
+    return node instanceof HTMLInputElement || node instanceof HTMLTextAreaElement || node instanceof HTMLSelectElement;
+}
+
 /** @param {string|Element} elementOrId  */
 function svgElement(elementOrId, throwIfMissing=true, warnIfMissing=true) {
     return getElement(elementOrId, SVGElement, throwIfMissing, warnIfMissing);
@@ -320,11 +332,11 @@ function templateElement(elementOrId, throwIfMissing=true, warnIfMissing=true) {
     return getElement(elementOrId, HTMLTemplateElement, throwIfMissing, warnIfMissing);
 }
 
-/** @overload @param {string} templateId @param {boolean} [alwaysReturnFragment] @returns {Element | DocumentFragment} */
-/** @overload @param {string} templateId @param {true} alwaysReturnFragment @returns {DocumentFragment} */
-/** @param {string} templateId */
-function cloneTemplate(templateId, alwaysReturnFragment=false) {
-    const template = templateElement(templateId);
+/** @overload @param {string|Element} templateOrId @param {boolean} [alwaysReturnFragment] @returns {Element | DocumentFragment} */
+/** @overload @param {string|Element} templateOrId @param {true} alwaysReturnFragment @returns {DocumentFragment} */
+/** @param {string} templateOrId */
+function cloneTemplate(templateOrId, alwaysReturnFragment=false) {
+    const template = templateElement(templateOrId);
     const fragment = /** @type {DocumentFragment} */(template.content.cloneNode(true));
     if (!alwaysReturnFragment && fragment.childElementCount === 1) {
         return fragment.firstElementChild;
