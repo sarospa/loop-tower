@@ -5819,8 +5819,11 @@ Action.RaiseZombie = new Action("Raise Zombie", {
     townNum: 5,
     storyReqs(storyNum) {
         switch(storyNum) {
-                case 1: return storyReqs.attemptedRaiseZombie;
-                case 2: return storyReqs.failedRaiseZombie;
+            // Hack to make reordering work
+            case 1:
+            case 2: return storyReqs.attemptedRaiseZombie;
+            case 3: return storyReqs.raised10Zombies;
+            case 4: return storyReqs.raised25Zombies;
         }
     },
     stats: {
@@ -5850,6 +5853,8 @@ Action.RaiseZombie = new Action("Raise Zombie", {
         unlockStory("attemptedRaiseZombie");
         handleSkillExp(this.skills);
         addResource("zombie", 1);
+        if (resources.zombie >= 10) unlockStory("raised10Zombies");
+        if (resources.zombie >= 25) unlockStory("raised25Zombies");
     },
 });
 

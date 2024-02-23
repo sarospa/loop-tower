@@ -386,6 +386,8 @@ const storyReqs = {
     drew15Wells: false,
     drewDryWell: false,
     attemptedRaiseZombie: false,
+    raised10Zombies: false,
+    raised25Zombies: false,
     failedRaiseZombie: false,
     spireAttempted: false,
     clearedSpire: false,
