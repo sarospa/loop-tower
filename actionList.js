@@ -4446,18 +4446,14 @@ Action.FaceJudgement = new Action("Face Judgement", {
     townNum: 3,
     storyReqs(storyNum) {
         switch (storyNum) {
-            // Stories 2 and 3 used to exist, but have been removed (really reordered). So if story 1 is finished, we
-            // want to consider 2 and 3 finished as well for visibility purposes.
             case 1:
-            case 2:
-            case 3:
                 return storyReqs.judgementFaced;
+            case 2:
+                return storyReqs.acceptedIntoValhalla;
+            case 3:
+                return storyReqs.castIntoShadowRealm;
             case 4:
                 return storyReqs.ignoredByGods;
-            case 5:
-                return storyReqs.acceptedIntoValhalla;
-            case 6:
-                return storyReqs.castIntoShadowRealm;
         }
         return false;
     },
@@ -5046,20 +5042,6 @@ Action.WizardCollege = new MultipartAction("Wizard College", {
     varName: "wizCollege",
     storyReqs(storyNum) {
         switch(storyNum) {
-            // Hack to make reordering work
-            // This mostly works, but causes some weirdness (empty cases
-            // show up in the action log). A less hacky solution would be better.
-            case 1:
-            case 2:
-            case 3:
-            case 4:
-            case 5:
-            case 6:
-            case 7:
-            case 8:
-            case 9:
-            case 10:
-            case 11: return true;
             case 12: return storyReqs.wizardGuildTestTaken;
             case 13: return storyReqs.wizardGuildStudentAchieved;
             case 14: return storyReqs.wizardGuildApprenticeAchieved;
@@ -5826,9 +5808,7 @@ Action.RaiseZombie = new Action("Raise Zombie", {
     townNum: 5,
     storyReqs(storyNum) {
         switch(storyNum) {
-            // Hack to make reordering work
-            case 1:
-            case 2: return storyReqs.attemptedRaiseZombie;
+            case 1: return storyReqs.attemptedRaiseZombie;
             case 3: return storyReqs.raised10Zombies;
             case 4: return storyReqs.raised25Zombies;
         }
