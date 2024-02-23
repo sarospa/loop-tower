@@ -222,9 +222,9 @@ class View {
     }
 
     /**
-     * @param {HTMLElement} tooltip 
-     * @param {Element} trigger 
-     * @param {Node} eventTarget 
+     * @param {HTMLElement} tooltip
+     * @param {Element} trigger
+     * @param {Node} eventTarget
      */
     fixTooltipPosition(tooltip, trigger, eventTarget, delayedCall=false) {
         if (tooltip.contains(eventTarget)) {
@@ -358,7 +358,7 @@ class View {
     }
 
     /**
-     * @param {string} maxContainerId 
+     * @param {string} maxContainerId
      * @param {string} logBarId
      * @param {number} level
      * @param {string} [levelBarId]
@@ -1016,7 +1016,7 @@ class View {
     }
 
     updateStories(init) {
-        // ~1.56ms cost per run. run once every 2000ms on an interval
+        // several ms cost per run. run once every 2000ms on an interval
         for (const action of totalActionList) {
             if (action.storyReqs !== undefined) {
                 // greatly reduces/nullifies the cost of checking actions with all stories unlocked, which is nice,
@@ -1026,33 +1026,43 @@ class View {
                     let storyTooltipText = "";
                     let lastInBranch = false;
                     const name = action.name.toLowerCase().replace(/ /gu, "_");
-                    const storyAmt = _txt(`actions>${name}`, "fallback").split("⮀").length - 1;
-                    let storiesUnlocked = 0;
-                    for (let i = 1; i <= storyAmt; i++) {
-                        storyTooltipText += "<p>"
-                        const storyText = _txt(`actions>${name}>story_${i}`, "fallback").split("⮀");
-                        if (action.storyReqs(i)) {
-                            storyTooltipText += storyText[0] + storyText[1];
-                            lastInBranch = false;
-                            storiesUnlocked++;
-                            if (action.visible() && action.unlocked() && completedActions.includes(action.varName)) {
-                                actionLog.addActionStory(action, i, init);
+
+                    const rawStoriesDataForAction = _txtsObj(`actions>${name}`, "fallback")[0].children;
+                    let allStoriesForActionUnlocked = true;
+
+                    for (const rawStoryData of rawStoriesDataForAction) {
+                        if (rawStoryData.nodeName.startsWith("story_")) {
+                            const storyId = parseInt(rawStoryData.nodeName.replace("story_", ""));
+
+                            storyTooltipText += "<p>";
+                            const storyText = rawStoryData.textContent.split("⮀");
+                            if (action.storyReqs(storyId)) {
+                                storyTooltipText += storyText[0] + storyText[1];
+                                lastInBranch = false;
+                                if (action.visible() && action.unlocked() && completedActions.includes(action.varName)) {
+                                    actionLog.addActionStory(action, storyId, init);
+                                }
+                            } else {
+                                allStoriesForActionUnlocked = false;
+
+                                if (lastInBranch) {
+                                    storyTooltipText += "<b>???:</b> ???";
+                                } else {
+                                    storyTooltipText += `${storyText[0]} ???`;
+                                    lastInBranch = true;
+                                }
                             }
-                        } else if (lastInBranch) {
-                            storyTooltipText += "<b>???:</b> ???";
-                        } else {
-                            storyTooltipText += `${storyText[0]} ???`;
-                            lastInBranch = true;
+                            storyTooltipText += "</p>\n";
                         }
-                        storyTooltipText += "</p>\n";
                     }
+
                     if (document.getElementById(divName).children[2].innerHTML !== storyTooltipText) {
                         document.getElementById(divName).children[2].innerHTML = storyTooltipText;
                         if (!init) {
                             showNotification(divName);
                             if (!unreadActionStories.includes(divName)) unreadActionStories.push(divName);
                         }
-                        if (storiesUnlocked === storyAmt) {
+                        if (allStoriesForActionUnlocked) {
                             document.getElementById(divName).classList.add("storyContainerCompleted");
                         } else {
                             document.getElementById(divName).classList.remove("storyContainerCompleted");
@@ -1328,23 +1338,29 @@ class View {
         if (action.storyReqs !== undefined) {
             let storyTooltipText = "";
             let lastInBranch = false;
-            const storyAmt = _txt(`actions>${action.name.toLowerCase().replace(/ /gu, "_")}`, "fallback").split("⮀").length - 1;
-            for (let i = 1; i <= storyAmt; i++) {
-                if (_txt(`actions>${action.name.toLowerCase().replace(/ /gu, "_")}>story_${i}`) === undefined) console.log(`actions>${action.name.toLowerCase().replace(/ /gu, "_")}>story_${i}`);
-                const storyText = _txt(`actions>${action.name.toLowerCase().replace(/ /gu, "_")}>story_${i}`, "fallback").split("⮀");
-                storyTooltipText += "<p>";
-                if (action.storyReqs(i)) {
-                    storyTooltipText += storyText[0] + storyText[1];
-                    lastInBranch = false;
-                } else if (lastInBranch) {
-                    storyTooltipText += "<b>???:</b> ???";
-                } else {
-                    storyTooltipText += `${storyText[0]} ???`;
-                    lastInBranch = true;
+            const name = action.name.toLowerCase().replace(/ /gu, "_");
+
+            const rawStoriesDataForAction = _txtsObj(`actions>${name}`, "fallback")[0].children;
+
+            for (const rawStoryData of rawStoriesDataForAction) {
+                if (rawStoryData.nodeName.startsWith("story_")) {
+                    const storyId = parseInt(rawStoryData.nodeName.replace("story_", ""));
+
+                    storyTooltipText += "<p>";
+                    const storyText = rawStoryData.textContent.split("⮀");
+                    if (action.storyReqs(storyId)) {
+                        storyTooltipText += storyText[0] + storyText[1];
+                        lastInBranch = false;
+                    } else if (lastInBranch) {
+                        storyTooltipText += "<b>???:</b> ???";
+                    } else {
+                        storyTooltipText += `${storyText[0]} ???`;
+                        lastInBranch = true;
+                    }
+                    storyTooltipText += "</p>";
                 }
-                storyTooltipText += "</p>";
             }
-    
+
             const storyDivText =
                 `<div id='storyContainer${action.varName}' tabindex='0' class='storyContainer showthatstory' draggable='false' onmouseover='hideNotification("storyContainer${action.varName}")'>${action.label}
                     <br>
@@ -1356,7 +1372,7 @@ class View {
                         ${storyTooltipText}
                     </div>
                 </div>`;
-    
+
             const storyDiv = document.createElement("div");
             storyDiv.innerHTML = storyDivText;
             actionStoriesTown[action.townNum].appendChild(storyDiv);
@@ -1483,7 +1499,7 @@ class View {
             }
         }
     };
-    
+
     updateMultiPartSegments(action) {
         let segment = 0;
         let curProgress = towns[action.townNum][action.varName];
@@ -1749,7 +1765,7 @@ class View {
         document.getElementById('prestigeSpatiomancyNextCost').textContent = `${formatNumber(getPrestigeCost("PrestigeSpatiomancy"))}`;
         document.getElementById('prestigeChronomancyNextCost').textContent = `${formatNumber(getPrestigeCost("PrestigeChronomancy"))}`;
         document.getElementById('prestigeBarteringNextCost').textContent = `${formatNumber(getPrestigeCost("PrestigeBartering"))}`;
-        document.getElementById('prestigeExpOverflowNextCost').textContent = `${formatNumber(getPrestigeCost("PrestigeExpOverflow"))}`;        
+        document.getElementById('prestigeExpOverflowNextCost').textContent = `${formatNumber(getPrestigeCost("PrestigeExpOverflow"))}`;
     }
 }
 
