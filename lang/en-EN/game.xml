@@ -1425,6 +1425,7 @@
             <header>Loop {loop}, {action} in {town}</header>
             <multiloop>{loopStart}–{loopEnd}</multiloop>
             <action_story><![CDATA[<b>{header} ({condition}):</b> {story}]]></action_story>
+            <action_story_not_found><![CDATA[You remember that something happened here, but not what it was.]]></action_story_not_found>
             <global_story><![CDATA[<b>Loop {loop}:</b> {story}]]></global_story>
             <soulstone><![CDATA[<b>{header}:</b> You find a soulstone attuned to {stat_long}!]]></soulstone>
             <soulstone_singlemulti><![CDATA[<b>{header}:</b> You find {count} soulstones attuned to {stat_long}.]]></soulstone_singlemulti>
