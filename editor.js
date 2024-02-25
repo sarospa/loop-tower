@@ -250,9 +250,8 @@ class DataElement {
         const clonedTemplate = typeof templateOrId === "string" ? cloneTemplate(templateOrId) : templateOrId;
         container.insertBefore(clonedTemplate, insertBefore);
         this.uiElement = htmlElement(clonedTemplate instanceof DocumentFragment ? container : clonedTemplate);
-        const summaryElement = this.uiElement.querySelector(":scope>details>summary, details:scope>summary");
-        if (summaryElement && summaryElement.childNodes.length === 0) {
-            summaryElement.textContent = this.toString();
+        if (this.uiElement.classList.contains("default-label")) {
+            this.uiElement.setAttribute("label", this.toString());
         }
         return this.uiElement;
     }
@@ -270,7 +269,7 @@ class DataElement {
             const isNumericEvaluation = evaluationField.classList.contains("numericEvaluation");
             const tagName = evaluationField.getAttribute("data-xml-name");
             const xmlChild = this.xmlElement.querySelector(tagName);
-            const isOptional = evaluationField.classList.contains("optional");
+            const isOptional = evaluationField.hasAttribute("optional");
             const fieldElement =
                 new (isNumericEvaluation ? NumericEvaluationElement : ConditionalEvaluationElement)
                     (this, xmlChild ?? tagName, isOptional).spawnUI(evaluationField);
@@ -281,6 +280,9 @@ class DataElement {
 
     populateUIFields() {
         if (this.isOptional) {
+            if (this.uiElement instanceof ListItem) {
+                this.uiElement.present = this.isPresent;
+            }
             const presenceCheckbox = this.uiElement.querySelector("input.elementPresent[type=checkbox]");
             if (presenceCheckbox) {
                 inputElement(presenceCheckbox).checked = this.isPresent;
@@ -337,7 +339,7 @@ class BaseValueElement extends DataElement {
 
     bindUI() {
         super.bindUI();
-        const typeSelect = valueElement(this.uiElement.querySelector("select.baseValueType"));
+        const typeSelect = valueElement(this.uiElement.querySelector(".baseValueType > select"));
         (typeSelect.onchange = () => this.changeBaseValueType(typeSelect.value))();
     }
 }
@@ -405,7 +407,7 @@ class ValueBearingElement extends EvaluationRulesContainerElement {
     bindUI() {
         super.bindUI();
         if (this.hasBaseValue) {
-            const baseValue = htmlElement(this.uiElement.querySelector("details.baseValueCalculation"));
+            const baseValue = htmlElement(this.uiElement.querySelector(".baseValueCalculation"));
             this.baseValue.spawnUI(baseValue);
             const valueInput = inputElement(this.uiElement.querySelector("[name=value]"));
             valueInput?.addEventListener("input", () => this.baseValue.isPresent = valueInput.value === "");
@@ -492,7 +494,7 @@ class EvaluationRuleElement extends ValueBearingElement {
     populateUIFields() {
         super.populateUIFields();
         if (this.rules.length > 0) {
-            this.uiElement.querySelector("details").open = true;
+            getElement(this.uiElement, ListItem).open = true;
         }
     }
 }
@@ -505,29 +507,7 @@ class ConditionalEvaluationElement extends ValueBearingElement {
 
     /** @param {string} templateId @param {Element} container @param {Element} insertBefore */
     spawnUIFromTemplate(templateId, container = this.parent?.uiElement, insertBefore = null) {
-        const {isOptional} = this;
-        let label = container.querySelector(":scope > label");
-        const uiElement = super.spawnUIFromTemplate(templateId, container, insertBefore);
-
-        const labelSlot = uiElement.querySelector("slot[name=label]");
-        const labelContainer = labelSlot.parentElement;
-
-        if (!label) {
-            label = document.createElement('label');
-            label.textContent = this.toString();
-        }
-
-        labelSlot.replaceWith(label);
-        if (isOptional) {
-            // add checkbox to label
-            label.insertAdjacentHTML("afterbegin", "<input type='checkbox' class='elementPresent'> ");
-        } else {
-            // no checkbox, so move all label attributes to the parent element and unwrap it
-            for (const attr of label.attributes) {
-                labelContainer.setAttribute(attr.name, attr.value);
-            }
-            label.outerHTML = label.innerHTML;
-        }
+        const uiElement = getElement(super.spawnUIFromTemplate(templateId, container, insertBefore), ListItem);
 
         return uiElement;
     }
@@ -535,7 +515,7 @@ class ConditionalEvaluationElement extends ValueBearingElement {
     populateUIFields() {
         super.populateUIFields();
         if (this.rules.length > 0) {
-            getElement(this.uiElement, HTMLDetailsElement).open = true;
+            getElement(this.uiElement, ListItem).open = true;
         }
     }
 }
@@ -545,6 +525,15 @@ class NumericEvaluationElement extends ConditionalEvaluationElement {
         this.defaultTemplate = "numericEvaluationTemplate";
         this.hasBaseValue = true;
     }
+    /** @param {string} templateId @param {Element} container @param {Element} insertBefore */
+    spawnUIFromTemplate(templateId, container = this.parent?.uiElement, insertBefore = null) {
+        const uiElement = super.spawnUIFromTemplate(templateId, container, insertBefore);
+
+        uiElement.label += ":";
+
+        return uiElement;
+    }
+
 }
 
 class NamedAdjustment extends EvaluationRulesContainerElement {
