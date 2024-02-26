@@ -623,12 +623,15 @@ class ListItem extends BaseComponent {
         this.dragging = true;
         this.startParent = this.parentElement;
         this.startNext = this.nextSibling;
-        this.draggerPart.setPointerCapture(event.pointerId);
+        this.draggerPart.setPointerCapture(this.dragPointer);
         this.draggerPart.onpointermove = this.dragMoveHandler;
         this.mousetrap ??= new Mousetrap();
         this.mousetrap.bind("escape", e => this.endDrag(e, true));
         document.documentElement.setAttribute("data-dragging-list-item", this.id || "");
+        // don't trust pointercapture to get all our events for us. set temporary listeners on the window.
         window.addEventListener("pointerdown", this.dragStartHandler);
+        window.addEventListener("pointermove", this.dragMoveHandler);
+        window.addEventListener("pointerup", this.dragEndHandler);
         this.dispatchEvent(new PointerEvent("dragStarted", event));
     }
 
@@ -642,6 +645,8 @@ class ListItem extends BaseComponent {
         this.draggerPart.onpointermove = null;
         this.mousetrap?.unbind("escape");
         window.removeEventListener("pointerdown", this.dragStartHandler);
+        window.removeEventListener("pointermove", this.dragMoveHandler);
+        window.removeEventListener("pointerup", this.dragEndHandler);
         document.documentElement.removeAttribute("data-dragging-list-item");
         if (revert) {
             this.startParent.insertBefore(this, this.startNext);
@@ -658,30 +663,36 @@ class ListItem extends BaseComponent {
     dragMoveHandler(event) {
         if (this.dragging && event.buttons > 1) this.endDrag(event, true);
         if (!this.dragging || event.pointerId !== this.dragPointer || (event.buttons & 1) !== 1) return;
+        event.preventDefault();
+        event.stopPropagation();
         const elements = document.elementsFromPoint(event.clientX, event.clientY);
         for (const element of elements) {
             if (element instanceof ListItem) {
                 if (element === this) {
                     this.lastOver = null;
-                    return;
+                    break;
                 }
-                if (element === this.lastOver) return;
+                if (element === this.lastOver) break;
                 const targetList = element.parentElement;
                 // console.log("found ListItem:",{this:this,element,targetList});
-                if (!(targetList instanceof ReorderableList)) return;
+                if (!(targetList instanceof ReorderableList)) break;
                 this.lastOver = element;
-                if (targetList === this.parentElement && (this.compareDocumentPosition(element) & this.DOCUMENT_POSITION_FOLLOWING) !== 0) {
-                    targetList.insertBefore(this, element.nextSibling);
-                } else if (targetList === this.parentElement || targetList.acceptsItem(this)) {
-                    targetList.insertBefore(this, element);
-                }
-                return;
+                try {
+                    if (targetList === this.parentElement && (this.compareDocumentPosition(element) & this.DOCUMENT_POSITION_FOLLOWING) !== 0) {
+                        targetList.insertBefore(this, element.nextSibling);
+                    } else if (targetList === this.parentElement || targetList.acceptsItem(this)) {
+                        targetList.insertBefore(this, element);
+                    }
+                } catch { }
+                break;
             } else if (element instanceof ReorderableList && element.childElementCount === 0) {
                 // console.log("found empty ReorderableList:",{this:this,element});
                 element.append(this);
-                return;
+                break;
             }
         }
+        // We know we should be dragging, but sometimes (like after moving an element) pointer capture can get lost. Get it back.
+        this.draggerPart.setPointerCapture(this.dragPointer);
     }
 
     /** @param {PointerEvent} event  */
