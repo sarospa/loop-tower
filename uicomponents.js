@@ -407,6 +407,7 @@ class ReorderableList extends BaseComponent {
         }
 
         if (index !== this.itemRefs.length) {
+            changed = true;
             for (const [i, item] of this.itemRefs.slice(index).entries()) {
                 this.#setIndex(index + i, null, item?.deref());
             }
@@ -512,7 +513,7 @@ class ListItem extends BaseComponent {
                 content: "●";
             }
             #default {
-                display: contents;
+                display: inline;
             }
 
             :host([dragging]) #dragger {

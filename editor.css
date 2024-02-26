@@ -45,6 +45,7 @@ fieldset > * {
 
 reorderable-list:not(:has(>list-item)) {
     min-height: 1lh;
+    max-width: 20em;
     box-sizing: border-box;
     border: 1px dashed currentColor;
     margin: 0 0 4px;
@@ -68,7 +69,7 @@ list-item[optional]:not([present]) {
     &>* {
         display:none;
     }
-    &::after {
+    &::part(default)::after {
         content: " (" var(--absence-text) ")";
     }
 }
@@ -82,7 +83,7 @@ list-item[dragging] {
     opacity: 0.75;
 }
 
-list-item:not([open]):has(>.evaluationRules > .evaluationRule)::after {
+list-item:not([open]):has(>.evaluationRules > .evaluationRule)::part(default)::after {
     content: "(...)";
 }
 
