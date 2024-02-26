@@ -401,15 +401,15 @@ ul#faq > li {
 .stat-Soul {--stat-color: var(--stat-Soul-color);}
 
 /* And similarly for zones */
-.zone-1 {--zone-color: var(--zone-1-color); --zone-tint: var(--zone-tint-1);}
-.zone-2 {--zone-color: var(--zone-2-color); --zone-tint: var(--zone-tint-2);}
-.zone-3 {--zone-color: var(--zone-3-color); --zone-tint: var(--zone-tint-3);}
-.zone-4 {--zone-color: var(--zone-4-color); --zone-tint: var(--zone-tint-4);}
-.zone-5 {--zone-color: var(--zone-5-color); --zone-tint: var(--zone-tint-5);}
-.zone-6 {--zone-color: var(--zone-6-color); --zone-tint: var(--zone-tint-6);}
-.zone-7 {--zone-color: var(--zone-7-color); --zone-tint: var(--zone-tint-7);}
-.zone-8 {--zone-color: var(--zone-8-color); --zone-tint: var(--zone-tint-8);}
-.zone-9 {--zone-color: var(--zone-9-color); --zone-tint: var(--zone-tint-9);}
+.zone-1 {--zone-color: var(--zone-1-color); --zone-tint: var(--zone-tint-1); --zone-tint-opaque: color-mix(in srgb, var(--zone-tint) 50%, var(--next-actions-background));}
+.zone-2 {--zone-color: var(--zone-2-color); --zone-tint: var(--zone-tint-2); --zone-tint-opaque: color-mix(in srgb, var(--zone-tint) 50%, var(--next-actions-background));}
+.zone-3 {--zone-color: var(--zone-3-color); --zone-tint: var(--zone-tint-3); --zone-tint-opaque: color-mix(in srgb, var(--zone-tint) 50%, var(--next-actions-background));}
+.zone-4 {--zone-color: var(--zone-4-color); --zone-tint: var(--zone-tint-4); --zone-tint-opaque: color-mix(in srgb, var(--zone-tint) 50%, var(--next-actions-background));}
+.zone-5 {--zone-color: var(--zone-5-color); --zone-tint: var(--zone-tint-5); --zone-tint-opaque: color-mix(in srgb, var(--zone-tint) 50%, var(--next-actions-background));}
+.zone-6 {--zone-color: var(--zone-6-color); --zone-tint: var(--zone-tint-6); --zone-tint-opaque: color-mix(in srgb, var(--zone-tint) 50%, var(--next-actions-background));}
+.zone-7 {--zone-color: var(--zone-7-color); --zone-tint: var(--zone-tint-7); --zone-tint-opaque: color-mix(in srgb, var(--zone-tint) 50%, var(--next-actions-background));}
+.zone-8 {--zone-color: var(--zone-8-color); --zone-tint: var(--zone-tint-8); --zone-tint-opaque: color-mix(in srgb, var(--zone-tint) 50%, var(--next-actions-background));}
+.zone-9 {--zone-color: var(--zone-9-color); --zone-tint: var(--zone-tint-9); --zone-tint-opaque: color-mix(in srgb, var(--zone-tint) 50%, var(--next-actions-background));}
 
 /* These expect to have one of the above classes on this or an enclosing element, and they're only enabled in full-color mode */
 .use-stat-colors .stat-color, .use-stat-colors.stat-color {
@@ -1307,6 +1307,12 @@ li#actionLogLatest {
     margin-right: 3px;
     margin-left: auto;
     order: 1;
+    display: flex;
+    gap: 2px;
+    justify-content: end;
+}
+.nextActionButtons > * {
+    flex-shrink:0;
 }
 .curActionContainer {
     width: 102px;
@@ -1743,13 +1749,14 @@ li#actionLogLatest {
     }
 
     & #curActionsListContainer {
-        flex: 1 1 content;
+        flex: 0 1 content;
         width: auto !important;
         min-width: 6em;
     }
     & #nextActionsListContainer {
         flex: 3 1 content;
         width: auto !important;
+        contain: size;
     }
     & #curActionsListContainer, & #nextActionsListContainer {
         display: flex;
