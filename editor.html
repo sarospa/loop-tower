@@ -18,6 +18,7 @@
     </style>
 
     <script src='lib/jquery.min.js'></script>
+    <script src='lib/mousetrap.min.js'></script>
     <script src='polyfills.js'></script>
 
     <!-- Google tag (gtag.js) -->
@@ -45,7 +46,7 @@
     </reorderable-list>
 
     <template id="defineAdjustmentTemplate">
-        <list-item open outside expandable reorderable class="default-label">
+        <list-item open expandable reorderable position="indent" class="default-label">
             <fieldset slot="details">
                 <label>
                     Name: <input name="name">
@@ -61,7 +62,7 @@
     </reorderable-list>
 
     <template id="actionDefinitionTemplate">
-        <list-item class="actionDefinition default-label" data-action-type="normal" open outside expandable reorderable>
+        <list-item class="actionDefinition default-label" data-action-type="normal" open expandable reorderable position="indent">
             <fieldset slot="details">
                 <div class="fieldrow">
                     <label>
@@ -83,16 +84,16 @@
                         XML name: <input name="xmlName">
                     </label>
                 </div>
-                <list-item expandable class="numericEvaluation" data-xml-name="effortCost" label="Effort cost"></list-item>
-                <list-item expandable optional class="numericEvaluation" data-xml-name="expMult" style="--absence-text:'1'" label="Exp multiplier"></list-item>
-                <list-item expandable optional class="numericEvaluation" data-xml-name="primaryValue" label="Primary value"></list-item>
-                <list-item expandable optional class="conditionalEvaluation" data-xml-name="visible" style="--absence-text:'never'" label="Action is visible"></list-item>
-                <list-item expandable optional class="conditionalEvaluation" data-xml-name="unlocked" style="--absence-text:'never'" label="Action is unlocked"></list-item>
-                <list-item expandable optional class="numericEvaluation" data-xml-name="allowed" style="--absence-text:'unlimited'" label="Max allowed in loop"></list-item>
-                <list-item expandable optional class="conditionalEvaluation" data-xml-name="canStart" style="--absence-text:'always'" label="Action can be started"></list-item>
-                <list-item expandable class="progressOnly numericEvaluation" data-xml-name="progress" label="Progress exp"></list-item>
-                <list-item expandable class="limitedOnly numericEvaluation" data-xml-name="totalDiscovered" label="Total items discovered"></list-item>
-                <list-item expandable class="limitedOnly numericEvaluation" data-xml-name="oneInEvery" label="One good item in every"></list-item>
+                <list-item expandable position="indent" class="numericEvaluation" data-xml-name="effortCost" label="Effort cost"></list-item>
+                <list-item expandable position="indent" optional class="numericEvaluation" data-xml-name="expMult" style="--absence-text:'1'" label="Exp multiplier"></list-item>
+                <list-item expandable position="indent" optional class="numericEvaluation" data-xml-name="primaryValue" label="Primary value"></list-item>
+                <list-item expandable position="indent" optional class="conditionalEvaluation" data-xml-name="visible" style="--absence-text:'never'" label="Action is visible"></list-item>
+                <list-item expandable position="indent" optional class="conditionalEvaluation" data-xml-name="unlocked" style="--absence-text:'never'" label="Action is unlocked"></list-item>
+                <list-item expandable position="indent" optional class="numericEvaluation" data-xml-name="allowed" style="--absence-text:'unlimited'" label="Max allowed in loop"></list-item>
+                <list-item expandable position="indent" optional class="conditionalEvaluation" data-xml-name="canStart" style="--absence-text:'always'" label="Action can be started"></list-item>
+                <list-item expandable position="indent" class="progressOnly numericEvaluation" data-xml-name="progress" label="Progress exp"></list-item>
+                <list-item expandable position="indent" class="limitedOnly numericEvaluation" data-xml-name="totalDiscovered" label="Total items discovered"></list-item>
+                <list-item expandable position="indent" class="limitedOnly numericEvaluation" data-xml-name="oneInEvery" label="One good item in every"></list-item>
             </fieldset>
         </list-item>
     </template>
@@ -101,7 +102,7 @@
         <shrink-wrap><input name="value" placeholder="base value:"></shrink-wrap>
         <span class="baseValueCalculation"></span>
 
-        <reorderable-list class="evaluationRules" slot="details"></reorderable-list>
+        <reorderable-list class="evaluationRules" slot="details" accepts="evaluationRule"></reorderable-list>
         <button class="addRule button" slot="details"></button>
     </template>
 
@@ -117,12 +118,12 @@
     </template>
 
     <template id="conditionalEvaluationTemplate">
-        <reorderable-list class="evaluationRules" slot="details"></reorderable-list>
+        <reorderable-list class="evaluationRules" slot="details" accepts="evaluationRule"></reorderable-list>
         <button class="addRule button" slot="details"></button>
     </template>
 
     <template id="evaluationRuleTemplate">
-        <list-item expandable reorderable outside class="evaluationRule">
+        <list-item expandable reorderable position="indent" class="evaluationRule" kind="evaluationRule">
             <shrink-wrap class="evaluationRuleType"><select name="tagName">
                 <optgroup label="Conditions" class="fromDataList" data-list="conditionalRuleTypes"></optgroup>
                 <optgroup label="Adjustments" class="fromDataList" data-list="numericAdjustmentTypes"></optgroup>
@@ -149,7 +150,7 @@
             <shrink-wrap><input name="value" placeholder="base value:"></shrink-wrap>
             <span class="baseValueCalculation"></span>
 
-            <reorderable-list class="evaluationRules" slot="details"></reorderable-list>
+            <reorderable-list class="evaluationRules" slot="details" accepts="evaluationRule"></reorderable-list>
             <button class="addRule button" slot="details"></button>
         </list-item>
     </template>

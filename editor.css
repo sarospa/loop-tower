@@ -7,7 +7,7 @@ ul + .button {
 }
 
 .elementList {
-    padding-left: 2em;
+    padding-left: .5rem;
     font-weight: bold;
     font-size: 1.25rem;
 }
@@ -43,6 +43,13 @@ fieldset > * {
     flex: 1 0 min-content;
 }
 
+reorderable-list:not(:has(>list-item)) {
+    min-height: 1lh;
+    box-sizing: border-box;
+    border: 1px dashed currentColor;
+    margin: 0 0 4px;
+}
+
 .actionDefinition:not([data-action-type="normal"]) .normalOnly,
 .actionDefinition:not([data-action-type="limited"]) .limitedOnly,
 .actionDefinition:not([data-action-type="progress"]) .progressOnly,
@@ -67,12 +74,12 @@ list-item[optional]:not([present]) {
 }
 
 .evaluationRules {
-    padding-left: 2em;
+    padding-left: 0;
 }
 
-.evaluationRule {
-    list-style-position: outside;
-    margin-left: 1em;
+list-item[dragging] {
+    background: color-mix(in srgb, currentColor 20%, transparent);
+    opacity: 0.75;
 }
 
 list-item:not([open]):has(>.evaluationRules > .evaluationRule)::after {
@@ -150,9 +157,6 @@ shrink-wrap:focus-within > .label {
     margin: 1px 2px;
 }
 
-.addRule {
-    margin-left: 2em;
-}
 .addRule::after {
     content: "Add adjustment/condition";
 }

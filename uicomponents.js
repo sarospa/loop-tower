@@ -364,6 +364,11 @@ class ReorderableList extends BaseComponent {
         return this.itemRefs.flatMap(r => r.deref());
     }
 
+    get accepts() { return this.getAttribute("accepts"); }
+    set accepts(v) { this.setAttribute("accepts", v); }
+
+    get acceptsList() { return this.accepts?.split(" ").flatMap(s => s || undefined) ?? []; }
+
     /** @type {WeakRef<ListItem>[]} */
     itemRefs = [];
 
@@ -373,6 +378,11 @@ class ReorderableList extends BaseComponent {
     constructor() {
         super();
         this.shadowRoot.querySelector("slot").addEventListener("slotchange", this.slotchangeHandler.bind(this));
+    }
+
+    /** @param {ListItem} listItem  */
+    acceptsItem(listItem) {
+        return listItem.parentElement === this || this.acceptsList.includes(listItem.getAttribute("kind"));
     }
 
     /** @param {Event & {target: HTMLSlotElement}} event  */
@@ -431,17 +441,21 @@ class ListItem extends BaseComponent {
 
     static makeTemplate() {
         super.makeTemplate();
-        // want to avoid any extraneous whitespace before the default slot
+        // want to avoid any extraneous whitespace before the default slot (Rendered.html removes initial space matching [\r\n]\s+)
         this.template = Rendered.html`
-            <div id="markers" part="markers"
-                ><div id="expander" part="expander"></div
-                ><div id="dragger" part="dragger"></div
-            ></div
-            ><div id="default" part="default"
-                ><label part="label"><input id="presence" type="checkbox" part="presence"></label
-                ><slot id="defaultSlot"></slot
-            ></div>
-            <slot name="details" part="details"></slot>`;
+            <div id="root" part="root"
+                ><div id="markers" part="markers"
+                    ><div id="expander" part="expander"></div
+                    ><div id="dragger" part="dragger"></div
+                ></div
+                ><div id="content" part="content"
+                    ><div id="default" part="default"
+                        ><label part="label"><input id="presence" type="checkbox" part="presence"></label
+                        ><slot id="defaultSlot"></slot
+                    ></div>
+                    <slot name="details" part="details"></slot>
+                </div>
+            </div>`;
 
         this.stylesheets.push(Rendered.css`
             :host {
@@ -453,18 +467,30 @@ class ListItem extends BaseComponent {
             :host([optional]:not([present])) {
                 color: color-mix(in srgb, currentColor 50%, transparent);
             }
-            #markers {
-                display: inline-block;
-                overflow: visible;
-                unicode-bidi: isolate-override;
-                direction: rtl;
+            #root, #content {
+                display: contents;
             }
-            :host([outside]) #markers {
+            #markers {
+                display: inline-flex;
+                overflow: visible;
+                flex-direction: row-reverse;
+            }
+            :host([position=outside]) #markers {
                 width: 0;
+            }
+            :host([position=indent]) #root {
+                display: flex;
+                flex-direction: row;
+                align-items: first baseline;
+            }
+            :host([position=indent]) #content {
+                display: block;
+                flex: 1 1 0;
             }
             #dragger {
                 display: inline;
                 cursor: grab;
+                touch-action: none;
             }
             #dragger::before {
                 content: "⣿";
@@ -489,6 +515,9 @@ class ListItem extends BaseComponent {
                 display: contents;
             }
 
+            :host([dragging]) #dragger {
+                cursor: grabbing;
+            }
             :host(:is([reorderable],[expandable])) {
                 list-style-type: none;
             }
@@ -523,6 +552,9 @@ class ListItem extends BaseComponent {
     get present() { return this.hasAttribute("present"); }
     set present(v) { this.toggleAttribute("present", v); }
 
+    get dragging() { return this.hasAttribute("dragging"); }
+    set dragging(v) { this.toggleAttribute("dragging", v); }
+
     get label() { return this.getAttribute("label") ?? ""; }
     set label(v) { if (this.label !== v) this.setAttribute("label", v); }
 
@@ -543,6 +575,17 @@ class ListItem extends BaseComponent {
     /** @type {HTMLSlotElement} */
     detailsSlot;
 
+    /** @type {number} */
+    dragPointer;
+    /** @type {Element} */
+    startParent;
+    /** @type {ChildNode} */
+    startNext;
+    /** @type {ListItem} */
+    lastOver;
+    /** @type {InstanceType<Mousetrap>} */
+    mousetrap;
+
     constructor() {
         super();
         this.labelPart = this.shadowRoot.querySelector("label");
@@ -554,12 +597,112 @@ class ListItem extends BaseComponent {
         this.defaultSlot = this.shadowRoot.querySelector("slot#defaultSlot");
         this.detailsSlot = this.shadowRoot.querySelector("slot[name=details]");
 
-        this.toggleOpenStateHandler = this.toggleOpenStateHandler.bind(this);
+        for (const prop of Object.getOwnPropertyNames(ListItem.prototype)) {
+            if (prop.endsWith("Handler") && typeof this[prop] === "function") {
+                this[prop] = this[prop].bind(this);
+            }
+        }
 
         this.expanderPart.addEventListener("click", this.toggleOpenStateHandler);
-        this.defaultSlot.addEventListener("slotchange", this.slotchangeHandler.bind(this));
+        this.defaultSlot.addEventListener("slotchange", this.slotchangeHandler);
         this.defaultPart.addEventListener("dblclick", this.toggleOpenStateHandler);
-        this.presencePart.addEventListener("input", this.presenceInputHandler.bind(this));
+        this.presencePart.addEventListener("input", this.presenceInputHandler);
+        this.draggerPart.addEventListener("pointerdown", this.dragStartHandler);
+        this.draggerPart.addEventListener("pointerup", this.dragEndHandler);
+        this.draggerPart.addEventListener("click", this.dragEndHandler);
+        this.draggerPart.addEventListener("pointercancel", this.dragEndHandler);
+    }
+
+    /** @param {PointerEvent} event  */
+    dragStartHandler(event) {
+        if (this.dragging && event.button !== 0) this.endDrag(event, true);
+        if (this.dragging || event.button !== 0) return;
+        event.preventDefault();
+        event.stopPropagation();
+        this.dragPointer = event.pointerId;
+        this.dragging = true;
+        this.startParent = this.parentElement;
+        this.startNext = this.nextSibling;
+        this.draggerPart.setPointerCapture(event.pointerId);
+        this.draggerPart.onpointermove = this.dragMoveHandler;
+        this.mousetrap ??= new Mousetrap();
+        this.mousetrap.bind("escape", e => this.endDrag(e, true));
+        document.documentElement.setAttribute("data-dragging-list-item", this.id || "");
+        window.addEventListener("pointerdown", this.dragStartHandler);
+        this.dispatchEvent(new PointerEvent("dragStarted", event));
+    }
+
+    /** @param {UIEvent} event  */
+    endDrag(event = null, revert = false) {
+        if (!this.dragging) return;
+        event?.preventDefault();
+        event?.stopPropagation();
+        this.dragging = false;
+        this.draggerPart.releasePointerCapture(this.dragPointer);
+        this.draggerPart.onpointermove = null;
+        this.mousetrap?.unbind("escape");
+        window.removeEventListener("pointerdown", this.dragStartHandler);
+        document.documentElement.removeAttribute("data-dragging-list-item");
+        if (revert) {
+            this.startParent.insertBefore(this, this.startNext);
+            this.dispatchEvent(new UIEvent("dragCanceled", event));
+        } else {
+            this.dispatchEvent(new UIEvent("dragCompleted", event));
+        }
+        if (event instanceof PointerEvent && event.type === "pointermove" && (event.buttons & 2 /* right button */) !== 0 /* is held */) {
+            document.addEventListener("contextmenu", e => e.preventDefault(), {once: true});
+        }
+    }
+
+    /** @param {PointerEvent} event  */
+    dragMoveHandler(event) {
+        if (this.dragging && event.buttons > 1) this.endDrag(event, true);
+        if (!this.dragging || event.pointerId !== this.dragPointer || (event.buttons & 1) !== 1) return;
+        const elements = document.elementsFromPoint(event.clientX, event.clientY);
+        for (const element of elements) {
+            if (element instanceof ListItem) {
+                if (element === this) {
+                    this.lastOver = null;
+                    return;
+                }
+                if (element === this.lastOver) return;
+                const targetList = element.parentElement;
+                // console.log("found ListItem:",{this:this,element,targetList});
+                if (!(targetList instanceof ReorderableList)) return;
+                this.lastOver = element;
+                if (targetList === this.parentElement && (this.compareDocumentPosition(element) & this.DOCUMENT_POSITION_FOLLOWING) !== 0) {
+                    targetList.insertBefore(this, element.nextSibling);
+                } else if (targetList === this.parentElement || targetList.acceptsItem(this)) {
+                    targetList.insertBefore(this, element);
+                }
+                return;
+            } else if (element instanceof ReorderableList && element.childElementCount === 0) {
+                // console.log("found empty ReorderableList:",{this:this,element});
+                element.append(this);
+                return;
+            }
+        }
+    }
+
+    /** @param {PointerEvent} event  */
+    dragEndHandler(event) {
+        if (!this.dragging || ("pointerId" in event && event.pointerId !== this.dragPointer) || event.button !== 0) return;
+        if (event.type === "pointerup") {
+            const hasCapture = this.draggerPart.hasPointerCapture(this.dragPointer);
+            // there will be a click coming shortly but Fx isn't dispatching it correctly. capture it on window
+            // in order to make sure the click doesn't dispatch to a different element.
+            window.addEventListener("click", this.dragEndHandler, {once: true, capture: true});
+            // but in case it doesn't come, fire it off ourself and remove the override
+            requestAnimationFrame(() => {
+                this.endDrag(null, false);
+                window.removeEventListener("click", this.dragEndHandler, {capture: true});
+            });
+            event.preventDefault();
+            event.stopPropagation();
+            return;
+        }
+        // anything other than a "click" cancels the drag
+        this.endDrag(event, event.type !== "click");
     }
 
     /** @param {Event & {target: HTMLSlotElement}} event  */
