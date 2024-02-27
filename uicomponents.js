@@ -204,10 +204,10 @@ class ShrinkWrapElement extends WrappingElement {
                 display: inline;
             }
             :host > div {
-                display: inline-grid;
                 display: inline grid;
-                vertical-align: top;
+                vertical-align: baseline;
                 grid: "cell" max-content / max-content;
+                align-items: first baseline;
             }
             slot {
                 display: block;
@@ -218,6 +218,7 @@ class ShrinkWrapElement extends WrappingElement {
             }
             slot[name=input] {
                 position: relative;
+                align-self: stretch;
             }
             slot[name=input]::slotted(*) {
                 position: absolute;
@@ -266,6 +267,9 @@ class ShrinkWrapElement extends WrappingElement {
         }
     }
 
+    /** @type {string} */
+    oldValue;
+
     constructor() {
         super({
             mode: "open",
@@ -279,6 +283,12 @@ class ShrinkWrapElement extends WrappingElement {
         this.labelSlot = shadow.querySelector("slot[name=label]");
         this.inputSlot.addEventListener("slotchange", this.slotchangeHandler);
         this.labelSlot.addEventListener("slotchange", this.slotchangeHandler);
+        // focus does not bubble, so we have to pick it up in the capture phase
+        this.addEventListener("focus", e => this.oldValue = this.value, {capture: true, passive: true});
+        this.addEventListener("change", e => this.input instanceof HTMLSelectElement && this.input.blur());
+        this.mousetrap = new Mousetrap(this);
+        this.mousetrap.bind("escape", e => {this.value = this.oldValue ?? this.value; this.input?.blur();});
+        this.mousetrap.bind("enter", e => this.input?.blur());
     }
 
     /** @param {string} value  */
