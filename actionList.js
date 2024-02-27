@@ -3998,6 +3998,8 @@ Action.Pyromancy = new Action("Pyromancy", {
             case 3:
                 return getSkillLevel("Pyromancy") >= 100;
             case 4:
+                return getSkillLevel("Pyromancy") >= 500;
+            case 5:
                 return getSkillLevel("Pyromancy") >= 1000;
         }
         return false;
