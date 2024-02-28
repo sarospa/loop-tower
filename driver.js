@@ -490,7 +490,7 @@ function loadList() {
 }
 
 function clearList() {
-    actions.clearActions(a => (a.disabled || a.loops === 0));
+    actions.clearActions(shiftDown ? (a => (a.disabled || a.loops === 0)) : null);
     view.updateNextActions();
 }
 
