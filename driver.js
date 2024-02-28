@@ -490,7 +490,7 @@ function loadList() {
 }
 
 function clearList() {
-    actions.clearActions();
+    actions.clearActions(a => (a.disabled || a.loops === 0));
     view.updateNextActions();
 }
 

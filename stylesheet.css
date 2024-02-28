@@ -1043,6 +1043,10 @@ div.townInfoContainer > .numeric {
     display: flex;
 }
 
+#townActions {
+    position: relative;
+}
+
 .actionOptions {
     text-align:center;
 }
@@ -1097,6 +1101,20 @@ div.townInfoContainer > .numeric {
         pointer-events: none;
         --pie-ratio: 0.25;
     }
+}
+
+:root.shift-key-pressed .cappableActionContainer > label::after {
+    content: "*"
+}
+
+#addActionAtCapText {
+    display: none;
+    position: absolute;
+    inset: auto 0.5em 4px auto;
+}
+
+:root.shift-key-pressed #addActionAtCapText {
+    display: block;
 }
 
 .show-stat-hints .actionOrTravelContainer .stat-pie {

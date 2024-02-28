@@ -37,12 +37,16 @@ class Town {
     /** @type {TN} */
     index;
     /** @type {string[]} */
+    allVarNames = [];
+    /** @type {string[]} */
     varNames = [];
     /** @type {string[]} */
     progressVars = [];
+    /** @type {string[]} */
+    multipartVars = [];
     /** @type {Record<string, ProgressScalingType>} */
     progressScaling = {};
-    /** @type {ActionOfTown<TN>[]} */
+    /** @type {AnyAction[]} */
     totalActionList = [];
 
     unlocked() {
@@ -149,6 +153,7 @@ class Town {
         }
         if (this.varNames.indexOf(varName) === -1) {
             this.varNames.push(varName);
+            this.allVarNames.push(varName);
         }
     };
 
@@ -159,6 +164,7 @@ class Town {
         }
         if (this.progressVars.indexOf(varName) === -1) {
             this.progressVars.push(varName);
+            this.allVarNames.push(varName);
             this.progressScaling[varName] = progressScaling;
         }
     };
@@ -166,12 +172,31 @@ class Town {
     createMultipartVars(varName) {
         this[varName] = 0;
         this[`${varName}LoopCounter`] = 0;
+        if (!this.multipartVars.includes(varName)) {
+            this.multipartVars.push(varName);
+            this.allVarNames.push(varName);
+        }
     }
 
     constructor(index) {
         this.index = index;
+        let lateGameActionCount = 0;
+        let inLateGameActions = true;
         for (const action of totalActionList) {
             if (this.index === action.townNum) {
+                if (inLateGameActions) {
+                    if (lateGameActions.includes(action.name)) {
+                        lateGameActionCount++;
+                    } else {
+                        inLateGameActions = false;
+                    }
+                }
+                if (!inLateGameActions && lateGameActionCount > 0 && isTravel(action.name)) {
+                    // shift late-game actions to end of action button list
+                    console.log(`moving ${lateGameActionCount} actions ${this.totalActionList.slice(0, lateGameActionCount).map(a=>a.name).join(", ")} to end of list for town ${index}`);
+                    this.totalActionList.push(...this.totalActionList.splice(0, lateGameActionCount));
+                    lateGameActionCount = 0;
+                }
                 // @ts-ignore
                 this.totalActionList.push(action);
                 if (action.type === "limited") this.createVars(action.varName);

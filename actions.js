@@ -517,11 +517,16 @@ class Actions {
         this.updateAction(this.#lastModifiedIndex, {loops: action.loops - amountToSplit});
     }
 
-    clearActions() {
+    /** @param {(action: Readonly<NextActionEntry>) => boolean} [predicate] */
+    clearActions(predicate) {
         if (this.next.length === 0) return;
         this.#nextLast = structuredClone(this.next);
         this.#lastModifiedIndex = undefined;
-        this.#writableNext.length = 0;
+        if (predicate) {
+            this.#writableNext.splice(0, Infinity, ...this.next.filter(a => !predicate(a)));
+        } else {
+            this.#writableNext.length = 0;
+        }
     }
 
     undoLast() {

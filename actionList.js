@@ -139,22 +139,35 @@ function hasLimit(name) {
     // @ts-ignore
     return limitedActions.includes(name);
 }
+/** @param {ActionName} name  */
+function isTravel(name) {
+    return getTravelNum(name) !== 0;
+}
+/** @param {ActionName} name  */
 function getPossibleTravel(name) {
     if (name === "Face Judgement") return [1,2];
     const travelNum = getTravelNum(name);
     return travelNum ? [travelNum] : [];
 }
+/** @param {ActionName} name  */
 function getTravelNum(name) {
     if (name === "Face Judgement" && resources.reputation <= 50) return 2;
     if (name === "Face Judgement" && resources.reputation >= 50) return 1;
     if (name === "Start Journey" || name === "Continue On" || name === "Start Trek" || name === "Fall From Grace" || name === "Journey Forth" || name === "Escape" || name === "Leave City" || name === "Guru") return 1;
     if (name === "Hitch Ride") return 2;
-    if (name === "Underworld") return 5;
+    if (name === "Underworld" || name === "Open Rift") return 5;
     if (name === "Open Portal") return -5;
     return 0;
 }
+/** @param {ActionName} name @returns {name is TrainingActionName} */
 function isTraining(name) {
+    // @ts-ignore
     return trainingActions.includes(name);
+}
+
+/** @template {ActionType} T @param {AnyAction} action @param {T} type @returns {action is ActionOfType<T>} */
+function isActionOfType(action, type) {
+    return action.type === type;
 }
 
 function getXMLName(name) {
@@ -234,7 +247,7 @@ class Action extends Localizable {
             : getXMLName(name);
     }
 
-    
+
     /* eslint-disable no-invalid-this */
     // not all actions have tooltip2 or labelDone, but among actions that do, the XML format is
     // always the same; these are loaded lazily once (and then they become own properties of the
@@ -738,6 +751,8 @@ Action.AssassinZ7 = new AssassinAction("AssassinZ7", {
     townNum: 7,
 });
 
+/** @type {string[]} */
+const lateGameActions = Object.values(Action).filter(a => a instanceof Action).map(a => a.name);
 
 //====================================================================================================
 //Zone 1 - Beginnersville
@@ -778,6 +793,7 @@ Action.Map = new Action("Map", {
         addResource("map", 1);
     },
 });
+lateGameActions.push("Map");
 
 Action.Wander = new Action("Wander", {
     type: "progress",
