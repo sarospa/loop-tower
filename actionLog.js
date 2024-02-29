@@ -11,7 +11,7 @@ class ActionLog {
 
     /**
      * @template {ActionLogEntry} T
-     * @param {T} entry 
+     * @param {T} entry
      * @param {boolean} init
      * @returns {T}
      */
@@ -96,7 +96,7 @@ class ActionLog {
 
     /**
      * @template {ActionLogEntry} T
-     * @param {T} entry 
+     * @param {T} entry
      * @param {boolean} init
      * @returns {T}
      */
@@ -298,8 +298,8 @@ class ActionStoryEntry extends UniqueLogEntry {
 
     /**
      * @param {Action|string=} action
-     * @param {number=} storyIndex 
-     * @param {number=} loop 
+     * @param {number=} storyIndex
+     * @param {number=} loop
      */
     constructor(action, storyIndex, loop) {
         super("story", action, loop);
@@ -318,8 +318,18 @@ class ActionStoryEntry extends UniqueLogEntry {
     }
 
     getReplacement(key) {
-        if (key === "condition") return _txt(`actions>${getXMLName(this.actionName)}>story_${this.storyIndex}`).split("⮀")[0].replace(/^<b>|:<\/b>$/g,"");
-        if (key === "story") return _txt(`actions>${getXMLName(this.actionName)}>story_${this.storyIndex}`).split("⮀")[1];
+        if (key === "condition" || key === "story") {
+            const storyInfo = getActionPrototype(this.actionName)?.getStoryTexts()?.find(({num}) => num === this.storyIndex);
+
+            if (storyInfo) {
+                if (key === "condition") return storyInfo.condition;
+                if (key === "story") return storyInfo.text;
+            } else {
+                if (key === "condition") return "???";
+                if (key === "story") return _txt(`actions>log>action_story_not_found`);
+            }
+        }
+
         return super.getReplacement(key);
     }
 }
@@ -363,7 +373,7 @@ class SoulstoneEntry extends RepeatableLogEntry {
 
     /**
      * @param {Action=} action
-     * @param {(number | [loopStart: number, loopEnd: number])=} loop 
+     * @param {(number | [loopStart: number, loopEnd: number])=} loop
      */
     constructor(action, loop) {
         super("soulstone", action, loop);
@@ -408,7 +418,7 @@ class SoulstoneEntry extends RepeatableLogEntry {
         if (key === "stat") return _txt(`stats>${Object.keys(this.stones)[0]}>short_form`);
         if (key === "stats") {
             const strs = [];
-            const template = _txt(Object.keys(this.stones).length > 3 ? "actions>log>soulstone_stat_short" : "actions>log>soulstone_stat"); 
+            const template = _txt(Object.keys(this.stones).length > 3 ? "actions>log>soulstone_stat_short" : "actions>log>soulstone_stat");
             for (const stat in stats) {
                 if (stat in this.stones) {
                     strs.push(template
@@ -528,7 +538,7 @@ class BuffEntry extends LeveledLogEntry {
      */
     constructor(action, buff, toLevel, fromLevel, loop, statsSpent, statSpendType) {
         super("buff", action, buff, toLevel, fromLevel, loop);
-        
+
         this.statSpendType = statSpendType;
         this.soulstoneEntry = new SoulstoneEntry();
         if (statsSpent) {

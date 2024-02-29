@@ -65,6 +65,7 @@ const Localization = self["Localization"] = {
         return txt;
     },
     // lib can be ignored to use the last used lib. returns the texts for the given key as objects
+    /** @returns {JQuery<Element>} */
     txtsObj(path, lib) {
         if (typeof(lib) === "undefined") return $(Localization.libs[Localization.lastLib]).find(path);
         return $(Localization.libs[lib]).find(path);
@@ -73,7 +74,7 @@ const Localization = self["Localization"] = {
     localizePage(lib) {
         $(".localized").each((_index, localizedElement) => {
             $(localizedElement).html(Localization.txt($(localizedElement).data("lockey"), lib));
-        }); 
+        });
     },
 
     // ====== PRIVATE ======
@@ -108,7 +109,7 @@ const _txtsObj = self["_txtsObj"] = Localization.txtsObj;
 
 if (typeof window !== "undefined") {
     Localization.init();
-    
+
     Localization.loadLib("fallback", () => {
         Localization.loadLib("game", () => Localization.setReady());
     });
@@ -146,7 +147,7 @@ class Localizable {
      * @template {keyof this} K
      * @template {this[K]} V
      * @param {K} property
-     * @param {V} value  
+     * @param {V} value
      */
     memoizeValue(property, value) {
         if (Object.hasOwn(this, property)) {
@@ -156,7 +157,7 @@ class Localizable {
         return value;
     }
 
-    /** 
+    /**
      * @param {keyof this} property Property to update on this object
      * @param {string} [subPath] Subpath of localization object, defaults to `">${`{@link property}`}"`
      * @returns {string}

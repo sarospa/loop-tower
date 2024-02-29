@@ -173,12 +173,12 @@ let loadoutnames;
 const skillList = /** @type {const} */(["Combat", "Magic", "Practical", "Alchemy", "Crafting", "Dark", "Chronomancy", "Pyromancy", "Restoration", "Spatiomancy", "Mercantilism", "Divine", "Commune", "Wunderkind", "Gluttony", "Thievery", "Leadership", "Assassin"]);
 /** @typedef {typeof skillList[number]} SkillName */
 const skills = /** @type {{[K in SkillName]: Skill}} */({});
-const buffList = /** @type {const} */(["Ritual", 
-    "Imbuement", 
-    "Imbuement2", 
-    "Feast", 
-    "Aspirant", 
-    "Heroism", 
+const buffList = /** @type {const} */(["Ritual",
+    "Imbuement",
+    "Imbuement2",
+    "Feast",
+    "Aspirant",
+    "Heroism",
     "Imbuement3",
     "PrestigePhysical",
     "PrestigeMental",
@@ -251,7 +251,9 @@ let trainingLimits = 10;
 let storyShowing = 0;
 let storyMax = 0;
 let unreadActionStories;
-const storyReqs = {
+
+/** @typedef {keyof typeof storyFlags} StoryFlagName */
+const storyFlags = {
     maxSQuestsInALoop: false,
     realMaxSQuestsInALoop: false,
     maxLQuestsInALoop: false,
@@ -326,6 +328,7 @@ const storyReqs = {
     imbueBodyThirdSegmentReached: false,
     failedImbueBody: false,
     judgementFaced: false,
+    ignoredByGods: false,
     acceptedIntoValhalla: false,
     castIntoShadowRealm: false,
     spokeToGuru: false,
@@ -334,9 +337,6 @@ const storyReqs = {
     receivedDonation: false,
     failedReceivedDonations: false,
     tidiedUp: false,
-    tidiedUp1Time: false,
-    tidiedUp6Times: false,
-    tidiedUp20Times: false,
     manaZ5Bought: false,
     artifactSold: false,
     artifactDonated: false,
@@ -347,17 +347,6 @@ const storyReqs = {
     armorEnchanted: false,
     enchanted10Armor: false,
     enchanted20Armor: false,
-    wizardGuildTestTaken: false,
-    wizardGuildRankEReached: false,
-    wizardGuildRankDReached: false,
-    wizardGuildRankCReached: false,
-    wizardGuildRankBReached: false,
-    wizardGuildRankAReached: false,
-    wizardGuildRankSReached: false,
-    wizardGuildRankSSReached: false,
-    wizardGuildRankSSSReached: false,
-    wizardGuildRankUReached: false,
-    wizardGuildRankGodlikeReached: false,
     repeatedCitizenExam: false,
     houseBuilt: false,
     housesBuiltGodlike: false,
@@ -380,6 +369,7 @@ const storyReqs = {
     blessingSought: false,
     greatBlessingSought: false,
     feastAttempted: false,
+    meanderIM100: false,
     wellDrawn: false,
     drew10Wells: false,
     drew15Wells: false,
@@ -474,6 +464,38 @@ const storyReqs = {
     fightGods17:false,
     fightGods18:false,
 };
+const storyReqs = storyFlags; // compatibility alias, can be removed when we're sure it won't break anything
+
+/** @typedef {keyof typeof storyVars} StoryVarName */
+const storyVars = {
+    maxWizardGuildSegmentCleared: -1,
+    maxZombiesRaised: -1,
+};
+
+/**
+ * @satisfies {{
+ *  storyFlags: {[K in StoryFlagName]?: (loadingFlags: Record<string, boolean>, loadingVars: Record<string, number>) => boolean},
+ *  storyVars: {[K in StoryVarName]?: (loadingFlags: Record<string, boolean>, loadingVars: Record<string, number>) => number},
+ * }}
+ */
+const storyInitializers = {
+    storyFlags: {
+    },
+    storyVars: {
+        maxWizardGuildSegmentCleared(loadingFlags, loadingVars) {
+            if (loadingFlags["wizardGuildRankSSSReached"]) return 48;
+            if (loadingFlags["wizardGuildRankSSReached"]) return 42;
+            if (loadingFlags["wizardGuildRankSReached"]) return 36;
+            if (loadingFlags["wizardGuildRankAReached"]) return 30;
+            if (loadingFlags["wizardGuildRankBReached"]) return 24;
+            if (loadingFlags["wizardGuildRankCReached"]) return 18;
+            if (loadingFlags["wizardGuildRankDReached"]) return 12;
+            if (loadingFlags["wizardGuildRankEReached"]) return 6;
+            if (loadingFlags["wizardGuildTestTaken"]) return 0;
+        },
+    },
+}
+
 
 const curDate = new Date();
 let totalOfflineMs = 0;
@@ -541,7 +563,8 @@ Data.registerAll({
     prestigeValues,
     townsUnlocked,
     completedActions,
-    storyReqs,
+    storyFlags,
+    storyVars,
     totals,
 });
 
@@ -670,7 +693,7 @@ function isStringOption(option) {
 /** @param {string} option @returns {option is BooleanOptionName} */
 function isBooleanOption(option) {
     // I'm explicitly deciding to leave this open-ended, so unknown options are treated as booleans
-    return !numericOptions.includes(/** @type {NumericOptionName} */(option)) 
+    return !numericOptions.includes(/** @type {NumericOptionName} */(option))
         && !stringOptions.includes(/** @type {StringOptionName} */(option));
 }
 
@@ -1023,11 +1046,19 @@ function doLoad(toLoad) {
     }
 
 
-    if (toLoad.storyReqs !== undefined) {
-        for (const property in storyReqs) {
-            if (toLoad.storyReqs.hasOwnProperty(property)) {
-                storyReqs[property] = toLoad.storyReqs[property];
-            }
+    for (const property in storyFlags) {
+        if (toLoad.storyReqs?.hasOwnProperty(property)) {
+            storyFlags[property] = toLoad.storyReqs[property];
+        } else {
+            storyFlags[property] = storyInitializers.storyFlags[property]?.(toLoad.storyReqs ?? {}, toLoad.storyVars ?? {}) ?? false;
+        }
+    }
+
+    for (const property in storyVars) {
+        if (toLoad.storyVars?.hasOwnProperty(property)) {
+            storyVars[property] = toLoad.storyVars[property];
+        } else {
+            storyVars[property] = storyInitializers.storyVars[property]?.(toLoad.storyReqs ?? {}, toLoad.storyVars ?? {}) ?? -1;
         }
     }
 
@@ -1236,7 +1267,7 @@ function doLoad(toLoad) {
     totalOfflineMs = toLoad.totalOfflineMs === undefined ? 0 : toLoad.totalOfflineMs; // must load before options
 
     for (const option of typedKeys(options)) {
-        loadOption(option, options[option]); 
+        loadOption(option, options[option]);
     }
     storyShowing = toLoad.storyShowing === undefined ? 0 : toLoad.storyShowing;
     storyMax = toLoad.storyMax === undefined ? 0 : toLoad.storyMax;
@@ -1354,7 +1385,8 @@ function doSave() {
     }
     toSave.storyShowing = storyShowing;
     toSave.storyMax = storyMax;
-    toSave.storyReqs = storyReqs;
+    toSave.storyReqs = storyFlags; // save uses the legacy name "storyReqs" for compatibility
+    toSave.storyVars = storyVars;
     toSave.unreadActionStories = unreadActionStories;
     toSave.actionLog = actionLog;
     toSave.buffCaps = buffCaps;
@@ -1362,7 +1394,7 @@ function doSave() {
     toSave.date = new Date();
     toSave.totalOfflineMs = totalOfflineMs;
     toSave.totals = totals;
-    
+
     toSave.challengeSave = challengeSave;
     for (const challengeProgress in challengeSave)
         toSave.challengeSave[challengeProgress] = challengeSave[challengeProgress];

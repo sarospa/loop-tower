@@ -230,9 +230,9 @@ class View {
     }
 
     /**
-     * @param {HTMLElement} tooltip 
-     * @param {Element} trigger 
-     * @param {Node} eventTarget 
+     * @param {HTMLElement} tooltip
+     * @param {Element} trigger
+     * @param {Node} eventTarget
      */
     fixTooltipPosition(tooltip, trigger, eventTarget, delayedCall=false) {
         if (tooltip.contains(eventTarget)) {
@@ -366,7 +366,7 @@ class View {
     }
 
     /**
-     * @param {string} maxContainerId 
+     * @param {string} maxContainerId
      * @param {string} logBarId
      * @param {number} level
      * @param {string} [levelBarId]
@@ -810,16 +810,16 @@ class View {
             div.style.backgroundColor = "var(--cur-action-error-indicator)";
             div.style.height = "30%";
             div.style.marginTop = "5px";
-            if (action.name === "Heal The Sick") unlockStory("failedHeal");
-            if (action.name === "Brew Potions" && resources.reputation >= 0 && resources.herbs >= 10) unlockStory("failedBrewPotions");
-            if (action.name === "Brew Potions" && resources.reputation < 0 && resources.herbs >= 10) unlockStory("failedBrewPotionsNegativeRep");
-            if (action.name === "Gamble" && resources.reputation < -5) unlockStory("failedGamble");
-            if (action.name === "Gamble" && resources.gold < 20 && resources.reputation > -6) unlockStory("failedGambleLowMoney");
-            if (action.name === "Gather Team") unlockStory("failedGatherTeam");
-            if (action.name === "Craft Armor") unlockStory("failedCraftArmor");
-            if (action.name === "Imbue Body") unlockStory("failedImbueBody");
-            if (action.name === "Accept Donations") unlockStory("failedReceivedDonations");
-            if (action.name === "Raise Zombie") unlockStory("failedRaiseZombie")
+            if (action.name === "Heal The Sick") setStoryFlag("failedHeal");
+            if (action.name === "Brew Potions" && resources.reputation >= 0 && resources.herbs >= 10) setStoryFlag("failedBrewPotions");
+            if (action.name === "Brew Potions" && resources.reputation < 0 && resources.herbs >= 10) setStoryFlag("failedBrewPotionsNegativeRep");
+            if (action.name === "Gamble" && resources.reputation < -5) setStoryFlag("failedGamble");
+            if (action.name === "Gamble" && resources.gold < 20 && resources.reputation > -6) setStoryFlag("failedGambleLowMoney");
+            if (action.name === "Gather Team") setStoryFlag("failedGatherTeam");
+            if (action.name === "Craft Armor") setStoryFlag("failedCraftArmor");
+            if (action.name === "Imbue Body") setStoryFlag("failedImbueBody");
+            if (action.name === "Accept Donations") setStoryFlag("failedReceivedDonations");
+            if (action.name === "Raise Zombie") setStoryFlag("failedRaiseZombie")
         } else if (action.loopsLeft === 0) {
             div.style.width = "100%";
             div.style.backgroundColor = "var(--cur-action-completed-background)";
@@ -1026,7 +1026,7 @@ class View {
     }
 
     updateStories(init) {
-        // ~1.56ms cost per run. run once every 2000ms on an interval
+        // several ms cost per run. run once every 2000ms on an interval
         for (const action of totalActionList) {
             if (action.storyReqs !== undefined) {
                 // greatly reduces/nullifies the cost of checking actions with all stories unlocked, which is nice,
@@ -1035,34 +1035,37 @@ class View {
                 if (init || document.getElementById(divName).innerHTML.includes("???")) {
                     let storyTooltipText = "";
                     let lastInBranch = false;
-                    const name = action.name.toLowerCase().replace(/ /gu, "_");
-                    const storyAmt = _txt(`actions>${name}`, "fallback").split("⮀").length - 1;
-                    let storiesUnlocked = 0;
-                    for (let i = 1; i <= storyAmt; i++) {
-                        storyTooltipText += "<p>"
-                        const storyText = _txt(`actions>${name}>story_${i}`, "fallback").split("⮀");
-                        if (action.storyReqs(i)) {
-                            storyTooltipText += storyText[0] + storyText[1];
-                            lastInBranch = false;
-                            storiesUnlocked++;
-                            if (action.visible() && action.unlocked() && completedActions.includes(action.varName)) {
-                                actionLog.addActionStory(action, i, init);
+                    let allStoriesForActionUnlocked = true;
+
+                    for (const {num: storyId, conditionHTML, text} of action.getStoryTexts()) {
+
+                            storyTooltipText += "<p>";
+                            if (action.storyReqs(storyId)) {
+                                storyTooltipText += conditionHTML + text;
+                                lastInBranch = false;
+                                if (action.visible() && action.unlocked() && completedActions.includes(action.varName)) {
+                                    actionLog.addActionStory(action, storyId, init);
+                                }
+                            } else {
+                                allStoriesForActionUnlocked = false;
+
+                                if (lastInBranch) {
+                                    storyTooltipText += "<b>???:</b> ???";
+                                } else {
+                                    storyTooltipText += `${conditionHTML} ???`;
+                                    lastInBranch = true;
+                                }
                             }
-                        } else if (lastInBranch) {
-                            storyTooltipText += "<b>???:</b> ???";
-                        } else {
-                            storyTooltipText += `${storyText[0]} ???`;
-                            lastInBranch = true;
-                        }
-                        storyTooltipText += "</p>\n";
+                            storyTooltipText += "</p>\n";
                     }
+
                     if (document.getElementById(divName).children[2].innerHTML !== storyTooltipText) {
                         document.getElementById(divName).children[2].innerHTML = storyTooltipText;
                         if (!init) {
                             showNotification(divName);
                             if (!unreadActionStories.includes(divName)) unreadActionStories.push(divName);
                         }
-                        if (storiesUnlocked === storyAmt) {
+                        if (allStoriesForActionUnlocked) {
                             document.getElementById(divName).classList.add("storyContainerCompleted");
                         } else {
                             document.getElementById(divName).classList.remove("storyContainerCompleted");
@@ -1340,23 +1343,24 @@ class View {
         if (action.storyReqs !== undefined) {
             let storyTooltipText = "";
             let lastInBranch = false;
-            const storyAmt = _txt(`actions>${action.name.toLowerCase().replace(/ /gu, "_")}`, "fallback").split("⮀").length - 1;
-            for (let i = 1; i <= storyAmt; i++) {
-                if (_txt(`actions>${action.name.toLowerCase().replace(/ /gu, "_")}>story_${i}`) === undefined) console.log(`actions>${action.name.toLowerCase().replace(/ /gu, "_")}>story_${i}`);
-                const storyText = _txt(`actions>${action.name.toLowerCase().replace(/ /gu, "_")}>story_${i}`, "fallback").split("⮀");
-                storyTooltipText += "<p>";
-                if (action.storyReqs(i)) {
-                    storyTooltipText += storyText[0] + storyText[1];
-                    lastInBranch = false;
-                } else if (lastInBranch) {
-                    storyTooltipText += "<b>???:</b> ???";
-                } else {
-                    storyTooltipText += `${storyText[0]} ???`;
-                    lastInBranch = true;
-                }
-                storyTooltipText += "</p>";
+            const name = action.name.toLowerCase().replace(/ /gu, "_");
+
+            const rawStoriesDataForAction = _txtsObj(`actions>${name}`, "fallback")[0].children;
+
+            for (const {num: storyId, conditionHTML, text} of action.getStoryTexts()) {
+                    storyTooltipText += "<p>";
+                    if (action.storyReqs(storyId)) {
+                        storyTooltipText += conditionHTML + text;
+                        lastInBranch = false;
+                    } else if (lastInBranch) {
+                        storyTooltipText += "<b>???:</b> ???";
+                    } else {
+                        storyTooltipText += `${conditionHTML} ???`;
+                        lastInBranch = true;
+                    }
+                    storyTooltipText += "</p>";
             }
-    
+
             const storyDivText =
                 `<div id='storyContainer${action.varName}' tabindex='0' class='storyContainer showthatstory' draggable='false' onmouseover='hideNotification("storyContainer${action.varName}")'>${action.label}
                     <br>
@@ -1368,7 +1372,7 @@ class View {
                         ${storyTooltipText}
                     </div>
                 </div>`;
-    
+
             const storyDiv = document.createElement("div");
             storyDiv.innerHTML = storyDivText;
             actionStoriesTown[action.townNum].appendChild(storyDiv);
@@ -1495,7 +1499,7 @@ class View {
             }
         }
     };
-    
+
     updateMultiPartSegments(action) {
         let segment = 0;
         let curProgress = towns[action.townNum][action.varName];
@@ -1761,7 +1765,7 @@ class View {
         document.getElementById('prestigeSpatiomancyNextCost').textContent = `${formatNumber(getPrestigeCost("PrestigeSpatiomancy"))}`;
         document.getElementById('prestigeChronomancyNextCost').textContent = `${formatNumber(getPrestigeCost("PrestigeChronomancy"))}`;
         document.getElementById('prestigeBarteringNextCost').textContent = `${formatNumber(getPrestigeCost("PrestigeBartering"))}`;
-        document.getElementById('prestigeExpOverflowNextCost').textContent = `${formatNumber(getPrestigeCost("PrestigeExpOverflow"))}`;        
+        document.getElementById('prestigeExpOverflowNextCost').textContent = `${formatNumber(getPrestigeCost("PrestigeExpOverflow"))}`;
     }
 }
 
@@ -1813,9 +1817,19 @@ function unlockGlobalStory(num) {
     }
 }
 
-function unlockStory(name) {
-    if (!storyReqs[name]) {
-        storyReqs[name] = true;
+/** @param {StoryFlagName} name  */
+function setStoryFlag(name) {
+    if (!storyFlags[name]) {
+        storyFlags[name] = true;
+        if (options.actionLog) view.requestUpdate("updateStories", false);
+    }
+}
+const unlockStory = setStoryFlag; // compatibility alias
+
+/** @param {StoryVarName} name @param {number} value */
+function increaseStoryVarTo(name, value) {
+    if (storyVars[name] < value) {
+        storyVars[name] = value;
         if (options.actionLog) view.requestUpdate("updateStories", false);
     }
 }
