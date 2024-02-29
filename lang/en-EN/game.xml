@@ -9,8 +9,14 @@
                 <title>Changelog</title>
                 <version_prefix>Version</version_prefix>
             </meta>
+            <!--
             <version caption="Latest"><![CDATA[
             <b>Recent changes</b>
+            ]]></version>
+            -->
+            <version verNum="3P.1.0"><![CDATA[
+            <b>Feb 29th, 2024</b>
+            • Writing update! A great many brand-new action stories have been contributed by Inferno Vulpix, Nikki, and scout from the Discord, along with lots of very welcome proofreading and other improvements! You'll find their writing all over, but my favorite might be the new storyline for the Wizard College in zone 5. Check the Action Stories tab - even actions you've already completed might have surprises for you!<br>
             • The inline stat bars should show up properly on all browsers now, I think.<br>
             • Progress bars (like for Wander) now use the inline style as well, to take up less space on the screen.<br>
             • Collapsing a zone in the Action List (using the arrows button) now uses the same logic as the functionality for snapping actions to their appropriate zones. This means, among other things, that trying to collapse an invalid travel action (one where you weren't in the right zone to begin with) will do nothing.<br>
