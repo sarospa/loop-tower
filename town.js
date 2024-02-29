@@ -193,7 +193,6 @@ class Town {
                 }
                 if (!inLateGameActions && lateGameActionCount > 0 && isTravel(action.name)) {
                     // shift late-game actions to end of action button list
-                    console.log(`moving ${lateGameActionCount} actions ${this.totalActionList.slice(0, lateGameActionCount).map(a=>a.name).join(", ")} to end of list for town ${index}`);
                     this.totalActionList.push(...this.totalActionList.splice(0, lateGameActionCount));
                     lateGameActionCount = 0;
                 }

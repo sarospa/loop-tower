@@ -732,3 +732,54 @@ const typedKeys = /** @type {<K extends string|number|symbol>(object: Partial<Re
 
 /** Strongly-typed version of Object.keys */
 const typedEntries = /** @type {<K extends string|number|symbol, V>(object: Partial<Record<K, V>>) => [K, V][]} */(Object.entries);
+
+const devtoolsHeader = Symbol.for("devtoolsHeader");
+const devtoolsHasBody = Symbol.for("devtoolsHasBody");
+const devtoolsBody = Symbol.for("devtoolsBody");
+
+/**
+ * Convenience class for defining devtools formatting 
+ * @template {*} DTConfig
+ */
+class DevtoolsFormattable {
+    /** @param {DTConfig} config @returns {DTJHTML<this, DTConfig> | null} */
+    dtHeader(config) { return null; }
+    /** @param {DTConfig} config */
+    dtHasBody(config) { return false; }
+    /** @param {DTConfig} config @returns {DTJHTML<this, DTConfig> | null} */
+    dtBody(config) { return null; }
+
+    [devtoolsHeader](config) {
+        return this.dtHeader(config);
+    }
+    [devtoolsHasBody](config) {
+        return this.dtHasBody(config);
+    }
+    [devtoolsBody](config) {
+        return this.dtBody(config);
+    }
+
+    constructor() {
+        new.target.addFormatter();
+    }
+
+    /** @type {DTFormatter} */
+    static formatter = {
+        header(object, config) {
+            return object?.[devtoolsHeader]?.(config) ?? null;
+        },
+        hasBody(object, config) {
+            return object?.[devtoolsHasBody]?.(config) ?? false;
+        },
+        body(object, config) {
+            return object?.[devtoolsBody]?.(config) ?? null;
+        }
+    }
+
+    static addFormatter() {
+        self.devtoolsFormatters ??= [];
+        if (!self.devtoolsFormatters.includes(this.formatter)) {
+            self.devtoolsFormatters.push(this.formatter);
+        }
+    }
+}

@@ -768,7 +768,6 @@ class ActionListEditor {
 
         if (!this.windowBound) {
             this.windowBound = true;
-            addEventListener("input", setValueAttribute, {capture: true, passive: true});
 
             this.bindDataList("skills", skills, s => s.label);
             this.bindDataList("buffs", buffs, b => !(b.name in prestigeBases) && b.label);

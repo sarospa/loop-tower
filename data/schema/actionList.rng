@@ -1,10 +1,13 @@
 <grammar xmlns="http://relaxng.org/ns/structure/1.0"
+         xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"
+         xmlns:il="http://dmchurch.github.io/omsi-loops/schema/1.0"
     datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
     <start>
         <element name="actions">
             <interleave>
                 <optional>
                     <element name="defs">
+                        <a:documentation>Definitions</a:documentation>
                         <zeroOrMore>
                             <ref name="anyDef"></ref>
                         </zeroOrMore>
@@ -54,14 +57,12 @@
         </element>
     </define>
     <define name="anyDef" combine="choice">
-        <choice>
-            <element name="defineAdjustment">
-                <attribute name="name" />
-                <zeroOrMore>
-                    <ref name="numericAdjustment"></ref>
-                </zeroOrMore>
-            </element>
-        </choice>
+        <element name="defineAdjustment">
+            <attribute name="name" />
+            <zeroOrMore>
+                <ref name="numericAdjustment"></ref>
+            </zeroOrMore>
+        </element>
     </define>
     <define name="numericEvaluation">
         <choice>
