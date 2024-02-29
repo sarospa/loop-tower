@@ -1035,19 +1035,13 @@ class View {
                 if (init || document.getElementById(divName).innerHTML.includes("???")) {
                     let storyTooltipText = "";
                     let lastInBranch = false;
-                    const name = action.name.toLowerCase().replace(/ /gu, "_");
-
-                    const rawStoriesDataForAction = _txtsObj(`actions>${name}`, "fallback")[0].children;
                     let allStoriesForActionUnlocked = true;
 
-                    for (const rawStoryData of rawStoriesDataForAction) {
-                        if (rawStoryData.nodeName.startsWith("story_")) {
-                            const storyId = parseInt(rawStoryData.nodeName.replace("story_", ""));
+                    for (const {num: storyId, conditionHTML, text} of action.getStoryTexts()) {
 
                             storyTooltipText += "<p>";
-                            const storyText = rawStoryData.textContent.split("⮀");
                             if (action.storyReqs(storyId)) {
-                                storyTooltipText += storyText[0] + storyText[1];
+                                storyTooltipText += conditionHTML + text;
                                 lastInBranch = false;
                                 if (action.visible() && action.unlocked() && completedActions.includes(action.varName)) {
                                     actionLog.addActionStory(action, storyId, init);
@@ -1058,12 +1052,11 @@ class View {
                                 if (lastInBranch) {
                                     storyTooltipText += "<b>???:</b> ???";
                                 } else {
-                                    storyTooltipText += `${storyText[0]} ???`;
+                                    storyTooltipText += `${conditionHTML} ???`;
                                     lastInBranch = true;
                                 }
                             }
                             storyTooltipText += "</p>\n";
-                        }
                     }
 
                     if (document.getElementById(divName).children[2].innerHTML !== storyTooltipText) {
@@ -1354,23 +1347,18 @@ class View {
 
             const rawStoriesDataForAction = _txtsObj(`actions>${name}`, "fallback")[0].children;
 
-            for (const rawStoryData of rawStoriesDataForAction) {
-                if (rawStoryData.nodeName.startsWith("story_")) {
-                    const storyId = parseInt(rawStoryData.nodeName.replace("story_", ""));
-
+            for (const {num: storyId, conditionHTML, text} of action.getStoryTexts()) {
                     storyTooltipText += "<p>";
-                    const storyText = rawStoryData.textContent.split("⮀");
                     if (action.storyReqs(storyId)) {
-                        storyTooltipText += storyText[0] + storyText[1];
+                        storyTooltipText += conditionHTML + text;
                         lastInBranch = false;
                     } else if (lastInBranch) {
                         storyTooltipText += "<b>???:</b> ???";
                     } else {
-                        storyTooltipText += `${storyText[0]} ???`;
+                        storyTooltipText += `${conditionHTML} ???`;
                         lastInBranch = true;
                     }
                     storyTooltipText += "</p>";
-                }
             }
 
             const storyDivText =

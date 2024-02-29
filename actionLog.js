@@ -319,11 +319,11 @@ class ActionStoryEntry extends UniqueLogEntry {
 
     getReplacement(key) {
         if (key === "condition" || key === "story") {
-            const rawActionText = _txt(`actions>${getXMLName(this.actionName)}>story_${this.storyIndex}`);
+            const storyInfo = getActionPrototype(this.actionName)?.getStoryTexts()?.find(({num}) => num === this.storyIndex);
 
-            if (!rawActionText.startsWith('[actions>')) {
-                if (key === "condition") return rawActionText.split("⮀")[0].replace(/^<b>|:<\/b>$/g,"");
-                if (key === "story") return rawActionText.split("⮀")[1];
+            if (storyInfo) {
+                if (key === "condition") return storyInfo.condition;
+                if (key === "story") return storyInfo.text;
             } else {
                 if (key === "condition") return "???";
                 if (key === "story") return _txt(`actions>log>action_story_not_found`);

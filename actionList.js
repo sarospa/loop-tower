@@ -290,6 +290,26 @@ class Action extends Localizable {
         return exp > 0;
     }
 
+    getStoryTexts(rawStoriesDataForAction = this.txtsObj[0].children) {
+        /** @type {{num: number, condition: string, conditionHTML: string, text: string}[]} */
+        const storyTexts = [];
+
+        for (const rawStoryData of rawStoriesDataForAction) {
+            if (rawStoryData.nodeName.startsWith("story_")) {
+                const num = parseInt(rawStoryData.nodeName.replace("story_", ""));
+                const [conditionHTML, text] = rawStoryData.textContent.split("⮀");
+                const condition = conditionHTML.replace(/^<b>|:<\/b>$/g,"")
+                storyTexts.push({num, condition, conditionHTML, text});
+            } else if (rawStoryData.nodeName === "story") {
+                const num = parseInt(rawStoryData.getAttribute("num"));
+                const condition = rawStoryData.getAttribute("condition");
+                const conditionHTML = `<b>${condition}:</b> `;
+                const text = rawStoryData.children.length > 0 ? rawStoryData.innerHTML : rawStoryData.textContent;
+                storyTexts.push({num, condition, conditionHTML, text});
+            }
+        }
+        return storyTexts;
+    }
 }
 
 /**
@@ -517,6 +537,10 @@ class AssassinAction extends MultipartAction {
             ...extras,
             ...AssassinAction.$defaults,
         });
+    }
+
+    getStoryTexts(rawStoriesDataForAction = _txtsObj(this.name.toLowerCase().replace(/ /gu, "_"))[0].children) { // I hate this
+        return super.getStoryTexts(rawStoriesDataForAction);
     }
 
     static $defaults = /** @type {const} */({
