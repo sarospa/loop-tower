@@ -669,6 +669,7 @@ class View {
             let capButton = "";
             const townNum = translatedAction.townNum;
             const travelNum = getTravelNum(action.name);
+            let classNames = `zone-${townNum+1} action-type-${translatedAction.type}`;
             /** @type {ZoneSpan[]} */
             const collapses = [];
             // eslint-disable-next-line no-loop-func
@@ -683,20 +684,22 @@ class View {
             });
             if (hasLimit(action.name)) {
                 capButton = `<button id='capButton${i}' onclick='capAmount(${i}, ${townNum})' class='actionIcon far fa-circle'></button>`;
+                classNames += " action-has-limit";
             } else if (isTraining(action.name)) {
                 capButton = `<button id='capButton${i}' onclick='capTraining(${i})' class='actionIcon far fa-circle'></button>`;
+                classNames += " action-is-training";
             }
             let isSingular;
             if (translatedAction.allowed === undefined) {
                 isSingular = false;
             } else {
                 isSingular = translatedAction.allowed() === 1;
+                classNames += isSingular ? " action-is-singular" : "";
             }
             const actionLoops = action.loops > 99999 ? toSuffix(action.loops) : formatNumber(action.loops);
-            const opacity = action.disabled || action.loops === 0 ? "opacity: 0.5" : "";
-            let display = "display: flex";
+            classNames += action.disabled || action.loops === 0 ? " action-disabled" : "";
             if (collapses.some(z => z.start <= i && z.end > i)) {
-                display = "display: none";
+                classNames += " zone-collapsed";
             }
             let color;
             if (action.name === "Face Judgement") {
@@ -712,7 +715,7 @@ class View {
             totalDivText +=
                 `<div
                     id='nextActionContainer${i}'
-                    class='nextActionContainer small showthat zone-${townNum+1}'
+                    class='nextActionContainer small showthat ${classNames}'
                     ondragover='handleDragOver(event)'
                     ondrop='handleDragDrop(event)'
                     ondragstart='handleDragStart(event)'
@@ -720,7 +723,7 @@ class View {
                     ondragenter='dragOverDecorate(${i})'
                     ondragleave='dragExitUndecorate(${i})'
                     draggable='true' data-index='${i}'
-                    style='background: ${color}; ${opacity}; ${display};'
+                    style='background: ${color};'
                 >
                     <div class='nextActionLoops'><img src='img/${imageName}.svg' class='smallIcon imageDragFix'> x
                     <div class='bold'>${actionLoops}</div></div>

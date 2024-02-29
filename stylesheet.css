@@ -1374,6 +1374,12 @@ li#actionLogLatest {
     width: 205px;
     height: 20px;
 }
+.nextActionContainer.zone-collapsed {
+    display: none;
+}
+.nextActionContainer.action-disabled {
+    opacity: 0.5;
+}
 .nextActionButtons {
     margin-top: 1px;
     margin-right: 3px;
