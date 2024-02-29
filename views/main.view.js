@@ -669,14 +669,16 @@ class View {
             let capButton = "";
             const townNum = translatedAction.townNum;
             const travelNum = getTravelNum(action.name);
+            /** @type {ZoneSpan[]} */
             const collapses = [];
             // eslint-disable-next-line no-loop-func
             actions.next.forEach((a, index) => {
                 if (a.collapsed) {
-                    const collapse = {};
-                    collapse.zone = getActionPrototype(a.name).townNum;
-                    collapse.index = index;
-                    collapses.push(collapse);
+                    const zoneSpan = actions.zoneSpanAtIndex(index);
+                    // if this collapse doesn't come at the end of a span, or if it isn't the right zone, then it doesn't count
+                    const actionZone = getActionPrototype(a.name).townNum;
+                    if (zoneSpan.end !== index || !zoneSpan.zones.includes(actionZone)) return;
+                    collapses.push(zoneSpan);
                 }
             });
             if (hasLimit(action.name)) {
@@ -693,8 +695,8 @@ class View {
             const actionLoops = action.loops > 99999 ? toSuffix(action.loops) : formatNumber(action.loops);
             const opacity = action.disabled || action.loops === 0 ? "opacity: 0.5" : "";
             let display = "display: flex";
-            for (const collapse of collapses) {
-                if (townNum === collapse.zone && i < collapse.index) display = "display: none";
+            if (collapses.some(z => z.start <= i && z.end > i)) {
+                display = "display: none";
             }
             let color;
             if (action.name === "Face Judgement") {

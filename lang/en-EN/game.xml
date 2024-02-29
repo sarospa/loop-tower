@@ -12,6 +12,7 @@
             <version caption="Latest"><![CDATA[
             <b>Recent changes</b>
             • The inline stat bars should show up properly on all browsers now, I think.<br>
+            • Collapsing a zone in the Action List (using the arrows button) now uses the same logic as the functionality for snapping actions to their appropriate zones. This means, among other things, that trying to collapse an invalid travel action (one where you weren't in the right zone to begin with) will do nothing.<br>
             ]]></version>
             <version verNum="3.P16.25"><![CDATA[
             <b>Recent changes</b>
