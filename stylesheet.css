@@ -718,9 +718,7 @@ input[type="checkbox"][disabled] + label {
         display: grid;
         grid-column: fullrow;
         grid-template:
-            "name expbar       level talent soulstone" 1fr
-            "name talentbar    level talent soulstone" 1fr
-            "name soulstonebar level talent soulstone" 1fr
+            "name statbars level talent soulstone"
             ;
         /* Chrome etc don't support subgrid in the grid-template value? */
         grid-template-columns: [fullrow-start] max-content 1fr max-content max-content max-content [fullrow-end];
@@ -753,38 +751,34 @@ input[type="checkbox"][disabled] + label {
         & .stat-soulstone {
             grid-area: soulstone;
         }
-        & > .expBar {
-            grid-area: expbar;
+        & > .statBars {
+            grid-area: statbars;
+            display: flex;
+            flex-direction: column;
+
+            & > :is(.thinProgressBarUpper, .thinProgressBarLower) {
+                margin: 0;
+                min-width: 4em;
+                height: 100%;
+                background: linear-gradient(to left, transparent, var(--progress-bar-background) max(32px,50%));
+            }
         }
-        & > .talentBar {
-            grid-area: talentbar;
+            
         }
-        & > .soulstoneBar {
-            grid-area: soulstonebar;
-        }
-        
-        & > :is(.thinProgressBarUpper, .thinProgressBarLower) {
-            margin: 0;
-            min-width: 4em;
-            height: 100%;
-            background: linear-gradient(to left, transparent, var(--progress-bar-background) max(32px,50%));
-        }
-    }
 }
 
 @container stats-container (max-width: 350px) {
     #statsWindow[data-view=regular] .statContainer {
         height: auto;
         grid-template-areas:
-            "name         name         level        talent       soulstone   "
-            "expbar       expbar       expbar       expbar       expbar      "
-            "talentbar    talentbar    talentbar    talentbar    talentbar   "
-            "soulstonebar soulstonebar soulstonebar soulstonebar soulstonebar";
-        grid-template-rows: max-content 4px 4px 4px;
-        grid-row-gap: 2px;
+            "name     name     level    talent   soulstone"
+            "statbars statbars statbars statbars statbars";
+        grid-template-rows: max-content max-content;
 
-        & > :is(.thinProgressBarUpper, .thinProgressBarLower) {
+        & > .statBars > :is(.thinProgressBarUpper, .thinProgressBarLower) {
+            height: 4px;
             margin-left: 18px;
+            margin-top: 2px;
         }
     }
 }
@@ -826,6 +820,9 @@ input[type="checkbox"][disabled] + label {
     background-color: var(--progress-bar-background);
     display:block;
     margin:0 auto 2px auto;
+}
+#statsColumn .statBars {
+    display: contents;
 }
 #statsColumn :is(.thinProgressBarUpper, .thinProgressBarLower):not(.tiny) {
     width:auto;

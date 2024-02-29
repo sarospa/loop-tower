@@ -9,11 +9,10 @@
                 <title>Changelog</title>
                 <version_prefix>Version</version_prefix>
             </meta>
-            <!--
             <version caption="Latest"><![CDATA[
             <b>Recent changes</b>
+            • The inline stat bars should show up properly on all browsers now, I think.<br>
             ]]></version>
-            -->
             <version verNum="3.P16.25"><![CDATA[
             <b>Recent changes</b>
             • Removed the Adblock Plus warning, which is no longer relevant.<br>

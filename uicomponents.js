@@ -9,13 +9,13 @@ const Rendered = {
         template.innerHTML = htmlString;
         
         return template.content;
-        },
+    },
     css(strings, ...exprs) {
         const cssString = String.raw(strings, ...exprs);
         const stylesheet = new CSSStyleSheet();
         stylesheet.replaceSync(cssString);
         return stylesheet;
-        },
+    },
 }
 
 class BaseComponent extends HTMLElement {

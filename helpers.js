@@ -783,3 +783,15 @@ class DevtoolsFormattable {
         }
     }
 }
+
+//Convenience class for rendering html template strings with syntax coloring
+/** @satisfies {Record<string, (strings: TemplateStringsArray, ...exprs: any[]) => any>} */
+const Raw = {
+    html(strings, ...exprs) {
+        return String.raw(strings, ...exprs);
+    },
+    css(strings, ...exprs) {
+        return String.raw(strings, ...exprs);
+    },
+}
+
