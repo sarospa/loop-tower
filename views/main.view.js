@@ -1188,11 +1188,13 @@ class View {
     /** @param {ActionOfType<"progress">} action @param {string} [label] */
     createActionProgress(action, varSuffix="", label, includeExpBar=true) {
         const totalDivText =
-        `<div class='townStatContainer showthat'>
+        Raw.html`<div class='townStatContainer showthat'>
             <div class='bold townLabel'>${label ?? action.labelDone}</div>
             <div class='progressValue' id='prc${action.varName}${varSuffix}'>5</div><div class='percentSign'>%</div>
-            ${includeExpBar ? `<div class='thinProgressBarUpper'><div id='expBar${action.varName}${varSuffix}' class='statBar townExpBar'></div></div>` : ""}
-            <div class='thinProgressBarLower'><div id='bar${action.varName}${varSuffix}' class='statBar townBar'></div></div>
+            <div class='progressBars'>
+                ${includeExpBar ? `<div class='thinProgressBarUpper'><div id='expBar${action.varName}${varSuffix}' class='statBar townExpBar'></div></div>` : ""}
+                <div class='thinProgressBarLower'><div id='bar${action.varName}${varSuffix}' class='statBar townBar'></div></div>
+            </div>
 
             <div class='showthis'>
                 ${_txt("actions>tooltip>higher_done_percent_benefic")}<br>
@@ -1344,8 +1346,6 @@ class View {
             let storyTooltipText = "";
             let lastInBranch = false;
             const name = action.name.toLowerCase().replace(/ /gu, "_");
-
-            const rawStoriesDataForAction = _txtsObj(`actions>${name}`, "fallback")[0].children;
 
             for (const {num: storyId, conditionHTML, text} of action.getStoryTexts()) {
                     storyTooltipText += "<p>";

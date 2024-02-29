@@ -951,7 +951,7 @@ input[type="checkbox"][disabled] + label {
 .townInfo {
     display:grid;
     text-align:left;
-    grid-template-columns: [full-row-start] repeat(2, max-content) [progress-value-start] repeat(2, max-content) [progress-value-end] repeat(4, max-content) 1fr [full-row-end];
+    grid-template-columns: [full-row-start] repeat(2, max-content) [progress-value-start] repeat(2, max-content) [progress-value-end] repeat(2, max-content) [progress-bars-start] repeat(2, max-content) 1fr [progress-bars-end full-row-end];
     grid-auto-rows: minmax(32px,1fr);
     align-items: center;
     gap: 4px;
@@ -972,7 +972,7 @@ input[type="checkbox"][disabled] + label {
 }
 .townContainer.infoType > div.townInfoContainer {
     display: grid;
-    grid-template-columns: [full-row-start] repeat(2, max-content) [progress-value-start] repeat(2, max-content) [progress-value-end] repeat(4, max-content) 1fr [full-row-end];
+    grid-template-columns: [full-row-start] repeat(2, max-content) [progress-value-start] repeat(2, max-content) [progress-value-end] repeat(2, max-content) [progress-bars-start] repeat(2, max-content) 1fr [progress-bars-end full-row-end];
     grid-template-columns: subgrid;
     gap: 0.5em;
     align-items: center;
@@ -983,7 +983,7 @@ div.townInfoContainer > .numeric {
 
 .townContainer.progressType > div.townStatContainer {
     display: grid;
-    grid-template-columns: [full-row-start] repeat(2, max-content) [progress-value-start] repeat(2, max-content) [progress-value-end] repeat(4, max-content) 1fr [full-row-end];
+    grid-template-columns: [full-row-start] repeat(2, max-content) [progress-value-start] repeat(2, max-content) [progress-value-end] repeat(2, max-content) [progress-bars-start] repeat(2, max-content) 1fr [progress-bars-end full-row-end];
     grid-template-columns: subgrid;
     row-gap: 2px;
 }
@@ -993,10 +993,23 @@ div.townInfoContainer > .numeric {
     grid-column-end: progress-value-start;
 }
 
+.townContainer.progressType .progressBars {
+    grid-column: progress-bars;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.townContainer.progressType .thinProgressBarUpper {
+    flex: 4;
+}
+.townContainer.progressType .thinProgressBarLower
+{
+    flex: 3;
+}
 .townContainer.progressType .thinProgressBarUpper,
 .townContainer.progressType .thinProgressBarLower {
-    grid-column: full-row;
-    margin: 0 25px;
+    margin: 0 25px 0 0;
     width: auto;
 }
 
