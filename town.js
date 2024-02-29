@@ -48,6 +48,12 @@ class Town {
     progressScaling = {};
     /** @type {AnyAction[]} */
     totalActionList = [];
+    /** @type {Set<string>} */
+    hiddenVars = new Set();
+
+    static {
+        Data.omitProperties(this.prototype, ["hiddenVars"]);
+    }
 
     unlocked() {
         return townsUnlocked.includes(this.index);

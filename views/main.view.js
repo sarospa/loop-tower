@@ -1126,6 +1126,21 @@ class View {
         actionStoriesShowing = stories;
     };
 
+    toggleHiding() {
+        document.documentElement.classList.toggle("editing-hidden-vars");
+    }
+
+    toggleHidden(varName, force) {
+        const isHidden = towns[townShowing].hiddenVars.has(varName);
+        if ((isHidden && force !== true) || force === false) {
+            towns[townShowing].hiddenVars.delete(varName);
+            htmlElement(`infoContainer${varName}`).classList.remove("user-hidden");
+        } else if (!isHidden || force === true) {
+            towns[townShowing].hiddenVars.add(varName);
+            htmlElement(`infoContainer${varName}`).classList.add("user-hidden");
+        }
+    }
+
     updateRegular(updateInfo) {
         const varName = updateInfo.name;
         const index = updateInfo.index;
@@ -1164,7 +1179,7 @@ class View {
     };
 
     createTownActions() {
-        if (actionOptionsTown[0].firstChild) return;
+        if (actionOptionsTown[0].querySelector(".actionOrTravelContainer")) return;
         for (const action of towns.flatMap(t => t.totalActionList)) {
             this.createTownAction(action);
         }
@@ -1200,6 +1215,7 @@ class View {
                 ${_txt("actions>tooltip>higher_done_percent_benefic")}<br>
                 <div class='bold'>${_txt("actions>tooltip>progress_label")}</div> <div id='progress${action.varName}${varSuffix}'></div>%
             </div>
+            <div class='hideVarButton far' onclick='view.toggleHidden("${action.varName}${varSuffix}")'></div>
         </div>`;
         const progressDiv = document.createElement("div");
         progressDiv.className = "townContainer progressType";
@@ -1207,6 +1223,9 @@ class View {
         progressDiv.style.display = "";
         progressDiv.innerHTML = totalDivText;
         townInfos[action.townNum].appendChild(progressDiv);
+        if (towns[action.townNum].hiddenVars.has(`${action.varName}${varSuffix}`)) {
+            progressDiv.classList.add("user-hidden");
+        }
     };
 
     /** @param {AnyAction} action  */
@@ -1339,13 +1358,11 @@ class View {
 
         const actionsDiv = document.createElement("div");
         actionsDiv.innerHTML = totalDivText;
-        if (isTravel) actionsDiv.style.width = "100%";
-        actionOptionsTown[action.townNum].appendChild(actionsDiv);
+        actionOptionsTown[action.townNum].querySelector(`:scope > .${isTravel ? "travelDiv" : "actionDiv"}`).appendChild(actionsDiv);
 
         if (action.storyReqs !== undefined) {
             let storyTooltipText = "";
             let lastInBranch = false;
-            const name = action.name.toLowerCase().replace(/ /gu, "_");
 
             for (const {num: storyId, conditionHTML, text} of action.getStoryTexts()) {
                     storyTooltipText += "<p>";
@@ -1426,8 +1443,9 @@ class View {
     /** @param {ActionOfType<"limited">} action  */
     createTownInfo(action) {
         const totalInfoText =
-            // important that there be 8 element children of townInfoContainer (excluding the showthis popup)
-            `<div class='townInfoContainer showthat'>
+            // important that there be 8 element children of townInfoContainer (excluding the showthis popup and hideVarButton)
+            Raw.html`
+            <div class='townInfoContainer showthat'>
                 <div class='bold townLabel'>${action.labelDone}</div>
                 <div class='numeric goodTemp' id='goodTemp${action.varName}'>0</div> <i class='fa fa-arrow-left'></i>
                 <div class='numeric good' id='good${action.varName}'>0</div> <i class='fa fa-arrow-left'></i>
@@ -1435,6 +1453,7 @@ class View {
                 <input type='checkbox' id='searchToggler${action.varName}' style='margin-left:10px;'>
                 <label for='searchToggler${action.varName}'> Lootable first</label>
                 <div class='showthis'>${action.infoText()}</div>
+                <div class='hideVarButton far' onclick='view.toggleHidden("${action.varName}")'></div>
             </div><br>`;
 
         const infoDiv = document.createElement("div");
@@ -1443,6 +1462,9 @@ class View {
         infoDiv.style.display = "";
         infoDiv.innerHTML = totalInfoText;
         townInfos[action.townNum].appendChild(infoDiv);
+        if (towns[action.townNum].hiddenVars.has(action.varName)) {
+            infoDiv.classList.add("user-hidden");
+        }
     };
 
     /** @param {ActionOfType<"multipart">} action  */
@@ -1466,7 +1488,8 @@ class View {
         else if (varName === "LDungeon") mouseOver = "onmouseover='view.showDungeon(1)' onmouseout='view.showDungeon(undefined)'";
         else if (varName === "TheSpire") mouseOver = "onmouseover='view.showDungeon(2)' onmouseout='view.showDungeon(undefined)'";
         const totalDivText =
-            `<div class='townStatContainer' id='infoContainer${varName}'>
+            Raw.html`
+            <div class='townStatContainer' id='infoContainer${varName}'>
                 <div class='multipartLabel'>
                     <div class='flexMargin'></div>
                     <div class='bold townLabel' id='multiPartName${varName}'></div>
@@ -1482,6 +1505,7 @@ class View {
                 <div class='multipartBars'>
                     ${pbars}
                 </div>
+                <div class='hideVarButton far' onclick='view.toggleHidden("${action.varName}")'></div>
             </div>`;
 
         const progressDiv = document.createElement("div");
@@ -1489,6 +1513,9 @@ class View {
         progressDiv.style.display = "";
         progressDiv.innerHTML = totalDivText;
         townInfos[action.townNum].appendChild(progressDiv);
+        if (towns[action.townNum].hiddenVars.has(action.varName)) {
+            progressDiv.firstElementChild.classList.add("user-hidden");
+        }
     };
 
     updateMultiPartActions() {
@@ -1856,6 +1883,7 @@ const actionStoriesTown = [];
 const townInfos = [];
 for (let i = 0; i <= 8; i++) {
     actionOptionsTown[i] = document.getElementById(`actionOptionsTown${i}`);
+    actionOptionsTown[i].append(Rendered.html`<div class="actionDiv"></div><div class="travelDiv">`);
     actionStoriesTown[i] = document.getElementById(`actionStoriesTown${i}`);
     townInfos[i] = document.getElementById(`townInfo${i}`);
 }

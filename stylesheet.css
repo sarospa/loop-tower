@@ -921,6 +921,7 @@ input[type="checkbox"][disabled] + label {
     background: var(--default-background);
     border-bottom: 1px solid var(--zone-color);
     margin-bottom: 1ex;
+    position: relative;
 }
 
 #townActionTitle {
@@ -932,6 +933,43 @@ input[type="checkbox"][disabled] + label {
     width: 100%;
 }
 
+#hideVarsButton, .hideVarButton {
+    position: absolute;
+    cursor: pointer;
+    width: 24px;
+    height: 24px;
+    font-size: 18px;
+    margin: auto 5px;
+    inset: 0 0 0 auto;
+    line-height: 24px;
+    text-align: center;
+    opacity: 0.5;
+    &:hover {
+        opacity: 1;
+    }
+}
+
+:root:not(.editing-hidden-vars) .hideVarButton {
+    display: none;
+}
+
+:root.editing-hidden-vars #hideVarsButton {
+    font-weight: 900;
+    opacity: 1;
+}
+
+.hideVarButton::before {
+    content: "\f06e"; /* fa-eye */
+}
+
+.user-hidden .hideVarButton::before {
+    content: "\f070"; /* fa-eye-slash */
+}
+
+:root:not(.editing-hidden-vars) .user-hidden {
+    display: none !important; /* one of the few cases where I feel !important is justified */
+}
+
 #townInfos {
     display: block;
 }
@@ -940,12 +978,14 @@ input[type="checkbox"][disabled] + label {
     width:100%;
     text-align:left;
     padding:0 10px 0;
+    position: relative;
 }
 
 .townInfoContainer {
     width:100%;
     text-align:left;
     padding:0 10px 0;
+    position: relative;
 }
 
 .townInfo {
@@ -1064,6 +1104,10 @@ div.townInfoContainer > .numeric {
 .actionStories {
     text-align:center;
     min-height:470px;
+}
+
+.actionDiv, .travelDiv {
+    display: block;
 }
 
 .actionOrTravelContainer {

@@ -1229,7 +1229,12 @@ function doLoad(toLoad) {
         }
     }
 
+    /** @type {string[]} */
+    const hiddenVarNames = toLoad.hiddenVars?.slice() ?? [];
+
     for (const town of towns) {
+        const hiddenVars = hiddenVarNames.shift() ?? [];
+        town.hiddenVars = new Set(hiddenVars);
         for (const action of town.totalActionList) {
             if (action.type === "progress")
                 town[`exp${action.varName}`] = toLoad[`exp${action.varName}`] === undefined ? 0 : toLoad[`exp${action.varName}`];
@@ -1353,7 +1358,11 @@ function doSave() {
     toSave.stonesUsed = stonesUsed;
     toSave.version75 = true;
 
+    /** @type {string[][]} */
+    const hiddenVars = [];
+
     for (const town of towns) {
+        hiddenVars.push(Array.from(town.hiddenVars));
         for (const action of town.totalActionList) {
             if (action.type === "progress") {
                 toSave[`exp${action.varName}`] = town[`exp${action.varName}`];
@@ -1371,6 +1380,7 @@ function doSave() {
             }
         }
     }
+    toSave.hiddenVars = hiddenVars;
     toSave.nextList = actions.next;
     toSave.loadouts = loadouts;
     toSave.loadoutnames = loadoutnames;

@@ -14,9 +14,10 @@
             • The inline stat bars should show up properly on all browsers now, I think.<br>
             • Progress bars (like for Wander) now use the inline style as well, to take up less space on the screen.<br>
             • Collapsing a zone in the Action List (using the arrows button) now uses the same logic as the functionality for snapping actions to their appropriate zones. This means, among other things, that trying to collapse an invalid travel action (one where you weren't in the right zone to begin with) will do nothing.<br>
+            • Town info bars can now be hidden on a per-zone, per-action basis. Click the eye icon to the right of the zone name.<br>
             ]]></version>
             <version verNum="3.P16.25"><![CDATA[
-            <b>Recent changes</b>
+            <b>Feb 27th, 2024</b>
             • Removed the Adblock Plus warning, which is no longer relevant.<br>
             • Edited the final Pyromancy action story to make the reference clearer.<br>
             • Mana remaining should now display with fixed precision, making the screen a little less jumpy.<br>
