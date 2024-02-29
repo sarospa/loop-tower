@@ -155,8 +155,8 @@ class Actions {
                     // segment finished
                     if (segment === curAction.segments - 1) {
                         // part finished
-                        if (curAction.name === "Dark Ritual" && towns[curAction.townNum][curAction.varName] >= 4000000) unlockStory("darkRitualThirdSegmentReached");
-                        if (curAction.name === "Imbue Mind" && towns[curAction.townNum][curAction.varName] >= 700000000) unlockStory("imbueMindThirdSegmentReached");
+                        if (curAction.name === "Dark Ritual" && towns[curAction.townNum][curAction.varName] >= 4000000) setStoryFlag("darkRitualThirdSegmentReached");
+                        if (curAction.name === "Imbue Mind" && towns[curAction.townNum][curAction.varName] >= 700000000) setStoryFlag("imbueMindThirdSegmentReached");
                         towns[curAction.townNum][curAction.varName] = 0;
                         loopCounter = towns[curAction.townNum][`${curAction.varName}LoopCounter`] += curAction.segments;
                         towns[curAction.townNum][`total${curAction.varName}`]++;

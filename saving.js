@@ -251,7 +251,9 @@ let trainingLimits = 10;
 let storyShowing = 0;
 let storyMax = 0;
 let unreadActionStories;
-const storyReqs = {
+
+/** @typedef {keyof typeof storyFlags} StoryFlagName */
+const storyFlags = {
     maxSQuestsInALoop: false,
     realMaxSQuestsInALoop: false,
     maxLQuestsInALoop: false,
@@ -472,6 +474,12 @@ const storyReqs = {
     fightGods17:false,
     fightGods18:false,
 };
+const storyReqs = storyFlags; // compatibility alias, can be removed when we're sure it won't break anything
+
+/** @typedef {keyof typeof storyVars} StoryVarName */
+const storyVars = {
+};
+
 
 const curDate = new Date();
 let totalOfflineMs = 0;
@@ -539,7 +547,7 @@ Data.registerAll({
     prestigeValues,
     townsUnlocked,
     completedActions,
-    storyReqs,
+    storyFlags,
     totals,
 });
 
@@ -1022,9 +1030,9 @@ function doLoad(toLoad) {
 
 
     if (toLoad.storyReqs !== undefined) {
-        for (const property in storyReqs) {
+        for (const property in storyFlags) {
             if (toLoad.storyReqs.hasOwnProperty(property)) {
-                storyReqs[property] = toLoad.storyReqs[property];
+                storyFlags[property] = toLoad.storyReqs[property];
             }
         }
     }
@@ -1352,7 +1360,8 @@ function doSave() {
     }
     toSave.storyShowing = storyShowing;
     toSave.storyMax = storyMax;
-    toSave.storyReqs = storyReqs;
+    toSave.storyReqs = storyFlags; // save uses the legacy name "storyReqs" for compatibility
+    toSave.storyVars = storyVars;
     toSave.unreadActionStories = unreadActionStories;
     toSave.actionLog = actionLog;
     toSave.buffCaps = buffCaps;

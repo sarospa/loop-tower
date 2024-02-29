@@ -772,7 +772,7 @@ class ActionListEditor {
             this.bindDataList("skills", skills, s => s.label);
             this.bindDataList("buffs", buffs, b => !(b.name in prestigeBases) && b.label);
             this.bindDataList("prestigeBuffs", buffs, b => b.name in prestigeBases && b.label);
-            this.bindDataList("storyFlags", storyReqs, (_, k) => k);
+            this.bindDataList("storyFlags", storyFlags, (_, k) => k);
             this.bindDataList("jsFunctions", jsFunctions, (_, k) => k);
             this.bindDataList("resources", resources, (_, k) => _txt(`tracked_resources>resource[id=${k}]>label`), k => k, v => typeof v);
             this.bindDataList("namedAdjustments", this.defs, d => d.name, (_, d) => d.name);

@@ -810,16 +810,16 @@ class View {
             div.style.backgroundColor = "var(--cur-action-error-indicator)";
             div.style.height = "30%";
             div.style.marginTop = "5px";
-            if (action.name === "Heal The Sick") unlockStory("failedHeal");
-            if (action.name === "Brew Potions" && resources.reputation >= 0 && resources.herbs >= 10) unlockStory("failedBrewPotions");
-            if (action.name === "Brew Potions" && resources.reputation < 0 && resources.herbs >= 10) unlockStory("failedBrewPotionsNegativeRep");
-            if (action.name === "Gamble" && resources.reputation < -5) unlockStory("failedGamble");
-            if (action.name === "Gamble" && resources.gold < 20 && resources.reputation > -6) unlockStory("failedGambleLowMoney");
-            if (action.name === "Gather Team") unlockStory("failedGatherTeam");
-            if (action.name === "Craft Armor") unlockStory("failedCraftArmor");
-            if (action.name === "Imbue Body") unlockStory("failedImbueBody");
-            if (action.name === "Accept Donations") unlockStory("failedReceivedDonations");
-            if (action.name === "Raise Zombie") unlockStory("failedRaiseZombie")
+            if (action.name === "Heal The Sick") setStoryFlag("failedHeal");
+            if (action.name === "Brew Potions" && resources.reputation >= 0 && resources.herbs >= 10) setStoryFlag("failedBrewPotions");
+            if (action.name === "Brew Potions" && resources.reputation < 0 && resources.herbs >= 10) setStoryFlag("failedBrewPotionsNegativeRep");
+            if (action.name === "Gamble" && resources.reputation < -5) setStoryFlag("failedGamble");
+            if (action.name === "Gamble" && resources.gold < 20 && resources.reputation > -6) setStoryFlag("failedGambleLowMoney");
+            if (action.name === "Gather Team") setStoryFlag("failedGatherTeam");
+            if (action.name === "Craft Armor") setStoryFlag("failedCraftArmor");
+            if (action.name === "Imbue Body") setStoryFlag("failedImbueBody");
+            if (action.name === "Accept Donations") setStoryFlag("failedReceivedDonations");
+            if (action.name === "Raise Zombie") setStoryFlag("failedRaiseZombie")
         } else if (action.loopsLeft === 0) {
             div.style.width = "100%";
             div.style.backgroundColor = "var(--cur-action-completed-background)";
@@ -1829,12 +1829,14 @@ function unlockGlobalStory(num) {
     }
 }
 
-function unlockStory(name) {
-    if (!storyReqs[name]) {
-        storyReqs[name] = true;
+/** @param {StoryFlagName} name  */
+function setStoryFlag(name) {
+    if (!storyFlags[name]) {
+        storyFlags[name] = true;
         if (options.actionLog) view.requestUpdate("updateStories", false);
     }
 }
+const unlockStory = setStoryFlag; // compatibility alias
 
 function scrollToPanel(event, target) {
     event.preventDefault();
