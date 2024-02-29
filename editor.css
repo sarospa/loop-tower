@@ -7,19 +7,14 @@ ul + .button {
 }
 
 .elementList {
-    padding-left: 1em;
-}
-
-.elementList > li {
-    list-style-type: none;
-}
-
-.elementList > li > details > summary {
+    padding-left: .5rem;
     font-weight: bold;
-    font-size: larger;
+    font-size: 1.25rem;
 }
 
-.elementList > li > details > fieldset {
+.elementList > * > fieldset {
+    font-size: 1rem;
+    font-weight: normal;
     margin-bottom: 1lh;
 }
 
@@ -48,6 +43,14 @@ fieldset > * {
     flex: 1 0 min-content;
 }
 
+reorderable-list:not(:has(>list-item)) {
+    min-height: 1lh;
+    max-width: 20em;
+    box-sizing: border-box;
+    border: 1px dashed currentColor;
+    margin: 0 0 4px;
+}
+
 .actionDefinition:not([data-action-type="normal"]) .normalOnly,
 .actionDefinition:not([data-action-type="limited"]) .limitedOnly,
 .actionDefinition:not([data-action-type="progress"]) .progressOnly,
@@ -56,87 +59,58 @@ fieldset > * {
     display: none;
 }
 
-.numericEvaluation > details > summary > input[value] ~ .baseValueCalculation {
+.numericEvaluation > [value] ~ .baseValueCalculation {
     display: none;
 }
 
-.optional > details > summary:has(>label>input.elementPresent:not(:checked)) {
+list-item[optional]:not([present]) {
     list-style-type: disc;
     color: color-mix(in srgb, currentColor, transparent 50%);
-    &:not(details[open]>summary) {
-        pointer-events: none;
-    }
-    &>label {
-        pointer-events: auto;
-    }
-    &>label ~ * {
+    &>* {
         display:none;
     }
-    &::after {
+    &::part(default)::after {
         content: " (" var(--absence-text) ")";
     }
 }
 
-ul.adjustments {
-    padding-left: 2em;
+.evaluationRules {
+    padding-left: 0;
 }
 
-li.evaluationRule {
-    list-style: none;
+list-item[dragging] {
+    background: color-mix(in srgb, currentColor 20%, transparent);
+    opacity: 0.75;
 }
 
-li.evaluationRule > details > summary {
-    list-style-type: disc;
-}
-
-details:not([open]) > summary:has( ~ .evaluationRules > .evaluationRule)::after {
+list-item:not([open]):has(>.evaluationRules > .evaluationRule)::part(default)::after {
     content: "(...)";
 }
 
-ul.conditions > .evaluationRule > details > summary > .evaluationElementType > optgroup[label=Adjustment] {
+.conditionalEvaluation > .evaluationRules > .evaluationRule > .evaluationRuleType optgroup[label=Adjustments] {
     display: none;
 }
 
-details.baseValueCalculation {
+.baseValueCalculation {
     display: inline-block;
 }
-details.baseValueCalculation > summary {
-    list-style: none;
-}
 
-.evaluationRule > details > summary > select.evaluationRuleType ~ *,
-details.baseValueCalculation > summary > select.baseValueType ~ * {
+/* Need to limit the specificity on these rules, thus the :where */
+.evaluationRule > .evaluationRuleType ~ *:where(:not([slot=details])),
+.baseValueCalculation > .baseValueType ~ *:where(:not([slot=details])) {
     display: none;
 }
-:is(.evaluationRule.skillName > details, details.skillName) > summary > select[name=skillName] {
-    display: revert;
-}
-:is(.evaluationRule.buffName > details, details.buffName) > summary > select[name=buffName] {
-    display: revert;
-}
-:is(.evaluationRule.actionName > details, details.actionName) > summary > select[name=actionName] {
-    display: revert;
-}
-:is(.evaluationRule.functionName > details, details.functionName) > summary > select[name=functionName] {
-    display: revert;
-}
-:is(.evaluationRule.varName > details, details.varName) > summary > select[name=varName] {
+.skillName > shrink-wrap[name=skillName],
+.buffName > shrink-wrap[name=buffName],
+.actionName > shrink-wrap[name=actionName],
+.functionName > shrink-wrap[name=functionName],
+.varName > shrink-wrap[name=varName],
+.adjustmentName > shrink-wrap[name=adjustmentName],
+.prestigeBuffName > shrink-wrap[name=prestigeBuffName] {
     display: revert;
 }
 
-.evaluationRule.adjustmentName > details > summary > select[name=adjustmentName] {
-    display: revert;
-}
-
-.evaluationRule.prestigeBuffName > details > summary > select[name=prestigeBuffName] {
-    display: revert;
-}
-
-.evaluationRule.varName > details > summary > select[name=varName] {
-    display: revert;
-}
-
-.evaluationRule.numericCondition > details > summary > .numericTestType.numericTest1 {
+.evaluationRule.numericCondition > .numericTestType.numericTest1 {
     display: revert;
     &[value] ~ .numericTestValue.numericTest1 {
         display: revert;
@@ -144,7 +118,7 @@ details.baseValueCalculation > summary > select.baseValueType ~ * {
     &[value] ~ span.numericTestType.numericTest2:has(+.numericTest2[value]) {
         display: revert;
     }
-    &[value] ~ select.numericTestType.numericTest2 {
+    &[value] ~ shrink-wrap.numericTestType.numericTest2 {
         display: revert;
         &[value] ~ .numericTestValue.numericTest2 {
             display: revert;
@@ -152,24 +126,42 @@ details.baseValueCalculation > summary > select.baseValueType ~ * {
     }
 }
 
-.evaluationRule.skillMod > details > summary > :is(.numericTestType, .numericTestValue) {
+.evaluationRule.numericEvaluation > [name=value] {
     display: revert;
 }
-.evaluationRule.skillMod > details > summary > .skillModOnly {
+
+.evaluationRule.skillMod > :is(.numericTestType, .numericTestValue) {
     display: revert;
 }
-.evaluationRule.skillMod > details > summary > select[name=numericTest1] > option:not([value=minExclusive]),
-.evaluationRule.skillMod > details > summary > select[name=numericTest2] > option:not([value=max]){
+.evaluationRule.skillMod > .skillModOnly {
+    display: revert;
+}
+.evaluationRule.skillMod > select[name=numericTest1] > option:not([value=minExclusive]),
+.evaluationRule.skillMod > select[name=numericTest2] > option:not([value=max]){
     display: none;
 }
 
-input.numericTestValue {
-    width: 5em;
+.shrink-wrapped.label {
+    display: inline-block;
+    min-width: 1ch;
+    min-height: 1lh;
+    padding: 1px;
+    margin: 1px 0;
+    text-decoration: dotted color-mix(in srgb, currentColor 75%, transparent) underline;
 }
-input.skillModOnly {
-    width: 5em;
+shrink-wrap:hover .shrink-wrapped.label {
+    text-decoration: underline;
+    background: color-mix(in srgb, currentColor 20%, transparent);
 }
 
-.addAdjustment, .addCondition {
-    margin-left: 2em;
+shrink-wrap:focus-within > .label {
+    margin: 1px 2px;
+}
+
+.addRule::after {
+    content: "Add adjustment/condition";
+}
+.evaluationRule:not(.numericEvaluation) > .addRule::after,
+.conditionalEvaluation > .addRule::after {
+    content: "Add condition";
 }

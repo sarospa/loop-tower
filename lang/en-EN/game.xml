@@ -11,8 +11,21 @@
             </meta>
             <version caption="Latest"><![CDATA[
             <b>Recent changes</b>
+            • The inline stat bars should show up properly on all browsers now, I think.<br>
+            • Collapsing a zone in the Action List (using the arrows button) now uses the same logic as the functionality for snapping actions to their appropriate zones. This means, among other things, that trying to collapse an invalid travel action (one where you weren't in the right zone to begin with) will do nothing.<br>
+            ]]></version>
+            <version verNum="3.P16.25"><![CDATA[
+            <b>Recent changes</b>
             • Removed the Adblock Plus warning, which is no longer relevant.<br>
             • Edited the final Pyromancy action story to make the reference clearer.<br>
+            • Mana remaining should now display with fixed precision, making the screen a little less jumpy.<br>
+            • Tweaked the display algorithm of the Actions List while the predictor is active, to allow buttons and predictions to coexist better. Hopefully.<br>
+            • Holding shift while clicking the "Clear List" button will clear only the disabled actions from your action list.<br>
+            • Holding shift will indicate which actions can be added at cap by holding shift while clicking.<br>
+            • The tooltips for the Prestige Mental and Physical buffs now also note that they affect stats, just like their Prestige menu tooltips.<br>
+            • The Fractional Mana option will auto-disable itself when you prestige, since the first Wander action can fail when it's enabled.<br>
+            • The "Open Rift" and "Open Portal" actions are now correctly recognized as travel actions, for the purposes of display styling and actions snapping to zones.<br>
+            • Endgame actions that show up in earlier zones now appear at the end of the respective zone's action buttons, just before the zone travel actions.<br>
             ]]></version>
             <version verNum="3.P16.24"><![CDATA[
             <b>Feb 20th, 2024</b>
@@ -1311,13 +1324,13 @@
         <prestige_-_physical>
             <label>Prestige - Physical</label>
             <desc><![CDATA[
-            Increases Experience gain of all Physical skills (Dex, Str, Con, Spd, Per) by 20% per level.
+            Increases Experience gain of all Physical stats (Dex, Str, Con, Spd, Per) by 20% per level.
             ]]></desc>
         </prestige_-_physical>
         <prestige_-_mental>
             <label>Prestige - Mental</label>
             <desc><![CDATA[
-            Increases Experience gain of all Mental skills (Cha, Int, Soul, Luck) by 20% per level.
+            Increases Experience gain of all Mental stats (Cha, Int, Soul, Luck) by 20% per level.
             ]]></desc>
         </prestige_-_mental>
         <prestige_-_combat>
@@ -1465,6 +1478,8 @@
             <save_loadout>Save To List</save_loadout>
             <load_loadout>Load From List</load_loadout>
             <clear_list>Clear List</clear_list>
+            <clear_disabled>Clear Disabled</clear_disabled>
+            <add_at_cap>*Add action at cap</add_at_cap>
             <max_training>Max Training</max_training>
             <higher_done_percent_benefic>You can find more stuff with higher %.</higher_done_percent_benefic>
             <progress_label>Progress</progress_label>

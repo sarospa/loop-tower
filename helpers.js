@@ -91,11 +91,11 @@ function intToStringNegative(value, amount) {
     return (isPositive === 1 ? "+" : "-") + parseFloat(value).toFixed(baseValue - 1);
 }
 
-function intToString(value, amount) {
+function intToString(value, amount, fixPrecision = false) {
     const prefix = value < 0 ? "-" : "";
     value = Math.abs(parseFloat(value));
     if (value >= 10000) {
-        return prefix + nFormatter(value, 3);
+        return prefix + nFormatter(value, 3, fixPrecision);
     }
     if (value >= 1000) {
         let baseValue = 3;
@@ -189,14 +189,15 @@ const si = [
 ];
 const rx = /\.0+$|(\.[0-9]*[1-9])0+$/u;
 
-function nFormatter(num, digits) {
+function nFormatter(num, digits, fixPrecision=false) {
     for (let i = 0; i < si.length; i++) {
         // /1.000501 to handle rounding
         if ((num) >= si[i].value / 1.000501) {
-            return (num / si[i].value).toPrecision(digits).replace(rx, "$1") + si[i].symbol;
+            // not the most elegant way to implement fixPrecision but whatever
+            return (num / si[i].value).toPrecision(digits).replace(rx, fixPrecision ? "$&" : "$1") + si[i].symbol;
         }
     }
-    return num.toPrecision(digits).replace(rx, "$1");
+    return num.toPrecision(digits).replace(rx, fixPrecision ? "$&" : "$1");
 }
 
 function camelize(str) {
@@ -259,6 +260,8 @@ function removeClassFromDiv(div, className) {
     div.classList.remove(className);
 }
 
+const wrappedElementSymbol = Symbol("wrappedElement");
+
 /**
  * @template {Element} [T=Element]
  * 
@@ -274,11 +277,16 @@ function getElement(elementOrId, expectedClass=/** @type {new()=>T} */(Element),
     for (const expected of expectedClasses) {
         if (element instanceof expected) return element;
     }
+    if (element && wrappedElementSymbol in element) {
+        // last try before bailing
+        const wrappedResult = getElement(/** @type {Element}*/(element[wrappedElementSymbol]), expectedClasses, false, false);
+        if (wrappedResult) return /** @type {T} */(element); // returning the wrapper so it can intercept IDL behaviors
+    }
     if (warnIfMissing) {
         console.warn("Expected element missing or wrong type!", elementOrId, expectedClass, element);
     }
     if (throwIfMissing) {
-        throw new Error(`Expected to find element of type ${expectedClasses.join("|")} with ${elementOrId}, instead found ${element}!`);
+        throw new Error(`Expected to find element of type ${expectedClasses.map(c=>c.name).join("|")} with ${elementOrId}, instead found ${element}!`);
     }
     return undefined;
 }
@@ -309,6 +317,11 @@ function valueElement(elementOrId, throwIfMissing=true, warnIfMissing=true) {
     return getElement(elementOrId, [/** @type {new() => HTMLValueElement} */(HTMLInputElement), HTMLTextAreaElement, HTMLSelectElement], throwIfMissing, warnIfMissing);
 }
 
+/** @returns {node is HTMLValueElement} */
+function isValueElement(node) {
+    return node instanceof HTMLInputElement || node instanceof HTMLTextAreaElement || node instanceof HTMLSelectElement;
+}
+
 /** @param {string|Element} elementOrId  */
 function svgElement(elementOrId, throwIfMissing=true, warnIfMissing=true) {
     return getElement(elementOrId, SVGElement, throwIfMissing, warnIfMissing);
@@ -319,11 +332,11 @@ function templateElement(elementOrId, throwIfMissing=true, warnIfMissing=true) {
     return getElement(elementOrId, HTMLTemplateElement, throwIfMissing, warnIfMissing);
 }
 
-/** @overload @param {string} templateId @param {boolean} [alwaysReturnFragment] @returns {Element | DocumentFragment} */
-/** @overload @param {string} templateId @param {true} alwaysReturnFragment @returns {DocumentFragment} */
-/** @param {string} templateId */
-function cloneTemplate(templateId, alwaysReturnFragment=false) {
-    const template = templateElement(templateId);
+/** @overload @param {string|Element} templateOrId @param {boolean} [alwaysReturnFragment] @returns {Element | DocumentFragment} */
+/** @overload @param {string|Element} templateOrId @param {true} alwaysReturnFragment @returns {DocumentFragment} */
+/** @param {string} templateOrId */
+function cloneTemplate(templateOrId, alwaysReturnFragment=false) {
+    const template = templateElement(templateOrId);
     const fragment = /** @type {DocumentFragment} */(template.content.cloneNode(true));
     if (!alwaysReturnFragment && fragment.childElementCount === 1) {
         return fragment.firstElementChild;
@@ -719,3 +732,66 @@ const typedKeys = /** @type {<K extends string|number|symbol>(object: Partial<Re
 
 /** Strongly-typed version of Object.keys */
 const typedEntries = /** @type {<K extends string|number|symbol, V>(object: Partial<Record<K, V>>) => [K, V][]} */(Object.entries);
+
+const devtoolsHeader = Symbol.for("devtoolsHeader");
+const devtoolsHasBody = Symbol.for("devtoolsHasBody");
+const devtoolsBody = Symbol.for("devtoolsBody");
+
+/**
+ * Convenience class for defining devtools formatting 
+ * @template {*} DTConfig
+ */
+class DevtoolsFormattable {
+    /** @param {DTConfig} config @returns {DTJHTML<this, DTConfig> | null} */
+    dtHeader(config) { return null; }
+    /** @param {DTConfig} config */
+    dtHasBody(config) { return false; }
+    /** @param {DTConfig} config @returns {DTJHTML<this, DTConfig> | null} */
+    dtBody(config) { return null; }
+
+    [devtoolsHeader](config) {
+        return this.dtHeader(config);
+    }
+    [devtoolsHasBody](config) {
+        return this.dtHasBody(config);
+    }
+    [devtoolsBody](config) {
+        return this.dtBody(config);
+    }
+
+    constructor() {
+        new.target.addFormatter();
+    }
+
+    /** @type {DTFormatter} */
+    static formatter = {
+        header(object, config) {
+            return object?.[devtoolsHeader]?.(config) ?? null;
+        },
+        hasBody(object, config) {
+            return object?.[devtoolsHasBody]?.(config) ?? false;
+        },
+        body(object, config) {
+            return object?.[devtoolsBody]?.(config) ?? null;
+        }
+    }
+
+    static addFormatter() {
+        self.devtoolsFormatters ??= [];
+        if (!self.devtoolsFormatters.includes(this.formatter)) {
+            self.devtoolsFormatters.push(this.formatter);
+        }
+    }
+}
+
+//Convenience class for rendering html template strings with syntax coloring
+/** @satisfies {Record<string, (strings: TemplateStringsArray, ...exprs: any[]) => any>} */
+const Raw = {
+    html(strings, ...exprs) {
+        return String.raw(strings, ...exprs);
+    },
+    css(strings, ...exprs) {
+        return String.raw(strings, ...exprs);
+    },
+}
+

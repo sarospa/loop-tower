@@ -94,12 +94,22 @@ window.onblur = function() {
 // handle shift/control keys
 let shiftDown = false;
 function setShiftKey(isDown) {
+    const wasDown = shiftDown;
     shiftDown = isDown;
+    document.documentElement.classList.toggle("shift-key-pressed", isDown);
+    if (shiftDown !== wasDown) {
+        window.dispatchEvent(new Event("modifierkeychange"));
+    }
 }
 
 let controlDown = false;
 function setControlKey(isDown) {
+    const wasDown = controlDown;
     controlDown = isDown;
+    document.documentElement.classList.toggle("control-key-pressed", isDown);
+    if (controlDown !== wasDown) {
+        window.dispatchEvent(new Event("modifierkeychange"));
+    }
 }
 
 // prevent spacebar scrolling

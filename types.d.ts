@@ -47,5 +47,18 @@ declare interface AssassinAction<const N, const E> {
 
 }
 
+type DTJHTMLTag = "span" | "div" | "ol" | "ul" | "li" | "table" | "tr" | "td";
+type DTJHTML<O=unknown,C=unknown> = [DTJHTMLTag, {style?: string}, ...DTJML<O,C>[]] | [DTJHTMLTag, ...DTJML<O,C>[]];
+type DTJML<O=unknown,C=unknown> = DTJHTML<O,C> | ["object", {object: O, config: C} | {object: any}] | string;
+interface DTFormatter<O=any, C=any> {
+    header(object: unknown, config?: C): DTJHTML<O,C> | null;
+    hasBody?: (object: O, config?: C) => boolean;
+    body?: (object: O, config?: C) => DTJHTML<O,C> | null;
+}
+
+declare interface Window {
+    devtoolsFormatters: DTFormatter[];
+}
+
 declare const LZString = await import("lz-string");
 declare const Mousetrap = await import("mousetrap");

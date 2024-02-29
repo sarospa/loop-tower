@@ -126,9 +126,11 @@ function prestigeWithNewValues(nextPrestigeValues, nextPrestigeBuffs) {
 function prestigeConfirmation() {
     save();
     if (window.localStorage[defaultSaveName] && window.localStorage[defaultSaveName] !== "") {
-        if (confirm("Prestiging will reset all of your progress, but retain prestige points. Are you sure?"))
+        const fracmanaWarning = options.fractionalMana ? "In addition, the Fractional Mana option will be disabled, since it can cause the first Wander action to fail. " : "";
+        if (confirm(`Prestiging will reset all of your progress, but retain prestige points. ${fracmanaWarning}Are you sure?`)) {
+            options.fractionalMana = false;
             window.localStorage[defaultSaveName] = "";
-        else
+        } else
             return false;
     }
     return true;

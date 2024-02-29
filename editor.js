@@ -1,47 +1,43 @@
 const baseValueTypes = {
-    skillLevel: "Skill Level",
-    buffLevel: "Buff Level",
-    primaryValue: "Primary value of action",
-    progressLevel: "Progress Level",
-    goodItems: "Total known-good items",
-    discoveredItems: "Total discovered items",
-    checkedItems: "Total checked items",
-    value: "Calculated Value",
-    function: "JS function",
+    skillLevel: ["Skill Level"],
+    buffLevel: ["Buff Level"],
+    primaryValue: ["Primary value of action"],
+    progressLevel: ["Progress Level"],
+    goodItems: ["Total known-good items"],
+    discoveredItems: ["Total discovered items"],
+    checkedItems: ["Total checked items"],
+    value: ["Calculated Value"],
+    function: ["JS function"],
 };
 const numericAdjustmentTypes = {
-    addition: "Add",
-    subtraction: "Subtract",
-    multiplier: "Multiply by",
-    divisor: "Divide by",
-    adjustment: "Named adjustment",
-    skillBonus: "Apply Skill Bonus",
-    prestigeBonus: "Apply Prestige Bonus",
-    surveyBonus: "Apply Survey Bonus",
-    additiveBonus: "Add bonuses before applying",
-    skillMod: "Skill-based modifier",
-    setValue: "Set arbitrary value",
-    ceil: "Round up",
-    floor: "Round down",
-    round: "Round to nearest",
-    clampMin: "Clamp to minimum",
-    clampMax: "Clamp to maximum",
+    addition: ["Add"],
+    subtraction: ["Subtract"],
+    multiplier: ["Multiply by"],
+    divisor: ["Divide by"],
+    adjustment: ["Named adjustment"],
+    skillBonus: ["Apply Skill Bonus", "using the standard multiplier for "],
+    prestigeBonus: ["Apply Prestige Bonus"],
+    surveyBonus: ["Apply Survey Bonus"],
+    additiveBonus: ["Add bonuses before applying"],
+    skillMod: ["Skill-based modifier", "When the level of the ", " skill is"],
+    setValue: ["Set arbitrary value"],
+    ceil: ["Round up"],
+    floor: ["Round down"],
+    round: ["Round to nearest"],
+    clampMin: ["Clamp to minimum"],
+    clampMax: ["Clamp to maximum"],
 };
 const conditionalRuleTypes = {
-    if: "If arbitrary value",
-    ifPrimaryValue: "If action's primary value",
-    ifCurrentValue: "If current evaluation",
-    ifResource: "If resource",
-    ifHasResource: "If player has resource",
-    ifStoryFlag: "If story flag",
-    ifProgress: "If current progress level",
-    ifGoodItems: "If total known-good items",
-    ifDiscoveredItems: "If total discovered items",
-    ifCheckedItems: "If total checked items",
-};
-const numericOrConditionalRuleTypes = {
-    "Condition": conditionalRuleTypes,
-    "Adjustment": numericAdjustmentTypes,
+    if: ["If arbitrary value"],
+    ifPrimaryValue: ["If action's primary value"],
+    ifCurrentValue: ["If current evaluation"],
+    ifResource: ["If resource"],
+    ifHasResource: ["If player has resource"],
+    ifStoryFlag: ["If story flag", "", " is set"],
+    ifProgress: ["If current progress level", "of "],
+    ifGoodItems: ["If total known-good items", "for action: "],
+    ifDiscoveredItems: ["If total discovered items", "for action: "],
+    ifCheckedItems: ["If total checked items", "for action: "],
 };
 const numericTestTypes = {
     min: "≥",
@@ -221,6 +217,7 @@ class DataElement {
                 }
             }
         }
+        return this;
     }
 
     toString() {
@@ -229,7 +226,7 @@ class DataElement {
 
     /** @param {string|Element} elementOrId */
     attachUI(elementOrId, bindUI = true) {
-        this.init();
+        if (!this.#initDone) this.init();
         this.uiElement = htmlElement(elementOrId);
         if (bindUI) this.bindUI();
         return this;
@@ -237,7 +234,7 @@ class DataElement {
 
     /** @param {Element} container @param {Element} insertBefore */
     spawnUI(container = this.parent?.uiElement, insertBefore = null, bindUI = true) {
-        this.init();
+        if (!this.#initDone) this.init();
         this.uiSpawned = true;
         const template = this["defaultTemplate"] ?? this.constructor["defaultTemplate"];
         if (typeof template !== "string") {
@@ -253,14 +250,15 @@ class DataElement {
         const clonedTemplate = typeof templateOrId === "string" ? cloneTemplate(templateOrId) : templateOrId;
         container.insertBefore(clonedTemplate, insertBefore);
         this.uiElement = htmlElement(clonedTemplate instanceof DocumentFragment ? container : clonedTemplate);
-        const summaryElement = this.uiElement.querySelector(":scope>details>summary, details:scope>summary");
-        if (summaryElement && summaryElement.childNodes.length === 0) {
-            summaryElement.textContent = this.toString();
+        if (this.uiElement.classList.contains("default-label")) {
+            this.uiElement.setAttribute("label", this.toString());
         }
         return this.uiElement;
     }
 
+    #uiBound = false;
     bindUI() {
+        if (this.#uiBound) throw new Error("Attempting to re-bind UI!");
         if (!this.uiElement) return;
         for (const [name, required] of Object.entries(this.fieldRequirements ?? {})) {
             for (const element of /** @type {NodeListOf<HTMLValueElement>} */(this.uiElement.querySelectorAll(`[name="${name}"]`))) {
@@ -271,7 +269,7 @@ class DataElement {
             const isNumericEvaluation = evaluationField.classList.contains("numericEvaluation");
             const tagName = evaluationField.getAttribute("data-xml-name");
             const xmlChild = this.xmlElement.querySelector(tagName);
-            const isOptional = evaluationField.classList.contains("optional");
+            const isOptional = evaluationField.hasAttribute("optional");
             const fieldElement =
                 new (isNumericEvaluation ? NumericEvaluationElement : ConditionalEvaluationElement)
                     (this, xmlChild ?? tagName, isOptional).spawnUI(evaluationField);
@@ -282,6 +280,9 @@ class DataElement {
 
     populateUIFields() {
         if (this.isOptional) {
+            if (this.uiElement instanceof ListItem) {
+                this.uiElement.present = this.isPresent;
+            }
             const presenceCheckbox = this.uiElement.querySelector("input.elementPresent[type=checkbox]");
             if (presenceCheckbox) {
                 inputElement(presenceCheckbox).checked = this.isPresent;
@@ -314,7 +315,9 @@ class BaseValueElement extends DataElement {
              "functionName",
              "varName"]);
     }
-    uiElementClass = "";
+
+    /** @type {readonly string[]} */
+    lastBaseValueClasses = [];
 
     /** @param {BaseValueClass} className */
     hasBaseValueClass(className) {
@@ -329,18 +332,90 @@ class BaseValueElement extends DataElement {
             return;
         }
         const baseValueClass = baseValueClasses[type];
-        this.uiElement.className = `${this.uiElementClass} ${baseValueClass}`;
+        this.uiElement.classList.remove(...this.lastBaseValueClasses);
+        this.uiElement.classList.add(...baseValueClass);
+        this.lastBaseValueClasses = baseValueClass;
     }
 
     bindUI() {
         super.bindUI();
-        this.uiElementClass = this.uiElement.className;
-        const typeSelect = valueElement(this.uiElement.querySelector("select.baseValueType"));
+        const typeSelect = valueElement(this.uiElement.querySelector(".baseValueType > select"));
         (typeSelect.onchange = () => this.changeBaseValueType(typeSelect.value))();
     }
 }
 
-class EvaluationRuleElement extends DataElement {
+class EvaluationRulesContainerElement extends DataElement {
+    /** @type {EvaluationRuleElement[]} */
+    rules = [];
+    /** @type {HTMLElement} */
+    rulesContainer;
+
+    init() {
+        super.init();
+        for (const elem of this.xmlElement?.children ?? []) {
+            if (elem.tagName in numericAdjustmentTypes || elem.tagName in conditionalRuleTypes) {
+                this.rules.push(new EvaluationRuleElement(this, elem, true, true).init());
+            }
+        }
+        return this;
+    }
+
+    bindUI() {
+        super.bindUI();
+
+        this.rulesContainer = htmlElement(this.uiElement.classList.contains("evaluationRules") ? this.uiElement : this.uiElement.querySelector(".evaluationRules"));
+        for (const adj of this.rules) {
+            adj.spawnUI(this.rulesContainer);
+        }
+    }
+}
+
+class ValueBearingElement extends EvaluationRulesContainerElement {
+    static {
+        this.addDefaultFields([], ["value"]);
+    }
+    static hasBaseValue = true;
+
+    /** @type {string} */
+    value;
+
+    /** @type {BaseValueElement} */
+    baseValue;
+
+    /** @type {boolean} */
+    hasBaseValue = this.constructor["hasBaseValue"] ?? false;
+
+    get effectiveValue() {
+        return this.value === "" ? this.baseValue : this.value;
+    }
+
+    init() {
+        super.init();
+        if (this.xmlElement?.childNodes.length === 1 && this.xmlElement.firstChild.nodeType === Node.TEXT_NODE && this.value == null) {
+            const text = this.xmlElement.firstChild.nodeValue.trim();
+            if (text.length) {
+                this.value = text;
+            }
+        }
+        if (isBaseValueType(this.xmlElement?.firstElementChild?.tagName ?? "")) {
+            this.baseValue = new BaseValueElement(this, this.xmlElement.firstElementChild, true, true);
+        }
+        this.baseValue ??= new BaseValueElement(this, "", true, false);
+        return this;
+    }
+
+    bindUI() {
+        super.bindUI();
+        if (this.hasBaseValue) {
+            const baseValue = htmlElement(this.uiElement.querySelector(".baseValueCalculation"));
+            this.baseValue.spawnUI(baseValue);
+            const valueInput = inputElement(this.uiElement.querySelector("[name=value]"));
+            valueInput?.addEventListener("input", () => this.baseValue.isPresent = valueInput.value === "");
+        }
+    }
+}
+
+class EvaluationRuleElement extends ValueBearingElement {
     static {
         this.defaultTemplate = "evaluationRuleTemplate";
         this.addDefaultFields(
@@ -388,7 +463,7 @@ class EvaluationRuleElement extends DataElement {
                 }
             }
         }
-        super.init();
+        return super.init();
     }
 
     changeRuleType(type="") {
@@ -415,63 +490,24 @@ class EvaluationRuleElement extends DataElement {
         const typeSelect = valueElement(this.uiElement.querySelector("select[name=tagName]"));
         (typeSelect.onchange = () => this.changeRuleType(typeSelect.value))();
     }
-}
 
-class EvaluationRulesContainerElement extends DataElement {
-    /** @type {EvaluationRuleElement[]} */
-    rules = [];
-    /** @type {HTMLElement} */
-    rulesContainer;
-
-    init() {
-        super.init();
-        for (const elem of this.xmlElement?.children ?? []) {
-            if (elem.tagName in numericAdjustmentTypes || elem.tagName in conditionalRuleTypes) {
-                this.rules.push(new EvaluationRuleElement(this, elem, true, true));
-            }
-        }
-    }
-
-    bindUI() {
-        super.bindUI();
-
-        this.rulesContainer = htmlElement(this.uiElement.classList.contains("evaluationRules") ? this.uiElement : this.uiElement.querySelector(".evaluationRules"));
-        for (const adj of this.rules) {
-            adj.spawnUI(this.rulesContainer);
+    populateUIFields() {
+        super.populateUIFields();
+        if (this.rules.length > 0) {
+            getElement(this.uiElement, ListItem).open = true;
         }
     }
 }
 
-class ConditionalEvaluationElement extends EvaluationRulesContainerElement {
+class ConditionalEvaluationElement extends ValueBearingElement {
     static {
         this.defaultTemplate = "conditionalEvaluationTemplate";
+        this.hasBaseValue = false;
     }
 
     /** @param {string} templateId @param {Element} container @param {Element} insertBefore */
     spawnUIFromTemplate(templateId, container = this.parent?.uiElement, insertBefore = null) {
-        const {isOptional} = this;
-        let label = container.querySelector(":scope > label");
-        const uiElement = super.spawnUIFromTemplate(templateId, container, insertBefore);
-
-        const labelSlot = uiElement.querySelector("slot[name=label]");
-        const labelContainer = labelSlot.parentElement;
-
-        if (!label) {
-            label = document.createElement('label');
-            label.textContent = this.toString();
-        }
-
-        labelSlot.replaceWith(label);
-        if (isOptional) {
-            // add checkbox to label
-            label.insertAdjacentHTML("afterbegin", "<input type='checkbox' class='elementPresent'> ");
-        } else {
-            // no checkbox, so move all label attributes to the parent element and unwrap it
-            for (const attr of label.attributes) {
-                labelContainer.setAttribute(attr.name, attr.value);
-            }
-            label.outerHTML = label.innerHTML;
-        }
+        const uiElement = getElement(super.spawnUIFromTemplate(templateId, container, insertBefore), ListItem);
 
         return uiElement;
     }
@@ -479,7 +515,7 @@ class ConditionalEvaluationElement extends EvaluationRulesContainerElement {
     populateUIFields() {
         super.populateUIFields();
         if (this.rules.length > 0) {
-            getElement(this.uiElement, HTMLDetailsElement).open = true;
+            getElement(this.uiElement, ListItem).open = true;
         }
     }
 }
@@ -487,39 +523,17 @@ class ConditionalEvaluationElement extends EvaluationRulesContainerElement {
 class NumericEvaluationElement extends ConditionalEvaluationElement {
     static {
         this.defaultTemplate = "numericEvaluationTemplate";
-        this.addDefaultFields([], ["value"]);
+        this.hasBaseValue = true;
+    }
+    /** @param {string} templateId @param {Element} container @param {Element} insertBefore */
+    spawnUIFromTemplate(templateId, container = this.parent?.uiElement, insertBefore = null) {
+        const uiElement = super.spawnUIFromTemplate(templateId, container, insertBefore);
+
+        uiElement.label += ":";
+
+        return uiElement;
     }
 
-    /** @type {string} */
-    value;
-
-    /** @type {BaseValueElement} */
-    baseValue;
-
-    get effectiveValue() {
-        return this.value === "" ? this.baseValue : this.value;
-    }
-
-    init() {
-        super.init();
-        if (this.xmlElement?.firstChild?.nodeType === Node.TEXT_NODE && this.value == null) {
-            const text = this.xmlElement.firstChild.nodeValue.trim();
-            if (text.length) {
-                this.value = text;
-            }
-        } else if (isBaseValueType(this.xmlElement?.firstElementChild?.tagName ?? "")) {
-            this.baseValue = new BaseValueElement(this, this.xmlElement.firstElementChild, true, true);
-        }
-        this.baseValue ??= new BaseValueElement(this, "", true, false);
-    }
-
-    bindUI() {
-        super.bindUI();
-        const baseValue = htmlElement(this.uiElement.querySelector("details.baseValueCalculation"));
-        this.baseValue.spawnUI(baseValue);
-        const nameInput = inputElement(this.uiElement.querySelector("input[name=value]"));
-        nameInput.oninput = () => this.baseValue.isPresent = nameInput.value === "";
-    }
 }
 
 class NamedAdjustment extends EvaluationRulesContainerElement {
@@ -574,11 +588,12 @@ class ActionDefinition extends DataElement {
             console.warn(`Unknown or missing type ${this.type}, treating as normal action`, this, this.xmlElement);
             this.type = "normal";
         }
+        return this;
     }
 
     updateNameDerivations() {
-        this.updatePlaceholder("input[name=varName]", withoutSpaces(this.name));
-        this.updatePlaceholder("input[name=xmlName]", getXMLName(this.name));
+        this.updatePlaceholder("[name=varName]", withoutSpaces(this.name));
+        this.updatePlaceholder("[name=xmlName]", getXMLName(this.name));
     }
     updatePlaceholder(inputSelector, placeholderValue) {
         const element = inputElement(this.uiElement.querySelector(inputSelector));
@@ -621,7 +636,7 @@ class DataListBinding {
     list;
     /** @type {Record<K, V>|V[]} */
     optionsSource;
-    /** @type {(value: V, key: K) => string|false} */
+    /** @type {(value: V, key: K) => string|string[]|false} */
     labelFunc;
     /** @type {(key: K, value: V) => string|false} */
     keyFunc;
@@ -631,7 +646,7 @@ class DataListBinding {
     /**
      * @param {string|Element} listId
      * @param {Record<K, V>|V[]} optionsSource
-     * @param {(value: V, key: K) => string|false} labelFunc
+     * @param {(value: V, key: K) => string|string[]|false} labelFunc
      * @param {(key: K, value: V) => string|false} keyFunc
      * @param {(value: V, key: K) => string} [classFunc]
      */
@@ -654,7 +669,8 @@ class DataListBinding {
         }
         const newOptions = [];
         for (const [sourceKey, sourceValue] of /** @type {[K,V][]} */(Object.entries(this.optionsSource))) {
-            const optionLabel = this.labelFunc(sourceValue, sourceKey);
+            const optionLabels = this.labelFunc(sourceValue, sourceKey);
+            const optionLabel = Array.isArray(optionLabels) ? optionLabels[0] : optionLabels;
             const optionValue = this.keyFunc(sourceKey, sourceValue);
             const optionClass = this.classFunc?.(sourceValue, sourceKey) ?? "";
             if (optionValue === false || optionLabel === false) continue;
@@ -671,6 +687,15 @@ class DataListBinding {
             if (optionClass !== newOption.className) {
                 newOption.className = optionClass;
                 isDirty = true;
+            }
+            if (Array.isArray(optionLabels)) {
+                for (const [index, label] of optionLabels.slice(1).entries()) {
+                    const key = `extraLabel-${index + 1}`;
+                    if (newOption.dataset[key] !== (label || undefined)) {
+                        newOption.dataset[key] = (label || undefined);
+                        isDirty = true;
+                    }
+                }
             }
             newOptions.push(newOption);
         }
@@ -700,9 +725,12 @@ class DataListBinding {
         if (typeof emptyOptionLabel === "string") {
             newOptions.push(new Option(emptyOptionLabel, "", currentValue === "", currentValue === ""));
         }
-        for (const {value, text, className} of this.list.options) {
+        for (const {value, text, className, dataset} of this.list.options) {
             const newOption = new Option(text, value, value === currentValue, value === currentValue);
             newOption.className = className;
+            for (const [key, value] of Object.entries(dataset)) {
+                newOption.dataset[key] = value;
+            }
             newOptions.push(newOption);
         }
         container.replaceChildren(...newOptions);
@@ -740,7 +768,6 @@ class ActionListEditor {
 
         if (!this.windowBound) {
             this.windowBound = true;
-            addEventListener("input", setValueAttribute, {capture: true, passive: true});
 
             this.bindDataList("skills", skills, s => s.label);
             this.bindDataList("buffs", buffs, b => !(b.name in prestigeBases) && b.label);
@@ -840,51 +867,5 @@ async function startEditor() {
     console.log("Starting editor...");
     await editor.init().load("data/actionList.xml");
     console.log(`Loaded ${editor.url}`);
-}
-
-/**
- * @template {string|number|symbol} K
- * @template {*} V
- * @param {Document|DocumentFragment|Element} context
- * @param {string} selector
- * @param {Record<K, V>} options
- * @param {string} [currentSelection]
- * @param {(value: V, key: K) => string|false} [labelFunc]
- * @param {(value: K, key: V) => string|false} [keyFunc]
- */
-function populateSelectOptions(context, selector, options, currentSelection, labelFunc = x => String(x), keyFunc = k => String(k)) {
-    for (const element of context instanceof Element && !selector ? [context] : context.querySelectorAll(selector)) {
-        element.innerHTML = ""; // still the fastest way to remove all children
-        for (const [key, value] of /** @type {[K,V][]} */(Object.entries(options))) {
-            const label = labelFunc(value, key);
-            const adjKey = keyFunc(key, value);
-            if (adjKey === false || label === false) continue;
-            const isSelected = currentSelection === adjKey;
-            element.appendChild(new Option(label, adjKey, isSelected, isSelected));
-        }
-    }
-}
-
-/**
- * @template {string} K
- * @template {*} V
- * @template {Record<K, V>} KV
- * @param {Document|DocumentFragment|Element} context
- * @param {string} selector
- * @param {Record<string, KV>} optionGroups
- * @param {string} [currentSelection]
- * @param {(value: V, key: K) => string|false} [labelFunc]
- * @param {(value: K, key: V) => string|false} [keyFunc]
- */
-function populateSelectOptionGroups(context, selector, optionGroups, currentSelection, labelFunc = x => String(x), keyFunc = k => String(k)) {
-    for (const element of context instanceof Element && !selector ? [context] : context.querySelectorAll(selector)) {
-        element.innerHTML = "";
-        for (const [label, opts] of Object.entries(optionGroups)) {
-            const group = document.createElement("optgroup");
-            group.label = label;
-            element.appendChild(group);
-            populateSelectOptions(group, null, opts, currentSelection, labelFunc, keyFunc);
-        }
-    }
 }
 

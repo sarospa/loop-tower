@@ -46,6 +46,7 @@ class View {
         document.body.addEventListener("mouseover", this.mouseoverHandler, {passive: true});
         document.body.removeEventListener("focusin", this.mouseoverHandler);
         document.body.addEventListener("focusin", this.mouseoverHandler, {passive: true});
+        window.addEventListener("modifierkeychange", this.modifierkeychangeHandler);
         /** @type {WeakMap<HTMLElement, Element | false>} */
         this.tooltipTriggerMap = new WeakMap();
         this.mouseoverCount = 0;
@@ -53,6 +54,7 @@ class View {
 
     constructor() {
         this.mouseoverHandler = this.mouseoverHandler.bind(this);
+        this.modifierkeychangeHandler = this.modifierkeychangeHandler.bind(this);
     }
 
     /** @param {UIEvent} event */
@@ -79,6 +81,10 @@ class View {
         }
     };
 
+    modifierkeychangeHandler() {
+        htmlElement("clearList").textContent = shiftDown ? _txt("actions>tooltip>clear_disabled") : _txt("actions>tooltip>clear_list");
+    }
+
     /** @param {HTMLElement} element */
     getClosestTrigger(element) {
         let trigger = this.tooltipTriggerMap.get(element);
@@ -96,7 +102,7 @@ class View {
         for (const stat of statList) {
             const axisTip = statGraph.getAxisTip(stat);
             totalContainer.insertAdjacentHTML("beforebegin",
-            `<div class='statContainer showthat stat-${stat}' style='left:${axisTip[0]}%;top:${axisTip[1]+3}%;' onmouseover='view.showStat("${stat}")' onmouseout='view.showStat(undefined)'>
+            Raw.html`<div class='statContainer showthat stat-${stat}' style='left:${axisTip[0]}%;top:${axisTip[1]+3}%;' onmouseover='view.showStat("${stat}")' onmouseout='view.showStat(undefined)'>
                 <div class='statLabelContainer'>
                     <div class='medium bold stat-name long-form' style='margin-left:18px;margin-top:5px;'>${_txt(`stats>${stat}>long_form`)}</div>
                     <div class='medium bold stat-name short-form' style='margin-left:18px;margin-top:5px;'>${_txt(`stats>${stat}>short_form`)}</div>
@@ -111,9 +117,11 @@ class View {
                         <div class='label bold' id='stat${stat}Level'>0</div>
                     </div>
                 </div>
-                <div class='thinProgressBarUpper expBar'><div class='statBar statLevelLogBar logBar' id='stat${stat}LevelLogBar'></div></div>
-                <div class='thinProgressBarLower talentBar'><div class='statBar statTalentLogBar logBar' id='stat${stat}TalentLogBar'></div></div>
-                <div class='thinProgressBarLower soulstoneBar'><div class='statBar statSoulstoneLogBar logBar' id='stat${stat}SoulstoneLogBar'></div></div>
+                <div class='statBars'>
+                    <div class='thinProgressBarUpper expBar'><div class='statBar statLevelLogBar logBar' id='stat${stat}LevelLogBar'></div></div>
+                    <div class='thinProgressBarLower talentBar'><div class='statBar statTalentLogBar logBar' id='stat${stat}TalentLogBar'></div></div>
+                    <div class='thinProgressBarLower soulstoneBar'><div class='statBar statSoulstoneLogBar logBar' id='stat${stat}SoulstoneLogBar'></div></div>
+                </div>
                 <div class='showthis' id='stat${stat}Tooltip' style='width:225px;'>
                     <div class='medium bold'>${_txt(`stats>${stat}>long_form`)}</div><br>${_txt(`stats>${stat}>blurb`)}
                     <br>
@@ -524,7 +532,7 @@ class View {
 
     updateTime() {
         document.getElementById("timeBar").style.width = `${100 - timer / timeNeeded * 100}%`;
-        document.getElementById("timer").textContent = `${intToString((timeNeeded - timer), options.fractionalMana ? 2 : 1)} | ${formatTime((timeNeeded - timer) / 50 / getActualGameSpeed())}`;
+        document.getElementById("timer").textContent = `${intToString((timeNeeded - timer), options.fractionalMana ? 2 : 1, true)} | ${formatTime((timeNeeded - timer) / 50 / getActualGameSpeed())}`;
         this.adjustGoldCost({varName:"Wells", cost: Action.ManaWell.goldCost()});
     };
     updateOffline() {
@@ -661,14 +669,16 @@ class View {
             let capButton = "";
             const townNum = translatedAction.townNum;
             const travelNum = getTravelNum(action.name);
+            /** @type {ZoneSpan[]} */
             const collapses = [];
             // eslint-disable-next-line no-loop-func
             actions.next.forEach((a, index) => {
                 if (a.collapsed) {
-                    const collapse = {};
-                    collapse.zone = getActionPrototype(a.name).townNum;
-                    collapse.index = index;
-                    collapses.push(collapse);
+                    const zoneSpan = actions.zoneSpanAtIndex(index);
+                    // if this collapse doesn't come at the end of a span, or if it isn't the right zone, then it doesn't count
+                    const actionZone = getActionPrototype(a.name).townNum;
+                    if (zoneSpan.end !== index || !zoneSpan.zones.includes(actionZone)) return;
+                    collapses.push(zoneSpan);
                 }
             });
             if (hasLimit(action.name)) {
@@ -685,8 +695,8 @@ class View {
             const actionLoops = action.loops > 99999 ? toSuffix(action.loops) : formatNumber(action.loops);
             const opacity = action.disabled || action.loops === 0 ? "opacity: 0.5" : "";
             let display = "display: flex";
-            for (const collapse of collapses) {
-                if (townNum === collapse.zone && i < collapse.index) display = "display: none";
+            if (collapses.some(z => z.start <= i && z.end > i)) {
+                display = "display: none";
             }
             let color;
             if (action.name === "Face Judgement") {
@@ -1162,17 +1172,19 @@ class View {
 
     createTownActions() {
         if (actionOptionsTown[0].firstChild) return;
-        for (const prop in Action) {
-            const action = Action[prop];
+        for (const action of towns.flatMap(t => t.totalActionList)) {
             this.createTownAction(action);
-            if (action.type === "limited") this.createTownInfo(action);
-            if (action.type === "progress") {
+        }
+        for (const varName of towns.flatMap(t => t.allVarNames)) {
+            const action = totalActionList.find(a => a.varName === varName);
+            if (isActionOfType(action, "limited")) this.createTownInfo(action);
+            if (isActionOfType(action, "progress")) {
                 if (action.name.startsWith("Survey")) this.createGlobalSurveyProgress(action);
                 this.createActionProgress(action);
             }
-            if (action.type === "multipart") this.createMultiPartPBar(action);
-            if (options.highlightNew) this.highlightIncompleteActions();
+            if (isActionOfType(action, "multipart")) this.createMultiPartPBar(action);
         }
+        if (options.highlightNew) this.highlightIncompleteActions();
     };
 
     /** @param {ActionOfType<"progress">} action  */
@@ -1290,15 +1302,15 @@ class View {
                 extraImage += `<img src='img/${camelize(action.affectedBy[i])}.svg' class='smallIcon' draggable='false' style='position:absolute;${extraImagePositions[i]}'>`;
             }
         }
-        const isTravel = getTravelNum(action.name) > 0;
-        const divClass = isTravel ? "travelContainer" : "actionContainer";
+        const isTravel = getTravelNum(action.name) != 0;
+        const divClass = `${isTravel ? "travelContainer" : "actionContainer"} ${isTraining(action.name) || hasLimit(action.name) ? "cappableActionContainer" : ""}`;
         const imageName = action.name.startsWith("Assassin") ? "assassin" : camelize(action.name);
         const unlockConditions = /<br>\s*Unlocked (.*?)(?:<br>|$)/is.exec(`${action.tooltip}${action.goldCost === undefined ? "" : action.tooltip2}`)?.[1]; // I hate this but wygd
         const lockedText = unlockConditions ? `${_txt("actions>tooltip>locked_tooltip")}<br>Will unlock ${unlockConditions}` : `${action.tooltip}${action.goldCost === undefined ? "" : action.tooltip2}`;
         const totalDivText =
             `<button
                 id='container${action.varName}'
-                class='${divClass} actionOrTravelContainer showthat'
+                class='${divClass} actionOrTravelContainer ${action.type}ActionContainer showthat'
                 draggable='true'
                 ondragover='handleDragOver(event)'
                 ondragstart='handleDirectActionDragStart(event, "${action.name}", ${action.townNum}, "${action.varName}", false)'
@@ -1307,7 +1319,7 @@ class View {
                 onmouseover='view.updateAction("${action.varName}")'
                 onmouseout='view.updateAction(undefined)'
             >
-                ${action.label}<br>
+                <label>${action.label}</label><br>
                 <div style='position:relative'>
                     <img src='img/${imageName}.svg' class='superLargeIcon' draggable='false'>${extraImage}
                 </div>
