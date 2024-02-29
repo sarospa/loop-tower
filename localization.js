@@ -65,6 +65,7 @@ const Localization = self["Localization"] = {
         return txt;
     },
     // lib can be ignored to use the last used lib. returns the texts for the given key as objects
+    /** @returns {JQuery<Element>} */
     txtsObj(path, lib) {
         if (typeof(lib) === "undefined") return $(Localization.libs[Localization.lastLib]).find(path);
         return $(Localization.libs[lib]).find(path);

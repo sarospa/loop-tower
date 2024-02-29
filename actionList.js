@@ -4736,9 +4736,6 @@ Action.TidyUp = new MultipartAction("Tidy Up", {
         addResource("reputation", 1);
         addResource("gold", 5);
         setStoryFlag("tidiedUp");
-        if (loopCounter >= 4) setStoryFlag("tidiedUp1Time")
-        if (loopCounter >= 24) setStoryFlag("tidiedUp6Times")
-        if (loopCounter >= 80) setStoryFlag("tidiedUp20Times")
     },
     segmentFinished() {
         // empty.
@@ -5030,15 +5027,15 @@ Action.WizardCollege = new MultipartAction("Wizard College", {
     varName: "wizCollege",
     storyReqs(storyNum) {
         switch(storyNum) {
-            case 12: return storyFlags.wizardGuildTestTaken;
-            case 13: return storyFlags.wizardGuildStudentAchieved;
-            case 14: return storyFlags.wizardGuildApprenticeAchieved;
-            case 15: return storyFlags.wizardGuildSpellcasterAchieved;
-            case 16: return storyFlags.wizardGuildWizardAchieved;
-            case 17: return storyFlags.wizardGuildSageAchieved;
-            case 18: return storyFlags.wizardGuildMagusAchieved;
-            case 19: return storyFlags.wizardGuildCouncilMemberAchieved;
-            case 20: return storyFlags.wizardGuildChairAchieved;
+            case 1: return storyVars.maxWizardGuildSegmentCleared >= 0;
+            case 12: return storyVars.maxWizardGuildSegmentCleared >= 3;
+            case 2: return storyVars.maxWizardGuildSegmentCleared >= 6;
+            case 3: return storyVars.maxWizardGuildSegmentCleared >= 12;
+            case 4: return storyVars.maxWizardGuildSegmentCleared >= 18;
+            case 6: return storyVars.maxWizardGuildSegmentCleared >= 30;
+            case 8: return storyVars.maxWizardGuildSegmentCleared >= 42;
+            case 10: return storyVars.maxWizardGuildSegmentCleared >= 54;
+            case 13: return storyVars.maxWizardGuildSegmentCleared >= 57;
         }
     },
     stats: {
@@ -5076,14 +5073,7 @@ Action.WizardCollege = new MultipartAction("Wizard College", {
         curWizCollegeSegment++;
         view.requestUpdate("adjustManaCost", "Restoration");
         view.requestUpdate("adjustManaCost", "Spatiomancy");
-        if (curWizCollegeSegment >= 3) setStoryFlag("wizardGuildStudentAchieved");
-        if (curWizCollegeSegment >= 6) setStoryFlag("wizardGuildApprenticeAchieved");
-        if (curWizCollegeSegment >= 12) setStoryFlag("wizardGuildSpellcasterAchieved");
-        if (curWizCollegeSegment >= 18) setStoryFlag("wizardGuildWizardAchieved");
-        if (curWizCollegeSegment >= 30) setStoryFlag("wizardGuildSageAchieved");
-        if (curWizCollegeSegment >= 42) setStoryFlag("wizardGuildMagusAchieved");
-        if (curWizCollegeSegment >= 54) setStoryFlag("wizardGuildCouncilMemberAchieved");
-        if (curWizCollegeSegment >= 57) setStoryFlag("wizardGuildChairAchieved");
+        increaseStoryVarTo("maxWizardGuildSegmentCleared", curWizCollegeSegment);
     },
     getPartName() {
         return `${getWizCollegeRank().name}`;
@@ -5099,7 +5089,7 @@ Action.WizardCollege = new MultipartAction("Wizard College", {
     },
     finish() {
         resources.wizardCollege = true;
-        setStoryFlag("wizardGuildTestTaken");
+        increaseStoryVarTo("maxWizardGuildSegmentCleared", 0);
     },
 });
 function getWizCollegeRank(offset) {
@@ -5797,8 +5787,8 @@ Action.RaiseZombie = new Action("Raise Zombie", {
     storyReqs(storyNum) {
         switch(storyNum) {
             case 1: return storyFlags.attemptedRaiseZombie;
-            case 3: return storyFlags.raised10Zombies;
-            case 4: return storyFlags.raised25Zombies;
+            case 3: return storyVars.maxZombiesRaised >= 10;
+            case 4: return storyVars.maxZombiesRaised >= 25;
         }
     },
     stats: {
@@ -5828,8 +5818,7 @@ Action.RaiseZombie = new Action("Raise Zombie", {
         setStoryFlag("attemptedRaiseZombie");
         handleSkillExp(this.skills);
         addResource("zombie", 1);
-        if (resources.zombie >= 10) setStoryFlag("raised10Zombies");
-        if (resources.zombie >= 25) setStoryFlag("raised25Zombies");
+        increaseStoryVarTo("maxZombiesRaised", resources.zombie);
     },
 });
 

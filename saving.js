@@ -347,15 +347,6 @@ const storyFlags = {
     armorEnchanted: false,
     enchanted10Armor: false,
     enchanted20Armor: false,
-    wizardGuildTestTaken: false,
-    wizardGuildStudentAchieved: false,
-    wizardGuildApprenticeAchieved: false,
-    wizardGuildSpellcasterAchieved: false,
-    wizardGuildWizardAchieved: false,
-    wizardGuildSageAchieved: false,
-    wizardGuildMagusAchieved: false,
-    wizardGuildCouncilMemberAchieved: false,
-    wizardGuildChairAchieved: false,
     repeatedCitizenExam: false,
     houseBuilt: false,
     housesBuiltGodlike: false,
@@ -378,13 +369,12 @@ const storyFlags = {
     blessingSought: false,
     greatBlessingSought: false,
     feastAttempted: false,
+    meanderIM100: false,
     wellDrawn: false,
     drew10Wells: false,
     drew15Wells: false,
     drewDryWell: false,
     attemptedRaiseZombie: false,
-    raised10Zombies: false,
-    raised25Zombies: false,
     failedRaiseZombie: false,
     spireAttempted: false,
     clearedSpire: false,
@@ -478,7 +468,33 @@ const storyReqs = storyFlags; // compatibility alias, can be removed when we're 
 
 /** @typedef {keyof typeof storyVars} StoryVarName */
 const storyVars = {
+    maxWizardGuildSegmentCleared: -1,
+    maxZombiesRaised: -1,
 };
+
+/**
+ * @satisfies {{
+ *  storyFlags: {[K in StoryFlagName]?: (loadingFlags: Record<string, boolean>, loadingVars: Record<string, number>) => boolean},
+ *  storyVars: {[K in StoryVarName]?: (loadingFlags: Record<string, boolean>, loadingVars: Record<string, number>) => number},
+ * }}
+ */
+const storyInitializers = {
+    storyFlags: {
+    },
+    storyVars: {
+        maxWizardGuildSegmentCleared(loadingFlags, loadingVars) {
+            if (loadingFlags["wizardGuildRankSSSReached"]) return 48;
+            if (loadingFlags["wizardGuildRankSSReached"]) return 42;
+            if (loadingFlags["wizardGuildRankSReached"]) return 36;
+            if (loadingFlags["wizardGuildRankAReached"]) return 30;
+            if (loadingFlags["wizardGuildRankBReached"]) return 24;
+            if (loadingFlags["wizardGuildRankCReached"]) return 18;
+            if (loadingFlags["wizardGuildRankDReached"]) return 12;
+            if (loadingFlags["wizardGuildRankEReached"]) return 6;
+            if (loadingFlags["wizardGuildTestTaken"]) return 0;
+        },
+    },
+}
 
 
 const curDate = new Date();
@@ -548,6 +564,7 @@ Data.registerAll({
     townsUnlocked,
     completedActions,
     storyFlags,
+    storyVars,
     totals,
 });
 
@@ -1029,11 +1046,19 @@ function doLoad(toLoad) {
     }
 
 
-    if (toLoad.storyReqs !== undefined) {
-        for (const property in storyFlags) {
-            if (toLoad.storyReqs.hasOwnProperty(property)) {
-                storyFlags[property] = toLoad.storyReqs[property];
-            }
+    for (const property in storyFlags) {
+        if (toLoad.storyReqs?.hasOwnProperty(property)) {
+            storyFlags[property] = toLoad.storyReqs[property];
+        } else {
+            storyFlags[property] = storyInitializers.storyFlags[property]?.(toLoad.storyReqs ?? {}, toLoad.storyVars ?? {}) ?? false;
+        }
+    }
+
+    for (const property in storyVars) {
+        if (toLoad.storyVars?.hasOwnProperty(property)) {
+            storyVars[property] = toLoad.storyVars[property];
+        } else {
+            storyVars[property] = storyInitializers.storyVars[property]?.(toLoad.storyReqs ?? {}, toLoad.storyVars ?? {}) ?? -1;
         }
     }
 

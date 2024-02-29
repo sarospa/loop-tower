@@ -1838,6 +1838,14 @@ function setStoryFlag(name) {
 }
 const unlockStory = setStoryFlag; // compatibility alias
 
+/** @param {StoryVarName} name @param {number} value */
+function increaseStoryVarTo(name, value) {
+    if (storyVars[name] < value) {
+        storyVars[name] = value;
+        if (options.actionLog) view.requestUpdate("updateStories", false);
+    }
+}
+
 function scrollToPanel(event, target) {
     event.preventDefault();
     const element = document.getElementById(target);
