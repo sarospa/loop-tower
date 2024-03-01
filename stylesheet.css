@@ -970,6 +970,10 @@ input[type="checkbox"][disabled] + label {
     display: none !important; /* one of the few cases where I feel !important is justified */
 }
 
+.user-hidden.townStatContainer, .user-hidden > :is(.townStatContainer,.townInfoContainer) {
+    opacity: 0.5;
+}
+
 #townInfos {
     display: block;
 }
