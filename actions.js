@@ -48,6 +48,7 @@
  * @prop {boolean}    disabled
  * @prop {boolean}    [collapsed]
  * @prop {ActionLoopType} [loopsType]
+ * @prop {number}     [actionId]
  */
 
 /** @param {AnyActionEntry} action @returns {action is MultipartAction} */
@@ -389,11 +390,11 @@ class Actions {
                 if (currentZones.length > 1 && currentZones.includes(actionProto.townNum)) {
                     currentZones = [actionProto.townNum];
                 }
-                this.#zoneSpans.push(new ZoneSpan(currentStartIndex, index, currentZones, this.#zoneSpans.length));
+                this.#zoneSpans.push(new ZoneSpan(currentStartIndex, index, currentZones, this.#zoneSpans.length, this.next));
                 currentStartIndex = index + 1;
                 currentZones = travelDeltas.map(x => x + actionProto.townNum);
             }
-            this.#zoneSpans.push(new ZoneSpan(currentStartIndex, this.next.length, currentZones, this.#zoneSpans.length));
+            this.#zoneSpans.push(new ZoneSpan(currentStartIndex, this.next.length, currentZones, this.#zoneSpans.length, this.next));
         }
         return this.#zoneSpans;
     }
@@ -403,6 +404,34 @@ class Actions {
 
     /** @type {number} */
     #lastModifiedIndex;
+
+    /** @param {number} actionId  */
+    findActionWithId(actionId) {
+        const index = this.findIndexOfActionWithId(actionId);
+        if (index < 0) return undefined;
+        const action = this.next[index];
+        return {...action, index};
+    }
+
+    /** @param {number} actionId  */
+    findIndexOfActionWithId(actionId) {
+        return this.next.findIndex(a => a.actionId === Number(actionId));
+    }
+
+    getMaxActionId() {
+        return Math.max(0, ...this.next.map(a => a.actionId).filter(a => a));
+    }
+
+    /** @param {NextActionEntry} action @param {(action: Readonly<NextActionEntry>, actionProto: Readonly<AnyAction>) => boolean} [additionalTest]  */
+    isValidAndEnabled(action, additionalTest) {
+        return action && (!action.actionId || this.next.some(a => a.actionId === action.actionId)) && Actions.isValidAndEnabled(action, additionalTest);
+    }
+
+    /** @param {NextActionEntry} action @param {(action: Readonly<NextActionEntry>, actionProto: Readonly<AnyAction>) => boolean} [additionalTest]  */
+    static isValidAndEnabled(action, additionalTest) {
+        const actionProto = getActionPrototype(action?.name);
+        return actionProto && !action.disabled && action.loops > 0 && (!additionalTest || additionalTest(action, actionProto));
+    }
 
     /**
      * @param {ActionName}     action
@@ -429,10 +458,13 @@ class Actions {
             const actionProto = getActionPrototype(toAdd.name);
             initialOrder = this.closestValidIndexForAction(actionProto?.townNum, initialOrder);
         }
-        this.#nextLast = structuredClone(this.next);
+        // Number.isFinite(), unlike isFinite(), doesn't coerce its argument so it also functions as a typecheck
+        if (!Number.isFinite(toAdd.actionId) || this.findActionWithId(toAdd.actionId)) {
+            // define it as immutable and non-enumerable so it doesn't get picked up by save
+            Object.defineProperty(toAdd, "actionId", {value: this.getMaxActionId() + 1, configurable: true, writable: false, enumerable: false});
+        }
+        this.recordLast();
         this.#writableNext.splice(initialOrder, 0, toAdd);
-        this.#zoneSpans = null;
-        this.#lastModifiedIndex = undefined;
         return initialOrder;
     }
 
@@ -459,7 +491,7 @@ class Actions {
             }
         }
         if (initialIndex === resultingIndex) return resultingIndex;
-        this.#nextLast = structuredClone(this.next);
+        this.recordLast();
         const actionToMove = this.next[initialIndex];
         if (initialIndex < resultingIndex) {
             this.#writableNext.copyWithin(initialIndex, initialIndex + 1, resultingIndex + 1);
@@ -467,8 +499,6 @@ class Actions {
             this.#writableNext.copyWithin(resultingIndex + 1, resultingIndex, initialIndex);
         }
         this.#writableNext[resultingIndex] = actionToMove;
-        this.#zoneSpans = null;
-        this.#lastModifiedIndex = undefined;
         return resultingIndex;
     }
 
@@ -478,9 +508,7 @@ class Actions {
         if (index < 0) index += this.next.length;
         if (index < 0 || index >= this.next.length) return;
 
-        if (this.#lastModifiedIndex !== index) this.#nextLast = structuredClone(this.next);
-        this.#zoneSpans = null;
-        this.#lastModifiedIndex = undefined;
+        this.recordLast(index);
         return this.#writableNext.splice(index, 1)[0];
     }
 
@@ -490,9 +518,7 @@ class Actions {
         if (index < 0) index += this.next.length;
         if (index < 0 || index >= this.next.length) return;
 
-        if (this.#lastModifiedIndex !== index) this.#nextLast = structuredClone(this.next);
-        this.#zoneSpans = null;
-        this.#lastModifiedIndex = index;
+        this.recordLast(index, true);
         return Object.assign(this.#writableNext[index], update);
     }
 
@@ -520,8 +546,7 @@ class Actions {
     /** @param {(action: Readonly<NextActionEntry>) => boolean} [predicate] */
     clearActions(predicate) {
         if (this.next.length === 0) return;
-        this.#nextLast = structuredClone(this.next);
-        this.#lastModifiedIndex = undefined;
+        this.recordLast();
         if (predicate) {
             this.#writableNext.splice(0, Infinity, ...this.next.filter(a => !predicate(a)));
         } else {
@@ -529,9 +554,22 @@ class Actions {
         }
     }
 
+    /** @param {number} [unlessIndex] */
+    recordLast(unlessIndex, saveLastModified = false) {
+        if (typeof unlessIndex === "undefined" || this.#lastModifiedIndex !== unlessIndex) {
+            this.#nextLast = structuredClone(this.next);
+            for (const [i, action] of this.#nextLast.entries()) {
+                // duplicate the non-enumerable property descriptor
+                Object.defineProperty(action,"actionId", Object.getOwnPropertyDescriptor(this.next[i], "actionId"));
+            }
+        }
+        this.#zoneSpans = null;
+        this.#lastModifiedIndex = saveLastModified ? unlessIndex : undefined;
+    }
+
     undoLast() {
-        // @ts-ignore
-        [this.next, this.#nextLast] = [this.#nextLast, this.next];
+        // @ts-ignore - we're overriding readonly
+        [this.#writableNext, this.#nextLast] = [this.#nextLast, this.next];
         this.#lastModifiedIndex = undefined;
         this.#zoneSpans = null;
     }
@@ -572,12 +610,38 @@ class ZoneSpan {
     end;
     zones;
     spanIndex;
-    /** @param {number} start @param {number} end @param {number[]} zones @param {number} spanIndex */
-    constructor(start, end, zones, spanIndex) {
+    actionList;
+
+    get startAction() {
+        return this.actionList[this.start];
+    }
+
+    get endAction() {
+        return this.actionList[this.end];
+    }
+
+    get isCollapsed() {
+        // For the zone to count as collapsed, it must:
+        // 1. end with an action
+        // 2. which is valid and enabled, and is in the right zone
+        // 3. and which is marked as collapsed by the user.
+        // We only expose the "collapse" arrows on travel actions and only travel actions can end zones, but if not for that
+        // it would be permissible to use a non-travel action (like, say, RT from z9) as a collapse source.
+        const {endAction, zones} = this;
+        
+        return endAction
+            && Actions.isValidAndEnabled(endAction, 
+                                         (_, eproto) => zones.includes(eproto.townNum))
+            && !!endAction.collapsed;
+    }
+
+    /** @param {number} start @param {number} end @param {number[]} zones @param {number} spanIndex @param {readonly NextActionEntry[]} actionList */
+    constructor(start, end, zones, spanIndex, actionList) {
         this.start = start;
         this.end = end;
         this.zones = zones;
         this.spanIndex = spanIndex;
+        this.actionList = actionList;
     }
 
     /** @param {number} [ignoringIndex] */

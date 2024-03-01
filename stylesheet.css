@@ -1378,12 +1378,27 @@ li#actionLogLatest {
     width: 205px;
     height: 20px;
 }
-.nextActionContainer.zone-collapsed {
+.nextActionContainer.zone-collapsed:not(.action-is-collapsing-zone) {
     display: none;
 }
 .nextActionContainer.action-disabled {
     opacity: 0.5;
 }
+
+.nextActionContainer:not(.action-is-training, .action-has-limit) .nextActionButtons .capButton,
+.nextActionContainer.action-is-singular :is(.plusButton, .minusButton, .splitButton),
+.nextActionContainer:not(.action-is-travel) .nextActionButtons .collapseButton
+{
+    display: none;
+}
+
+.nextActionContainer.user-collapsed .nextActionButtons .collapseButton::before {
+    content:"\f424"; /* fa-expand-alt */
+}
+.nextActionContainer.user-disabled .nextActionButtons .skipButton::before {
+    content:"\f058"; /* fa-check-circle */
+}
+
 .nextActionButtons {
     margin-top: 1px;
     margin-right: 3px;
@@ -1517,7 +1532,14 @@ li#actionLogLatest {
 
 .actionIcon {
     text-align:center;
+    cursor:pointer;
     width:12px;
+}
+.actionIcon:focus {
+    color: color-mix(in srgb, var(--action-icon-hover-color), currentColor);
+}
+.actionIcon:focus-visible {
+    outline: none;
 }
 .actionIcon:hover {
     color: var(--action-icon-hover-color);

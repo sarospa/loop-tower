@@ -1,12 +1,64 @@
 /** @satisfies {Record<string, (strings: TemplateStringsArray, ...exprs: any[]) => any>} */
 const Rendered = {
+    /**
+     * Creates a {@link DocumentFragment} representing the given interpolated HTML string. If the initial backtick is followed
+     * immediately by a newline, all initial whitespace is ignored (rather than being rendered as a text node). DOM properties
+     * of HTML elements can be set by having an interpolation immediately follow a property name with an equals sign. Thus,
+     * 
+     * ```
+     * Rendered.html`<input value="${5}">`
+     * ```
+     * 
+     * will set the HTML attribute "value" to "5", but
+     * 
+     * ```
+     * Rendered.html`<input value=${5}>`
+     * ```
+     * 
+     * will set the DOM property `.value` to 5. This is especially useful for event handler properties.
+     * 
+     * If the string contains only a single element and you would like to have the {@link Element} rather than a {@link DocumentFragment}, just access `.firstElementChild`.
+     * 
+     * @param {TemplateStringsArray} strings
+     * @param  {...any} exprs 
+     * @returns 
+     */
     html(strings, ...exprs) {
-        let htmlString = String.raw(strings, ...exprs);
+        const propAssignmentRegex = /(?<=\s+)(\w+)=$/;
+        const rawStrings = [...strings.raw];
+        if (strings.raw[0][0] === '\n' || strings.raw[0][0] === '\r') { // if this starts with an explicit linebreak, strip early whitespace
+            rawStrings[0] = rawStrings[0].trimStart();
+        }
+        /** @type {{name: string, value: any}[]} */
+        const propertiesToSet = [];
+        for (const [i, string] of rawStrings.entries()) {
+            const matches = propAssignmentRegex.exec(string);
+            if (matches) {
+                const propIdx = propertiesToSet.length;
+                propertiesToSet.push({name: matches[1], value: exprs[i]});
+                rawStrings[i] = string.replace(propAssignmentRegex, "");
+                exprs[i] = `data-rendered-prop-to-set data-rendered-prop-idx-${propIdx}="${propIdx}"`;
+            }
+        }
+        let htmlString = String.raw({raw: rawStrings}, ...exprs);
         if (htmlString[0] === '\n' || htmlString[0] === '\r') { // if this starts with a linebreak, strip early whitespace
             htmlString = htmlString.trimStart();
         }
         const template = document.createElement("template");
         template.innerHTML = htmlString;
+
+        for (const elem of template.content.querySelectorAll("[data-rendered-prop-to-set]")) {
+            elem.removeAttribute("data-rendered-prop-to-set");
+            for (const attr of Array.from(elem.attributes)) {
+                if (attr.name.startsWith("data-rendered-prop-idx-")) {
+                    const setProp = propertiesToSet[parseInt(attr.value)];
+                    elem.removeAttributeNode(attr);
+                    if (setProp) {
+                        elem[setProp.name] = setProp.value;
+                    }
+                }
+            }
+        }
         
         return template.content;
     },

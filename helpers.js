@@ -788,7 +788,11 @@ class DevtoolsFormattable {
 /** @satisfies {Record<string, (strings: TemplateStringsArray, ...exprs: any[]) => any>} */
 const Raw = {
     html(strings, ...exprs) {
-        return String.raw(strings, ...exprs);
+        let htmlString = String.raw(strings, ...exprs);
+        if (strings.raw[0][0] === '\n' || strings.raw[0][0] === '\r') { // if this starts with an explicit linebreak, strip early whitespace
+            htmlString = htmlString.trimStart();
+        }
+        return htmlString;
     },
     css(strings, ...exprs) {
         return String.raw(strings, ...exprs);

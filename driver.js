@@ -533,9 +533,19 @@ function adjustAll() {
     view.requestUpdate("adjustManaCost", "Continue On");
 }
 
+function capAction(actionId) {
+    const action = actions.findActionWithId(actionId);
+    if (!action) return;
+    if (hasLimit(action.name)) {
+        return capAmount(action.index, getActionPrototype(action.name).townNum);
+    } else if (isTraining(action.name)) {
+        return capTraining(action.index);
+    }
+}
+
 function capAmount(index, townNum) {
     const action = actions.next[index];
-    const varName = `good${translateClassNames(action.name).varName}`;
+    const varName = `good${getActionPrototype(action.name)?.varName}`;
     let alreadyExisting;
     //if (action.name.startsWith("Survey")) alreadyExisting = getOtherSurveysOnList("") + (action.disabled ? action.loops : 0);
     //else
@@ -570,9 +580,9 @@ function capAllTraining() {
 
 }
 
-function addLoop(index) {
-    const action = actions.next[index];
-    const theClass = translateClassNames(action.name);
+function addLoop(actionId) {
+    const action = actions.findActionWithId(actionId);
+    const theClass = getActionPrototype(action.name);
     let addAmount = actions.addAmount;
     if (theClass.allowed) {
         const numMax = theClass.allowed();
@@ -581,24 +591,25 @@ function addLoop(index) {
             addAmount = numMax - numHave;
         }
     }
-    actions.updateAction(index, {loops: clamp(action.loops + addAmount, 0, 1e12)});
+    actions.updateAction(action.index, {loops: clamp(action.loops + addAmount, 0, 1e12)});
     view.updateNextActions();
     view.updateLockedHidden();
 }
-function removeLoop(index) {
-    const action = actions.next[index];
-    actions.updateAction(index, {loops: clamp(action.loops - actions.addAmount, 0, 1e12)});
+function removeLoop(actionId) {
+    const action = actions.findActionWithId(actionId);
+    actions.updateAction(action.index, {loops: clamp(action.loops - actions.addAmount, 0, 1e12)});
     view.updateNextActions();
     view.updateLockedHidden();
 }
-function split(index) {
-    actions.splitAction(index);
+function split(actionId) {
+    const action = actions.findActionWithId(actionId);
+    actions.splitAction(action.index);
     view.updateNextActions();
 }
 
-function collapse(index) {
-    const action = actions.next[index];
-    actions.updateAction(index, {collapsed: !action.collapsed});
+function collapse(actionId) {
+    const action = actions.findActionWithId(actionId);
+    actions.updateAction(action.index, {collapsed: !action.collapsed});
     view.updateNextActions();
 }
 
@@ -620,7 +631,7 @@ function showActionIcons() {
 }
 
 function handleDragStart(event) {
-    const index = event.target.getAttribute("data-index");
+    const index = event.target.getAttribute("data-action-id");
     draggedDecorate(index);
     event.dataTransfer.setData("text/html", index);
     hideActionIcons();
@@ -648,14 +659,15 @@ function handleDragOver(event) {
 }
 
 function handleDragDrop(event) {
-    const indexOfDroppedOverElement = event.target.getAttribute("data-index");
-    dragExitUndecorate(indexOfDroppedOverElement);
-    const initialIndex = event.dataTransfer.getData("text/html");
-    if (initialIndex === "") {
+    const idOfDroppedOverElement = event.target.getAttribute("data-action-id");
+    const indexOfDroppedOverElement = actions.findIndexOfActionWithId(idOfDroppedOverElement);
+    dragExitUndecorate(idOfDroppedOverElement);
+    const initialId = event.dataTransfer.getData("text/html");
+    if (initialId === "") {
         const actionData = JSON.parse(event.dataTransfer.getData("actionData"));
         addActionToList(actionData._actionName, actionData._townNum, actionData._isTravelAction, indexOfDroppedOverElement);
     } else {
-        moveQueuedAction(Number(initialIndex), Number(indexOfDroppedOverElement));
+        moveQueuedAction(actions.findIndexOfActionWithId(initialId), indexOfDroppedOverElement);
     }
     showActionIcons();
 }
@@ -670,21 +682,24 @@ function moveQueuedAction(initialIndex, resultingIndex) {
     view.updateNextActions();
 }
 
-function moveUp(index) {
+function moveUp(actionId) {
+    const index = actions.findIndexOfActionWithId(actionId);
     if (index <= 0) {
         return;
     }
     actions.moveAction(index, index - 1);
     view.updateNextActions();
 }
-function moveDown(index) {
+function moveDown(actionId) {
+    const index = actions.findIndexOfActionWithId(actionId);
     if (index >= actions.next.length - 1) {
         return;
     }
     actions.moveAction(index, index + 1);
     view.updateNextActions();
 }
-function disableAction(index) {
+function disableAction(actionId) {
+    const index = actions.findIndexOfActionWithId(actionId);
     const action = actions.next[index];
     const translated = getActionPrototype(action.name);
     if (action.disabled) {
@@ -695,7 +710,8 @@ function disableAction(index) {
     view.updateNextActions();
     view.requestUpdate("updateLockedHidden", null);
 }
-function removeAction(index) {
+function removeAction(actionId) {
+    const index = actions.findIndexOfActionWithId(actionId);
     actions.removeAction(index);
     view.updateNextActions();
     view.requestUpdate("updateLockedHidden", null);

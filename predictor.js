@@ -546,6 +546,7 @@ const Koviko = {
             statistic.hidden = false;
           }
         }
+        selectElement("predictorTrackedStatInput").value = options.predictorTrackedStat;
     }
 
     /**
@@ -1521,8 +1522,8 @@ const Koviko = {
     preUpdate(container) {
       this.update.totalDisplay = this.totalDisplay.innerHTML;
       this.updateTrackedList();
-      this.update.pre = container.querySelectorAll('ul.koviko');
-      this.update.pre.forEach((element) => element.classList.add('expired'));
+      const pre = container.querySelectorAll('ul.koviko');
+      pre.forEach((element) => element.classList.add('expired'));
     }
 
     /**
@@ -1540,11 +1541,6 @@ const Koviko = {
     async update(actions, container, isDebug) {
 
       performance.mark("start-predictor-update");
-      if(this.update.pre?.length) {
-        for (const [i, element] of Array.from(container.children).slice(0, this.update.pre.length).entries()) {
-          element.querySelector("ul.koviko").replaceWith(this.update.pre[i]);
-        }
-      }
       this.updateHadNaNs = false;
 
       /**

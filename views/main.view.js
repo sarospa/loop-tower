@@ -662,86 +662,67 @@ class View {
             Koviko.preUpdateHandler(nextActionsDiv);
         }
 
-        let totalDivText = "";
-
-        for (const [i, action] of actions.next.entries()) {
-            const translatedAction = getActionPrototype(action.name);
-            let capButton = "";
-            const townNum = translatedAction.townNum;
-            const travelNum = getTravelNum(action.name);
-            let classNames = `zone-${townNum+1} action-type-${translatedAction.type}`;
-            /** @type {ZoneSpan[]} */
-            const collapses = [];
-            // eslint-disable-next-line no-loop-func
-            actions.next.forEach((a, index) => {
-                if (a.collapsed) {
-                    const zoneSpan = actions.zoneSpanAtIndex(index);
-                    // if this collapse doesn't come at the end of a span, or if it isn't the right zone, then it doesn't count
-                    const actionZone = getActionPrototype(a.name).townNum;
-                    if (zoneSpan.end !== index || !zoneSpan.zones.includes(actionZone)) return;
-                    collapses.push(zoneSpan);
-                }
-            });
-            if (hasLimit(action.name)) {
-                capButton = `<button id='capButton${i}' onclick='capAmount(${i}, ${townNum})' class='actionIcon far fa-circle'></button>`;
-                classNames += " action-has-limit";
-            } else if (isTraining(action.name)) {
-                capButton = `<button id='capButton${i}' onclick='capTraining(${i})' class='actionIcon far fa-circle'></button>`;
-                classNames += " action-is-training";
-            }
-            let isSingular;
-            if (translatedAction.allowed === undefined) {
-                isSingular = false;
-            } else {
-                isSingular = translatedAction.allowed() === 1;
-                classNames += isSingular ? " action-is-singular" : "";
-            }
-            const actionLoops = action.loops > 99999 ? toSuffix(action.loops) : formatNumber(action.loops);
-            classNames += action.disabled || action.loops === 0 ? " action-disabled" : "";
-            if (collapses.some(z => z.start <= i && z.end > i)) {
-                classNames += " zone-collapsed";
-            }
-            let color;
-            if (action.name === "Face Judgement") {
-                color = "linear-gradient(to bottom, var(--zone-tint-4-opaque) 49%, transparent 51%), linear-gradient(to right, var(--zone-tint-5) 50%, var(--zone-tint-6) 51%)";
-            } else if (action.name === "Fall From Grace") {
-                color = "linear-gradient(to bottom, var(--zone-tint-5) 49%, var(--zone-tint-6) 51%)";
-            } else if (action.name === "Open Rift") {
-                color = "linear-gradient(to bottom, var(--zone-tint-1) 49%, var(--zone-tint-6) 51%)";
-            } else {
-                color = (travelNum > 0 || travelNum == -5) ? `linear-gradient(${this.zoneTints[townNum]} 49%, ${this.zoneTints[townNum + travelNum]} 51%)` : this.zoneTints[townNum];
-            }
-            const imageName = action.name.startsWith("Assassin") ? "assassin" : camelize(action.name);
-            totalDivText +=
-                `<div
-                    id='nextActionContainer${i}'
-                    class='nextActionContainer small showthat ${classNames}'
-                    ondragover='handleDragOver(event)'
-                    ondrop='handleDragDrop(event)'
-                    ondragstart='handleDragStart(event)'
-                    ondragend='draggedUndecorate(${i})'
-                    ondragenter='dragOverDecorate(${i})'
-                    ondragleave='dragExitUndecorate(${i})'
-                    draggable='true' data-index='${i}'
-                    style='background: ${color};'
-                >
-                    <div class='nextActionLoops'><img src='img/${imageName}.svg' class='smallIcon imageDragFix'> x
-                    <div class='bold'>${actionLoops}</div></div>
-                    <div class='nextActionButtons'>
-                        ${capButton}
-                        ${isSingular ? "" : `<button id='plusButton${i}' onclick='addLoop(${i})' class='actionIcon fas fa-plus'></button>`}
-                        ${isSingular ? "" : `<button id='minusButton${i}' onclick='removeLoop(${i})' class='actionIcon fas fa-minus'></button>`}
-                        ${isSingular ? "" : `<button id='splitButton${i}' onclick='split(${i})' class='actionIcon fas fa-arrows-alt-h'></button>`}
-                        ${travelNum ? `<button id='collapseButton${i}' onclick='collapse(${i})' class='actionIcon fas fa-${action.collapsed ? "expand" : "compress"}-alt'></button>` : ""}
-                        <button id='upButton${i}' onclick='moveUp(${i})' class='actionIcon fas fa-sort-up'></button>
-                        <button id='downButton${i}' onclick='moveDown(${i})' class='actionIcon fas fa-sort-down'></button>
-                        <button id='skipButton${i}' onclick='disableAction(${i})' class='actionIcon far fa-${action.disabled ? "check" : "times"}-circle'></button>
-                        <button id='removeButton${i}' onclick='removeAction(${i})' class='actionIcon fas fa-times'></button>
+        const actionContainers = d3.select(nextActionsDiv)
+            .selectAll(".nextActionContainer")
+            .data(actions.next.map((a, index) => ({...a, actionId: a.actionId /* not enumerable by design */, index, action: getActionPrototype(a.name)})), a => a.actionId)
+            .join(enter => enter
+                .append(({action, actionId: i}) => Rendered.html`
+                    <div
+                        id='nextActionContainer${i}'
+                        class='nextActionContainer small showthat zone-${action.townNum + 1} action-type-${action.type}'
+                        ondragover=${handleDragOver}
+                        ondrop=${handleDragDrop}
+                        ondragstart=${handleDragStart}
+                        ondragend=${draggedUndecorate.bind(null, i)}
+                        ondragenter=${dragOverDecorate.bind(null, i)}
+                        ondragleave=${dragExitUndecorate.bind(null, i)}
+                        draggable='true' data-action-id='${i}'
+                    >
+                        <div class='nextActionLoops'><img src='img/${action.imageName}.svg' class='smallIcon imageDragFix'> ×
+                        <div class='bold'></div></div>
+                        <div class='nextActionButtons'>
+                            <button onclick=${capAction.bind(null, i)}      class='capButton actionIcon far fa-circle'></button>
+                            <button onclick=${addLoop.bind(null, i)}        class='plusButton actionIcon fas fa-plus'></button>
+                            <button onclick=${removeLoop.bind(null, i)}     class='minusButton actionIcon fas fa-minus'></button>
+                            <button onclick=${split.bind(null, i)}          class='splitButton actionIcon fas fa-arrows-alt-h'></button>
+                            <button onclick=${collapse.bind(null, i)}       class='collapseButton actionIcon fas fa-compress-alt'></button>
+                            <button onclick=${moveUp.bind(null, i)}         class='upButton actionIcon fas fa-sort-up'></button>
+                            <button onclick=${moveDown.bind(null, i)}       class='downButton actionIcon fas fa-sort-down'></button>
+                            <button onclick=${disableAction.bind(null, i)}  class='skipButton actionIcon far fa-times-circle'></button>
+                            <button onclick=${removeAction.bind(null, i)}   class='removeButton actionIcon fas fa-times'></button>
+                        </div>
+                        <ul class='koviko'></ul>
                     </div>
-                    <ul class='koviko'></ul>
-                </div>`;
-        }
-        nextActionsDiv.innerHTML = totalDivText;
+                `.firstElementChild))
+            .attr("data-index", (_a, i) => i)
+            .classed("action-has-limit", a => hasLimit(a.name))
+            .classed("action-is-training", a => isTraining(a.name))
+            .classed("action-is-singular", a => a.action.allowed?.() === 1)
+            .classed("action-is-travel", a => getPossibleTravel(a.name).length > 0)
+            .classed("action-disabled", a => !actions.isValidAndEnabled(a))
+            .classed("user-disabled", a => !!a.disabled)
+            .classed("user-collapsed", a => !!a.collapsed)
+            .classed("zone-collapsed", a => actions.zoneSpanAtIndex(a.index).isCollapsed)
+            .classed("action-is-collapsing-zone", a => {
+                const zoneSpan = actions.zoneSpanAtIndex(a.index);
+                return zoneSpan.end === a.index && zoneSpan.isCollapsed;
+            })
+            .style("background", ({action}) => {
+                const {townNum} = action;
+                const travelNums = getPossibleTravel(action.name);
+                let color = this.zoneTints[townNum];
+                if (travelNums.length === 1) {
+                    color = `linear-gradient(${color} 49%, ${this.zoneTints[townNum + travelNums[0]]} 51%)`;
+                } else if (travelNums.length > 1) {
+                    color = `conic-gradient(${color} 100grad, ${travelNums.map((travelNum, i) => `${this.zoneTints[townNum + travelNum]} ${i * 200 / travelNums.length + 100}grad ${(i + 1) * 200 / travelNums.length + 100}grad`).join(", ")}, ${color} 300grad)`
+                }
+                return color;
+            })
+            .call(container => container
+                .select("div.nextActionLoops > div.bold")
+                .text(action => action.loops > 99999 ? toSuffix(action.loops) : formatNumber(action.loops))
+            )
+
         if (options.predictor) {
             Koviko.postUpdateHandler(actions.next, nextActionsDiv);
         }

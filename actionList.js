@@ -83,14 +83,14 @@ function withoutSpaces(name) {
  * @param {N} name @returns {TryLookupAction<N>}
  */
 function getActionPrototype(name) {
+    if (!name) return undefined;
     const nameWithoutSpaces = withoutSpaces(name);
     if (nameWithoutSpaces in Action && Action[nameWithoutSpaces] instanceof Action) {
         // @ts-ignore
         return Action[nameWithoutSpaces];
     }
-    console.log(`error trying to create ${name}`);
-    // @ts-ignore
-    return false;
+    console.warn(`error trying to create ${name}`);
+    return undefined;
 }
 /** @template T @typedef {{-readonly [K in keyof T]: T[K]}} Mutable */
 /** @template {ActionId|ActionName} N @param {N} name @returns {Mutable<LookupAction<N>>} */
@@ -247,6 +247,9 @@ class Action extends Localizable {
             : getXMLName(name);
     }
 
+    get imageName() {
+        return camelize(this.name);
+    }
 
     /* eslint-disable no-invalid-this */
     // not all actions have tooltip2 or labelDone, but among actions that do, the XML format is
@@ -537,6 +540,10 @@ class AssassinAction extends MultipartAction {
             ...extras,
             ...AssassinAction.$defaults,
         });
+    }
+
+    get imageName() {
+        return "assassin";
     }
 
     getStoryTexts(rawStoriesDataForAction = _txtsObj(this.name.toLowerCase().replace(/ /gu, "_"))[0].children) { // I hate this

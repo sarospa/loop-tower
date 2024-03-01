@@ -9,11 +9,13 @@
                 <title>Changelog</title>
                 <version_prefix>Version</version_prefix>
             </meta>
-            <!--
             <version caption="Latest"><![CDATA[
             <b>Recent changes</b>
+            • The Action List no longer completely redraws itself with every change you make, so the UI should feel somewhat snappier.<br>
+            • The predictor now waits 100ms after starting a prediction before marking the existing one as stale. If the prediction finishes within that time, it avoids some UI flashing.<br>
+            • The action buttons on the Action List now show their keyboard-focus state visibly, and when they are sharing space with the predictor, having keyboard focus will keep them expanded. Click away from the action list if you want to see the predictor stats again.<br>
+            • The predictor will try a little harder to keep the tracked stat dropdown in sync with what it's actually tracking.<br>
             ]]></version>
-            -->
             <version verNum="3P.1.0"><![CDATA[
             <b>Feb 29th, 2024</b>
             • Writing update! A great many brand-new action stories have been contributed by Inferno Vulpix, Nikki, and scout from the Discord, along with lots of very welcome proofreading and other improvements! You'll find their writing all over, but my favorite might be the new storyline for the Wizard College in zone 5. Check the Action Stories tab - even actions you've already completed might have surprises for you!<br>
