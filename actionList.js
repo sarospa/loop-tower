@@ -187,7 +187,8 @@ const townNames = ["Beginnersville", "Forest Path", "Merchanton", "Mt. Olympus",
 // define one of these in the action, and they will create any additional UI elements that are needed
 /** @typedef {"normal"|"progress"|"limited"|"multipart"} ActionType */
 /** @typedef {"default"|"linear"} ProgressScalingType */
-
+/** @satisfies {ActionType[]} */
+const actionTypes = ["normal", "progress", "limited", "multipart"];
 /**
  * @typedef {{
  *     type: ActionType,

@@ -669,7 +669,7 @@ class View {
                 .append(({action, actionId: i}) => Rendered.html`
                     <div
                         id='nextActionContainer${i}'
-                        class='nextActionContainer small showthat zone-${action.townNum + 1} action-type-${action.type}'
+                        class='nextActionContainer small showthat'
                         ondragover=${handleDragOver}
                         ondrop=${handleDragDrop}
                         ondragstart=${handleDragStart}
@@ -678,7 +678,7 @@ class View {
                         ondragleave=${dragExitUndecorate.bind(null, i)}
                         draggable='true' data-action-id='${i}'
                     >
-                        <div class='nextActionLoops'><img src='img/${action.imageName}.svg' class='smallIcon imageDragFix'> ×
+                        <div class='nextActionLoops'><img class='smallIcon imageDragFix'> ×
                         <div class='bold'></div></div>
                         <div class='nextActionButtons'>
                             <button onclick=${capAction.bind(null, i)}      class='capButton actionIcon far fa-circle'></button>
@@ -694,7 +694,15 @@ class View {
                         <ul class='koviko'></ul>
                     </div>
                 `.firstElementChild))
-            .attr("data-index", (_a, i) => i)
+            .property("data-index", (_a, i) => i)
+            .call(container => {
+                for (const {index} of towns) {
+                    container.classed(`zone-${index+1}`, a => a.action.townNum === index);
+                }
+                for (const type of actionTypes) {
+                    container.classed(`action-type-${type}`, a => a.action.type === type);
+                }
+            })
             .classed("action-has-limit", a => hasLimit(a.name))
             .classed("action-is-training", a => isTraining(a.name))
             .classed("action-is-singular", a => a.action.allowed?.() === 1)
@@ -718,6 +726,9 @@ class View {
                 }
                 return color;
             })
+            .call(container => container
+                .select("div.nextActionLoops > img")
+                .property("src", a => `img/${a.action.imageName}.svg`))
             .call(container => container
                 .select("div.nextActionLoops > div.bold")
                 .text(action => action.loops > 99999 ? toSuffix(action.loops) : formatNumber(action.loops))
