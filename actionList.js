@@ -6425,6 +6425,9 @@ Action.Escape = new Action("Escape", {
     finish() {
         unlockTown(7);
     },
+    story(completed) {
+        unlockGlobalStory(10);
+    },
 });
 
 Action.OpenPortal = new Action("Open Portal", {
@@ -6465,9 +6468,6 @@ Action.OpenPortal = new Action("Open Portal", {
         handleSkillExp(this.skills);
         unlockTown(1);
     },
-    story(completed) {
-        unlockGlobalStory(10);
-    }
 });
 
 //====================================================================================================
@@ -7303,6 +7303,9 @@ Action.LeaveCity = new Action("Leave City", {
     finish() {
         unlockTown(8);
     },
+    story(completed) {
+        unlockGlobalStory(11);
+    }
 });
 
 //====================================================================================================
@@ -7634,9 +7637,6 @@ Action.ChallengeGods = new TrialAction("Challenge Gods", 2, {
             default: break;
         }
     },
-    story(completed) {
-        unlockGlobalStory(11);
-    }
 });
 
 Action.RestoreTime = new Action("Restore Time", {
