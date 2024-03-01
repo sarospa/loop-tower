@@ -48,10 +48,6 @@ const numericTestTypes = {
     notEquals: "≠",
 };
 
-const jsFunctions = {
-    getExploreProgress,
-};
-
 /**
  * @typedef {keyof typeof baseValueTypes} BaseValueType
  * @typedef {keyof typeof numericAdjustmentTypes} NumericAdjustmentType
@@ -773,7 +769,7 @@ class ActionListEditor {
             this.bindDataList("buffs", buffs, b => !(b.name in prestigeBases) && b.label);
             this.bindDataList("prestigeBuffs", buffs, b => b.name in prestigeBases && b.label);
             this.bindDataList("storyFlags", storyFlags, (_, k) => k);
-            this.bindDataList("jsFunctions", jsFunctions, (_, k) => k);
+            this.bindDataList("jsFunctions", Schema.jsFunctions, (_, k) => k);
             this.bindDataList("resources", resources, (_, k) => _txt(`tracked_resources>resource[id=${k}]>label`), k => k, v => typeof v);
             this.bindDataList("namedAdjustments", this.defs, d => d.name, (_, d) => d.name);
             this.bindDataList("actionNames", this.actions, a => a.name, (_,a) => a.name, a => a.type);

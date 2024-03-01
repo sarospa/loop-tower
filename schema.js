@@ -4,6 +4,11 @@ class Schema {
     /** @readonly */ static XMLNS_RELAXNG_A = "http://relaxng.org/ns/compatibility/annotations/1.0";
     /** @readonly */ static XMLNS_IL = "http://dmchurch.github.io/omsi-loops/schema/1.0";
 
+    // This object exposes functions to the XML schema's <function> element.
+    /** @readonly */ static jsFunctions = {
+        getExploreProgress,
+    };
+
     // well-known instances, should never be reassigned at runtime
     /** @readonly */ static actionList = new Schema("data/schema/actionList.rng");
     
