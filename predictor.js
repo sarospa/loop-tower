@@ -2289,7 +2289,7 @@ const Koviko = {
         if ( resources[name] != 0 ) return `<li class="${name}" title="${capitalizeFirst(name)}: ${isNaN(resources[name])?"???":formatNumber(resources[name])}">${isNaN(resources[name])?"?":intToString(resources[name], 1)}</li>`;
         else return "";
       }).join('');
-      return `<ul class='koviko ${isValidStr}'>` + Affec + `</ul><div class='koviko showthis'><table>${tooltip || '<b>N/A</b>'}</table></div>`;
+      return `<ul class='koviko ${isValidStr}'>` + Affec + `<div class='koviko showthis'><table>${tooltip || '<b>N/A</b>'}</table></div></ul>`;
     };
 
     /**

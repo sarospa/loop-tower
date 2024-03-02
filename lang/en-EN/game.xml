@@ -16,6 +16,7 @@
             • The action buttons on the Action List now show their keyboard-focus state visibly, and when they are sharing space with the predictor, having keyboard focus will keep them expanded. Click away from the action list if you want to see the predictor stats again.<br>
             • The predictor will try a little harder to keep the tracked stat dropdown in sync with what it's actually tracking.<br>
             • Fixed the unlock conditions for a couple late-game global stories.<br>
+            • The predictor will stop spawning ever-more tooltips as you play the game, causing the browser to slow to a crawl. Thanks to Desent from the discord for helping me track this one down!<br>
             ]]></version>
             <version verNum="3P.1.0"><![CDATA[
             <b>Feb 29th, 2024</b>
