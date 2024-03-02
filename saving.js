@@ -1234,8 +1234,16 @@ function doLoad(toLoad) {
 
     for (const town of towns) {
         const hiddenVars = hiddenVarNames.shift() ?? [];
-        town.hiddenVars = new Set(hiddenVars);
+        town.hiddenVars.clear()
         for (const action of town.totalActionList) {
+            if ((action.visible?.() ?? true) && (action.unlocked?.() ?? true)) {
+                if (hiddenVars.includes(action.varName)) {
+                    town.hiddenVars.add(action.varName);
+                }
+                if (action.name.startsWith("Survey") && hiddenVars.includes(`${action.varName}Global`)) {
+                    town.hiddenVars.add(`${action.varName}Global`);
+                }
+            }
             if (action.type === "progress")
                 town[`exp${action.varName}`] = toLoad[`exp${action.varName}`] === undefined ? 0 : toLoad[`exp${action.varName}`];
             else if (action.type === "multipart")
