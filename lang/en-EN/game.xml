@@ -17,6 +17,7 @@
             <version caption="Latest"><![CDATA[
             <b>Recent changes</b>
             • Fixed the first Wander action failing when fractional mana consumption is enabled in Extras.<br>
+            • The two-column layout in the responsive UI now sets a minimum height for the Action List.<br>
             ]]></version>
             <version verNum="3P.1.1"><![CDATA[
             <b>Mar 1st, 2024</b>

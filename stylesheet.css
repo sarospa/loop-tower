@@ -2011,7 +2011,7 @@ li#actionLogLatest {
             display: grid;
             height: 100%;
             grid:
-                "actions town"
+                "actions town" minmax(600px, max-content)
                 "stats log"
                 / minmax(min-content,3fr) minmax(min-content,2fr);
             margin-right:0.5em;
