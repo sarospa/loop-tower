@@ -126,9 +126,7 @@ function prestigeWithNewValues(nextPrestigeValues, nextPrestigeBuffs) {
 function prestigeConfirmation() {
     save();
     if (window.localStorage[defaultSaveName] && window.localStorage[defaultSaveName] !== "") {
-        const fracmanaWarning = options.fractionalMana ? "In addition, the Fractional Mana option will be disabled, since it can cause the first Wander action to fail. " : "";
-        if (confirm(`Prestiging will reset all of your progress, but retain prestige points. ${fracmanaWarning}Are you sure?`)) {
-            options.fractionalMana = false;
+        if (confirm(`Prestiging will reset all of your progress, but retain prestige points. Are you sure?`)) {
             for (const town of towns) {
                 // this should be done in a more logical way but for now, just make sure to clear these out
                 town?.hiddenVars?.clear();

@@ -201,6 +201,11 @@ class Actions {
         // exp gets added here, where it can factor in to adjustTicksNeeded
         addExpFromAction(curAction, manaToSpend);
 
+        if (this.currentPos === this.current.length - 1 && options.fractionalMana && curAction.ticks < curAction.adjustedTicks && curAction.ticks >= curAction.adjustedTicks - 0.005) {
+            // this is close enough to finished that it shows as e.g. 250.00/250.00 mana used for action
+            curAction.ticks = curAction.adjustedTicks;
+        }
+
         if (curAction.ticks >= curAction.adjustedTicks) {
             curAction.ticks = 0;
             curAction.loopsLeft--;
