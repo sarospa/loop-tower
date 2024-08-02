@@ -1,5 +1,3 @@
-:ok_hand: :ok_hand: :ok_hand: :ok_hand: :ok_hand: :ok_hand: :ok_hand: :ok_hand: :ok_hand: :ok_hand: 
-
 ##Local Development
  - **Fork** the repository into your own account
  - Download VSCode and pull the repo locally
